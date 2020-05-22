@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Provide feedback{% endblock %}
+
+{% block base_breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+  <style>
+    #div_id_captcha {
+      display: none;
+    }
+  </style>
+
+  <br/>
+
+  <h1 class="block-title page-title">REQUEST HELP OR PROVIDE FEEDBACK</h1>
+
+  <form action='#' method="POST" class="form">
+    <div class="form-block">
+      {% csrf_token %}
+      {{ form|crispy }}
+    </div>
+    <div class="form-actions">
+      <a href="/" class="btn btn-lg btn-light-blue">Cancel</a>
+      <button type="submit" name="save" class="btn btn-lg btn-primary">Send</button>
+    </div>
+  </form>
+{% endblock content %}

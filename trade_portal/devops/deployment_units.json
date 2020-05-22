@@ -1,0 +1,4 @@
+{
+    "Units" : [ "www-v1-web", "www-v1-task", "www-v1-celerybeat", "www-v1-celeryworker", "www-v1-flower" ],
+    "Formats" : [ "docker" ]
+}

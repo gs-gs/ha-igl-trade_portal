@@ -1,0 +1,9 @@
+.*
+!.coveragerc
+!.env
+!.pylintrc
+trade_portal/trade_portal/media/
+var/
+node_modules
+
+

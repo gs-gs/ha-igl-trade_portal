@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile update{% endblock %}
+
+{% block breadcrumbs %}
+  <li class="breadcrumb-item"><a href="{% url 'users:detail' %}">My Profile</a></li>
+  <li class="breadcrumb-item active" aria-current="page">Update</li>
+{% endblock %}
+
+{% block content %}
+<form class="form-horizontal" method="post" action="{% url 'users:update' %}">
+  <div class="row">
+    <div class="col-xs-12 col-md-6">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <br/>
+        <div class="control-group">
+          <div class="controls">
+            <button type="submit" class="au-btn">Save changes</button>
+          </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+    </div>
+  </div>
+</form>
+{% endblock %}

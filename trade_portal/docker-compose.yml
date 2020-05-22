@@ -1,0 +1,101 @@
+version: '3'
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: trade_portal_django
+    depends_on:
+      - postgres
+      - minio
+      - redis
+    volumes:
+      - .:/app
+    env_file:
+      - local.env
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - REDIS_URL=redis://redis:6379/0
+      - USE_DOCKER=yes
+      - IPYTHONDIR=/app/.ipython
+      - DJANGO_DEBUG=True
+      - DJANGO_AWS_ACCESS_KEY_ID=minidemoaccess
+      - DJANGO_AWS_SECRET_ACCESS_KEY=miniodemosecret
+      - DJANGO_AWS_STORAGE_BUCKET_NAME=storage
+      - S3_ENDPOINT_URL=http://minio:9000
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8050:8050"
+    command: /start
+    restart: on-failure
+
+  postgres:
+    image: postgres:11.3-alpine
+    logging:
+      driver: none
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=
+    restart: on-failure
+
+  redis:
+    image: redis:5.0
+    restart: on-failure
+    logging:
+      driver: none
+
+  celeryworker:
+    <<: *django
+    image: trade_portal_celeryworker
+    depends_on:
+      - redis
+      - postgres
+      - minio
+    ports: []
+    command: /start-celeryworker
+    restart: on-failure
+
+  celerybeat:
+    <<: *django
+    image: trade_portal_celerybeat
+    depends_on:
+      - redis
+      - postgres
+      - minio
+    ports: []
+    command: /start-celerybeat
+    restart: on-failure
+
+  # flower:
+  #   <<: *django
+  #   image: trade_portal_flower
+  #   ports:
+  #     - "5555:5555"
+  #   command: /start-flower
+  #   logging:
+  #     driver: none
+
+  minio:
+    # https://docs.min.io/docs/minio-docker-quickstart-guide.html
+    image: minio/minio
+    entrypoint: sh
+    command: -c 'mkdir -p /minio-data/storage && /usr/bin/minio server /minio-data'
+    environment:
+      - MINIO_ACCESS_KEY=minidemoaccess
+      - MINIO_SECRET_KEY=miniodemosecret
+      - MINIO_HTTP_TRACE=/minio-data/requests.log
+    # ports: ['9000:9000']
+    restart: on-failure
+    volumes:
+      - ./var/minio-data:/minio-data
+    logging:
+      driver: none

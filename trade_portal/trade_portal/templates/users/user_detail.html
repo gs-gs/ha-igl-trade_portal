@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active" aria-current="page">My Profile</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xs-12 col-md-6">
+    <a class="au-btn" href="{% url 'users:update' %}" role="button">Change my info</a>
+    <a class="au-btn" href="{% url 'account_email' %}" role="button">E-Mail management</a>
+    <br/><br/>
+    <a class="au-btn" href="{% url 'account_change_password' %}" role="button">Change password</a>
+  </div>
+  <div class="col-xs-12 col-md-6">
+    {# ... #}
+  </div>
+</div>
+{% endblock content %}
+

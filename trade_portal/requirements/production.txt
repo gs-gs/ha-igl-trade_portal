@@ -1,0 +1,6 @@
+# PRECAUTION: avoid production dependencies that aren't in development
+
+-r ./base.txt
+
+gunicorn==20.0.4  # https://github.com/benoitc/gunicorn
+django-anymail[ses]==7.0.0  # https://github.com/anymail/django-anymail
