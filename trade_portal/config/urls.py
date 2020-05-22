@@ -17,14 +17,18 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("about/", TemplateView.as_view(template_name="pages/about.html")),
 
-    path(settings.ADMIN_URL, admin.site.urls),
-    path("users/", include("trade_portal.users.urls", namespace="users")),
+
+    path("profile/", include("trade_portal.users.urls", namespace="users")),
+    path("feedback/", FeedbackView.as_view(), name="feedback"),
+
+    path("healthcheck", HealthcheckView.as_view()),
+
     path("accounts/", include("allauth.urls")),
     path("oidc/logout-initiate", LogoutInitiateView.as_view(), name="logout_initiate"),
-    path("logout", LogoutPerformView.as_view(), name="logout"),
-    path("feedback/", FeedbackView.as_view(), name="feedback"),
-    path("healthcheck", HealthcheckView.as_view()),
+    path("logout/", LogoutPerformView.as_view(), name="logout"),
     path("oidc/", include('mozilla_django_oidc.urls')),
+
+    path(settings.ADMIN_URL, admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

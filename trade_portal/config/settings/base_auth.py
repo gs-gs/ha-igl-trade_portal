@@ -12,7 +12,7 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-LOGIN_URL = "oidc_authentication_init"
+LOGIN_URL = "account_login"  # "oidc_authentication_init"
 
 # OIDC
 OIDC_RP_CLIENT_ID = env('ICL_OIDC_RP_CLIENT_ID', default='')
