@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create document{% endblock %}
+
+{% block extra_head %}
+  <style>
+    textarea {
+      max-height: 100px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<h1>Create document</h1>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.errors }}
+    {{ form|crispy }}
+
+    {% comment %}
+      for per-field basis:
+      <div class="row">
+        <div class="col-col-md-6 col-md-6">
+          {{ form.item_no|as_crispy_field }}
+        </div>
+        ...
+    {% endcomment %}
+
+    <div class="mt-5">
+      <button type="submit" class="btn btn-primary">Create</button>
+      <a class="btn btn-default ml-3" href="../">Cancel</a>
+    </div>
+  </form>
+{% endblock content %}

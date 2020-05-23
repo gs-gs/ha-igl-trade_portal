@@ -36,6 +36,14 @@
               </li>
             {% else %}
               <li class="nav-item">
+                <a class="nav-link" href="{% url 'documents:list' %}">Documents</a>
+              </li>
+              {% if request.user.is_staff %}
+                <li class="nav-item">
+                  <a class="nav-link" href="/admin/" target="_new">Admin</a>
+                </li>
+              {% endif %}
+              <li class="nav-item">
                 <a class="nav-link" href="/logout/">Logout</a>
               </li>
             {% endif %}
@@ -56,6 +64,15 @@
 
     <!-- Begin page content -->
     <main role="main" class="container">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="ml-3">&times;</span></button>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
       {% block content %}{% endblock %}
     </main>
 

@@ -62,6 +62,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "trade_portal.users.apps.UsersConfig",
+    "trade_portal.documents",
     "trade_portal",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -178,6 +179,13 @@ SERVER_EMAIL = env("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 EMAIL_SUBJECT_PREFIX = env(
     "DJANGO_EMAIL_SUBJECT_PREFIX", default="[trade-portal]"
 )
+
+# Statd monitoring (if enabled)
+STATSD_HOST = env('MON_STATSD_HOST', default=None)
+if STATSD_HOST:
+    STATSD_PREFIX = env('MON_STATSD_PREFIX', default='tradeportal')
+    STATSD_PORT = int(env('MON_STATSD_PORT', default=8125))
+
 
 BUILD_REFERENCE = env('BUILD_REFERENCE', default=None)
 CONFIGURATION_REFERENCE = env('CONFIGURATION_REFERENCE', default=None)

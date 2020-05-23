@@ -7,7 +7,7 @@ redis==3.4.1 # https://github.com/andymccurdy/redis-py
 celery==4.4.0  # pyup: < 5.0  # https://github.com/celery/celery
 flower==0.9.3  # https://github.com/mher/flower
 psycopg2==2.8.4 --no-binary psycopg2  # https://github.com/psycopg/psycopg2
-pycountry==19.8.18
+django-countries==5.3.3
 
 # Django
 # ------------------------------------------------------------------------------
@@ -37,3 +37,6 @@ awscli>=1.15.76,<2
 
 # AWS Cognito Auth
 mozilla-django-oidc==1.2.3
+
+# Metrics collection
+python-statsd==2.1.0

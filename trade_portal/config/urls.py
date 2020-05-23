@@ -17,7 +17,7 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("about/", TemplateView.as_view(template_name="pages/about.html")),
 
-
+    path("documents/", include("trade_portal.documents.urls", namespace="documents")),
     path("profile/", include("trade_portal.users.urls", namespace="users")),
     path("feedback/", FeedbackView.as_view(), name="feedback"),
 
