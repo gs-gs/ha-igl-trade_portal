@@ -1,5 +1,9 @@
 version: '3'
 
+networks:
+  internal:
+    driver: bridge
+
 services:
   django: &django
     build:
@@ -34,11 +38,13 @@ services:
       - "8050:8050"
     command: /start
     restart: on-failure
+    networks:
+      - internal
 
   postgres:
     image: postgres:11.3-alpine
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
@@ -46,12 +52,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=
     restart: on-failure
+    networks:
+      - internal
 
   redis:
     image: redis:5.0
     restart: on-failure
     logging:
       driver: none
+    networks:
+      - internal
 
   celeryworker:
     <<: *django
@@ -99,3 +109,5 @@ services:
       - ./var/minio-data:/minio-data
     logging:
       driver: none
+    networks:
+      - internal

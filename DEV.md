@@ -21,6 +21,11 @@ Please note that docker-compose project name must not be AU or CN or SG because 
 
 Please note that by default the app is started for AU jurisdiction, you may change it using env variables.
 
+To create a superuser:
+
+    $ docker-compose run -rm django bash
+    $ ./manage.py createsuperuser
+
 
 ## Test coverage
 

@@ -1,0 +1,25 @@
+version: '3.0'
+
+# This file is different only by one external network,
+# which assumed to be created by Intergov setup somewhere and used to
+# talk to intergov APIs. You don't need it for chambers app UI development,
+# or you could configure Intergov api endpoints in a different way
+# (cloud setup or so). But if you want to use your local intergov then please
+# use it as well.
+
+networks:
+  au-ig-apis-external:
+    external: true
+  internal:
+    driver: bridge
+
+services:
+  django:
+    networks:
+      - au-ig-apis-external
+      - internal
+
+  celeryworker:
+    networks:
+      - au-ig-apis-external
+      - internal
