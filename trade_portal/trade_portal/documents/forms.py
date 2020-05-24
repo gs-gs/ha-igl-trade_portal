@@ -1,16 +1,17 @@
 from django import forms
 
-from .models import Document, FTA
+from .models import Document, DocumentFile, FTA
 
 
 class DocumentCreateForm(forms.ModelForm):
+    file = forms.FileField()
 
     class Meta:
         model = Document
         fields = (
             'type',
             'document_number', 'fta', 'importing_country', 'exporter',
-            'importer_name',
+            'importer_name', 'file',
         )
 
     def __init__(self, *args, **kwargs):
@@ -29,8 +30,25 @@ class DocumentCreateForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         self.instance.created_by = self.user
-        return super().save(*args, **kwargs)
+        result = super().save(*args, **kwargs)
+        uploaded_file = self.cleaned_data.get("file")
+        if uploaded_file:
+            DocumentFile.objects.filter(
+                doc=self.instance
+            ).delete()
+            df = DocumentFile(
+                doc=self.instance,
+                size=uploaded_file.size,
+                file=uploaded_file,
+                filename=uploaded_file.name,
+                created_by=self.user,
+            )
+            df.save()
+        return result
 
 
 class DocumentUpdateForm(DocumentCreateForm):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["file"].required = False
+        self.fields["file"].help_text = "Leave empty if you want to keep the old file"

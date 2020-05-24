@@ -1,7 +1,7 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin as LoginRequired
+from django.contrib.auth.mixins import LoginRequiredMixin as Login
 from django.views.generic import (
-    DetailView, ListView, CreateView,
+    DetailView, ListView, CreateView, UpdateView,
 )
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, Http404
@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 
 from trade_portal.documents.forms import (
-    DocumentCreateForm,
+    DocumentCreateForm, DocumentUpdateForm,
 )
 from trade_portal.documents.models import Document
 from trade_portal.utils.monitoring import statsd_timer
@@ -29,7 +29,7 @@ class DocumentQuerysetMixin(object):
         )
 
 
-class DocumentListView(LoginRequired, DocumentQuerysetMixin, ListView):
+class DocumentListView(Login, DocumentQuerysetMixin, ListView):
     template_name = 'documents/list.html'
     model = Document
 
@@ -38,7 +38,7 @@ class DocumentListView(LoginRequired, DocumentQuerysetMixin, ListView):
         return super().dispatch(*args, **kwargs)
 
 
-class DocumentCreateView(LoginRequired, CreateView):
+class DocumentCreateView(Login, CreateView):
     template_name = 'documents/create.html'
     form_class = DocumentCreateForm
 
@@ -60,7 +60,28 @@ class DocumentCreateView(LoginRequired, CreateView):
         return reverse('documents:detail', args=[self.object.pk])
 
 
-class DocumentDetailView(LoginRequired, DetailView):
+class DocumentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
+    template_name = 'documents/update.html'
+    form_class = DocumentUpdateForm
+
+    @statsd_timer("view.DocumentUpdateView.dispatch")
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_form_kwargs(self):
+        k = super().get_form_kwargs()
+        k['user'] = self.request.user
+        return k
+
+    def get_success_url(self):
+        messages.success(
+            self.request,
+            "The document has been updated"
+        )
+        return reverse('documents:detail', args=[self.object.pk])
+
+
+class DocumentDetailView(Login, DetailView):
     template_name = 'documents/detail.html'
     model = Document
 
@@ -74,7 +95,7 @@ class DocumentDetailView(LoginRequired, DetailView):
         return redirect(request.path_info)
 
 
-class DocumentFileDownloadView(LoginRequired, DocumentQuerysetMixin, DetailView):
+class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
 
     def get_object(self):
         try:

@@ -92,8 +92,8 @@ class Document(models.Model):
     TYPE_NONPREF_COO = "non_pref_coo"
 
     TYPE_CHOICES = (
-        (TYPE_PREF_COO, "Preferential Document of Origin"),
-        (TYPE_NONPREF_COO, "Non-preferential Document of Origin"),
+        (TYPE_PREF_COO, "Preferential Certificate of Origin"),
+        (TYPE_NONPREF_COO, "Non-preferential Certificate of Origin"),
     )
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
@@ -142,7 +142,7 @@ class Document(models.Model):
         return reverse('documents:detail', args=[self.pk])
 
     def __str__(self):
-        return f"{self.get_type_display} document {self.short_id}"
+        return f"{self.get_type_display()} #{self.short_id}"
 
     @statsd_timer("model.Document.save")
     def save(self, *args, **kwargs):
@@ -198,7 +198,7 @@ def generate_docfile_filename(instance, filename):
         or "ref" + str(uuid.uuid4())
     )
     upload_id = ''.join(
-        random.choice(string.ascii_lowercase) for i in range(12)
+        random.choice(string.ascii_lowercase) for i in range(7)
     )
     if filename and '.' in filename:
         ext = filename.split('.')[-1]

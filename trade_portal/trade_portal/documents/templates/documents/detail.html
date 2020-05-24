@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load our_utils %}
+{% load static %}
+
+{% block title %}Document #{{ object.short_id }}{% endblock %}
+
+{% block content %}
+<h1>Document #{{ object.short_id }}</h1>
+
+  <div class="row certificate-detail-content">
+    <div class="col-7">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          {% with object.status as s %}
+            <li class="breadcrumb-item {% if s == 'draft' %}active{% endif %}">Draft</li>
+            <li class="breadcrumb-item {% if s == 'complete' %}active{% endif %}">Complete</li>
+            <li class="breadcrumb-item {% if s == 'lodged' %}active{% endif %}">Lodged</li>
+            <li class="breadcrumb-item {% if s == 'sent' %}active{% endif %}">Sent</li>
+            {% if s != 'rejected' %}
+              <li class="breadcrumb-item {% if s == 'accepted' %}active{% endif %}">Accepted</li>
+              <li class="breadcrumb-item {% if s == 'acquitted' %}active{% endif %}">Acquitted</li>
+            {% endif %}
+            {% if s == 'rejected' %}
+              <li class="breadcrumb-item active">Rejected</li>
+            {% endif %}
+          {% endwith %}
+        </ol>
+      </nav>
+
+      <fieldset>
+        <table class="table certificate-detail-table">
+          <tr>
+            <th>Status</th>
+            <td>
+              {{ object.get_status_display }}
+            </td>
+          </tr>
+          {% if object.acquitted_at %}
+          <tr>
+            <th>Acquittal</th>
+            <td>
+              <label class='badge badge-success'>{{ object.acquitted_at }}</label>
+            </td>
+          </tr>
+          {% endif %}
+          <tr>
+            <th>Created by</th>
+            <td>{{ object.created_by.email|default:object.created_by }}</td>
+          </tr>
+          <tr>
+            <th>Created at</th>
+            <td>{{ object.created_at }}</td>
+          </tr>
+          {% for field, value, readable_name in object.get_iterable_readable_fields %}
+            {% if value %}
+              <tr>
+                <th>{{ readable_name }}</th>
+                {% if field == "intergov_details" %}
+                  <td><textarea style="width: 100%; border: 0px; height: 250px; font-size: 8pt">{{ value|json_render }}</textarea></td>
+                {% else %}
+                  <td>{{ value|default:"(unknown)"|linebreaksbr }}</td>
+                {% endif %}
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </table>
+      </fieldset>
+    </div>
+
+    <div class="col-5">
+      {% if object.can_be_updated %}
+        <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
+      {% endif %}
+
+      {% if object.nodemessage_set.all %}
+        <div class="certificate-detail-document" style="height: auto">
+          {% for nm in object.nodemessage_set.all %}
+            {% if nm.is_outbound %}Outbound{% else %}Incoming{%endif %}
+            message:<br/>
+            <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
+            <small>{{ nm.history|join:", " }}</small>
+            <hr/>
+          {% endfor %}
+        </div>
+        <br/>
+      {% endif %}
+
+      <div class="certificate-detail-document" style="height: auto">
+        {% if object.files.all %}
+          <fieldset>
+            <legend class="certificate-detail-document-legent">
+              <div>
+                Documents
+              </div>
+            </legend>
+            <form action="#" method="POST" onSubmit="return confirm('Are you sure?')">
+              {% csrf_token %}
+              <table class="table certificate-detail-document-table">
+                <tr>
+                  <th>Type</th>
+                  <th>File and author</th>
+                  {% if object.can_be_updated %}
+                    <th></th>
+                  {% endif %}
+                </tr>
+                {% for doc in object.files.all %}
+                  <tr>
+                    <td>
+                      <small>{{ doc.extension }}</small>
+                    </td>
+                    <td title="{{ doc.filename }}">
+                      {% if doc.is_upstream %}
+                        <span class="oi oi-eye" style="font-size: 1em" title="The document will be sent to remote party"></span>
+                      {% endif %}
+                      <a href="{% url 'documents:file-download' object.id doc.id %}">
+                        {{ doc.short_filename }}
+                      </a>
+                      <div class="document-info">
+                      {{ doc.created_at }} by
+                      <span class="document-owner">{{ doc.created_by }}</span>
+                      </div>
+                    </td>
+                    {% if object.can_be_updated %}
+                      <td>
+                        <button type="submit" name="delete-document" value="{{ doc.pk }}" class="btn-sm btn">
+                          <img src="{% static 'images/delete_icon.png' %}" width="15" />
+                        </button>
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+              </table>
+            </form>
+          </fieldset>
+        {% else %}
+          {% if obj.status == obj.status_draft %}
+            <fieldset>
+              <legend class="document-warning-msg">
+                <span class="badge badge-info" style="font-size: 11pt">
+                  Please fill all the required certificate details.
+                </span>
+              </legend>
+            </fieldset>
+          {% endif %}
+        {% endif %}
+      </div>
+
+
+      {% if object.acquitted_details %}
+        <br/>
+        <div class="certificate-detail-document" style="height: auto; overflow: hide; padding: 5px">
+          <fieldset><legend>Acquittals</legend>
+            {% for row in object.acquitted_details %}
+              <table class="table table-sm" style='font-size: 8pt'>
+                {% for key, value in row.items %}
+                  <tr>
+                    <th>{{ key }}</th>
+                    <td><em>{{ value }}</em></td>
+                  </tr>
+                {% endfor %}
+              </table>
+            {% endfor %}
+          </fieldset>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block modal %}
+  {% if object.can_be_updated %}
+    <div class="modal" id="certificate-update">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Updating Certificate Details</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form method="post">
+              {% csrf_token %}
+              {{ cert_update_form|crispy }}
+              <input type="hidden" name="certificate-update"/>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-success">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
