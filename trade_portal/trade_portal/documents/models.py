@@ -33,6 +33,9 @@ class FTA(models.Model):
 
 
 class Party(models.Model):
+    # This is business field, just a dictionary of values to click on
+    # and bears no access right meaning (apart of business ID, which
+    # gives access to organisations owning it)
     TYPE_EXPORTER = 'e'
     TYPE_IMPORTER = 'i'
     TYPE_CHAMBERS = 'c'
@@ -100,7 +103,13 @@ class Document(models.Model):
     type = models.CharField(max_length=64, choices=TYPE_CHOICES)
 
     created_at = models.DateTimeField(default=timezone.now)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
+    created_by_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, models.SET_NULL,
+        blank=True, null=True)
+    created_by_org = models.ForeignKey(
+        "users.Organisation", models.SET_NULL,
+        blank=True, null=True
+    )
 
     fta = models.ForeignKey(FTA, models.PROTECT)
     importing_country = CountryField()

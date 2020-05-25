@@ -4,6 +4,8 @@ from http import HTTPStatus
 import requests
 
 logger = logging.getLogger(__name__)
+VERSION = "0.0.3"
+VERSION_API = "20200501"
 
 
 class IntergovClient(object):

@@ -10,9 +10,25 @@
 {% block content %}
 <div class="row">
   <div class="col-xs-12 col-md-6">
+    <p>
+      You are member of the next organisatons:<br/>
+      {% if user.orgs %}
+        <ul>
+          {% for org in user.orgs %}
+            <li><strong>{{ org }}</strong></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        (none)
+      {% endif %}
+    </p>
+    <p>To become a member of a new one - please login with the method supporting organisation assignment or request a staff member to assign them manually.</p>
+  </div>
+  <div class="col-xs-12 col-md-6">
     <a class="au-btn" href="{% url 'users:update' %}" role="button">Change my info</a>
+    <br/>
     <a class="au-btn" href="{% url 'account_email' %}" role="button">E-Mail management</a>
-    <br/><br/>
+    <br/>
     <a class="au-btn" href="{% url 'account_change_password' %}" role="button">Change password</a>
   </div>
   <div class="col-xs-12 col-md-6">

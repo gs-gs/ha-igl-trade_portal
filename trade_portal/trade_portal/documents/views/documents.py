@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin as Login
+from django.contrib.auth.mixins import LoginRequiredMixin as Login, AccessMixin
 from django.views.generic import (
     DetailView, ListView, CreateView, UpdateView,
 )
@@ -15,7 +15,7 @@ from trade_portal.documents.models import Document
 from trade_portal.utils.monitoring import statsd_timer
 
 
-class DocumentQuerysetMixin(object):
+class DocumentQuerysetMixin(AccessMixin):
 
     def get_queryset(self):
         qs = Document.objects.all()
@@ -24,9 +24,23 @@ class DocumentQuerysetMixin(object):
             # no further checks for the staff members
             return qs
         return qs.filter(
-            created_by=user
+            created_by_org__in=user.orgs
             # TODO: or available to the user's ABN
         )
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        if not request.user.is_staff:
+            if not request.user.orgs:
+                messages.warning(
+                    request,
+                    "You are not a member of any organisation - which is "
+                    "mandatory to access the documents page"
+                )
+                return redirect('users:detail')
+        return super().dispatch(request, *args, **kwargs)
 
 
 class DocumentListView(Login, DocumentQuerysetMixin, ListView):
