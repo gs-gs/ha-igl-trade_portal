@@ -149,11 +149,13 @@ pipeline {
                     }
 
                     dir("${env.DOCKER_BUILD_DIR}/test/intergov/") {
-                        sh '''#!/bin/bash
-                            if [[ -f demo.yml ]]; then
-                                docker-compose -f demo.yml down --rmi local -v --remove-orphans
-                            fi
-                        '''
+                        withEnv(['COMPOSE_PROJECT_NAME=au']) {
+                            sh '''#!/bin/bash
+                                if [[ -f demo.yml ]]; then
+                                    docker-compose -f demo.yml down --rmi local -v --remove-orphans
+                                fi
+                            '''
+                        }
                     }
                 }
             }
