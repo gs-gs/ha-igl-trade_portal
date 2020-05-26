@@ -21,6 +21,8 @@ pipeline {
 
     environment {
         DOCKER_BUILD_DIR = "${env.DOCKER_STAGE_DIR}/${BUILD_TAG}"
+        PORTPREFIX = "40"
+        COMPOSE_PROJECT_NAME = "trau"
     }
 
     parameters {
@@ -88,7 +90,7 @@ pipeline {
                         dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                             sh '''#!/bin/bash
                             touch local.env
-                            COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml -f demo-au.yml up
+                            docker-compose -f docker-compose.yml -f demo-au.yml up
                             sleep 30s
                             '''
                         }
@@ -100,9 +102,9 @@ pipeline {
                     steps {
                         dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                             sh '''#!/bin/bash
-                            COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml run -T django py.test --junitxml=/app/tests/junit.xml
-                            COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml run -T django coverage run -m pytest
-                            COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml run -T django coverage html
+                            docker-compose -f docker-compose.yml -f demo-au.yml run -T django py.test --junitxml=/app/tests/junit.xml
+                            docker-compose -f docker-compose.yml -f demo-au.yml run -T django coverage run -m pytest
+                            docker-compose -f docker-compose.yml -f demo-au.yml run -T django coverage html
                             '''
                         }
                     }
@@ -137,7 +139,7 @@ pipeline {
                     dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                         sh '''#!/bin/bash
                             if [[ -f docker-compose.yml ]]; then
-                                COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml down --rmi local -v --remove-orphans
+                                docker-compose -f docker-compose.yml -f demo-au.yml down --rmi local -v --remove-orphans
                             fi
                         '''
                     }
@@ -145,7 +147,7 @@ pipeline {
                     dir("${env.DOCKER_BUILD_DIR}/test/intergov/") {
                         sh '''#!/bin/bash
                             if [[ -f pie.py ]]; then
-                                COMPOSE_PROJECT_NAME=trau python3.6 pie.py intergov.destroy
+                                python3.6 pie.py intergov.destroy
                             fi
                         '''
                     }
