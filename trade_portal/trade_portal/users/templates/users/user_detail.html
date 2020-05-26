@@ -14,8 +14,8 @@
       You are member of the next organisatons:<br/>
       {% if user.orgs %}
         <ul>
-          {% for org in user.orgs %}
-            <li><strong>{{ org }}</strong></li>
+          {% for ms in user.orgmembership_set.all %}
+            <li><strong>{{ ms.org }}</strong>: {{ ms.get_role_display }} (since {{ ms.since }})</li>
           {% endfor %}
         </ul>
       {% else %}

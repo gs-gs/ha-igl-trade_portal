@@ -55,9 +55,21 @@
             {% endif %}
           </ul>
 
-          <form class="form-inline mt-2 mt-md-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          <form class="form-inline mt-2 mt-md-0" action="{% url 'users:change-org' %}?next={{ request.path_info }}" id='id-current-org-form' method="POST">
+            {% csrf_token %}
+            {% if user.orgs %}
+              <span style="color: white">Acting as
+                <select class="form-control mr-sm-2" onChange="$('#id-current-org-form').submit()" name="current_org">
+                  {% for org in user.orgs %}
+                    <option value="{{ org.pk }}" {% if org.id == current_org.id %}selected{% endif %}>{{ org }}</option>
+                  {% endfor %}
+                </select>
+              </span>
+            {% else %}
+              {% if user.is_staff %}
+                <span style="color: white">Staff member</span>
+              {% endif %}
+            {% endif %}
           </form>
         </div>
       </nav>

@@ -10,7 +10,40 @@ class User(AbstractUser):
 
     @property
     def orgs(self):
-        return self.orgmembership_set.values_list("org", flat=True).distinct("org")
+        # fixme: could be duplicates
+        if self.is_staff:
+            return Organisation.objects.all()
+        else:
+            return [om.org for om in self.orgmembership_set.all()]
+
+    def get_current_org(self, session):
+        """
+        For both staff and normal user
+        Returns current (selected manually) or just the first available org
+        Because default org is used to create objects for it
+        """
+        org = None
+        current_org_id = session.get("current_org_id") or None
+
+        if self.is_staff:
+            if current_org_id:
+                org = Organisation.objects.get(pk=current_org_id)
+            else:
+                org = Organisation.objects.first()
+        else:
+            current_org_ms = None
+            if current_org_id:
+                current_org_ms = OrgMembership.objects.filter(
+                    user=self,
+                    org_id=current_org_id
+                ).first()
+            if not current_org_ms:
+                current_org_ms = OrgMembership.objects.filter(
+                    user=self,
+                ).first()
+            if current_org_ms:
+                org = current_org_ms.org
+        return org
 
 
 class OrgMembership(models.Model):
