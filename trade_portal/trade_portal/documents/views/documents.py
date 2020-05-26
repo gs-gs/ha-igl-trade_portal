@@ -21,13 +21,8 @@ class DocumentQuerysetMixin(AccessMixin):
         qs = Document.objects.all()
         user = self.request.user
 
-        # filter by the generic availability (can see)
-        if not user.is_staff:
-            qs = qs.filter(
-                created_by_org__in=user.orgs
-                # TODO: or available to the user's ABN
-            )
         # filter by the current org
+        # (this assumes that current org is definitely available by the user)
         qs = qs.filter(
             created_by_org=user.get_current_org(self.request.session)
         )

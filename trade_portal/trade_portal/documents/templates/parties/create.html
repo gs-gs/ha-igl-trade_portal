@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Create document{% endblock %}
+{% block title %}Add a party{% endblock %}
 
 {% block extra_head %}
   <style>
@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-<h1>Create document</h1>
+<h1>Add a party</h1>
 <h2>for {{ current_org }}</h2>
 
   <form method="POST" enctype="multipart/form-data">
@@ -31,7 +31,7 @@
 
     <div class="mt-5">
       <a class="btn btn-default ml-3" href="../">Cancel</a>
-      <button type="submit" class="btn btn-primary">Create</button>
+      <button type="submit" class="btn btn-primary">Add</button>
     </div>
   </form>
 

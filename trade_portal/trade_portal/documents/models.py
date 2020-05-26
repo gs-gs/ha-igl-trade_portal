@@ -48,11 +48,21 @@ class Party(models.Model):
         (TYPE_OTHER, "Other"),
     )
 
-    # exporter or importer or even chambers app
-    type = models.CharField(max_length=1, blank=True, default=TYPE_OTHER)
-    business_id = models.CharField(max_length=256, help_text="Abn for example")
+    created_by_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, models.SET_NULL,
+        related_name="parties_created",
+        blank=True, null=True)
+    created_by_org = models.ForeignKey(
+        "users.Organisation", models.SET_NULL,
+        related_name="parties",
+        blank=True, null=True
+    )
+
+    # exporter or importer
+    type = models.CharField(max_length=1, blank=True, choices=TYPE_CHOICES, default=TYPE_OTHER)
+    business_id = models.CharField(max_length=256, help_text="Abn for example", blank=True)
     name = models.CharField(max_length=256, blank=True)
-    country = CountryField()
+    country = CountryField(blank=True)
 
     def __str__(self):
         return f"{self.name or self.business_id} ({self.country})"

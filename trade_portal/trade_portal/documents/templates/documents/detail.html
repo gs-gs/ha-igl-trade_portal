@@ -55,18 +55,6 @@
             <th>Created at</th>
             <td>{{ object.created_at }}</td>
           </tr>
-          {% for field, value, readable_name in object.get_iterable_readable_fields %}
-            {% if value %}
-              <tr>
-                <th>{{ readable_name }}</th>
-                {% if field == "intergov_details" %}
-                  <td><textarea style="width: 100%; border: 0px; height: 250px; font-size: 8pt">{{ value|json_render }}</textarea></td>
-                {% else %}
-                  <td>{{ value|default:"(unknown)"|linebreaksbr }}</td>
-                {% endif %}
-              </tr>
-            {% endif %}
-          {% endfor %}
         </table>
       </fieldset>
     </div>
@@ -172,29 +160,3 @@
   </div>
 </div>
 {% endblock content %}
-
-{% block modal %}
-  {% if object.can_be_updated %}
-    <div class="modal" id="certificate-update">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">Updating Certificate Details</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <form method="post">
-              {% csrf_token %}
-              {{ cert_update_form|crispy }}
-              <input type="hidden" name="certificate-update"/>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success">Save</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endif %}
-{% endblock %}
