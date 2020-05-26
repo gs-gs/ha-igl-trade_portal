@@ -94,7 +94,7 @@ pipeline {
                         dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                             sh '''#!/bin/bash
                             touch local.env
-                            docker-compose -f docker-compose.yml -f demo-au.yml -d up
+                            docker-compose -f docker-compose.yml -f demo-au.yml up -d
                             sleep 30s
                             '''
                         }
