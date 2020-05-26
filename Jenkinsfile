@@ -81,7 +81,7 @@ pipeline {
 
                             sh '''#!/bin/bash
                                 ls -l ./
-                                cp demo-local-example.env demo-au-local.env
+                                touch demo-au-local.env
                                 python3.6 pie.py intergov.build
                                 python3.6 pie.py intergov.start
                                 echo "waiting for startup"
