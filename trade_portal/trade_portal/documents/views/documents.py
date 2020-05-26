@@ -12,6 +12,7 @@ from trade_portal.documents.forms import (
     DocumentCreateForm, DocumentUpdateForm,
 )
 from trade_portal.documents.models import Document
+from trade_portal.documents.tasks import lodge_document
 from trade_portal.utils.monitoring import statsd_timer
 
 
@@ -110,7 +111,12 @@ class DocumentDetailView(Login, DetailView):
         obj = self.get_object()
         if 'lodge-document' in request.POST:
             if obj.status == Document.STATUS_COMPLETE:
-                obj.lodge()
+                obj.status = Document.STATUS_LODGED
+                obj.save()
+                lodge_document.apply_async(
+                    [obj.pk],
+                    countdown=2
+                )
                 messages.success(request, 'The document has been lodged')
                 return redirect(obj.get_absolute_url())
         return redirect(request.path_info)

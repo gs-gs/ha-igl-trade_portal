@@ -18,7 +18,7 @@ CHAMBERS_ORG_ID = env(
 # for the WebSub notifications
 ICL_CHAMBERS_APP_HOST = env(
     'ICL_CHAMBERS_APP_HOST',
-    default='http://chambers-app-django.au-ig-apis-external:8010'
+    default='http://trau-trade-portal-django.au-ig-apis-external:8050'
 )
 
 # Just for the UI skin

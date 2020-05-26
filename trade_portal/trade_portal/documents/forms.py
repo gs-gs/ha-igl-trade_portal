@@ -35,7 +35,7 @@ class DocumentCreateForm(forms.ModelForm):
         model = Document
         fields = (
             'type',
-            'document_number', 'fta', 'importing_country', 'exporter',
+            'document_number', 'fta', 'issuer', 'importing_country', 'exporter',
             'importer_name', 'file',
         )
 
@@ -57,6 +57,10 @@ class DocumentCreateForm(forms.ModelForm):
         self.fields["exporter"].queryset = Party.objects.filter(
             created_by_org=self.current_org,
             type=Party.TYPE_EXPORTER
+        )
+
+        self.fields["issuer"].queryset = Party.objects.filter(
+            created_by_org=self.current_org,
         )
 
         importers_added = Party.objects.filter(

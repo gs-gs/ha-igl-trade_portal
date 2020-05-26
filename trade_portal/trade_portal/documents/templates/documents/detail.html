@@ -63,6 +63,12 @@
       {% if object.can_be_updated %}
         <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
       {% endif %}
+      {% if object.status == object.STATUS_COMPLETE %}
+        <form action='#' method='post'>
+          {% csrf_token %}
+          <button type="submit" name="lodge-document" value="{{ obj.pk }}" class="btn btn-warning">Lodge</button>
+        </form>
+      {% endif %}
 
       {% if object.nodemessage_set.all %}
         <div class="certificate-detail-document" style="height: auto">

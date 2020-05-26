@@ -10,6 +10,7 @@ services:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
     image: trade_portal_django
+    container_name: ${COMPOSE_PROJECT_NAME}-trade-portal-django
     depends_on:
       - postgres
       - minio
@@ -43,8 +44,8 @@ services:
 
   postgres:
     image: postgres:11.3-alpine
-    # logging:
-    #   driver: none
+    logging:
+      driver: none
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
@@ -65,7 +66,8 @@ services:
 
   celeryworker:
     <<: *django
-    image: trade_portal_celeryworker
+    image: trade_portal_django
+    container_name: ${COMPOSE_PROJECT_NAME}-trade-portal-celeryworker
     depends_on:
       - redis
       - postgres
@@ -76,7 +78,8 @@ services:
 
   celerybeat:
     <<: *django
-    image: trade_portal_celerybeat
+    image: trade_portal_django
+    container_name: ${COMPOSE_PROJECT_NAME}-trade-portal-celerybeat
     depends_on:
       - redis
       - postgres
