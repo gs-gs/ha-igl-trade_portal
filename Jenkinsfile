@@ -74,7 +74,6 @@ pipeline {
 
                             sh '''#!/bin/bash
                                 cp demo-local-example.env demo-local.env
-                                touch demo-trau.env demo-trau-local.env
                                 python3.6 pie.py intergov.build
                                 python3.6 pie.py intergov.start
                                 echo "waiting for startup"
@@ -88,8 +87,8 @@ pipeline {
                     steps {
                         dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                             sh '''#!/bin/bash
-                            touch local.env
-                            COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml up --build -d
+                            touch demo-trau.env demo-trau-local.env
+                            COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml -f demo-au.yml up
                             sleep 30s
                             '''
                         }
