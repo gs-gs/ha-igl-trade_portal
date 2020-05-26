@@ -81,7 +81,7 @@ pipeline {
 
                             sh '''#!/bin/bash
                                 touch demo-au-local.env
-                                docker-compose -f demo.yml up
+                                docker-compose -f demo.yml up -d
                                 echo "waiting for startup"
                                 sleep 15s
                             '''
@@ -94,7 +94,7 @@ pipeline {
                         dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                             sh '''#!/bin/bash
                             touch local.env
-                            docker-compose -f docker-compose.yml -f demo-au.yml up
+                            docker-compose -f docker-compose.yml -f demo-au.yml -d up
                             sleep 30s
                             '''
                         }
@@ -150,8 +150,8 @@ pipeline {
 
                     dir("${env.DOCKER_BUILD_DIR}/test/intergov/") {
                         sh '''#!/bin/bash
-                            if [[ -f pie.py ]]; then
-                                python3.6 pie.py intergov.destroy
+                            if [[ -f demo.yml ]]; then
+                                docker-compose -f demo.yml down --rmi local -v --remove-orphans
                             fi
                         '''
                     }
