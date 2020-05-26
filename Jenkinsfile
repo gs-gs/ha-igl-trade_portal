@@ -82,8 +82,7 @@ pipeline {
                             sh '''#!/bin/bash
                                 ls -l ./
                                 touch demo-au-local.env
-                                python3.6 pie.py intergov.build
-                                python3.6 pie.py intergov.start
+                                docker-compose -f demo.yml up
                                 echo "waiting for startup"
                                 sleep 15s
                             '''
