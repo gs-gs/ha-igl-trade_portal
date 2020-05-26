@@ -16,6 +16,7 @@ class DocumentCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
+        self.current_org = kwargs.pop('current_org')
         super().__init__(*args, **kwargs)
 
         self.fields['importing_country'].choices = []
@@ -29,7 +30,8 @@ class DocumentCreateForm(forms.ModelForm):
         )
 
     def save(self, *args, **kwargs):
-        self.instance.created_by = self.user
+        self.instance.created_by_user = self.user
+        self.instance.created_by_org = self.current_org
         result = super().save(*args, **kwargs)
         uploaded_file = self.cleaned_data.get("file")
         if uploaded_file:

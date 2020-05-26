@@ -155,11 +155,20 @@ class Document(models.Model):
 
     @statsd_timer("model.Document.save")
     def save(self, *args, **kwargs):
+        self._recalc_status(save=False)
+        super().save(*args, **kwargs)
+
+    def _recalc_status(self, save=True):
+        shall_be_saved = False
         if self.status == self.STATUS_DRAFT and self.is_completed:
             self.status = self.STATUS_COMPLETE
+            shall_be_saved = True
         if self.status == self.STATUS_COMPLETE and not self.is_completed:
             self.status = self.STATUS_DRAFT
-        super().save(*args, **kwargs)
+            shall_be_saved = True
+        if save and shall_be_saved:
+            self.save()
+        return
 
     @statsd_timer("model.Document.lodge")
     def lodge(self):

@@ -6,7 +6,7 @@
 {% block title %}Documents{% endblock %}
 
 {% block content %}
-  <h1>Documents</h1>
+  <h1>Documents for {{ current_org }}</h1>
 
   <div class="float-right">
     <a href="{% url 'documents:create' %}" class="btn btn-primary btn-sm">+ Create</a>

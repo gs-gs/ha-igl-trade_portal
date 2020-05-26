@@ -46,7 +46,10 @@
           {% endif %}
           <tr>
             <th>Created by</th>
-            <td>{{ object.created_by.email|default:object.created_by }}</td>
+            <td>
+              <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
+              at <strong>{{ object.created_by_org }}</strong>
+            </td>
           </tr>
           <tr>
             <th>Created at</th>

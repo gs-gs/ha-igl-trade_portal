@@ -20,13 +20,18 @@ class DocumentQuerysetMixin(AccessMixin):
     def get_queryset(self):
         qs = Document.objects.all()
         user = self.request.user
-        if user.is_staff:
-            # no further checks for the staff members
-            return qs
-        return qs.filter(
-            created_by_org__in=user.orgs
-            # TODO: or available to the user's ABN
+
+        # filter by the generic availability (can see)
+        if not user.is_staff:
+            qs = qs.filter(
+                created_by_org__in=user.orgs
+                # TODO: or available to the user's ABN
+            )
+        # filter by the current org
+        qs = qs.filter(
+            created_by_org=user.get_current_org(self.request.session)
         )
+        return qs
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -63,6 +68,7 @@ class DocumentCreateView(Login, CreateView):
     def get_form_kwargs(self):
         k = super().get_form_kwargs()
         k['user'] = self.request.user
+        k['current_org'] = self.request.user.get_current_org(self.request.session)
         return k
 
     def get_success_url(self):
@@ -85,6 +91,7 @@ class DocumentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
     def get_form_kwargs(self):
         k = super().get_form_kwargs()
         k['user'] = self.request.user
+        k['current_org'] = self.request.user.get_current_org(self.request.session)
         return k
 
     def get_success_url(self):
@@ -98,6 +105,11 @@ class DocumentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
 class DocumentDetailView(Login, DetailView):
     template_name = 'documents/detail.html'
     model = Document
+
+    def get_object(self):
+        obj = super().get_object()
+        obj._recalc_status()
+        return obj
 
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
