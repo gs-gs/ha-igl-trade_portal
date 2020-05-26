@@ -35,4 +35,13 @@ To follow the first method:
 
 After that the new user should have access to the organisation (including objects created by another users of the same org).
 
-### Document creation.
+### Document creation
+
+After we have some user with the organisation access we can start to create documents. The base workflow is:
+
+* Navigate to "Parties" section and add desired parties (exporters, importers, etc). Chambers app will probably add both these parties while exporters itself may be interested only in importers (or leave this section completely empty)
+* Navigate to the Documents section and start document creation process
+* Fill the form, upload some file
+* Process by lodging the document and sending it to the Intergov upstream (node)
+* Wait till the document is accepted by the node and it's status changed
+* Wait for new updates from the remote parties
