@@ -64,6 +64,11 @@ pipeline {
 
             stages {
                 stage('Setup intergov') {
+
+                    environment {
+                        COMPOSE_PROJECT_NAME = "au"
+                    }
+
                     steps {
                         dir("${env.DOCKER_BUILD_DIR}/test/intergov/") {
                             checkout(
@@ -75,7 +80,7 @@ pipeline {
                             )
 
                             sh '''#!/bin/bash
-                                cp demo-local-example.env demo-local.env
+                                cp demo-local-example.env demo-au.env
                                 python3.6 pie.py intergov.build
                                 python3.6 pie.py intergov.start
                                 echo "waiting for startup"
