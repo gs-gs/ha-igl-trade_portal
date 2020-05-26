@@ -20,6 +20,7 @@ urlpatterns = [
     path("documents/", include("trade_portal.documents.urls", namespace="documents")),
     path("profile/", include("trade_portal.users.urls", namespace="users")),
     path("feedback/", FeedbackView.as_view(), name="feedback"),
+    path("websub/", include("trade_portal.websub_receiver.urls", namespace="websub")),
 
     path("healthcheck", HealthcheckView.as_view()),
 

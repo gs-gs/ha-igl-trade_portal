@@ -195,7 +195,9 @@ class DocumentService(BaseIgService):
                 predicate=f"subject.{subj}.status",
                 callback=(
                     settings.ICL_CHAMBERS_APP_HOST +
-                    f"/websub/conversation/{message['subject']}/"
+                    reverse("websub:conversation-ping", args=[
+                        message['subject']
+                    ])
                 ),
             )
         except Exception as e:
@@ -206,10 +208,9 @@ class DocumentService(BaseIgService):
                 predicate=f"message.{message['sender_ref']}.status",
                 callback=(
                     settings.ICL_CHAMBERS_APP_HOST +
-                    '/websub/message/' + message['sender'] + ":" + message['sender_ref'] + '/'
-                    # reverse("websub:message-thin-ping", args=[
-                    #     message['sender'] + ":" + message['sender_ref']
-                    # ])
+                    reverse("websub:message-thin-ping", args=[
+                        message['sender'] + ":" + message['sender_ref']
+                    ])
                 ),
             )
         except Exception as e:
