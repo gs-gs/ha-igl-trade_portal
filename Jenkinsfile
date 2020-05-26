@@ -80,7 +80,6 @@ pipeline {
                             )
 
                             sh '''#!/bin/bash
-                                ls -l ./
                                 touch demo-au-local.env
                                 docker-compose -f demo.yml up
                                 echo "waiting for startup"
