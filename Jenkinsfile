@@ -71,10 +71,11 @@ pipeline {
                             )
 
                             sh '''#!/bin/bash
-                                touch demo-au-local.env
-                                docker-compose -f demo.yml up -d
+                                cp demo-au.env demo-au-local.env
+                                python3.6 pie.py intergov.build
+                                python3.6 pie.py intergov.start
                                 echo "waiting for startup"
-                                sleep 15s
+                                sleep 60s
                             '''
                         }
                     }
@@ -159,7 +160,7 @@ pipeline {
             script {
                 if (env.BRANCH_NAME == 'master') {
                     build job: '../cotp-devnet/build-clients/master', parameters: [
-                        string(name: 'branchref_tradeportalapp', value: "${GIT_COMMIT}")
+                        string(name: 'branchref_tradeportal', value: "${GIT_COMMIT}")
                     ]
                 }
             }
