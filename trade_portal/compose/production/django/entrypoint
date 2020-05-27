@@ -9,9 +9,9 @@ set -o nounset
 # N.B. If only .env files supported variable expansion...
 export CELERY_BROKER_URL="${REDIS_URL}"
 
-if [ -n "${DATABASE_PASSWORD_PASSWORD_ENCRYPTED+x}" ]; then
-  >&2 echo "DATABASE_PASSWORD_PASSWORD_ENCRYPTED is defined, decrypt DATABASE_PASSWORD"
-        echo ${DATABASE_PASSWORD#"base64:"}| base64 -d > "/tmp/cipher.blob"
+if [ -n "${DATABASE_PASSWORD_ENCRYPTED+x}" ]; then
+  >&2 echo "DATABASE_PASSWORD_ENCRYPTED is defined, decrypt DATABASE_PASSWORD"
+        echo ${DATABASE_PASSWORD#"${KMS_PREFIX}"}| base64 -d > "/tmp/cipher.blob"
         DATABASE_PASSWORD="$(aws --region "${AWS_REGION}" kms decrypt --ciphertext-blob "fileb:///tmp/cipher.blob" --output text --query Plaintext | base64 -d || exit $?)"
     export POSTGRES_PASSWORD="${DATABASE_PASSWORD}"
     export POSTGRES_USER="${DATABASE_USERNAME}"
