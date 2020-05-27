@@ -53,15 +53,6 @@ pipeline {
 
         stage('Testing') {
 
-            when {
-                anyOf {
-                    branch 'master'
-                    changeRequest()
-                    equals expected: true, actual: params.run_tests
-                }
-            }
-
-
             stages {
                 stage('Setup intergov') {
 

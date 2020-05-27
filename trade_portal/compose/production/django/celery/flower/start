@@ -4,7 +4,7 @@ set -o errexit
 set -o nounset
 
 if [ -n "${CELERY_FLOWER_PASSWORD_ENCRYPTED}" ]; then
-    echo ${CELERY_FLOWER_PASSWORD#"base64:"}| base64 -d > "/tmp/cipher.blob"
+    echo ${CELERY_FLOWER_PASSWORD#"${KMS_PREFIX}"}| base64 -d > "/tmp/cipher.blob"
     CELERY_FLOWER_PASSWORD="$(aws --region "${AWS_REGION}" kms decrypt --ciphertext-blob "fileb:///tmp/cipher.blob" --output text --query Plaintext | base64 -d || return $?)"
 fi
 
