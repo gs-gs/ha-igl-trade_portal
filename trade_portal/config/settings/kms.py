@@ -4,7 +4,7 @@ import logging
 
 import boto3
 
-BASE64_PREFIX = 'base64:'
+BASE64_PREFIX = os.environ.get('KMS_PREFIX', 'base64:')
 AWS_REGION = os.environ.get('AWS_REGION', None)
 
 
