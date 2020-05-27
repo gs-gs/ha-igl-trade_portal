@@ -39,7 +39,7 @@ OIDC_OP_JWKS_ENDPOINT = env(
     default="http://please-fill-it/.well-known/jwks.json"
 )
 OIDC_AUTH_REQUEST_EXTRA_PARAMS = {
-    "scope": "openid email profile aws.cognito.signin.user.admin"
+    # "scope": "openid email profile aws.cognito.signin.user.admin"
 }
 
 OIDC_STORE_ACCESS_TOKEN = True
