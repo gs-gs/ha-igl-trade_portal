@@ -21,21 +21,7 @@ pipeline {
 
     environment {
         DOCKER_BUILD_DIR = "${env.DOCKER_STAGE_DIR}/${BUILD_TAG}"
-        PORTPREFIX = "40"
         COMPOSE_PROJECT_NAME = "trau"
-    }
-
-    parameters {
-        string(
-            name: 'branchref_intergov',
-            defaultValue: 'master',
-            description: 'The commit to use for the testing build'
-        )
-        booleanParam(
-            name: 'run_tests',
-            defaultValue: false,
-            description: 'Run tests for all components'
-        )
     }
 
     stages {
@@ -52,41 +38,13 @@ pipeline {
         }
 
         stage('Testing') {
-
             stages {
-                stage('Setup intergov') {
-
-                    environment {
-                        COMPOSE_PROJECT_NAME = "au"
-                    }
-
-                    steps {
-                        dir("${env.DOCKER_BUILD_DIR}/test/intergov/") {
-                            checkout(
-                                [
-                                    $class: 'GitSCM',
-                                    branches: [[name: "${params.branchref_intergov}" ]],
-                                    userRemoteConfigs: [[ url: 'https://github.com/trustbridge/intergov' ]]
-                                ]
-                            )
-
-                            sh '''#!/bin/bash
-                                cp demo-au.env demo-au-local.env
-                                python3.6 pie.py intergov.build
-                                python3.6 pie.py intergov.start
-                                echo "waiting for startup"
-                                sleep 60s
-                            '''
-                        }
-                    }
-                }
-
                 stage('Setup Trade Portal') {
                     steps {
                         dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                             sh '''#!/bin/bash
                             touch local.env
-                            docker-compose -f docker-compose.yml -f demo-au.yml up -d
+                            docker-compose -f docker-compose.yml up -d
                             sleep 30s
                             '''
                         }
@@ -98,9 +56,9 @@ pipeline {
                     steps {
                         dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                             sh '''#!/bin/bash
-                            docker-compose -f docker-compose.yml -f demo-au.yml run -T django py.test --junitxml=/app/tests/junit.xml
-                            docker-compose -f docker-compose.yml -f demo-au.yml run -T django coverage run -m pytest
-                            docker-compose -f docker-compose.yml -f demo-au.yml run -T django coverage html
+                            docker-compose -f docker-compose.yml run -T django py.test --junitxml=/app/tests/junit.xml
+                            docker-compose -f docker-compose.yml run -T django coverage run -m pytest
+                            docker-compose -f docker-compose.yml run -T django coverage html
                             '''
                         }
                     }
@@ -135,19 +93,9 @@ pipeline {
                     dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                         sh '''#!/bin/bash
                             if [[ -f docker-compose.yml ]]; then
-                                docker-compose -f docker-compose.yml -f demo-au.yml down --rmi local -v --remove-orphans
+                                docker-compose -f docker-compose.yml down --rmi local -v --remove-orphans
                             fi
                         '''
-                    }
-
-                    dir("${env.DOCKER_BUILD_DIR}/test/intergov/") {
-                        withEnv(['COMPOSE_PROJECT_NAME=au']) {
-                            sh '''#!/bin/bash
-                                if [[ -f demo.yml ]]; then
-                                    docker-compose -f demo.yml down --rmi local -v --remove-orphans
-                                fi
-                            '''
-                        }
                     }
                 }
             }
