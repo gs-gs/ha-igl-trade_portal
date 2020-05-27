@@ -4,6 +4,12 @@ networks:
   internal:
     driver: bridge
 
+volumes:
+  # named volumes are needed because permissions don't work on Windows
+  # otherwise, which breaks PostgreSQL. COMPOSE_PROJECT_NAME is automatically
+  # prefixed to the volume name by docker-compose
+  postgresql_data:
+
 services:
   django: &django
     build:
@@ -55,6 +61,8 @@ services:
     restart: on-failure
     networks:
       - internal
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
 
   redis:
     image: redis:5.0

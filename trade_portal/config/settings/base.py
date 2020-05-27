@@ -103,19 +103,6 @@ MIDDLEWARE = [
     "dj_pagination.middleware.PaginationMiddleware",
 ]
 
-# STATIC
-STATIC_ROOT = "/staticfiles"
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [str(APPS_DIR.path("static"))]
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-]
-
-# MEDIA
-MEDIA_ROOT = str(APPS_DIR("media"))
-MEDIA_URL = "/media/"
-
 # TEMPLATES
 TEMPLATES = [
     {
@@ -155,6 +142,21 @@ X_FRAME_OPTIONS = "DENY"
 ADMIN_URL = "admin/"
 ADMINS = []
 MANAGERS = ADMINS
+
+
+# STATIC
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = "/staticfiles"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [str(APPS_DIR.path("static"))]
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
+
+# MEDIA
+MEDIA_ROOT = str(APPS_DIR("media"))
+MEDIA_URL = "/media/"
 
 
 # Celery

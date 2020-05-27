@@ -283,6 +283,5 @@ trade_portal/media/
 .envs/*
 !.envs/.local/
 
-trade_portal/static/css
 trade_portal/static/js/pancake
 trade_portal/static/sass/_pancake.scss
