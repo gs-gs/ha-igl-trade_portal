@@ -2,7 +2,7 @@
 
 ## Start locally
 
-First, cd do the ``src`` folder and create local.env file (may be empty):
+First, cd do the ``trade_portal/`` folder and create local.env file (may be empty):
 
     $ touch local.env
 
