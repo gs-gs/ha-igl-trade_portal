@@ -150,6 +150,7 @@ class Document(models.Model):
         default=dict, blank=True,
         help_text="Details about communication with the Intergov"
     )
+    # https://edi3.org/specs/edi3-regulatory/develop/certificates/#state-lifecycle
     status = models.CharField(
         max_length=12, choices=STATUS_CHOICES, default=STATUS_DRAFT
     )

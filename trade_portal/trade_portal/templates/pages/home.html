@@ -12,7 +12,11 @@
       <div class="hero-box home-content__hero">
         <h1 class="hero-box__title">Inter-Government Ledger Trade Portal</h1>
         <p class="hero-box__description">The Inter-Government Ledger is a global platform that supoorts the digitisation of cross-border trade.  Documents such as certificates of origin, phyto-certificates, and others that are currently paper documents can be digitised and linked to the relevant consignment.</p>
-        <a href="#" class="btn btn-light hero-box__action">Register</a>
+        {% if not request.user.is_authenticated %}
+          <a href="/accounts/signup/" class="btn btn-light hero-box__action">Register</a>
+        {% else %}
+          <a href="{% url 'documents:list' %}" class="btn btn-light hero-box__action">Documents</a>
+        {% endif %}
       </div>
       <div class="news home-content__news">
         <div class="news-item">

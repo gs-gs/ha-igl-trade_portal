@@ -2,6 +2,10 @@
 
 ## Start locally
 
+First - build the static files (UI):
+
+    $ npm install && npm run build
+
 First, cd do the ``trade_portal/`` folder and create local.env file (may be empty):
 
     $ touch local.env
