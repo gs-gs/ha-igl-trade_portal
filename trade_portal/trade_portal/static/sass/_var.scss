@@ -1,0 +1,50 @@
+$base-font-family: 'Arial', sans-serif;
+$second-font-family: 'Helvetica', sans-serif;
+
+$font-weight-regular: 400;
+$font-weight-semi-bold: 600;
+$font-weight-bold: 700;
+$font-weight-extra-bold: 800;
+$font-weight-black: 900;
+
+$base-radius: 4px;
+
+//Colors:
+$site-bg: #fafafd;
+$dark-blue-color: #014b7e;
+$blue-green-color: #135e70;
+$primary-color: #061b36;
+$white-color: #fff;
+$black-color: #121212;
+$secondary-black-color: #223140;
+$grey-color: #ebebeb;
+$grey40-color: #666;
+$light-grey-color: #f5f5f5;
+$dark-grey-color: #d0d0d0;
+
+$border-color: #dadada;
+
+$verification-color: #edca72;
+$transfer-color: #b74d94;
+$logistics-color: #45c2f0;
+$regulators-color: #3196ae;
+
+$site-max-width: 1200px;
+$header-max-width: 1700px;
+
+$mobile-xs: 480px;
+$mobile-md: 560px;
+$tablet-md: 768px;
+$desktop-sm: 1024px;
+$desktop-lg: 1366px;
+$desktop-xl: 1440px;
+
+$base-padding: 45px;
+$mobile-padding: 22px;
+
+$body-color: red;
+
+
+//Bootstrap variables:
+
+$btn-font-weight: $font-weight-bold;

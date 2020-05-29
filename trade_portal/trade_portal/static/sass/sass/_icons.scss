@@ -1,0 +1,48 @@
+@font-face {
+	font-family: "traded-icons";
+	src: url('trade_portal/static/fonts/traded-icons.eot?1590496154');
+	src: url('trade_portal/static/fonts/traded-icons.eot?1590496154#iefix') format('eot'),
+		url('trade_portal/static/fonts/traded-icons.woff2?1590496154') format('woff2'),
+		url('trade_portal/static/fonts/traded-icons.woff?1590496154') format('woff'),
+		url('trade_portal/static/fonts/traded-icons.ttf?1590496154') format('truetype'),
+		url('trade_portal/static/fonts/traded-icons.svg?1590496154#traded-icons') format('svg');
+	font-weight: normal;
+	font-display: block;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"]{
+	/* use !important to prevent issues with browser extensions that change fonts */
+	font-family: "traded-icons" !important;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+@function icon-char($filename) {
+	$char: "";
+
+	@if $filename == arrow-forward {
+		$char: "\E001";
+	}
+
+	@return $char;
+}
+
+@mixin icon($filename, $insert: before) {
+	&:#{$insert} {
+		content: icon-char($filename);
+	}
+}
+
+.icon-arrow-forward {
+	@include icon(arrow-forward);
+}
+
