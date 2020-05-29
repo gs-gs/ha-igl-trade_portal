@@ -1,0 +1,197 @@
+$home-max-width: 1280px;
+
+.homepage {
+  background: url("../images/bg/homepage-mobile.png") no-repeat 50% 0;
+
+  @include media-breakpoint-up(md) {
+    background-position: 0 0;
+  }
+
+  @include media-breakpoint-up(lg) {
+    background: url("../images/bg/homepage.png") no-repeat 0 0;
+    background-size: 60% auto;
+  }
+
+}
+
+.home-content {
+  padding: 20px $mobile-padding 35px $mobile-padding;
+
+  @include media-breakpoint-up(lg) {
+    @include flexbox();
+    @include justify-content(space-between);
+    padding: 82px 15px 92px 15px;
+  }
+
+  @include media-breakpoint-up(xl) {
+    padding-top: 146px;
+  }
+
+  &__hero {
+    max-width: 450px;
+
+    @include media-breakpoint-down(md) {
+      min-height: 500px;
+    }
+  }
+
+  &__news {
+    max-width: 441px;
+  }
+}
+
+.home-content,
+.usp-box {
+  max-width: $home-max-width;
+  margin: 0 auto;
+}
+
+.hero-box {
+  &__title {
+    color: $white-color;
+    font-family: $second-font-family;
+    font-size: 37px;
+    font-weight: $font-weight-bold;
+    line-height: 50px;
+    margin: 0 0 24px 0;
+    padding: 0;
+  }
+
+  &__description {
+    color: $white-color;
+    font-size: 14px;
+    line-height: 22px;
+    margin: 0 0 36px 0;
+    padding: 0;
+  }
+
+  &__action {
+    width: 184px;
+    height: 51px;
+    line-height: 51px;
+    padding: 0;
+    color: $dark-blue-color;
+  }
+}
+
+.usp-box {
+  padding: 0 $mobile-padding;
+
+  @include media-breakpoint-up(md) {
+    @include flexbox();
+    padding: 0 10px;
+  }
+}
+
+.usp-item {
+  @include flexbox();
+  @include flex-direction(column);
+  box-shadow: 0 2px 13px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  border-top: 1px solid $grey-color;
+  border-top-width: 7px;
+  background-color: $white-color;
+  padding: 15px 15px 36px 28px;
+  margin: 0 5px;
+
+  @include media-breakpoint-down(md) {
+    margin: 20px 0 0 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    flex-basis: calc(25% - 10px);
+  }
+
+  &.usp-verification {
+    border-top-color: $verification-color;
+  }
+  &.usp-transfer {
+    border-top-color: $transfer-color;
+  }
+  &.usp-logistics {
+    border-top-color: $logistics-color;
+  }
+  &.usp-regulators {
+    border-top-color: $regulators-color;
+  }
+
+  &__action {
+    text-align: right;
+    padding: 15px 0 0 0;
+
+    &-link {
+      @include inline-flex();
+      @include align-items(center);
+      @include justify-content(center);
+      width: 33px;
+      height: 33px;
+      line-height: 33px;
+      border-radius: 50%;
+      text-align: center;
+      font-size: 16px;
+
+      .usp-verification & {
+        color: $verification-color;
+      }
+      .usp-transfer & {
+        color: $transfer-color;
+      }
+      .usp-logistics & {
+        color: $logistics-color;
+      }
+      .usp-regulators & {
+        color: $regulators-color;
+      }
+
+      &:hover {
+        text-decoration: none;
+        color: $white-color;
+
+        .usp-verification & {
+          background-color: $verification-color;
+        }
+        .usp-transfer & {
+          background-color: $transfer-color;
+        }
+        .usp-logistics & {
+          background-color: $logistics-color;
+        }
+        .usp-regulators & {
+          background-color: $regulators-color;
+        }
+      }
+
+      .icon {
+        vertical-align: middle;
+        line-height: 16px;
+      }
+    }
+  }
+
+  &__icon {
+    font-size: 43px;
+    height: 43px;
+    line-height: 43px;
+    color: $dark-grey-color;
+    margin: -10px 0 10px 0;
+  }
+
+  &__title {
+    color: $dark-blue-color;
+    font-size: 22px;
+    line-height: 29px;
+    font-family: $second-font-family;
+    font-weight: $font-weight-bold;
+  }
+
+  &__description {
+    color: $primary-color;
+    font-size: 17px;
+    line-height: 23px;
+    margin: 36px 0 0 0;
+  }
+}

@@ -1,0 +1,140 @@
+$icon-font: "traded-icons";
+
+@font-face {
+	font-family: "traded-icons";
+	src: url('../fonts/traded-icons.eot?1590765080');
+	src: url('../fonts/traded-icons.eot?1590765080#iefix') format('eot'),
+		url('../fonts/traded-icons.woff2?1590765080') format('woff2'),
+		url('../fonts/traded-icons.woff?1590765080') format('woff'),
+		url('../fonts/traded-icons.ttf?1590765080') format('truetype'),
+		url('../fonts/traded-icons.svg?1590765080#traded-icons') format('svg');
+	font-weight: normal;
+	font-display: block;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"]{
+	/* use !important to prevent issues with browser extensions that change fonts */
+	font-family: "traded-icons" !important;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+@function icon-char($filename) {
+	$char: "";
+
+	@if $filename == arrow-forward {
+		$char: "\E001";
+	}
+	@if $filename == assignment {
+		$char: "\E002";
+	}
+	@if $filename == calendar {
+		$char: "\E003";
+	}
+	@if $filename == check {
+		$char: "\E004";
+	}
+	@if $filename == chevron-right {
+		$char: "\E005";
+	}
+	@if $filename == close {
+		$char: "\E006";
+	}
+	@if $filename == import-export {
+		$char: "\E007";
+	}
+	@if $filename == info {
+		$char: "\E008";
+	}
+	@if $filename == mail {
+		$char: "\E009";
+	}
+	@if $filename == menu {
+		$char: "\E00A";
+	}
+	@if $filename == pdf {
+		$char: "\E00B";
+	}
+	@if $filename == refresh {
+		$char: "\E00C";
+	}
+	@if $filename == search {
+		$char: "\E00D";
+	}
+	@if $filename == verified {
+		$char: "\E00E";
+	}
+	@if $filename == vpn {
+		$char: "\E00F";
+	}
+	@if $filename == word {
+		$char: "\E010";
+	}
+
+	@return $char;
+}
+
+@mixin icon($filename, $insert: before) {
+	&:#{$insert} {
+		content: icon-char($filename);
+	}
+}
+
+.icon-arrow-forward {
+	@include icon(arrow-forward);
+}
+.icon-assignment {
+	@include icon(assignment);
+}
+.icon-calendar {
+	@include icon(calendar);
+}
+.icon-check {
+	@include icon(check);
+}
+.icon-chevron-right {
+	@include icon(chevron-right);
+}
+.icon-close {
+	@include icon(close);
+}
+.icon-import-export {
+	@include icon(import-export);
+}
+.icon-info {
+	@include icon(info);
+}
+.icon-mail {
+	@include icon(mail);
+}
+.icon-menu {
+	@include icon(menu);
+}
+.icon-pdf {
+	@include icon(pdf);
+}
+.icon-refresh {
+	@include icon(refresh);
+}
+.icon-search {
+	@include icon(search);
+}
+.icon-verified {
+	@include icon(verified);
+}
+.icon-vpn {
+	@include icon(vpn);
+}
+.icon-word {
+	@include icon(word);
+}
+
