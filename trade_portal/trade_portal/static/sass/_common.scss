@@ -1,0 +1,21 @@
+body {
+  font-family: $base-font-family;
+  color: $primary-color;
+  background: $site-bg;
+  font-size: 1rem;
+  min-height: 100%;
+  font-weight: 400;
+  -webkit-user-drag: none;
+
+  @include media-breakpoint-down(md) {
+    padding: 90px 0 0 0;
+  }
+}
+
+img {
+  max-width: 100%;
+}
+
+.main-container {
+  padding: 0 0 70px 0;
+}
