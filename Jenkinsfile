@@ -45,7 +45,10 @@ pipeline {
                             sh '''#!/bin/bash
                             touch local.env
                             docker-compose -f docker-compose.yml up -d
-                            sleep 30s
+
+                            # Install Node dependecices
+                            npm ci
+                            npm run build
                             '''
                         }
                     }
