@@ -1,0 +1,14 @@
+.btn-primary-light {
+  @include button-variant($light-blue-color, $light-blue-color);
+  color: $white-color;
+}
+
+.btn-white {
+  @include button-variant($white-color, $white-color);
+  color: $dark-blue-color;
+
+  &:hover,
+  &:focus{
+    color: $dark-blue-color;
+  }
+}

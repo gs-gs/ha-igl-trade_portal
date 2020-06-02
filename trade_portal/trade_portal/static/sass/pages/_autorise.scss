@@ -1,0 +1,181 @@
+$home-max-width: 1280px;
+
+.authorise {
+
+  &-signup {
+    @include media-breakpoint-up(lg) {
+      background: url("../images/bg/signup.png") no-repeat 100% 0;
+      background-size: 62% auto;
+    }
+  }
+
+  &-login {
+    @include media-breakpoint-up(lg) {
+      background: url("../images/bg/login.png") no-repeat 100% 0;
+      background-size: 62% auto;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    .header__menu-toggler {
+      color: $white-color;
+    }
+  }
+
+  .header__nav-btn {
+    background-color: $white-color;
+    color: $dark-blue-color;
+  }
+
+  .header__nav-btn--mygovid {
+    background-color: $white-color;
+    background-image: url("../images/mygovid-logo-dark.svg");
+  }
+
+  @include media-breakpoint-up(lg) {
+    .footer {
+      display: none;
+    }
+  }
+
+  .page-main {
+    @include flexbox();
+    @include flex-shrink(1);
+    width: 100%;
+    padding: 5rem 0 0 0;
+
+    @include media-breakpoint-up(lg) {
+      padding: 11.25rem 0 0 0;
+    }
+  }
+
+  &__container {
+    width: 100%;
+
+    @include media-breakpoint-up(lg) {
+      @include flexbox();
+      @include justify-content(space-between);
+      padding: 0 60px;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    &__col {
+      width: 40%;
+
+      &.authorise-form {
+        width: 60%;
+      }
+    }
+  }
+
+  .authorise-form {
+
+    h1,
+    &__title {
+      font-size: 37px;
+      color: $primary-color;
+      font-weight: $font-weight-bold;
+      font-family: $second-font-family;
+      margin: 0 0 3rem 0;
+    }
+
+    .form-control {
+      height: 64px;
+    }
+  }
+
+  &-form {
+    padding: 0 $mobile-padding;
+
+    @include media-breakpoint-down(lg) {
+      margin: 0 0 150px 0;
+    }
+
+    &--single {
+      display: block;
+      margin: 5rem auto;
+      max-width: 570px;
+    }
+
+    &__container {
+      width: 100%;
+      max-width: 472px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      > label {
+        display: none;
+      }
+    }
+
+    .forgot-password {
+      text-align: right;
+
+      &__link {
+        color: $dark-blue-color;
+      }
+    }
+
+    .form-actions {
+      .btn {
+        display: block;
+        width: 100%;
+        margin: 12px 0 0 0;
+      }
+    }
+
+    .btn-signin-mygovid {
+      background-image: url("../images/mygovid-logo.svg");
+      background-repeat: no-repeat;
+      background-position: 19px 50%;
+      background-size: 77px 27px;
+      padding-left: 110px;
+      padding-right: 110px;
+
+      @include media-breakpoint-down(xs) {
+        padding-right: 0;
+      }
+    }
+  }
+
+  &-text {
+    @include media-breakpoint-down(md) {
+      background: #175c8a url("../images/bg/login-mobile.png") no-repeat 50% 100%;
+      padding: 45px $mobile-padding 90px $mobile-padding;
+    }
+
+    &__container {
+      width: 100%;
+      max-width: 570px;
+      margin: 0 auto;
+    }
+
+    &__title {
+      color: $white-color;
+      font-size: 42px;
+      font-family: $second-font-family;
+      font-weight: $font-weight-bold;
+      margin: 0 0 1.75rem 0;
+    }
+
+    &__description {
+      color: $white-color;
+    }
+
+    &__btn {
+      min-width: 184px;
+
+      @include media-breakpoint-down(lg) {
+        padding-top: 0.625rem;
+        padding-bottom: 0.625rem;
+      }
+      @include media-breakpoint-up(lg) {
+        min-width: 210px;
+      }
+
+    }
+  }
+
+}

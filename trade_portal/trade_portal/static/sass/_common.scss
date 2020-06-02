@@ -19,3 +19,7 @@ img {
 .main-container {
   padding: 0 0 70px 0;
 }
+.page-main{
+  @include flex-shrink(0);
+}
+

@@ -6,8 +6,10 @@
   height: 90px;
   max-width: $header-max-width;
   padding: 0 $mobile-padding;
+  margin: 0 auto;
 
   @include media-breakpoint-down(md) {
+    background: $white-color;
     position: fixed;
     width: 100%;
     top: 0;
@@ -27,11 +29,28 @@
     @include flexbox();
     @include align-items(center);
 
+    &:hover{
+      text-decoration: none;
+    }
+
     &-image {
       max-height: 49px;
 
       @include media-breakpoint-up(md) {
         max-height: 61px;
+      }
+
+      &--white{
+        display: none;
+
+        .header--dark &{
+          display: block;
+        }
+      }
+      &--default{
+        .header--dark &{
+          display: none;
+        }
       }
     }
 
@@ -40,13 +59,18 @@
 
       @include media-breakpoint-up(md) {
         display: block;
-        border-left: 1px solid rgba($white-color, 0.2);
+        border-left: 1px solid $blue-color;
         margin: 5px 0 0 24px;
         padding: 3px 0 3px 17px;
         font-weight: $font-weight-bold;
         font-family: $second-font-family;
-        color: $white-color;
+        color: $blue-color;
         font-size: 17px;
+
+        .header--dark &{
+          border-color: rgba($white-color, 0.2);
+          color: $white-color;
+        }
       }
     }
   }
@@ -59,6 +83,12 @@
 
     &-btn {
       display: none;
+      background-color: $dark-blue-color;
+      color: $white-color;
+
+      &:hover{
+
+      }
 
       @include media-breakpoint-up(md) {
         display: block;
@@ -68,6 +98,14 @@
         padding: 0;
         width: 137px;
         height: 48px;
+      }
+
+      &--mygovid{
+        background-image: url("../images/mygovid-logo.svg");
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        background-size: 77px 27px;
+        text-indent: -99999px;
       }
     }
 
