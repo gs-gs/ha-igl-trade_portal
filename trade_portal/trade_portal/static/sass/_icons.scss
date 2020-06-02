@@ -2,12 +2,12 @@ $icon-font: "traded-icons";
 
 @font-face {
 	font-family: "traded-icons";
-	src: url('../fonts/traded-icons.eot?1590765080');
-	src: url('../fonts/traded-icons.eot?1590765080#iefix') format('eot'),
-		url('../fonts/traded-icons.woff2?1590765080') format('woff2'),
-		url('../fonts/traded-icons.woff?1590765080') format('woff'),
-		url('../fonts/traded-icons.ttf?1590765080') format('truetype'),
-		url('../fonts/traded-icons.svg?1590765080#traded-icons') format('svg');
+	src: url('../fonts/traded-icons.eot?1591132095');
+	src: url('../fonts/traded-icons.eot?1591132095#iefix') format('eot'),
+		url('../fonts/traded-icons.woff2?1591132095') format('woff2'),
+		url('../fonts/traded-icons.woff?1591132095') format('woff'),
+		url('../fonts/traded-icons.ttf?1591132095') format('truetype'),
+		url('../fonts/traded-icons.svg?1591132095#traded-icons') format('svg');
 	font-weight: normal;
 	font-display: block;
 	font-style: normal;
@@ -49,35 +49,38 @@ $icon-font: "traded-icons";
 	@if $filename == close {
 		$char: "\E006";
 	}
-	@if $filename == import-export {
+	@if $filename == email {
 		$char: "\E007";
 	}
-	@if $filename == info {
+	@if $filename == import-export {
 		$char: "\E008";
 	}
-	@if $filename == mail {
+	@if $filename == info {
 		$char: "\E009";
 	}
-	@if $filename == menu {
+	@if $filename == mail {
 		$char: "\E00A";
 	}
-	@if $filename == pdf {
+	@if $filename == menu {
 		$char: "\E00B";
 	}
-	@if $filename == refresh {
+	@if $filename == pdf {
 		$char: "\E00C";
 	}
-	@if $filename == search {
+	@if $filename == refresh {
 		$char: "\E00D";
 	}
-	@if $filename == verified {
+	@if $filename == search {
 		$char: "\E00E";
 	}
-	@if $filename == vpn {
+	@if $filename == verified {
 		$char: "\E00F";
 	}
-	@if $filename == word {
+	@if $filename == vpn {
 		$char: "\E010";
+	}
+	@if $filename == word {
+		$char: "\E011";
 	}
 
 	@return $char;
@@ -106,6 +109,9 @@ $icon-font: "traded-icons";
 }
 .icon-close {
 	@include icon(close);
+}
+.icon-email {
+	@include icon(email);
 }
 .icon-import-export {
 	@include icon(import-export);
