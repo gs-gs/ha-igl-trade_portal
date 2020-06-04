@@ -4,7 +4,8 @@
 {% block title %}Update #{{ form.instance.short_id }}{% endblock %}
 
 {% block content %}
-<h1>Update #{{ form.instance.short_id }}</h1>
+<div class="content-box">
+  <h1>Update #{{ form.instance.short_id }}</h1>
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.errors }}
@@ -26,4 +27,5 @@
     </div>
     <br/>
   </form>
+</div>
 {% endblock content %}

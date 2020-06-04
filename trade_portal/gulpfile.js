@@ -76,7 +76,7 @@ function watch() {
     gulp.watch(paths.scripts.src, js);
     gulp.watch(
         [
-            'trade_portal/templates/**/*.html'
+            'trade_portal/**/*.html'
         ],
         gulp.series(browserSyncReload));
 }
