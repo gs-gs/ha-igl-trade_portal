@@ -1,21 +1,40 @@
+$icomoon-font-family: "traded-icons" !default;
+$icomoon-font-path: "../fonts" !default;
+
+$icon-arrow-forward: "\e900";
+$icon-assignment: "\e901";
+$icon-calendar: "\e902";
+$icon-check: "\e903";
+$icon-chevron-right: "\e904";
+$icon-close: "\e905";
+$icon-import-export: "\e906";
+$icon-info: "\e907";
+$icon-mail: "\e908";
+$icon-menu: "\e909";
+$icon-pdf: "\e90a";
+$icon-refresh: "\e90b";
+$icon-search: "\e90c";
+$icon-verified: "\e90d";
+$icon-vpn: "\e90e";
+$icon-word: "\e90f";
+
 $icon-font: "traded-icons";
 
 @font-face {
-	font-family: "traded-icons";
-	src: url('../fonts/traded-icons.eot?1591132095');
-	src: url('../fonts/traded-icons.eot?1591132095#iefix') format('eot'),
-		url('../fonts/traded-icons.woff2?1591132095') format('woff2'),
-		url('../fonts/traded-icons.woff?1591132095') format('woff'),
-		url('../fonts/traded-icons.ttf?1591132095') format('truetype'),
-		url('../fonts/traded-icons.svg?1591132095#traded-icons') format('svg');
+	font-family: '#{$icomoon-font-family}';
+	src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?enc739');
+	src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?enc739#iefix') format('embedded-opentype'),
+	url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?enc739') format('truetype'),
+	url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff?enc739') format('woff'),
+	url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg?enc739##{$icomoon-font-family}') format('svg');
 	font-weight: normal;
-	font-display: block;
 	font-style: normal;
+	font-display: block;
 }
 
-[class^="icon-"], [class*=" icon-"]{
+.icon {
 	/* use !important to prevent issues with browser extensions that change fonts */
-	font-family: "traded-icons" !important;
+	font-family: '#{$icomoon-font-family}' !important;
 	speak: none;
 	font-style: normal;
 	font-weight: normal;
@@ -28,119 +47,83 @@ $icon-font: "traded-icons";
 	-moz-osx-font-smoothing: grayscale;
 }
 
-@function icon-char($filename) {
-	$char: "";
-
-	@if $filename == arrow-forward {
-		$char: "\E001";
-	}
-	@if $filename == assignment {
-		$char: "\E002";
-	}
-	@if $filename == calendar {
-		$char: "\E003";
-	}
-	@if $filename == check {
-		$char: "\E004";
-	}
-	@if $filename == chevron-right {
-		$char: "\E005";
-	}
-	@if $filename == close {
-		$char: "\E006";
-	}
-	@if $filename == email {
-		$char: "\E007";
-	}
-	@if $filename == import-export {
-		$char: "\E008";
-	}
-	@if $filename == info {
-		$char: "\E009";
-	}
-	@if $filename == mail {
-		$char: "\E00A";
-	}
-	@if $filename == menu {
-		$char: "\E00B";
-	}
-	@if $filename == pdf {
-		$char: "\E00C";
-	}
-	@if $filename == refresh {
-		$char: "\E00D";
-	}
-	@if $filename == search {
-		$char: "\E00E";
-	}
-	@if $filename == verified {
-		$char: "\E00F";
-	}
-	@if $filename == vpn {
-		$char: "\E010";
-	}
-	@if $filename == word {
-		$char: "\E011";
-	}
-
-	@return $char;
-}
-
-@mixin icon($filename, $insert: before) {
-	&:#{$insert} {
-		content: icon-char($filename);
-	}
-}
-
 .icon-arrow-forward {
-	@include icon(arrow-forward);
+	&:before {
+		content: $icon-arrow-forward;
+	}
 }
 .icon-assignment {
-	@include icon(assignment);
+	&:before {
+		content: $icon-assignment;
+	}
 }
 .icon-calendar {
-	@include icon(calendar);
+	&:before {
+		content: $icon-calendar;
+	}
 }
 .icon-check {
-	@include icon(check);
+	&:before {
+		content: $icon-check;
+	}
 }
 .icon-chevron-right {
-	@include icon(chevron-right);
+	&:before {
+		content: $icon-chevron-right;
+	}
 }
 .icon-close {
-	@include icon(close);
-}
-.icon-email {
-	@include icon(email);
+	&:before {
+		content: $icon-close;
+	}
 }
 .icon-import-export {
-	@include icon(import-export);
+	&:before {
+		content: $icon-import-export;
+	}
 }
 .icon-info {
-	@include icon(info);
+	&:before {
+		content: $icon-info;
+	}
 }
 .icon-mail {
-	@include icon(mail);
+	&:before {
+		content: $icon-mail;
+	}
 }
 .icon-menu {
-	@include icon(menu);
+	&:before {
+		content: $icon-menu;
+	}
 }
 .icon-pdf {
-	@include icon(pdf);
+	&:before {
+		content: $icon-pdf;
+	}
 }
 .icon-refresh {
-	@include icon(refresh);
+	&:before {
+		content: $icon-refresh;
+	}
 }
 .icon-search {
-	@include icon(search);
+	&:before {
+		content: $icon-search;
+	}
 }
 .icon-verified {
-	@include icon(verified);
+	&:before {
+		content: $icon-verified;
+	}
 }
 .icon-vpn {
-	@include icon(vpn);
+	&:before {
+		content: $icon-vpn;
+	}
 }
 .icon-word {
-	@include icon(word);
+	&:before {
+		content: $icon-word;
+	}
 }
-
