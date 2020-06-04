@@ -4,59 +4,57 @@
 
 {% block body_class %}homepage{% endblock %}
 {% block header_class %}header--dark{% endblock %}
+{% block main-container %}main-container{% endblock %}
 
 {% block content %}
-
-<div class="main-container">
-    <div class="home-content">
-      <div class="hero-box home-content__hero">
-        <h1 class="hero-box__title">Inter-Government Ledger Trade Portal</h1>
-        <p class="hero-box__description">The Inter-Government Ledger is a global platform that supoorts the digitisation of cross-border trade.  Documents such as certificates of origin, phyto-certificates, and others that are currently paper documents can be digitised and linked to the relevant consignment.</p>
-        {% if not request.user.is_authenticated %}
-          <a href="/accounts/signup/" class="btn btn-light hero-box__action">Register</a>
-        {% else %}
-          <a href="{% url 'documents:list' %}" class="btn btn-light hero-box__action">Documents</a>
-        {% endif %}
-      </div>
-      <div class="news home-content__news">
-        <div class="news-item">
-          <div class="news-item__title"><a href="#" class="news-item__title-link"><span class="news-item__title-text">Start using the portal</span></a></div>
-          <div class="news-item__description">A simple and intuitive user interface, tailored to your role helps to get you started.</div>
-        </div>
-        <div class="news-item">
-          <div class="news-item__title"><a href="#" class="news-item__title-link"><span class="news-item__title-text">Easily scale to high volumes using the API</span></a></div>
-          <div class="news-item__description">Well documented international standards compliant APIs allow your IT team to plug your systems into the IGL to operate at scale.</div>
-        </div>
-      </div>
+<div class="home-content">
+  <div class="hero-box home-content__hero">
+    <h1 class="hero-box__title">Inter-Government Ledger Trade Portal</h1>
+    <p class="hero-box__description">The Inter-Government Ledger is a global platform that supoorts the digitisation of cross-border trade.  Documents such as certificates of origin, phyto-certificates, and others that are currently paper documents can be digitised and linked to the relevant consignment.</p>
+    {% if not request.user.is_authenticated %}
+      <a href="/accounts/signup/" class="btn btn-light hero-box__action">Register</a>
+    {% else %}
+      <a href="{% url 'documents:list' %}" class="btn btn-light hero-box__action">Documents</a>
+    {% endif %}
+  </div>
+  <div class="news home-content__news">
+    <div class="news-item">
+      <div class="news-item__title"><a href="#" class="news-item__title-link"><span class="news-item__title-text">Start using the portal</span></a></div>
+      <div class="news-item__description">A simple and intuitive user interface, tailored to your role helps to get you started.</div>
     </div>
-    <div class="usp-box">
-      <div class="usp-item usp-verification">
-        <div class="usp-item__action"><a class="usp-item__action-link" href="#"><i class="icon icon-arrow-forward"></i></a></div>
-        <div class="usp-item__icon"><i class="icon icon-verified"></i></div>
-        <div class="usp-item__title">Authorised Bodies</div>
-        <div class="usp-item__description">Enhance your documents with digital verification and receive confirmation of validity from the importing regulator.</div>
-      </div>
-
-      <div class="usp-item usp-transfer">
-        <div class="usp-item__action"><a class="usp-item__action-link" href="#"><i class="icon icon-arrow-forward"></i></a></div>
-        <div class="usp-item__icon"><i class="icon icon-import-export"></i></div>
-        <div class="usp-item__title">Exporters/Importers</div>
-        <div class="usp-item__description">Improve efficiency and reduce non-compliance risks through increased visibility and end-to-end digitisation and trust.</div>
-      </div>
-
-      <div class="usp-item usp-logistics">
-        <div class="usp-item__action"><a class="usp-item__action-link" href="#"><i class="icon icon-arrow-forward"></i></a></div>
-        <div class="usp-item__icon"><i class="icon icon-assignment"></i></div>
-        <div class="usp-item__title">Logistics Providers</div>
-        <div class="usp-item__description">Attach your consignment references to certificates and other documents for automated matching and processing by importing regulators.</div>
-      </div>
-
-      <div class="usp-item usp-regulators">
-        <div class="usp-item__action"><a class="usp-item__action-link" href="#"><i class="icon icon-arrow-forward"></i></a></div>
-        <div class="usp-item__icon"><i class="icon icon-vpn"></i></div>
-        <div class="usp-item__title">Regulators</div>
-        <div class="usp-item__description">Improve trade facilitation and compliance outcomes through trusted digital data exchange with your international counterparties.</div>
-      </div>
+    <div class="news-item">
+      <div class="news-item__title"><a href="#" class="news-item__title-link"><span class="news-item__title-text">Easily scale to high volumes using the API</span></a></div>
+      <div class="news-item__description">Well documented international standards compliant APIs allow your IT team to plug your systems into the IGL to operate at scale.</div>
     </div>
+  </div>
+</div>
+<div class="usp-box">
+  <div class="usp-item usp-verification">
+    <div class="usp-item__action"><a class="usp-item__action-link" href="#"><i class="icon icon-arrow-forward"></i></a></div>
+    <div class="usp-item__icon"><i class="icon icon-verified"></i></div>
+    <div class="usp-item__title">Authorised Bodies</div>
+    <div class="usp-item__description">Enhance your documents with digital verification and receive confirmation of validity from the importing regulator.</div>
+  </div>
+
+  <div class="usp-item usp-transfer">
+    <div class="usp-item__action"><a class="usp-item__action-link" href="#"><i class="icon icon-arrow-forward"></i></a></div>
+    <div class="usp-item__icon"><i class="icon icon-import-export"></i></div>
+    <div class="usp-item__title">Exporters/Importers</div>
+    <div class="usp-item__description">Improve efficiency and reduce non-compliance risks through increased visibility and end-to-end digitisation and trust.</div>
+  </div>
+
+  <div class="usp-item usp-logistics">
+    <div class="usp-item__action"><a class="usp-item__action-link" href="#"><i class="icon icon-arrow-forward"></i></a></div>
+    <div class="usp-item__icon"><i class="icon icon-assignment"></i></div>
+    <div class="usp-item__title">Logistics Providers</div>
+    <div class="usp-item__description">Attach your consignment references to certificates and other documents for automated matching and processing by importing regulators.</div>
+  </div>
+
+  <div class="usp-item usp-regulators">
+    <div class="usp-item__action"><a class="usp-item__action-link" href="#"><i class="icon icon-arrow-forward"></i></a></div>
+    <div class="usp-item__icon"><i class="icon icon-vpn"></i></div>
+    <div class="usp-item__title">Regulators</div>
+    <div class="usp-item__description">Improve trade facilitation and compliance outcomes through trusted digital data exchange with your international counterparties.</div>
+  </div>
 </div>
 {% endblock %}

@@ -7,39 +7,38 @@
 {% block head_title %}Login{% endblock %}
 
 {% block body_class %}authorise authorise-login{% endblock %}
+{% block main-container %}authorise__container{% endblock %}
 
 {% block breadcrumbs %}
   <li aria-current="page">Login</li>
 {% endblock %}
 
 {% block content %}
-<div class="authorise__container">
-  <div class="authorise__col authorise-form">
-    <div class="authorise-form__container">
-      <h1>{% trans "Sign in to your account" %}</h1>
-      <form class="login" method="POST" action="{% url 'account_login' %}">
-        {% csrf_token %}
-        {{ form|crispy }}
-        {% if redirect_field_value %}
-        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-        {% endif %}
-        <div class="forgot-password">
-          <a class="button secondaryAction forgot-password__link" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-        </div>
-        <div class="form-actions">
-          <button class="primaryAction btn btn-primary" type="submit">{% trans "Sign In" %}</button>
-          <a href="{% url 'oidc_authentication_init' %}" class="btn btn-dark btn-signin-mygovid">{% trans "Sign in with MyGovId" %}</a>
-        </div>
-      </form>
-    </div>
+<div class="authorise__col authorise-form">
+  <div class="authorise-form__container">
+    <h1>{% trans "Sign in to your account" %}</h1>
+    <form class="login" method="POST" action="{% url 'account_login' %}">
+      {% csrf_token %}
+      {{ form|crispy }}
+      {% if redirect_field_value %}
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+      {% endif %}
+      <div class="forgot-password">
+        <a class="button secondaryAction forgot-password__link" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+      </div>
+      <div class="form-actions">
+        <button class="primaryAction btn btn-primary" type="submit">{% trans "Sign In" %}</button>
+        <a href="{% url 'oidc_authentication_init' %}" class="btn btn-dark btn-signin-mygovid">{% trans "Sign in with MyGovId" %}</a>
+      </div>
+    </form>
   </div>
+</div>
 
-  <div class="authorise__col authorise-text">
-    <div class="authorise-text__container">
-      <h1 class="authorise-text__title">{% trans "Don’t have an account yet?" %}</h1>
-      <p class="authorise-text__description">{% blocktrans %}If you have not created an account yet, then please sign up first.</p>
-      <a href="{{ signup_url }}" class="btn btn-white btn-lg authorise-text__btn">Register</a>{% endblocktrans %}
-    </div>
+<div class="authorise__col authorise-text">
+  <div class="authorise-text__container">
+    <h1 class="authorise-text__title">{% trans "Don’t have an account yet?" %}</h1>
+    <p class="authorise-text__description">{% blocktrans %}If you have not created an account yet, then please sign up first.</p>
+    <a href="{{ signup_url }}" class="btn btn-white btn-lg authorise-text__btn">Register</a>{% endblocktrans %}
   </div>
 </div>
 {% endblock %}

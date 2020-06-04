@@ -44,10 +44,18 @@ $desktop-xl: 1440px;
 $base-padding: 45px;
 $mobile-padding: 22px;
 
-$body-color: red;
+$body-color: $primary-color;
 
 
 //Bootstrap variables:
+$container-max-widths: (
+        sm: 540px,
+        md: 720px,
+        lg: 960px,
+        xl: 1230px
+) !default;
+
+
 $blue: $dark-blue-color;
 
 $input-font-size:   0.875rem;
@@ -58,6 +66,7 @@ $btn-font-weight: $font-weight-bold;
 $input-btn-padding-y:         0.75rem;
 $input-btn-padding-x:         1rem;
 
+$input-height: 3.125rem;
 
 $input-btn-padding-y-lg:      1rem;
 $input-btn-font-size-lg:      17px;
@@ -65,3 +74,5 @@ $input-btn-line-height-lg:    1.75;
 
 
 $border-radius-lg: 0.25em;
+
+$table-cell-padding: 0.5rem 0.625rem

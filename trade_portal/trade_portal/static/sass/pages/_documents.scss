@@ -1,0 +1,14 @@
+.documents-list{
+  &__search{
+    margin: 0 0 20px 0;
+
+    .btn-search{
+      border-top-right-radius: $border-radius !important;
+      border-bottom-right-radius: $border-radius !important;
+      font-size: 20px;
+      height: $input-height;
+    }
+
+  }
+
+}
