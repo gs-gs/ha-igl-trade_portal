@@ -3,23 +3,20 @@ from . import Env
 
 env = Env()
 
-ICL_CHAMBERS_APP_COUNTRY = env('ICL_CHAMBERS_APP_COUNTRY', default='AU')
-ICL_APP_COUNTRY = ICL_CHAMBERS_APP_COUNTRY
-
-CHAMBERS_ORG_NAME = env(
-    'ICL_CHAMBERS_ORG_NAME',
-    default=f"Chambers {ICL_APP_COUNTRY}"
+ICL_TRADE_PORTAL_COUNTRY = env(
+    'ICL_TRADE_PORTAL_COUNTRY',
+    default=env("ICL_COUNTRY", default="AU")
 )
-CHAMBERS_ORG_ID = env(
-    'ICL_CHAMBERS_ORG_ID',
-    default=f"{CHAMBERS_ORG_NAME.replace(' ', '_')}.{ICL_APP_COUNTRY}"
-)
+ICL_APP_COUNTRY = ICL_TRADE_PORTAL_COUNTRY
 
 # for the WebSub notifications
-ICL_CHAMBERS_APP_HOST = env(
-    'ICL_CHAMBERS_APP_HOST',
+ICL_TRADE_PORTAL_HOST = env(
+    'ICL_TRADE_PORTAL_HOST',
     default='http://trau-trade-portal-django.au-ig-apis-external:8050'
 )
+if ICL_TRADE_PORTAL_HOST.endswith("/"):
+    ICL_TRADE_PORTAL_HOST = ICL_TRADE_PORTAL_HOST[:-1]
+
 
 # Just for the UI skin
 CSS_COUNTRY = env(

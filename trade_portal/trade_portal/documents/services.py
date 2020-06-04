@@ -173,11 +173,13 @@ class DocumentService(BaseIgService):
     def _render_intergov_message(self, document, obj_multihash):
         return {
             "predicate": "UN.CEFACT.Trade.CertificateOfOrigin.created",
-            "sender": settings.ICL_CHAMBERS_APP_COUNTRY,
+            "sender": settings.ICL_APP_COUNTRY,
             "receiver": str(document.importing_country),
             "subject": "{}.{}.{}".format(
-                settings.ICL_CHAMBERS_APP_COUNTRY.upper(),
-                settings.CHAMBERS_ORG_ID.replace('.', '-'),
+                settings.ICL_APP_COUNTRY.upper(),
+                (
+                    document.created_by_org.business_id or "chambers-app"
+                ).replace('.', '-'),
                 document.short_id,
             ),
             "obj": obj_multihash,
@@ -194,7 +196,7 @@ class DocumentService(BaseIgService):
             self.ig_client.subscribe(
                 predicate=f"subject.{subj}.status",
                 callback=(
-                    settings.ICL_CHAMBERS_APP_HOST +
+                    settings.ICL_TRADE_PORTAL_HOST +
                     reverse("websub:conversation-ping", args=[
                         message['subject']
                     ])
@@ -207,7 +209,7 @@ class DocumentService(BaseIgService):
             self.ig_client.subscribe(
                 predicate=f"message.{message['sender_ref']}.status",
                 callback=(
-                    settings.ICL_CHAMBERS_APP_HOST +
+                    settings.ICL_TRADE_PORTAL_HOST +
                     reverse("websub:message-thin-ping", args=[
                         message['sender'] + ":" + message['sender_ref']
                     ])
