@@ -3,14 +3,8 @@ var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
-var cp = require('child_process');
 var concatjs = require('gulp-concat');
 var browserSync = require('browser-sync').create();
-var iconfont = require('gulp-iconfont');
-var iconfontCss = require('gulp-iconfont-css');
-var runTimestamp = Math.round(Date.now()/1000);
-var imagemin = require('gulp-imagemin');
-var imageminMozjpeg = require('imagemin-mozjpeg');
 
 var paths = {
     styles: {
@@ -65,39 +59,6 @@ function minifyJs() {
         .pipe(gulp.dest(paths.scripts.dest));
 }
 
-function optimiseImages() {
-    return gulp.src('images/**/*')
-        .pipe(imagemin([
-            imagemin.optipng({optimizationLevel: 5}),
-            imageminMozjpeg({
-                quality: 90
-            }),
-            imagemin.svgo({
-                plugins: [
-                    {removeUnknownsAndDefaults: false}
-                ]
-            })
-        ]))
-        .pipe(gulp.dest(paths.images.dest));
-}
-
-function optimiseUploads() {
-    return gulp.src(paths.uploads.src)
-        .pipe(imagemin([
-            imageminMozjpeg({
-                quality: 90
-            }),
-            imagemin.optipng(),
-            imagemin.svgo({
-                plugins: [
-                    {removeUnknownsAndDefaults: false},
-                    {allowEmpty: true}
-                ]
-            })
-        ]))
-        .pipe(gulp.dest(paths.uploads.dest));
-}
-
 function browserSyncServe(done) {
     browserSync.init({
         proxy: "localhost:8050"
@@ -120,33 +81,8 @@ function watch() {
         gulp.series(browserSyncReload));
 }
 
-function fontIcons(){
-    var fontName = 'traded-icons';
-
-    return gulp.src(['trade_portal/static/images/font-icons/*.svg'])
-        .pipe(iconfontCss({
-            fontName: fontName,
-            path: 'trade_portal/static/sass/mixins/_icons-template.scss',
-            targetPath: '../sass/_icons.scss',
-            fontPath: '../fonts/',
-            cssClass: 'icon',
-            cacheBuster: runTimestamp
-        }))
-        .pipe(iconfont({
-            fontName: fontName,
-            formats: ['svg', 'ttf', 'eot', 'woff', 'woff2'],
-            fontPath: '../fonts/',
-            normalize: true,
-            fontHeight: 1500
-        }))
-        .pipe(gulp.dest('trade_portal/static/fonts/'));
-}
-
-
-gulp.task('icons', gulp.series(fontIcons));
-gulp.task('images', gulp.parallel(optimiseImages, optimiseUploads));
 gulp.task('styles', gulp.series(style));
 gulp.task('js', gulp.series(js));
-gulp.task('build', gulp.series(fontIcons, gulp.parallel(style, js), minifyJs));
+gulp.task('build', gulp.series(gulp.parallel(style, js), minifyJs));
 gulp.task('dev', gulp.series(gulp.parallel(style, js), browserSyncServe, watch));
 gulp.task('default', gulp.series(gulp.parallel(style, js), browserSyncServe, watch));

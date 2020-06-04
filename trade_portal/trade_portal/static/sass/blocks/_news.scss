@@ -23,10 +23,14 @@
         font-family: $second-font-family;
         text-decoration: none;
         position: relative;
-        @include icon(chevron-right, after);
 
         &:hover {
           text-decoration: none;
+
+          &:after{
+            @extend .icon;
+            content: $icon-chevron-right;
+          }
         }
 
         &:after {
