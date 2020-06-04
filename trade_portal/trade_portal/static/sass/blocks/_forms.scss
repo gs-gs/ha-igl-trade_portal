@@ -1,5 +1,8 @@
 .form-control{
   &[type=email]{
-    background: url("../images/font-icons/email.svg") no-repeat 100% 50%;
+    background-image: url("../images/icons/email.svg");
+    background-repeat: no-repeat;
+    background-position: right 16px top 50%;
+    background-size: 17px 14px;
   }
 }
