@@ -1,2 +1,7 @@
 @import "mixins/flex";
 @import "mixins/placeholder";
+
+
+@function get-breakpoints($key: "md") {
+  @return map-get($container-max-widths, $key);
+}

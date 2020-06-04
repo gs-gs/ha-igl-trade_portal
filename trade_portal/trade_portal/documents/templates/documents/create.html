@@ -4,16 +4,17 @@
 {% block title %}Create document{% endblock %}
 
 {% block extra_head %}
-  <style>
-    textarea {
-      max-height: 100px;
-    }
-  </style>
+<style>
+  textarea {
+    max-height: 100px;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<h1>Create document</h1>
-<h2>for {{ current_org }}</h2>
+<div class="content-box">
+  <h1>Create document</h1>
+  <h2>for {{ current_org }}</h2>
 
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
@@ -21,18 +22,15 @@
     {{ form|crispy }}
 
     {% comment %}
-      for per-field basis:
-      <div class="row">
-        <div class="col-col-md-6 col-md-6">
-          {{ form.item_no|as_crispy_field }}
-        </div>
-        ...
-    {% endcomment %}
+    for per-field basis:
+        {{ form.item_no|as_crispy_field }}
+      ...
+      {% endcomment %}
 
-    <div class="mt-5">
-      <a class="btn btn-default ml-3" href="../">Cancel</a>
-      <button type="submit" class="btn btn-primary">Create</button>
-    </div>
+      <div class="form-actions">
+        <a class="btn btn-default ml-3" href="../">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </div>
   </form>
-
+</div>
 {% endblock content %}
