@@ -26,21 +26,22 @@ class MyOIDCAB(OIDCAuthenticationBackend):
         return claims.get('email')
 
     def _fill_user(self, user, claims):
+        return  # while they are not implemented on the Cognito side
         # access roles
-        roles = claims.get("custom:roles", "").replace(
-            "[", ""
-        ).replace(
-            "]", ""
-        ).split(",") or []
-        if "gov_admin" in roles:
-            user.is_staff = True
-        if "superuser" in roles:
-            user.is_staff = True
-            user.is_superuser = True
-        if "gov_admin" not in roles and "superuser" not in roles:
-            user.is_staff = False
-            user.is_superuser = False
-        user.save()
+        # roles = claims.get("custom:roles", "").replace(
+        #     "[", ""
+        # ).replace(
+        #     "]", ""
+        # ).split(",") or []
+        # if "gov_admin" in roles:
+        #     user.is_staff = True
+        # if "superuser" in roles:
+        #     user.is_staff = True
+        #     user.is_superuser = True
+        # if "gov_admin" not in roles and "superuser" not in roles:
+        #     user.is_staff = False
+        #     user.is_superuser = False
+        # user.save()
 
     def create_user(self, claims):
         """Return object for a newly created user account."""
