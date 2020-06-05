@@ -58,7 +58,7 @@ class DocumentService(BaseIgService):
         * send the message, linking to message object, which links to uploaded docs
         * save all details to the certificate object just for fun
         """
-        assert document.status == Document.STATUS_LODGED
+        assert document.status == Document.STATUS_ISSUED
 
         # For each attached document we have - upload it to the intergov
         # ideally this should be a celery chord with retries and so on
@@ -103,11 +103,10 @@ class DocumentService(BaseIgService):
         posted_message = self.ig_client.post_message(message_json)
         if not posted_message:
             raise Exception("Unable to post message, trying again")
-        else:
-            document.status = Document.STATUS_SENT
         document.save()
 
         NodeMessage.objects.create(
+            status=NodeMessage.STATUS_SENT,
             document=document,
             sender_ref=posted_message["sender_ref"],
             subject=posted_message["subject"],
@@ -256,6 +255,11 @@ class NodeService(BaseIgService):
                 f"Changed status from {node_msg.body['status']} to {msg_body['status']}"
             )
             node_msg.body = msg_body
+
+            if msg_body["status"] == "accepted":
+                node_msg.status = NodeMessage.STATUS_ACCEPTED
+            elif msg_body["status"] == "rejected":
+                node_msg.status = NodeMessage.STATUS_REJECTED
             node_msg.save()
 
         # 3. optional processing steps (send reply/ack msg, etc)

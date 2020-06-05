@@ -14,12 +14,18 @@
         <ol class="breadcrumb">
           {% with object.status as s %}
             <li class="breadcrumb-item {% if s == 'draft' %}active{% endif %}">Draft</li>
-            <li class="breadcrumb-item {% if s == 'complete' %}active{% endif %}">Complete</li>
-            <li class="breadcrumb-item {% if s == 'lodged' %}active{% endif %}">Lodged</li>
-            <li class="breadcrumb-item {% if s == 'sent' %}active{% endif %}">Sent</li>
+            <li class="breadcrumb-item {% if s == 'submitted' %}active{% endif %}">Submitted</li>
+            {% if s.status == "not-issued" %}
+              <li class="breadcrumb-item {% if s == 'not-issued' %}active{% endif %}">Not Issued</li>
+            {% endif %}
+            <li class="breadcrumb-item {% if s == 'issued' %}active{% endif %}">Issued</li>
             {% if s != 'rejected' %}
+              {% if s.status == "disputed" %}
+                <li class="breadcrumb-item {% if s == 'disputed' %}active{% endif %}">Disputed</li>
+              {% endif %}
               <li class="breadcrumb-item {% if s == 'accepted' %}active{% endif %}">Accepted</li>
               <li class="breadcrumb-item {% if s == 'acquitted' %}active{% endif %}">Acquitted</li>
+              <li class="breadcrumb-item {% if s == 'expired' %}active{% endif %}">Expired</li>
             {% endif %}
             {% if s == 'rejected' %}
               <li class="breadcrumb-item active">Rejected</li>
@@ -63,17 +69,23 @@
       {% if object.can_be_updated %}
         <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
       {% endif %}
-      {% if object.status == object.STATUS_COMPLETE %}
-        <form action='#' method='post'>
-          {% csrf_token %}
-          <button type="submit" name="lodge-document" value="{{ obj.pk }}" class="btn btn-warning">Lodge</button>
-        </form>
-      {% endif %}
+
+      <form action='#' method='post' style="display: inline">
+        {% csrf_token %}
+        {% if object.status == object.STATUS_DRAFT or object.status == object.STATUS_NOT_ISSUED %}
+          <button type="submit" name="to_submitted" value="{{ obj.pk }}" class="btn btn-success">{{ object.get_status_display }} -> Submitted</button>
+        {% endif %}
+        {% if object.status == object.STATUS_SUBMITTED %}
+          <button type="submit" name="issue" value="{{ obj.pk }}" class="btn btn-success">Issue (send to the node)</button>
+          <button type="submit" name="not-issue" value="{{ obj.pk }}" class="btn btn-warning">Return (for re-work)</button>
+        {% endif %}
+      </form>
 
       {% if object.nodemessage_set.all %}
         <div class="certificate-detail-document" style="height: auto">
           {% for nm in object.nodemessage_set.all %}
-            {% if nm.is_outbound %}Outbound{% else %}Incoming{%endif %}
+            {{ nm.get_status_display }}
+            {% if nm.is_outbound %}outbound{% else %}incoming{%endif %}
             message:<br/>
             <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
             <small>{{ nm.history|join:", " }}</small>

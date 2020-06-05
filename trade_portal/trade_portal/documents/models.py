@@ -73,31 +73,29 @@ class Party(models.Model):
 
 
 class Document(models.Model):
-    # User creates a document in this status
+    # Business status
     STATUS_DRAFT = 'draft'
-    # and then all conditions of a valid one are met - we change status to this
-    STATUS_COMPLETE = 'complete'
-    # user has reviewed the document and wants to send it further
-    STATUS_LODGED = 'lodged'
-    # we have sent it further
-    STATUS_SENT = 'sent'
-    # we got some message that our document was accepted by a remote party
+    STATUS_SUBMITTED = 'submitted'
+    STATUS_ISSUED = 'issued'
+    STATUS_NOT_ISSUED = 'not-issued'
     STATUS_ACCEPTED = 'accepted'
-    # or not accepted
-    STATUS_REJECTED = 'rejected'
-    # or even has already used by the receiver
+    STATUS_DISPUTED = 'disputed'
+    STATUS_EXPIRED = 'expired'
     STATUS_ACQUITTED = 'acquitted'
+    STATUS_REJECTED = 'rejected'
     # some error, mostly the internal one
     STATUS_ERROR = 'error'
 
     STATUS_CHOICES = (
         (STATUS_DRAFT, 'Draft'),
-        (STATUS_COMPLETE, 'Complete'),
-        (STATUS_LODGED, 'Lodged'),
-        (STATUS_SENT, 'Sent'),
+        (STATUS_SUBMITTED, 'Submitted'),
+        (STATUS_ISSUED, 'Issued'),
+        (STATUS_NOT_ISSUED, 'Not issued'),
         (STATUS_ACCEPTED, 'Accepted'),
+        (STATUS_DISPUTED, 'Disputed'),
         (STATUS_REJECTED, 'Rejected'),
         (STATUS_ACQUITTED, 'Acquitted'),
+        (STATUS_EXPIRED, 'Expired'),
         (STATUS_ERROR, 'Error'),
     )
 
@@ -166,43 +164,7 @@ class Document(models.Model):
 
     @statsd_timer("model.Document.save")
     def save(self, *args, **kwargs):
-        self._recalc_status(save=False)
         super().save(*args, **kwargs)
-
-    def _recalc_status(self, save=True):
-        shall_be_saved = False
-        if self.status == self.STATUS_DRAFT and self.is_completed:
-            self.status = self.STATUS_COMPLETE
-            shall_be_saved = True
-        if self.status == self.STATUS_COMPLETE and not self.is_completed:
-            self.status = self.STATUS_DRAFT
-            shall_be_saved = True
-        if save and shall_be_saved:
-            self.save()
-        return
-
-    @statsd_timer("model.Document.lodge")
-    def lodge(self):
-        from trade_portal.documents.tasks import (
-            notify_users_about_document_created,
-            send_document_to_node,
-        )
-        self.status = Document.STATUS_LODGED
-        self.save()
-        notify_users_about_document_created.apply_async(args=[self.id], countdown=3)
-        send_document_to_node.apply_async(
-            kwargs=dict(
-                document_id=self.id
-            ),
-            countdown=1,  # to let the object settle in the DB
-        )
-        return
-
-    @property
-    def is_completed(self):
-        return all([
-            self.files.exists()
-        ])
 
     @property
     def short_id(self):
@@ -212,7 +174,8 @@ class Document(models.Model):
     def can_be_updated(self):
         return self.status in [
             self.STATUS_DRAFT,
-            self.STATUS_COMPLETE
+            self.STATUS_SUBMITTED,
+            self.STATUS_NOT_ISSUED,
         ]
 
 
@@ -295,6 +258,21 @@ class DocumentFile(models.Model):
 
 
 class NodeMessage(models.Model):
+    STATUS_SENT = "sent"
+    STATUS_REJECTED = "rejected"
+    STATUS_ACCEPTED = "accepted"
+
+    STATUSES = (
+        (STATUS_SENT, "Sent"),
+        (STATUS_ACCEPTED, "Accepted"),
+        (STATUS_REJECTED, "Rejected"),
+    )
+
+    status = models.CharField(
+        max_length=16,
+        default=STATUS_SENT, choices=STATUSES,
+    )
+
     document = models.ForeignKey(
         Document, models.CASCADE,
         blank=True, null=True
@@ -329,19 +307,23 @@ class NodeMessage(models.Model):
         return self.sender_ref or self.pk
 
     def trigger_processing(self, new_status=None):
-        c = self.document
-        b = self.body
-        if new_status:
-            if b["predicate"] == Predicates.CO_CREATED and self.is_outbound:
-                if new_status == "accepted" and c.status != c.STATUS_ACCEPTED:
-                    c.status = c.STATUS_ACCEPTED
-                    logger.info("Changing document %s status to accepted", c.short_id)
-                    c.save()
-                    return
-                if new_status == "rejected" and c.status != c.STATUS_REJECTED:
-                    c.status = c.STATUS_REJECTED
-                    logger.info("Changing document %s status to rejected", c.short_id)
-                    c.save()
-                    return
-            # TODO: the same for Acquitted and received
+        """
+        We don't update business status based on the nodes status changes,
+        because it needs a business message, not just transport state change
+        """
+        # c = self.document
+        # b = self.body
+        # if new_status:
+        #     if b["predicate"] == Predicates.CO_CREATED and self.is_outbound:
+        #         if new_status == "accepted" and c.status != c.STATUS_ACCEPTED:
+        #             c.status = c.STATUS_ACCEPTED
+        #             logger.info("Changing document %s status to accepted", c.short_id)
+        #             c.save()
+        #             return
+        #         if new_status == "rejected" and c.status != c.STATUS_REJECTED:
+        #             c.status = c.STATUS_REJECTED
+        #             logger.info("Changing document %s status to rejected", c.short_id)
+        #             c.save()
+        #             return
+        #     # TODO: the same for Acquitted and received
         return

@@ -102,24 +102,30 @@ class DocumentDetailView(Login, DetailView):
     template_name = 'documents/detail.html'
     model = Document
 
-    def get_object(self):
-        obj = super().get_object()
-        obj._recalc_status()
-        return obj
-
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
-        if 'lodge-document' in request.POST:
-            if obj.status == Document.STATUS_COMPLETE:
-                obj.status = Document.STATUS_LODGED
+        if 'to_submitted' in request.POST:
+            if obj.status in (Document.STATUS_DRAFT, Document.STATUS_NOT_ISSUED):
+                obj.status = Document.STATUS_SUBMITTED
+                obj.save()
+                messages.success(request, "The document status has been changed to Submitted")
+        elif 'not-issue' in request.POST:
+            if obj.status == Document.STATUS_SUBMITTED:
+                obj.status = Document.STATUS_NOT_ISSUED
+                obj.save()
+        elif 'issue' in request.POST:
+            if obj.status == Document.STATUS_SUBMITTED:
+                obj.status = Document.STATUS_ISSUED
                 obj.save()
                 lodge_document.apply_async(
                     [obj.pk],
                     countdown=2
                 )
-                messages.success(request, 'The document has been lodged')
-                return redirect(obj.get_absolute_url())
-        return redirect(request.path_info)
+                messages.success(
+                    request,
+                    'The document has been issued and will be sent to node in background'
+                )
+        return redirect(obj.get_absolute_url())
 
 
 class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):

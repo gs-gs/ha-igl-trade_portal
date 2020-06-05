@@ -19,7 +19,7 @@ class PartyAdmin(admin.ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'type', 'importing_country', 'status')
+    list_display = ('created_at', 'status', 'type', 'importing_country', 'status')
     list_filter = ('status', 'type', 'importing_country')
 
 
@@ -30,4 +30,4 @@ class DocumentFileAdmin(admin.ModelAdmin):
 
 @admin.register(NodeMessage)
 class NodeMessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'created_at', 'document', 'sender_ref', 'body')
+    list_display = ('id', 'status', 'created_at', 'document', 'sender_ref', 'body')
