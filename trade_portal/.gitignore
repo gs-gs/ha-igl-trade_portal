@@ -286,4 +286,5 @@ trade_portal/media/
 trade_portal/static/css
 trade_portal/static/js/scripts.js
 trade_portal/static/js/scripts.js.map
-trade_portal/static/js/scripts.min.js
+trade_portal/static/js/scripts.min*
+
