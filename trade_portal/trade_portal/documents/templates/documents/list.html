@@ -48,7 +48,7 @@
           <tr>
             <td>
               <a href="{% url 'documents:detail' doc.pk %}">
-                {{ doc.document_number }}
+                {{ doc.document_number|default:doc.short_id }}
               </a>
               <div class="badge badge-pill badge-info">{{ doc.get_type_display }}</div>
             </td>
