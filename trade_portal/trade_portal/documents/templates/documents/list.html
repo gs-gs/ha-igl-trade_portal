@@ -80,7 +80,7 @@
                 {% if qrcode_image %}
                   <span class="qr-btn" data-toggle="qr" data-qr="{{ doc.short_id }}">QRCode</span>
                   <div class="qr-code__content" id="{{ doc.short_id }}" style="display: none;">
-                    <img class="qr-code__image" src="data:image/png;base64, {{ qrcode_image }}" alt="{{ doc.get_igid_text }}"/>
+                    <img class="qr-code__image" src="data:image/png;base64,{{ qrcode_image }}" alt="{{ doc.get_igid_text }}"/>
                   </div>
                 {% endif %}
               {% endwith %}
