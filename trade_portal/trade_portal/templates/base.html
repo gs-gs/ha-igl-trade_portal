@@ -52,6 +52,7 @@
             {% else %}
               <li class="site-nav__item">
                 <a class="site-nav__item-link" href="{% url 'documents:list' %}">Documents</a>
+                <a class="site-nav__item-link" href="{% url 'documents:parties' %}">Parties</a>
                 {% if request.user.is_staff %}
                   <li class="site-nav__item">
                     <a class="site-nav__item-link" href="/admin/" target="_new">Admin Panel</a>
@@ -90,6 +91,9 @@
             <ul class="account-nav__list">
               <li class="account-nav__item">
                 <a class="account-nav__item-link{% if request.resolver_match.view_name == 'documents:list' %} active{% endif %}" href="{% url 'documents:list' %}">Documents</a>
+              </li>
+              <li class="account-nav__item">
+                <a class="account-nav__item-link{% if request.resolver_match.view_name == 'documents:parties' %} active{% endif %}" href="{% url 'documents:parties' %}">Parties</a>
               </li>
               <li class="account-nav__item">
                 <a class="account-nav__item-link" href="/profile/">Profile</a>

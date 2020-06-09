@@ -9,6 +9,7 @@ from trade_portal.documents.views.parties import (
     PartiesListView, PartyDetailView,
     PartyCreateView, PartyUpdateView,
 )
+from trade_portal.legi.views import AbnLookupView
 
 app_name = "documents"
 
@@ -29,4 +30,7 @@ urlpatterns = [
     path("parties/create/", view=PartyCreateView.as_view(), name="party-create"),
     path("parties/<int:pk>/", view=PartyDetailView.as_view(), name="party-detail"),
     path("parties/<int:pk>/update/", view=PartyUpdateView.as_view(), name="party-update"),
+
+    # misc
+    path('api/abn-lookup/', AbnLookupView.as_view(), name='abn-lookup'),
 ]

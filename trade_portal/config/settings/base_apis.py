@@ -44,3 +44,6 @@ else:
         env('IGL_DOCAPI_HOST', default='document_api'),
         env('IGL_DOCAPI_PORT', default='80'),
     )
+
+
+ABR_UUID = env("ABR_UUID", default=None) or None

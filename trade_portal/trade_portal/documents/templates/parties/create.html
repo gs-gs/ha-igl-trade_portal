@@ -36,3 +36,25 @@
   </form>
 
 {% endblock content %}
+
+{% block extra_script %}
+  <script>
+    $("#id_business_id").keyup(function() {
+      let val = $("#id_business_id").val();
+      if (val.length == 11) {
+        // could be full ABN entered
+        let hint = $("#hint_id_business_id");
+        hint.innerHTML = "Loading ABN info...";
+        $.ajax({
+          dataType: "json",
+          url: '/documents/api/abn-lookup/?abn=' + val,
+          data: null,
+          success: function(resp) {
+            hint.html(resp.snippet);
+            $("#id_name").val(resp.EntityName);
+          }
+        });
+      }
+    });
+  </script>
+{% endblock %}
