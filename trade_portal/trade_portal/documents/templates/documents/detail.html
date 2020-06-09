@@ -37,19 +37,17 @@
       <fieldset>
         <table class="table certificate-detail-table">
           <tr>
-            <th>Status</th>
-            <td>
-              {{ object.get_status_display }}
-            </td>
+            <th>Document Type</th>
+            <td>{{ object.get_type_display }}</td>
           </tr>
-          {% if object.acquitted_at %}
           <tr>
-            <th>Acquittal</th>
-            <td>
-              <label class='badge badge-success'>{{ object.acquitted_at }}</label>
-            </td>
+            <th>Current Status</th>
+            <td>{{ object.get_status_display }}</td>
           </tr>
-          {% endif %}
+          <tr>
+            <th>Issuer</th>
+            <td>{{ object.issuer }}</td>
+          </tr>
           <tr>
             <th>Created by</th>
             <td>
@@ -58,20 +56,41 @@
             </td>
           </tr>
           <tr>
-            <th>Issuer</th>
-            <td>{{ object.issuer }}</td>
+            <th>Created at</th>
+            <td>{{ object.created_at }}</td>
+          </tr>
+        </table>
+      </fieldset>
+
+      <fieldset>
+        <legend>Document metadata</legend>
+        <table class="table certificate-detail-table">
+          <tr>
+            <th>Doc number</th>
+            <td>{{ object.document_number|default:"(not specified)" }}</td>
+          </tr>
+          <tr>
+            <th>IGL Document ID</th>
+            <td>{{ object.pk }}</td>
+          </tr>
+          <tr>
+            <th>FTA</th>
+            <td>{{ object.fta }}</td>
+          </tr>
+          <tr>
+            <th>Importing country</th>
+            <td>{{ object.importing_country.name }}</td>
           </tr>
           <tr>
             <th>Exporter</th>
-            <td>{{ object.exporter }}</td>
+            <td>
+              Entity: {{ object.exporter.name }}<br/>
+              ABN: {{ object.exporter.business_id }}
+            </td>
           </tr>
           <tr>
-            <th>Importer</th>
-            <td>{{ object.importer|default:"(unknown)" }}</td>
-          </tr>
-          <tr>
-            <th>Created at</th>
-            <td>{{ object.created_at }}</td>
+            <th>Importer name</th>
+            <td>{{ object.importer_name|default:"(not specified)" }}</td>
           </tr>
         </table>
       </fieldset>
@@ -131,7 +150,7 @@
           <fieldset>
             <legend class="certificate-detail-document-legent">
               <div>
-                Documents
+                Attachments
               </div>
             </legend>
             <form action="#" method="POST" onSubmit="return confirm('Are you sure?')">
