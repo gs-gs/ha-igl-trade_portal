@@ -11,7 +11,7 @@
     <div class="row justify-content-between">
       <div class="col-6">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+          <input type="text" class="form-control" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
             <button class="btn btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
           </div>
@@ -28,13 +28,11 @@
   </div>
 
   <div class="content-box documents-list__table">
-    <h1>Documents for {{ current_org }}</h1>
     <div class="table-responsive">
       <table class="table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Document Number</th>
+            <th>Document No.</th>
             <th>Status</th>
             <th>Trading Country</th>
             <th>Created Date</th>
@@ -50,19 +48,28 @@
           <tr>
             <td>
               <a href="{% url 'documents:detail' doc.pk %}">
-                {{ doc.short_id }}
-              </a><br/>
+                {{ doc.document_number|default:doc.short_id }}
+              </a>
               <div class="badge badge-pill badge-info">{{ doc.get_type_display }}</div>
-            </td>
-            <td>
-              {{ doc.document_number }}
             </td>
             <td>{{ doc.get_status_display }}</td>
             <td>{{ doc.importing_country.name }}</td>
             <td>{{ doc.created_at }}</td>
             <td>{{ doc.issuer }}</td>
-            <td>{{ doc.exporter }}</td>
-            <td>{{ doc.importer_name }}</td>
+            <td>
+              {% if doc.exporter %}
+                {{ doc.exporter }}
+              {% else %}
+                <a href="{% url 'documents:update' doc.pk %}">+ Add</a>
+              {% endif %}
+            </td>
+            <td>
+              {% if doc.importer_name %}
+                {{ doc.importer_name }}
+              {% else %}
+                <a href="{% url 'documents:update' doc.pk %}">+ Add</a>
+              {% endif %}
+            </td>
             <td>
               {{ doc.consignment_ref }}
               {{ doc.invoice_number }}
@@ -71,7 +78,10 @@
               {# {{ doc.get_igid_text|default:"(not provided for draft)" }} #}
               {% with doc.get_igid_image_base64 as qrcode_image %}
                 {% if qrcode_image %}
-                  <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ doc.get_igid_text }}" style="max-width: 100px;"/>
+                  <span class="qr-btn" data-toggle="qr" data-qr="{{ doc.short_id }}">QRCode</span>
+                  <div class="qr-code__content" id="{{ doc.short_id }}" style="display: none;">
+                    <img class="qr-code__image" src="data:image/png;base64,{{ qrcode_image }}" alt="{{ doc.get_igid_text }}"/>
+                  </div>
                 {% endif %}
               {% endwith %}
             </td>

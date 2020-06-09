@@ -40,7 +40,7 @@ function style() {
 function js() {
     return gulp.src([
         './node_modules/jquery/dist/jquery.min.js',
-        './node_modules/bootstrap/dist/js/bootstrap.js',
+        './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
         paths.scripts.src
     ])
         .pipe(sourcemaps.init())

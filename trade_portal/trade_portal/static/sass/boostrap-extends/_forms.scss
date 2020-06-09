@@ -1,10 +1,119 @@
-.form-control{
-
-
-  &[type=email]{
+.form-control {
+  &[type=email] {
     background-image: url("../images/icons/email.svg");
     background-repeat: no-repeat;
     background-position: right 16px top 50%;
     background-size: 17px 14px;
+  }
+}
+
+.form-check {
+  padding: 0;
+  overflow: hidden;
+
+  &-input {
+
+    &:checked + .form-check-label {
+      color: $primary-color;
+
+      &:before {
+        border-color: $dark-blue-color;
+        background: $dark-blue-color;
+        content: '\2713';
+        color: $white-color;
+        text-align: center;
+      }
+    }
+
+    &:focus + .form-check-label {
+
+    }
+  }
+
+  &-label {
+    display: inline-block;
+    padding: 0 0 0 41px;
+    font-size: 14px;
+    color: $primary-color;
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: $white-color;
+      border: 1px solid $dark-blue-color;
+      border-radius: 2px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+.form-section {
+  border-top: 1px solid $border-color;
+  margin: 0 0 24px 0;
+  padding: 24px 0 0 0;
+
+  &--first {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  &__container {
+    max-width: 476px;
+  }
+
+  &__title {
+    color: $dark-blue-color;
+    font-family: $second-font-family;
+    font-size: 22px;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0;
+    line-height: 29px;
+    margin: 0 0 20px 0;
+  }
+
+  .form-group {
+    label,
+    .label {
+      font-weight: $font-weight-bold;
+      color: $primary-color;
+      font-size: 17px;
+      line-height: 21px;
+      letter-spacing: 0;
+      font-family: $second-font-family;
+      margin-bottom: $label-margin-bottom;;
+    }
+  }
+}
+
+.form-group {
+  .help-icon {
+    color: $dark-grey-color;
+    font-size: 18px;
+  }
+}
+
+.form-actions {
+  margin: 62px 0 0 0;
+
+  .btn {
+    min-width: 162px;
+    width: 100%;
+    font-size: 14px;
+    height: 50px;
+
+    & + .btn {
+      margin: 10px 0 0 0;
+
+      @include media-breakpoint-up(sm) {
+        margin: 0 0 0 3px;
+      }
+    }
+
+    @include media-breakpoint-up(sm) {
+      width: auto;
+    }
   }
 }

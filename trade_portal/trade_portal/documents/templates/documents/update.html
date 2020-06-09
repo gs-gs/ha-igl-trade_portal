@@ -1,32 +1,139 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
 
-{% block title %}Update #{{ form.instance.short_id }}{% endblock %}
+{% block title %}Update document #{{ form.instance.short_id }}{% endblock %}
 
 {% block content %}
 <div class="content-box">
-  <h1>Update #{{ form.instance.short_id }}</h1>
-  <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.errors }}
-    {{ form|crispy }}
+  <div class="document-form">
+    <h1 class="page-title">Update Document #{{ form.instance.short_id }}</h1>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.errors }}
 
-    {% comment %}
-      for per-field basis:
-      <div class="row">
-        <div class="col-col-md-6 col-md-6">
-          {{ form.item_no|as_crispy_field }}
+      <fieldset class="form-section form-section--first">
+        <div class="form-section__container">
+          {{ form.type|as_crispy_field }}
         </div>
-        ...
-    {% endcomment %}
+      </fieldset>
 
-    <div class="mt-5">
-      <a class="btn btn-default ml-3" href="../">Cancel</a>
+      <fieldset class="form-section">
+        <div class="form-section__title">Document Metadata</div>
 
-      <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-    <br/>
-  </form>
+        <div class="form-section__container">
+
+          {{ form.document_number|as_crispy_field }}
+
+          <div class="form-group">
+            <div class="label">IGL Document ID <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">Key</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">QR Code</a>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="igl-doc-key">
+                <div class="input-group">
+                  <input type="text" class="form-control" readonly value="8WgbLik5EbdtJY4OWm2ZQ0tHiU2lmvXNVrPhFDz3W2Y=" id="igl-doc-key-input">
+                  <div class="input-group-append">
+                    <button type="button" class="btn btn-primary" id="copy-button" onclick="copyToClipboard('igl-doc-key-input')"><i class="icon icon-copy"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="igl-doc-qrcode">
+                <div class="qrcode-box">
+                  <div class="qrcode-box__picture">
+                    <img class="igl-doc-qrcode__image" src="{% static 'images/qr-code.svg' %}" alt="">
+                  </div>
+                  <div class="qrcode-box__content">
+                    <p class="qrcode-box__description">Put this QR code on your document so that any third party can verify it using the trustbridge app</p>
+                    <a class="btn btn-outline-white btn-sm qrcode-box__print" href="#"><i class="icon icon-print"></i>Print</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{ form.fta|as_crispy_field }}
+
+          {{ form.importing_country|as_crispy_field }}
+
+          {{ form.importer_name|as_crispy_field }}
+
+          {{ form.invoice_number|as_crispy_field }}
+
+          {{ form.origin_criteria|as_crispy_field }}
+
+        </div>
+      </fieldset>
+
+      <fieldset class="form-section">
+        <div class="form-section__title">Consignment Ref (if know)</div>
+
+        <div class="form-section__container">
+
+          <div class="form-group">
+            <label for="consignmentDocNumber">Document Number</label>
+            <input type="text" class="form-control" id="consignmentDocNumber">
+          </div>
+
+          <div class="form-group">
+            <label for="consignmentDocType">Document Type</label>
+            <select name="consignment_doc_type" class="form-control" id="consignmentDocType">
+              <option>ConNote</option>
+              <option>HouseBill</option>
+              <option>MasterBill</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="consignmentDocIssuer">Document Issuer</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="consignmentDocIssuer">
+              <div class="input-group-append">
+                <button class="btn btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </fieldset>
+
+      <fieldset class="form-section">
+        <div class="form-section__title">Attachment</div>
+        {{ form.file|as_crispy_field }}
+      </fieldset>
+
+      <fieldset class="form-section">
+        <div class="form-section__title">Document Declaration</div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="declaration">
+          <label class="form-check-label" for="declaration">I certify that the information herein is correct and that the described goods comply with the origin requirements of the specified Free Trade Agreement.</label>
+        </div>
+
+      </fieldset>
+
+      {% comment %}
+        for per-field basis:
+        <div class="row">
+          <div class="col-col-md-6 col-md-6">
+            {{ form.item_no|as_crispy_field }}
+          </div>
+          ...
+      {% endcomment %}
+
+      <div class="form-actions">
+        <a class="btn btn-outline-dark" href="../">Cancel</a>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+      <br/>
+    </form>
+  </div>
 </div>
 {% endblock content %}
 

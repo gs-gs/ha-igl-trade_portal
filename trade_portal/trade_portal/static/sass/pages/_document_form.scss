@@ -1,0 +1,44 @@
+.document-form {
+  padding: 23px;
+
+  @include media-breakpoint-down(md) {
+    padding: 0;
+  }
+
+  .tab-pane {
+    margin: 0 0 70px 0;
+  }
+}
+
+.qrcode-box {
+  @include flexbox();
+
+  &__picture {
+    min-width: 105px;
+
+    img {
+      border: 1px solid $border-color;
+    }
+  }
+
+  &__content {
+    margin: 0 0 0 22px;
+  }
+
+  &__description {
+    font-size: 14px;
+    color: $black-color;
+    margin: 0 0 15px 0;
+  }
+
+  &__print {
+    width: 117px;
+    height: 31px;
+
+    .icon {
+      color: $black-color;
+      margin-right: 5px;
+    }
+
+  }
+}
