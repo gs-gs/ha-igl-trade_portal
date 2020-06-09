@@ -3,6 +3,7 @@ import mimetypes
 import string
 import logging
 import uuid
+from base64 import b64encode
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -11,8 +12,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django_countries.fields import CountryField
 
-from intergov_client.predicates import Predicates
+# from intergov_client.predicates import Predicates
 
+from trade_portal.utils.qr import get_qrcode_image
 from trade_portal.utils.monitoring import statsd_timer
 
 logger = logging.getLogger(__name__)
@@ -191,6 +193,25 @@ class Document(models.Model):
             self.STATUS_SUBMITTED,
             self.STATUS_NOT_ISSUED,
         ]
+
+    def get_igid_text(self):
+        if self.status == self.STATUS_DRAFT:
+            return None
+        if not self.intergov_details.get('object_hash'):
+            return None
+        return f"https://testnet.trustbridge.io/v/{self.intergov_details.get('object_hash')}"
+
+    def get_igid_image(self):
+        text = self.get_igid_text()
+        if not text:
+            return None
+        return get_qrcode_image(text)
+
+    def get_igid_image_base64(self):
+        text = self.get_igid_text()
+        if not text:
+            return None
+        return b64encode(self.get_igid_image()).decode("utf-8")
 
 
 def generate_docfile_filename(instance, filename):

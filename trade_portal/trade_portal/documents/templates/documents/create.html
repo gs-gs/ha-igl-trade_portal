@@ -38,7 +38,7 @@
 {% block extra_script %}
   <script>
     $("#id_exporter").keyup(function() {
-      let val = $("#id_exporter").val();
+      let val = $("#id_exporter").val().replace(/\s/g, "");
       if (val.length == 11) {
         // could be full ABN entered
         let hint = $("#hint_id_exporter");

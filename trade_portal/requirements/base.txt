@@ -40,3 +40,6 @@ mozilla-django-oidc==1.2.3
 
 # Metrics collection
 python-statsd==2.1.0
+
+# QR code rendering
+qrcode==6.1

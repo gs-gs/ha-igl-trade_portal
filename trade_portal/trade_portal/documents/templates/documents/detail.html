@@ -78,6 +78,25 @@
     </div>
 
     <div class="col-5">
+      {% with object.get_igid_image_base64 as qrcode_image %}
+        {% if qrcode_image %}
+          <fieldset>
+            <legend class="certificate-detail-document-legent">
+              <div>
+                IGID
+              </div>
+            </legend>
+            <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
+          </fieldset>
+        {% else %}
+          The certificate must be issued to show the QR code;
+          We need it to ensure that no changes will be made.
+        {% endif %}
+      {% endwith %}
+
+      <hr/>
+
+
       {% if object.can_be_updated %}
         <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
       {% endif %}

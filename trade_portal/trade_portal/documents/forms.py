@@ -33,7 +33,7 @@ class PartyUpdateForm(PartyCreateForm):
 
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
-    exporter = forms.CharField(max_length=11, help_text="Please enter 11-digit ABN")
+    exporter = forms.CharField(max_length=32, help_text="Please enter 11-digit ABN")
 
     class Meta:
         model = Document
@@ -64,11 +64,11 @@ class DocumentCreateForm(forms.ModelForm):
         )
         if importers_added:
             self.fields["importer_name"].help_text = "For example: " + ', '.join(
-                importers_added.values_list("name", flat=True)
+                importers_added.exclude(name="").values_list("name", flat=True)
             )
 
     def clean_exporter(self):
-        value = self.cleaned_data.get("exporter")
+        value = self.cleaned_data.get("exporter").strip().replace(" ", "")
         if not value or len(value) != 11:
             raise forms.ValidationError("The value must be 11 digits")
         exporter_data = fetch_abn_info(value)
