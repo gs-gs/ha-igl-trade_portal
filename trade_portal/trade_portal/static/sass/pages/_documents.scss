@@ -1,8 +1,8 @@
-.documents-list{
-  &__search{
+.documents-list {
+  &__search {
     margin: 0 0 20px 0;
 
-    .btn-search{
+    .btn-search {
       border-top-right-radius: $border-radius !important;
       border-bottom-right-radius: $border-radius !important;
       font-size: 20px;
@@ -11,4 +11,17 @@
 
   }
 
+  &__table {
+    .qr-btn {
+      display: block;
+      color: $dark-blue-color;
+      cursor: pointer;
+    }
+  }
+
+}
+
+.qr-code__image {
+  width: 104px;
+  height: 104px;
 }

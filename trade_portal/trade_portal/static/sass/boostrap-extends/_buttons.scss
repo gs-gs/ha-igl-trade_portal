@@ -8,7 +8,22 @@
   color: $dark-blue-color;
 
   &:hover,
-  &:focus{
+  &:focus {
     color: $dark-blue-color;
   }
+}
+
+.btn-outline-white {
+  @include button-outline-variant($border-color, $border-color);
+  color: $dark-blue-color;
+
+  &:hover,
+  &:focus {
+    color: $dark-blue-color;
+  }
+}
+
+.btn-dark {
+  @include button-variant(#4F5256, #4F5256);
+  color: $white-color;
 }

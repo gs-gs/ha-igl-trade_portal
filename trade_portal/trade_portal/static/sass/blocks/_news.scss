@@ -26,14 +26,11 @@
 
         &:hover {
           text-decoration: none;
-
-          &:after{
-            @extend .icon;
-            content: $icon-chevron-right;
-          }
         }
 
         &:after {
+          @extend .icon;
+          content: $icon-chevron-right;
           font-family: $icon-font;
           font-size: 12px;
           position: absolute;

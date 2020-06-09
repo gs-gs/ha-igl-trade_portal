@@ -33,9 +33,8 @@
       <table class="table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Type</th>
-            <th>Document Number</th>
+            <th>Document No.</th>
             <th>Status</th>
             <th>Trading Country</th>
             <th>Created Date</th>
@@ -50,26 +49,40 @@
         {% for doc in object_list %}
           <tr>
             <td>
-              <a href="{% url 'documents:detail' doc.pk %}">
-                {{ doc.short_id }}
-              </a>
-            </td>
-            <td>
               <div class="badge badge-pill badge-info">
                 {{ doc.get_type_display }}
               </div>
             </td>
             <td>
-              {{ doc.document_number }}
+              <a href="{% url 'documents:detail' doc.pk %}">
+                {{ doc.document_number }}
+              </a>
             </td>
             <td>{{ doc.get_status_display }}</td>
             <td>{{ doc.importing_country }}</td>
-            <td>{{ doc.created_at }}</td>
+            <td>{{ doc.created_at | date:"d/m/Y" }}</td>
             <td>{{ doc.issuer }}</td>
-            <td>{{ doc.exporter }}</td>
-            <td>{{ doc.importer }}</td>
+            <td>
+              {% if doc.exporter %}
+                {{ doc.exporter }}
+              {% else %}
+                <a href="{% url 'documents:update' doc.pk %}">+ Add</a>
+              {% endif %}
+            </td>
+            <td>
+              {% if doc.importer %}
+                {{ doc.importer }}
+              {% else %}
+                <a href="{% url 'documents:update' doc.pk %}">+ Add</a>
+              {% endif %}
+            </td>
             <td>{{ doc.consignment_ref }}</td>
-            <td>TODO</td>
+            <td>
+              <span class="qr-btn" data-toggle="qr" data-qr="{{ doc.short_id }}">QRCode</span>
+              <div class="qr-code__content" id="{{ doc.short_id }}" style="display: none;">
+                <img class="qr-code__image" src="{% static 'images/qr-code.svg' %}" alt="">
+              </div>
+            </td>
           </tr>
         {% endfor %}
       </table>
