@@ -162,6 +162,9 @@ $home-max-width: 1280px;
 
     &__description {
       color: $white-color;
+      font-size: 17px;
+      line-height: 23px;
+      max-width: 520px;
     }
 
     &__btn {

@@ -34,6 +34,7 @@ class PartyUpdateForm(PartyCreateForm):
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
     exporter = forms.CharField(max_length=32, help_text="Please enter 11-digit ABN")
+    type = forms.CharField(label="Document type", help_text="Please enter 11-digit ABN")
 
     class Meta:
         model = Document

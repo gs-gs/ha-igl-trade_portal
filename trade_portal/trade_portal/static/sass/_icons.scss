@@ -17,6 +17,8 @@ $icon-search: "\e90c";
 $icon-verified: "\e90d";
 $icon-vpn: "\e90e";
 $icon-word: "\e90f";
+$icon-copy: "\e910";
+$icon-print: "\e911";
 
 $icon-font: "traded-icons";
 
@@ -125,5 +127,15 @@ $icon-font: "traded-icons";
 .icon-word {
 	&:before {
 		content: $icon-word;
+	}
+}
+.icon-copy {
+  &:before {
+    content: $icon-copy; 
+  }
+}
+.icon-print {
+	&:before {
+		content: $icon-print;
 	}
 }

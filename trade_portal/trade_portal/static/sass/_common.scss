@@ -19,23 +19,36 @@ img {
 .main-container {
   padding: 0 0 70px 0;
 }
-.page-main{
+
+.page-main {
   @include flex-shrink(0);
 
-  .authenticated &{
+  .authenticated & {
     padding-top: 35px;
     padding-bottom: 70px;
   }
 
 }
+
 .container-fluid {
   max-width: get-breakpoints("xl");
 }
 
-.content-box{
+.content-box {
   border: 1px solid $grey-color;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07);
   border-radius: 5px;
   background-color: $white-color;
   padding: $mobile-padding
+}
+
+.page-title {
+  color: $primary-color;
+  font-family: $second-font-family;
+  font-size: 27px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0;
+  line-height: 37px;
+  margin: 0 0 28px 0;
+  padding: 0;
 }

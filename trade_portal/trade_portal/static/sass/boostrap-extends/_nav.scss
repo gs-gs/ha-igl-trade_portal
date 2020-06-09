@@ -1,0 +1,40 @@
+.nav-tabs {
+
+  .nav-item {
+
+  }
+
+  .nav-link {
+    border: 0;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    padding: 13px 13px 4px 13px;
+    min-width: 74px;
+    text-align: center;
+    color: $primary-color;
+
+    @include hover-focus() {
+      border-bottom: 3px solid transparent;
+    }
+
+  }
+
+  .nav-link.active,
+  .nav-item.show .nav-link {
+    color: $dark-blue-color;
+    background-color: transparent;
+    border-color: $dark-blue-color;
+    font-weight: $font-weight-bold;
+  }
+}
+
+// Tabbable tabs
+//
+// Hide tabbable panes to start, show them when `.active`
+
+.tab-content {
+  .tab-pane {
+    padding: 23px 0 0 0;
+  }
+
+}
