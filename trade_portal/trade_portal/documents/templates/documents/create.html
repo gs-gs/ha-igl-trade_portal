@@ -53,5 +53,19 @@
         });
       }
     });
+
+    $("#id_fta").change(function() {
+      var protocol = $( "#id_fta option:selected" ).text();
+      $("#id_importing_country option").each(function() {
+        var $sel = $(this);
+        if ($sel.text().indexOf(protocol) !== -1) {
+          $sel.show();
+        } else {
+          $sel.hide();
+        }
+      });
+      $("#id_importing_country").prop('selectedIndex', -1);
+    });
+    $("#id_fta").change();
   </script>
 {% endblock %}
