@@ -110,7 +110,7 @@ class Document(models.Model):
     )
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    type = models.CharField(max_length=64, choices=TYPE_CHOICES)
+    type = models.CharField("Document type", max_length=64, choices=TYPE_CHOICES)
 
     created_at = models.DateTimeField(default=timezone.now)
     created_by_user = models.ForeignKey(
