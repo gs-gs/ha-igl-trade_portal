@@ -1,4 +1,7 @@
 from django import forms
+from django.conf import settings
+
+from trade_portal.legi.abr import fetch_abn_info
 
 from .models import Party, Document, DocumentFile, FTA
 
@@ -30,13 +33,14 @@ class PartyUpdateForm(PartyCreateForm):
 
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
+    exporter = forms.CharField(max_length=11, help_text="Please enter 11-digit ABN")
 
     class Meta:
         model = Document
         fields = (
             'type',
-            'document_number', 'fta', 'issuer', 'importing_country', 'exporter',
-            'importer_name', 'file',
+            'document_number', 'fta', 'importing_country', 'exporter',
+            'importer_name', 'file', 'invoice_number', 'origin_criteria',
         )
 
     def __init__(self, *args, **kwargs):
@@ -54,15 +58,6 @@ class DocumentCreateForm(forms.ModelForm):
             "Countries list is limited to the trade agreements entered in the system"
         )
 
-        self.fields["exporter"].queryset = Party.objects.filter(
-            created_by_org=self.current_org,
-            type=Party.TYPE_EXPORTER
-        )
-
-        self.fields["issuer"].queryset = Party.objects.filter(
-            created_by_org=self.current_org,
-        )
-
         importers_added = Party.objects.filter(
             created_by_org=self.current_org,
             type=Party.TYPE_IMPORTER,
@@ -72,9 +67,46 @@ class DocumentCreateForm(forms.ModelForm):
                 importers_added.values_list("name", flat=True)
             )
 
+    def clean_exporter(self):
+        value = self.cleaned_data.get("exporter")
+        if not value or len(value) != 11:
+            raise forms.ValidationError("The value must be 11 digits")
+        exporter_data = fetch_abn_info(value)
+        if not exporter_data or not exporter_data.get("Abn"):
+            raise forms.ValidationError("Please provide a valid ABN in this field")
+        exporter_party, created = Party.objects.get_or_create(
+            business_id=exporter_data["Abn"],
+            created_by_org=self.current_org,
+            defaults={
+                "created_by_user": self.user,
+                "name": exporter_data["EntityName"],
+                "type": Party.TYPE_EXPORTER,
+                "country": settings.ICL_APP_COUNTRY,
+            }
+        )
+        return exporter_party
+
     def save(self, *args, **kwargs):
         self.instance.created_by_user = self.user
         self.instance.created_by_org = self.current_org
+
+        # filling the issuer field: current org converted to party
+        issuer_party, created = Party.objects.get_or_create(
+            created_by_org=self.current_org,
+            business_id=self.current_org.business_id,
+            name=self.current_org.name,
+            country=settings.ICL_APP_COUNTRY,
+            defaults={
+                "created_by_user": self.user,
+                "type": (
+                    Party.TYPE_EXPORTER
+                    if self.current_org.type == self.current_org.TYPE_EXPORTER
+                    else Party.TYPE_CHAMBERS
+                ),
+            }
+        )
+        self.instance.issuer = issuer_party
+
         result = super().save(*args, **kwargs)
         uploaded_file = self.cleaned_data.get("file")
         if uploaded_file:
@@ -97,3 +129,4 @@ class DocumentUpdateForm(DocumentCreateForm):
         super().__init__(*args, **kwargs)
         self.fields["file"].required = False
         self.fields["file"].help_text = "Leave empty if you want to keep the old file"
+        del self.fields["exporter"]

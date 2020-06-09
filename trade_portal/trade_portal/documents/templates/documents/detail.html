@@ -58,6 +58,18 @@
             </td>
           </tr>
           <tr>
+            <th>Issuer</th>
+            <td>{{ object.issuer }}</td>
+          </tr>
+          <tr>
+            <th>Exporter</th>
+            <td>{{ object.exporter }}</td>
+          </tr>
+          <tr>
+            <th>Importer</th>
+            <td>{{ object.importer|default:"(unknown)" }}</td>
+          </tr>
+          <tr>
             <th>Created at</th>
             <td>{{ object.created_at }}</td>
           </tr>

@@ -14,7 +14,7 @@
 {% block content %}
 <div class="content-box">
   <h1>Create document</h1>
-  <h2>for {{ current_org }}</h2>
+  <h2>Issuer: {{ current_org }}</h2>
 
   <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
@@ -34,3 +34,24 @@
   </form>
 </div>
 {% endblock content %}
+
+{% block extra_script %}
+  <script>
+    $("#id_exporter").keyup(function() {
+      let val = $("#id_exporter").val();
+      if (val.length == 11) {
+        // could be full ABN entered
+        let hint = $("#hint_id_exporter");
+        hint.html("Loading ABN info...");
+        $.ajax({
+          dataType: "json",
+          url: '/documents/api/abn-lookup/?abn=' + val,
+          data: null,
+          success: function(resp) {
+            hint.html(resp.snippet);
+          }
+        });
+      }
+    });
+  </script>
+{% endblock %}

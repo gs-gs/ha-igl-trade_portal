@@ -65,7 +65,7 @@ class Party(models.Model):
     country = CountryField(blank=True)
 
     def __str__(self):
-        return f"{self.name or self.business_id} ({self.country})"
+        return f"{self.name} {self.business_id} {self.country}".strip()
 
     class Meta:
         ordering = ('name',)
@@ -119,7 +119,7 @@ class Document(models.Model):
         blank=True, null=True
     )
 
-    fta = models.ForeignKey(FTA, models.PROTECT)
+    fta = models.ForeignKey(FTA, models.PROTECT, verbose_name="FTA")
     importing_country = CountryField()
     issuer = models.ForeignKey(
         Party, models.CASCADE,
@@ -137,6 +137,20 @@ class Document(models.Model):
 
     document_number = models.CharField(max_length=256, blank=True, default="")
     consignment_ref = models.CharField(max_length=256, blank=True, default="")
+    invoice_number = models.CharField(
+        "Invoice Number",
+        max_length=256, blank=True, default=""
+    )
+    origin_criteria = models.CharField(
+        "Origin Criteria",
+        max_length=32, blank=True, default="",
+        choices=(
+            ("WO", "WO"),
+            ("WP", "WP"),
+            ("PSR", "PSR"),
+            ("other", "Other"),
+        )
+    )
 
     # acquitted_at = models.DateTimeField(blank=True, null=True)
     # acquitted_details = JSONField(
