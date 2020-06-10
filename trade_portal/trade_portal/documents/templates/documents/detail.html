@@ -94,6 +94,28 @@
           </tr>
         </table>
       </fieldset>
+
+      <fieldset>
+        <legend>Consignment details</legend>
+        <table class="table certificate-detail-table">
+          <tr>
+            <th>Doc number</th>
+            <td>{{ object.consignment_ref_doc_number|default:"(not specified)" }}</td>
+          </tr>
+          <tr>
+            <th>Doc type</th>
+            <td>{{ object.consignment_ref_doc_type|default:"(not specified)" }}</td>
+          </tr>
+          <tr>
+            <th>Doc issuer</th>
+            <td>{{ object.consignment_ref_doc_issuer|default:"(not specified)" }}</td>
+          </tr>
+          <tr>
+            <th>Data provided by </th>
+            <td>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</td>
+          </tr>
+        </table>
+      </fieldset>
     </div>
 
     <div class="col-5">
