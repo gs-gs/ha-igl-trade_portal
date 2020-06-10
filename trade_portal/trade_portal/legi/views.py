@@ -35,7 +35,7 @@ class AbnLookupView(View):
             })
         else:
             snippet = abn_info.get("Message") or "".join(
-                f"<strong>{escape(a)}:</strong>{escape(b)}<br/>\n"
+                f"<p><strong>{escape(a)}:</strong><span>{escape(b)}</span><p>\n"
                 for a, b in abn_info.items()
                 if b
             )

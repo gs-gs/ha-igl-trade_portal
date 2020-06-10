@@ -7,6 +7,8 @@ User = get_user_model()
 
 
 class UserChangeForm(forms.ModelForm):
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'First name'}))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Last name'}))
     class Meta:
         model = User
         fields = ["first_name", "last_name"]

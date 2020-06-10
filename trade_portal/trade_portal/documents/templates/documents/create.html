@@ -149,6 +149,7 @@
       if (val.length == 11) {
         // could be full ABN entered
         let hint = $("#hint_id_exporter");
+        hint.addClass('abn-info')
         hint.html("Loading ABN info...");
         $.ajax({
           dataType: "json",

@@ -19,6 +19,9 @@ $icon-vpn: "\e90e";
 $icon-word: "\e90f";
 $icon-copy: "\e910";
 $icon-print: "\e911";
+$icon-navigate_before: "\e912";
+$icon-navigate_next: "\e913";
+
 
 $icon-font: "traded-icons";
 
@@ -50,92 +53,102 @@ $icon-font: "traded-icons";
 }
 
 .icon-arrow-forward {
-	&:before {
-		content: $icon-arrow-forward;
-	}
+  &:before {
+    content: $icon-arrow-forward;
+  }
 }
 .icon-assignment {
-	&:before {
-		content: $icon-assignment;
-	}
+  &:before {
+    content: $icon-assignment;
+  }
 }
 .icon-calendar {
-	&:before {
-		content: $icon-calendar;
-	}
+  &:before {
+    content: $icon-calendar;
+  }
 }
 .icon-check {
-	&:before {
-		content: $icon-check;
-	}
+  &:before {
+    content: $icon-check;
+  }
 }
 .icon-chevron-right {
-	&:before {
-		content: $icon-chevron-right;
-	}
+  &:before {
+    content: $icon-chevron-right;
+  }
 }
 .icon-close {
-	&:before {
-		content: $icon-close;
-	}
+  &:before {
+    content: $icon-close;
+  }
 }
 .icon-import-export {
-	&:before {
-		content: $icon-import-export;
-	}
+  &:before {
+    content: $icon-import-export;
+  }
 }
 .icon-info {
-	&:before {
-		content: $icon-info;
-	}
+  &:before {
+    content: $icon-info;
+  }
 }
 .icon-mail {
-	&:before {
-		content: $icon-mail;
-	}
+  &:before {
+    content: $icon-mail;
+  }
 }
 .icon-menu {
-	&:before {
-		content: $icon-menu;
-	}
+  &:before {
+    content: $icon-menu;
+  }
 }
 .icon-pdf {
-	&:before {
-		content: $icon-pdf;
-	}
+  &:before {
+    content: $icon-pdf;
+  }
 }
 .icon-refresh {
-	&:before {
-		content: $icon-refresh;
-	}
+  &:before {
+    content: $icon-refresh;
+  }
 }
 .icon-search {
-	&:before {
-		content: $icon-search;
-	}
+  &:before {
+    content: $icon-search;
+  }
 }
 .icon-verified {
-	&:before {
-		content: $icon-verified;
-	}
+  &:before {
+    content: $icon-verified;
+  }
 }
 .icon-vpn {
-	&:before {
-		content: $icon-vpn;
-	}
+  &:before {
+    content: $icon-vpn;
+  }
 }
 .icon-word {
-	&:before {
-		content: $icon-word;
-	}
+  &:before {
+    content: $icon-word;
+  }
 }
 .icon-copy {
   &:before {
-    content: $icon-copy; 
+    content: $icon-copy;
   }
 }
 .icon-print {
-	&:before {
-		content: $icon-print;
-	}
+  &:before {
+    content: $icon-print;
+  }
+}
+.icon-navigate_before {
+  &:before {
+    content: $icon-navigate_before;
+  }
+}
+.icon-navigate_next {
+  &:before {
+    content: $icon-navigate_next;
+  }
 }
