@@ -86,28 +86,23 @@
       </fieldset>
 
       <fieldset class="form-section">
-        <div class="form-section__title">Consignment Ref (if know)</div>
+        <div class="form-section__title">Consignment Ref (if known)</div>
 
         <div class="form-section__container">
 
           <div class="form-group">
-            <label for="consignmentDocNumber">Document Number</label>
-            <input type="text" class="form-control" id="consignmentDocNumber">
+            {{ form.consignment_ref_doc_number|as_crispy_field }}
           </div>
 
           <div class="form-group">
-            <label for="consignmentDocType">Document Type</label>
-            <select name="consignment_doc_type" class="form-control" id="consignmentDocType">
-              <option>ConNote</option>
-              <option>HouseBill</option>
-              <option>MasterBill</option>
-            </select>
+            {{ form.consignment_ref_doc_type|as_crispy_field }}
           </div>
 
           <div class="form-group">
             <label for="consignmentDocIssuer">Document Issuer</label>
             <div class="input-group">
-              <input type="text" class="form-control" id="consignmentDocIssuer">
+              {# TODO: add consignmentDocIssuer ID #}
+              {{ form.consignment_ref_doc_issuer }}
               <div class="input-group-append">
                 <button class="btn btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
               </div>

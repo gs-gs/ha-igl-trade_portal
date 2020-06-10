@@ -40,7 +40,11 @@ class DocumentCreateForm(forms.ModelForm):
         fields = (
             'type',
             'document_number', 'fta', 'importing_country', 'exporter',
-            'importer_name', 'file', 'invoice_number', 'origin_criteria',
+            'importer_name',
+            'file',
+            'consignment_ref_doc_number', 'consignment_ref_doc_type', 'consignment_ref_doc_issuer',
+
+            'invoice_number', 'origin_criteria',
         )
 
     def __init__(self, *args, **kwargs):

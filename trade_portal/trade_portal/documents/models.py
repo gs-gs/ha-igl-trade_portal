@@ -110,7 +110,6 @@ class Document(models.Model):
     )
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    type = models.CharField("Document type", max_length=64, choices=TYPE_CHOICES)
 
     created_at = models.DateTimeField(default=timezone.now)
     created_by_user = models.ForeignKey(
@@ -120,6 +119,9 @@ class Document(models.Model):
         "users.Organisation", models.SET_NULL,
         blank=True, null=True
     )
+
+    type = models.CharField("Document type", max_length=64, choices=TYPE_CHOICES)
+    document_number = models.CharField(max_length=256, blank=False, default="")
 
     fta = models.ForeignKey(FTA, models.PROTECT, verbose_name="FTA")
     importing_country = CountryField()
@@ -137,8 +139,27 @@ class Document(models.Model):
         max_length=256, help_text="If known", blank=True, default=""
     )
 
-    document_number = models.CharField(max_length=256, blank=True, default="")
-    consignment_ref = models.CharField(max_length=256, blank=True, default="")
+    consignment_ref_doc_number = models.CharField(
+        "Document Number",
+        help_text="Consignment details",
+        max_length=256, blank=True, default=""
+    )
+    consignment_ref_doc_type = models.CharField(
+        "Document Type",
+        help_text="Consignment details",
+        max_length=100, blank=True,
+        choices=(
+            ("ConNote", "ConNote"),
+            ("HouseBill", "HouseBill"),
+            ("MasterBill", "MasterBill"),
+        ),
+    )
+    consignment_ref_doc_issuer = models.CharField(
+        "Document Issuer",
+        help_text="Consignment details",
+        max_length=200, blank=True, default=""
+    )
+
     invoice_number = models.CharField(
         "Invoice Number",
         max_length=256, blank=True, default=""
