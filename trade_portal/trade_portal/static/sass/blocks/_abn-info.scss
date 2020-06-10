@@ -1,0 +1,18 @@
+.abn-info{
+  font-size: 12px;
+  font-weight: $font-weight-bold;
+  line-height: 22px;
+  color: $primary-color;
+
+  p{
+    margin: 0;
+    padding: 0;
+    @include flexbox();
+  }
+
+  strong{
+    width: 35%;
+    padding: 0 10px 0 0;
+    font-weight: $font-weight-regular;
+  }
+}

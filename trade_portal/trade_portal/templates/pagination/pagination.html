@@ -1,0 +1,30 @@
+{% if is_paginated %}
+  <ul class="pagination" aria-label="Page navigation">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link page-link--prev" href="?page={{ page_obj.previous_page_number }}{{ getvars }}{{ hashtag }}" aria-label="Previous"><span
+          class="page-link__text"><span class="page-link__text"><i class="icon icon-navigate_before"></i></span></span></a>
+      </li>
+    {% endif %}
+
+    {% for page in pages %}
+      {% if page %}
+        {% ifequal page page_obj.number %}
+          <li class="page-item active"><a class="page-link" href="#">{{ page }}</a></li>
+        {% else %}
+          <li class="page-item"><a class="page-link" href="?page={{ page }}{{ getvars }}{{ hashtag }}">{{ page }}</a></li>
+        {% endifequal %}
+      {% else %}
+        <li><a>...</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link page-link--next" href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" aria-label="Next">
+          <span class="page-link__text"><i class="icon icon-navigate_next"></i></span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+{% endif %}
