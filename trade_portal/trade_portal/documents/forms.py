@@ -107,6 +107,7 @@ class DocumentCreateForm(forms.ModelForm):
                     if self.current_org.type == self.current_org.TYPE_EXPORTER
                     else Party.TYPE_CHAMBERS
                 ),
+                "dot_separated_id": self.current_org.dot_separated_id,
             }
         )
         self.instance.issuer = issuer_party

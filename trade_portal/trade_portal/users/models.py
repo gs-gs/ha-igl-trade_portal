@@ -90,6 +90,9 @@ class Organisation(models.Model):
         help_text='ABN for Australia',
         blank=True
     )
+    dot_separated_id = models.CharField(
+        max_length=256, blank=True, default="fill.that.value.au"
+    )
 
     class Meta:
         ordering = ("name",)

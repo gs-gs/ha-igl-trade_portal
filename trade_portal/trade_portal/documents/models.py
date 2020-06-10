@@ -63,6 +63,7 @@ class Party(models.Model):
     # exporter or importer
     type = models.CharField(max_length=1, blank=True, choices=TYPE_CHOICES, default=TYPE_OTHER)
     business_id = models.CharField(max_length=256, help_text="Abn for example", blank=True)
+    dot_separated_id = models.CharField(max_length=256, blank=True, default="a.b.c")
     name = models.CharField(max_length=256, blank=True)
     country = CountryField(blank=True)
 
@@ -233,6 +234,10 @@ class Document(models.Model):
         if not text:
             return None
         return b64encode(self.get_igid_image()).decode("utf-8")
+
+    def get_rendered_json(self):
+        from trade_portal.edi3.certificates import CertificateRenderer
+        return CertificateRenderer().render(self)
 
 
 def generate_docfile_filename(instance, filename):

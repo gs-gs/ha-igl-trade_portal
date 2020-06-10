@@ -142,23 +142,7 @@ class DocumentService(BaseIgService):
         return uploaded
 
     def _lodge_render_document(self, document):
-        return json.dumps({
-            "TYPE": document.get_type_display(),
-            "FORMAT": "EDI3.draft.2020-05-26.01",  # TODO: UN.blabla.edi3.2019-06.1
-
-            'id': str(document.pk),
-            'importing_country': str(document.importing_country),
-            'org.name': str(document.created_by_org),
-            'body': {
-                'importer_info': document.importer_name,
-                'document_number': document.document_number or '',
-                'consignment_ref': document.consignment_ref or '',
-                'issuer': str(document.issuer or ''),
-                'exporter': str(document.exporter or ''),
-                'fta': str(document.fta or ''),
-                'created_at': str(document.created_at),
-            }
-        })
+        return json.dumps(document.get_rendered_json())
 
     def _render_obj_body(self, links):
         return json.dumps({
