@@ -24,5 +24,5 @@ if [[ -n "${CELERY_FLOWER_USER}" && -n "${CELERY_FLOWER_PASSWORD}" ]]; then
 fi
 
 celery flower \
-    --app=chambers_app.taskapp \
+    --app=config.celery_app \
     --broker="${CELERY_BROKER_URL}"
