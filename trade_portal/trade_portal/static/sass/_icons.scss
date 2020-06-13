@@ -21,7 +21,7 @@ $icon-copy: "\e910";
 $icon-print: "\e911";
 $icon-navigate_before: "\e912";
 $icon-navigate_next: "\e913";
-
+$icon-check-circle: "\e914";
 
 $icon-font: "traded-icons";
 
@@ -150,5 +150,10 @@ $icon-font: "traded-icons";
 .icon-navigate_next {
   &:before {
     content: $icon-navigate_next;
+  }
+}
+.icon-check-circle {
+  &:before {
+    content: $icon-check-circle;
   }
 }

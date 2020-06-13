@@ -1,0 +1,26 @@
+.section-info{
+  border-top: 1px solid $border-color;
+  padding: 20px 0 0 0;
+
+  &__title{
+    margin: 0 0 22px 0;
+  }
+}
+
+.info-list {
+  @include clearfix();
+
+  dt {
+    font-weight: $font-weight-bold;
+
+    @include media-breakpoint-up(lg){
+      float: left;
+      clear: left;
+      width: 25%;
+    }
+  }
+
+  dd {
+    overflow: hidden;
+  }
+}

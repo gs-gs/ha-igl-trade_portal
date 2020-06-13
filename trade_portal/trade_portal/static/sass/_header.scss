@@ -19,7 +19,7 @@
     width: 100%;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 4;
 
     &--dark {
       background: #145988;
@@ -31,17 +31,14 @@
     @include justify-content(space-between);
     @include align-items(center);
     @include flex-wrap(wrap);
-    height: 90px;
     max-width: $site-max-width;
     padding: 0;
     margin: 0 auto;
 
     .authenticated &{
-      max-width: $site-max-width;
-      margin: 0 auto;
 
-      @include media-breakpoint-up(md) {
-        height: auto;
+      @include media-breakpoint-down(md) {
+        height: 90px;
       }
     }
   }
@@ -171,10 +168,24 @@
   &__account-nav{
     width: 100%;
     border-top: 1px solid $grey-color;
-    margin: 25px 0 0 0;
+    margin: 25px auto 0 auto;
+    max-width: $site-max-width;
+    padding: 0;
+
 
     @include media-breakpoint-down(md) {
       display: none;
+    }
+  }
+
+  &__user{
+    text-align: right;
+    padding: 2px 1rem 0 0;
+    font-size: 0.875rem;
+    line-height: 16px;
+
+    &-name{
+      font-weight: $font-weight-bold;
     }
   }
 }
@@ -249,6 +260,10 @@
       }
     }
   }
+
+  &__org{
+    padding: $mobile-padding;
+  }
 }
 
 .account-nav{
@@ -258,10 +273,10 @@
   }
 
   &__list{
+    @include flexbox();
     list-style: none;
     margin: 0;
     padding: 0;
-    @include flexbox();
   }
 
   &__item{

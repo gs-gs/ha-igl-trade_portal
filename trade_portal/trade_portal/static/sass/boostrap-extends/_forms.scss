@@ -65,12 +65,6 @@
   }
 
   &__title {
-    color: $dark-blue-color;
-    font-family: $second-font-family;
-    font-size: 22px;
-    font-weight: $font-weight-bold;
-    letter-spacing: 0;
-    line-height: 29px;
     margin: 0 0 20px 0;
   }
 
@@ -96,7 +90,22 @@
 }
 
 .form-actions {
-  margin: 62px 0 0 0;
+  margin: 3rem 0 0 0;
+
+  &--bordered{
+    border-top: 1px solid $border-color;
+    padding: 2.875rem 0 0 0;
+  }
+
+  @include media-breakpoint-down(md){
+    margin-top: 1rem;
+
+    &--bordered{
+      border-top: 0;
+      padding-top: 0;
+    }
+
+  }
 
   .btn {
     min-width: 162px;

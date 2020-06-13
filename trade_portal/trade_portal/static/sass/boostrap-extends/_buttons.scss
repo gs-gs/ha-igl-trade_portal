@@ -3,6 +3,14 @@
   color: $white-color;
 }
 
+.btn-sm{
+  font-weight: $font-weight-regular;
+}
+
+.btn-md{
+  @include button-size(0.5rem, 2.5rem, 14px, 1.5rem, $border-radius);
+}
+
 .btn-white {
   @include button-variant($white-color, $white-color);
   color: $dark-blue-color;
@@ -19,7 +27,9 @@
 
   &:hover,
   &:focus {
-    color: $dark-blue-color;
+    background: $dark-blue-color;
+    border-color: $dark-blue-color;
+    color: $white-color;
   }
 }
 

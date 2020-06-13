@@ -6,58 +6,32 @@
 {% block title %}Party {{ object }}{% endblock %}
 
 {% block content %}
-<h1>Party {{ object }}</h1>
+<div class="content-box">
+  <h1>Party {{ object }}</h1>
 
-  <div class="row certificate-detail-content">
-    <div class="col-7">
-      <fieldset>
-        <table class="table certificate-detail-table">
-          <tr>
-            <th>ID</th>
-            <td>
-              {{ object.pk }}
-            </td>
-          </tr>
-          <tr>
-            <th>Type</th>
-            <td>
-              {{ object.get_type_display }}
-            </td>
-          </tr>
-          <tr>
-            <th>Name</th>
-            <td>
-              {{ object.name|default:"(empty)" }}
-            </td>
-          </tr>
-          <tr>
-            <th>Business ID (ABN)</th>
-            <td>
-              {{ object.business_id|default:"(empty)" }}
-            </td>
-          </tr>
-          <tr>
-            <th>Country</th>
-            <td>
-              {{ object.country.name|default:"(empty)" }}
-            </td>
-          </tr>
-          <tr>
-            <th>Created by</th>
-            <td>
-              <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
-              at <strong>{{ object.created_by_org }}</strong>
-            </td>
-          </tr>
-        </table>
-      </fieldset>
-    </div>
-
-    <div class="col-5">
-      {% if object.can_be_updated %}
-        <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
-      {% endif %}
-    </div>
+  <div class="section-info">
+    <dl class="info-list">
+      <dt>ID</dt>
+      <dd>{{ object.pk }}</dd>
+      <dt>Type</dt>
+      <dd>{{ object.get_type_display }}</dd>
+      <dt>Name</dt>
+      <dd>{{ object.name|default:"(empty)" }}</dd>
+      <dt>Business ID (ABN)</dt>
+      <dd>{{ object.business_id|default:"(empty)" }}</dd>
+      <dt>Country</dt>
+      <dd>{{ object.country.name|default:"(empty)" }}</dd>
+      <dt>Created by</dt>
+      <dd>
+        <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
+        at <strong>{{ object.created_by_org }}</strong>
+      </dd>
+    </dl>
+  </div>
+  <div class="form-actions">
+    {% if object.can_be_updated %}
+    <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
+    {% endif %}
   </div>
 </div>
 {% endblock content %}

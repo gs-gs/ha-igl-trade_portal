@@ -34,6 +34,7 @@ class PartyUpdateForm(PartyCreateForm):
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
     exporter = forms.CharField(max_length=32, help_text="Please enter 11-digit ABN")
+    consignment_ref_doc_issuer = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Consignment doc issuer'}))
 
     class Meta:
         model = Document

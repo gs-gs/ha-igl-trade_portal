@@ -1,0 +1,30 @@
+.card {
+  &--key {
+    & + & {
+      margin: 28px 0 0 0;
+    }
+
+    .card-header {
+      background: $white-color;
+
+      @include media-breakpoint-up(md){
+        @include flexbox();
+        @include justify-content(space-between);
+        @include align-items(center);
+      }
+    }
+
+    .card-body{
+      font-size: 0.875rem;
+    }
+
+    .card-title{
+      font-weight: $font-weight-bold;
+      margin: 0 0 .25rem 0;
+    }
+
+    .card-text{
+      margin: 0;
+    }
+  }
+}
