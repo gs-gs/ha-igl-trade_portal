@@ -7,254 +7,221 @@
 
 {% block content %}
 <div class="content-box">
-  <h1>Document #{{ object.short_id }}</h1>
-  <div class="row certificate-detail-content">
-    <div class="col-7">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          {% with object.status as s %}
-            <li class="breadcrumb-item {% if s == 'draft' %}active{% endif %}">Draft</li>
-            <li class="breadcrumb-item {% if s == 'submitted' %}active{% endif %}">Submitted</li>
-            {% if s.status == "not-issued" %}
-              <li class="breadcrumb-item {% if s == 'not-issued' %}active{% endif %}">Not Issued</li>
-            {% endif %}
-            <li class="breadcrumb-item {% if s == 'issued' %}active{% endif %}">Issued</li>
-            {% if s != 'rejected' %}
-              {% if s.status == "disputed" %}
-                <li class="breadcrumb-item {% if s == 'disputed' %}active{% endif %}">Disputed</li>
-              {% endif %}
-              <li class="breadcrumb-item {% if s == 'accepted' %}active{% endif %}">Accepted</li>
-              <li class="breadcrumb-item {% if s == 'acquitted' %}active{% endif %}">Acquitted</li>
-              <li class="breadcrumb-item {% if s == 'expired' %}active{% endif %}">Expired</li>
-            {% endif %}
-            {% if s == 'rejected' %}
-              <li class="breadcrumb-item active">Rejected</li>
-            {% endif %}
-          {% endwith %}
-        </ol>
-      </nav>
-
-      <fieldset>
-        <table class="table certificate-detail-table">
-          <tr>
-            <th>Document Type</th>
-            <td>{{ object.get_type_display }}</td>
-          </tr>
-          <tr>
-            <th>Current Status</th>
-            <td>{{ object.get_status_display }}</td>
-          </tr>
-          <tr>
-            <th>Issuer</th>
-            <td>{{ object.issuer }}</td>
-          </tr>
-          <tr>
-            <th>Created by</th>
-            <td>
-              <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
-              at <strong>{{ object.created_by_org }}</strong>
-            </td>
-          </tr>
-          <tr>
-            <th>Created at</th>
-            <td>{{ object.created_at }}</td>
-          </tr>
-        </table>
-      </fieldset>
-
-      <fieldset>
-        <legend>Document metadata</legend>
-        <table class="table certificate-detail-table">
-          <tr>
-            <th>Doc number</th>
-            <td>{{ object.document_number|default:"(not specified)" }}</td>
-          </tr>
-          <tr>
-            <th>IGL Document ID</th>
-            <td>{{ object.pk }}</td>
-          </tr>
-          <tr>
-            <th>FTA</th>
-            <td>{{ object.fta }}</td>
-          </tr>
-          <tr>
-            <th>Importing country</th>
-            <td>{{ object.importing_country.name }}</td>
-          </tr>
-          <tr>
-            <th>Exporter</th>
-            <td>
-              Entity: {{ object.exporter.name }}<br/>
-              ABN: {{ object.exporter.business_id }}
-            </td>
-          </tr>
-          <tr>
-            <th>Importer name</th>
-            <td>{{ object.importer_name|default:"(not specified)" }}</td>
-          </tr>
-        </table>
-      </fieldset>
-
-      <fieldset>
-        <legend>Consignment details</legend>
-        <table class="table certificate-detail-table">
-          <tr>
-            <th>Doc number</th>
-            <td>{{ object.consignment_ref_doc_number|default:"(not specified)" }}</td>
-          </tr>
-          <tr>
-            <th>Doc type</th>
-            <td>{{ object.consignment_ref_doc_type|default:"(not specified)" }}</td>
-          </tr>
-          <tr>
-            <th>Doc issuer</th>
-            <td>{{ object.consignment_ref_doc_issuer|default:"(not specified)" }}</td>
-          </tr>
-          <tr>
-            <th>Data provided by </th>
-            <td>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</td>
-          </tr>
-        </table>
-      </fieldset>
-
-      {% if object.status != object.STATUS_DRAFT %}
-        <fieldset><legend>EDI3 document</legend>
-          <textarea style="width: 100%; border: 0px; height: 500px; font-size: 8pt" disabled>{{ object.get_rendered_json|json_render }}</textarea>
-        </fieldset>
-      {% endif %}
-
-
-    </div>
-
-    <div class="col-5">
-      {% with object.get_igid_image_base64 as qrcode_image %}
-        {% if qrcode_image %}
-          <fieldset>
-            <legend class="certificate-detail-document-legent">
-              <div>
-                IGID
-              </div>
-            </legend>
-            <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
-          </fieldset>
-        {% else %}
-          The certificate must be issued to show the QR code;
-          We need it to ensure that no changes will be made.
+  <h1 class="page-title">Document #{{ object.short_id }}</h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      {% with object.status as s %}
+        <li class="breadcrumb-item {% if s == 'draft' %}active{% endif %}">Draft</li>
+        <li class="breadcrumb-item {% if s == 'submitted' %}active{% endif %}">Submitted</li>
+        {% if s.status == "not-issued" %}
+          <li class="breadcrumb-item {% if s == 'not-issued' %}active{% endif %}">Not Issued</li>
+        {% endif %}
+        <li class="breadcrumb-item {% if s == 'issued' %}active{% endif %}">Issued</li>
+        {% if s != 'rejected' %}
+          {% if s.status == "disputed" %}
+            <li class="breadcrumb-item {% if s == 'disputed' %}active{% endif %}">Disputed</li>
+          {% endif %}
+          <li class="breadcrumb-item {% if s == 'accepted' %}active{% endif %}">Accepted</li>
+          <li class="breadcrumb-item {% if s == 'acquitted' %}active{% endif %}">Acquitted</li>
+          <li class="breadcrumb-item {% if s == 'expired' %}active{% endif %}">Expired</li>
+        {% endif %}
+        {% if s == 'rejected' %}
+          <li class="breadcrumb-item active">Rejected</li>
         {% endif %}
       {% endwith %}
+    </ol>
+  </nav>
+  <div class="section-info">
+    <dl class="info-list">
+      <dt>Document Type</dt>
+      <dd>{{ object.get_type_display }}</dd>
+      <dt>Current status</dt>
+      <dd>{{ object.get_status_display }}</dd>
+      <dt>Issuer</dt>
+      <dd>{{ object.issuer }}</dd>
+      <dt>Created by</dt>
+      <dd>
+        <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
+        at <strong>{{ object.created_by_org }}</strong>
+      </dd>
+      <dt>Created at</dt>
+      <dd>{{ object.created_at }}</dd>
+    </dl>
+  </div>
+  <div class="section-info">
+    <div class="subtitle section-info__title">Document metadata</div>
+    <dl class="info-list">
+      <dt>Doc number</dt>
+      <dd>{{ object.document_number|default:"(not specified)" }}</dd>
+      <dt>IGL Document ID</dt>
+      <dd>
+        {{ object.pk }}<br/>
+          {% with object.get_igid_image_base64 as qrcode_image %}
+            {% if qrcode_image %}
+              <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
+            {% else %}
+              <p>The certificate must be issued to show the QR code;
+                We need it to ensure that no changes will be made.</p>
+            {% endif %}
+          {% endwith %}
+      </dd>
+      <dt>FTA</dt>
+      <dd>{{ object.fta }}</dd>
+      <dt>Importing country</dt>
+      <dd>{{ object.importing_country.name }}</dd>
+      <dt>Exporter</dt>
+      <dd>
+        Entity: {{ object.exporter.name }}<br/>
+        ABN: <a href="https://abr.business.gov.au/ABN/View?abn={{ object.exporter.business_id }}" target="_blank">{{ object.exporter.business_id }}</a>
+      </dd>
+      <dt>Importer name</dt>
+      <dd>{{ object.importer_name|default:"(not specified)" }}</dd>
+    </dl>
+  </div>
 
+  <div class="section-info">
+    <h2 class="subtitle section-info__title">Consignment details</h2>
+    <dl class="info-list">
+      <dt>Doc number</dt>
+      <dd>{{ object.consignment_ref_doc_number|default:"(not specified)" }}</dd>
+      <dt>Doc type</dt>
+      <dd>{{ object.consignment_ref_doc_type|default:"(not specified)" }}</dd>
+      <dt>Doc issuer</dt>
+      <dd>{{ object.consignment_ref_doc_issuer|default:"(not specified)" }}</dd>
+      <dt>Data provided by </dt>
+      <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
+    </dl>
+  </div>
+
+  {% if object.status != object.STATUS_DRAFT %}
+  <div class="section-info">
+    <h2 class="subtitle section-info__title">EDI3 document</h2>
+    <textarea style="width: 100%; border: 0; height: 300px; font-size: 8pt" disabled>{{ object.get_rendered_json|json_render }}</textarea>
+  </div>
+  {% endif %}
+
+  {% if object.nodemessage_set.all %}
+    <div class="section-info">
+      {% for nm in object.nodemessage_set.all %}
+      {{ nm.get_status_display }}
+      {% if nm.is_outbound %}outbound{% else %}incoming{%endif %}
+      message:<br/>
+      <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
+      <small>{{ nm.history|join:", " }}</small>
       <hr/>
-
-
-      {% if object.can_be_updated %}
-        <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
-      {% endif %}
-
-      <form action='#' method='post' style="display: inline">
-        {% csrf_token %}
-        {% if object.status == object.STATUS_DRAFT or object.status == object.STATUS_NOT_ISSUED %}
-          <button type="submit" name="to_submitted" value="{{ obj.pk }}" class="btn btn-success">{{ object.get_status_display }} -> Submitted</button>
-        {% endif %}
-        {% if object.status == object.STATUS_SUBMITTED %}
-          <button type="submit" name="issue" value="{{ obj.pk }}" class="btn btn-success">Issue (send to the node)</button>
-          <button type="submit" name="not-issue" value="{{ obj.pk }}" class="btn btn-warning">Return (for re-work)</button>
-        {% endif %}
-      </form>
-
-      {% if object.nodemessage_set.all %}
-        <div class="certificate-detail-document" style="height: auto">
-          {% for nm in object.nodemessage_set.all %}
-            {{ nm.get_status_display }}
-            {% if nm.is_outbound %}outbound{% else %}incoming{%endif %}
-            message:<br/>
-            <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
-            <small>{{ nm.history|join:", " }}</small>
-            <hr/>
-          {% endfor %}
-        </div>
-        <br/>
-      {% endif %}
-
-      <div class="certificate-detail-document" style="height: auto">
-        {% if object.files.all %}
-          <fieldset>
-            <legend class="certificate-detail-document-legent">
-              <div>
-                Attachments
-              </div>
-            </legend>
-            <form action="#" method="POST" onSubmit="return confirm('Are you sure?')">
-              {% csrf_token %}
-              <table class="table certificate-detail-document-table">
-                <tr>
-                  <th>Type</th>
-                  <th>File and author</th>
-                  {% if object.can_be_updated %}
-                    <th></th>
-                  {% endif %}
-                </tr>
-                {% for doc in object.files.all %}
-                  <tr>
-                    <td>
-                      <small>{{ doc.extension }}</small>
-                    </td>
-                    <td title="{{ doc.filename }}">
-                      {% if doc.is_upstream %}
-                        <span class="oi oi-eye" style="font-size: 1em" title="The document will be sent to remote party"></span>
-                      {% endif %}
-                      <a href="{% url 'documents:file-download' object.id doc.id %}">
-                        {{ doc.short_filename }}
-                      </a>
-                      <div class="document-info">
-                      {{ doc.created_at }} by
-                      <span class="document-owner">{{ doc.created_by }}</span>
-                      </div>
-                    </td>
-                    {% if object.can_be_updated %}
-                      <td>
-                        <button type="submit" name="delete-document" value="{{ doc.pk }}" class="btn-sm btn">
-                          <img src="{% static 'images/delete_icon.png' %}" width="15" />
-                        </button>
-                      </td>
-                    {% endif %}
-                  </tr>
-                {% endfor %}
-              </table>
-            </form>
-          </fieldset>
-        {% else %}
-          {% if obj.status == obj.status_draft %}
-            <fieldset>
-              <legend class="document-warning-msg">
-                <span class="badge badge-info" style="font-size: 11pt">
-                  Please fill all the required certificate details.
-                </span>
-              </legend>
-            </fieldset>
-          {% endif %}
-        {% endif %}
-      </div>
-
-
-      {% if object.acquitted_details %}
-        <br/>
-        <div class="certificate-detail-document" style="height: auto; overflow: hide; padding: 5px">
-          <fieldset><legend>Acquittals</legend>
-            {% for row in object.acquitted_details %}
-              <table class="table table-sm" style='font-size: 8pt'>
-                {% for key, value in row.items %}
-                  <tr>
-                    <th>{{ key }}</th>
-                    <td><em>{{ value }}</em></td>
-                  </tr>
-                {% endfor %}
-              </table>
-            {% endfor %}
-          </fieldset>
-        </div>
-      {% endif %}
-
+      {% endfor %}
     </div>
+  {% endif %}
+
+  <div class="section-info">
+    {% if object.files.all %}
+    <h2 class="subtitle section-info__title">Attachments</h2>
+    <form action="#" method="POST" onSubmit="return confirm('Are you sure?')">
+      {% csrf_token %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>File and author</th>
+              {% if object.can_be_updated %}
+              <th></th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for doc in object.files.all %}
+            <tr>
+              <td>
+                <small>{{ doc.extension }}</small>
+              </td>
+              <td title="{{ doc.filename }}">
+                {% if doc.is_upstream %}
+                <span class="oi oi-eye" style="font-size: 1em" title="The document will be sent to remote party"></span>
+                {% endif %}
+                <a href="{% url 'documents:file-download' object.id doc.id %}">
+                  {{ doc.short_filename }}
+                </a>
+                <div class="document-info">
+                  {{ doc.created_at }} by
+                  <span class="document-owner">{{ doc.created_by }}</span>
+                </div>
+              </td>
+              {% if object.can_be_updated %}
+              <td>
+                <button type="submit" name="delete-document" value="{{ doc.pk }}" class="btn-sm btn">
+                  <img src="{% static 'images/delete_icon.png' %}" width="15" />
+                </button>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+    {% else %}
+      {% if obj.status == obj.status_draft %}
+        <p class="alert alert-primary">Please fill all the required certificate details.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {% if object.acquitted_details %}
+    <div class="certificate-detail-document">
+      <h2 class="subtitle section-info__title">Acquittals</h2>
+      {% for row in object.acquitted_details %}
+      <table class="table table-sm">
+        {% for key, value in row.items %}
+        <tr>
+          <th>{{ key }}</th>
+          <td><em>{{ value }}</em></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="section-info">
+    <div class="subtitle section-info__title">Document status history</div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Data/Time</th>
+            <th>Status</th>
+            <th>IGL Message Log</th>
+            <th>Related Document</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>18-05-2020 09:30</td>
+            <td>created</td>
+            <td>-</td>
+            <td>OpenATT</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    {% if object.can_be_updated %}
+    <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
+    {% endif %}
+
+    <form action='#' method='post' style="display: inline">
+      {% csrf_token %}
+      {% if object.status == object.STATUS_DRAFT or object.status == object.STATUS_NOT_ISSUED %}
+      <button type="submit" name="to_submitted" value="{{ obj.pk }}" class="btn btn-success">{{ object.get_status_display }} -> Submitted</button>
+      {% endif %}
+      {% if object.status == object.STATUS_SUBMITTED %}
+      <button type="submit" name="issue" value="{{ obj.pk }}" class="btn btn-success">Issue (send to the node)</button>
+      <button type="submit" name="not-issue" value="{{ obj.pk }}" class="btn btn-warning">Return (for re-work)</button>
+      {% endif %}
+    </form>
   </div>
 </div>
 {% endblock content %}

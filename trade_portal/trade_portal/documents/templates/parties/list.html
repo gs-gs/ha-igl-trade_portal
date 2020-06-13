@@ -6,41 +6,64 @@
 {% block title %}Parties{% endblock %}
 
 {% block content %}
-  <h1>Parties for {{ current_org }}</h1>
-
-  <div class="float-right">
-    <a href="{% url 'documents:party-create' %}" class="btn btn-primary btn-sm">+ Add a party</a>
-  </div>
-
-  <table class="table">
-    <tr>
-      <th>ID</th>
-      <th>Type</th>
-      <th>Business ID</th>
-      <th>Name</th>
-      <th>Country</th>
-    </tr>
-    {% autopaginate object_list 10 %}
-    {% for pty in object_list %}
-      <tr>
-        <td>
-          <a href="{% url 'documents:party-detail' pty.pk %}">
-            {{ pty.pk }}
-          </a>
-        </td>
-        <td>
-          <div class="badge badge-pill badge-info">
-            {{ pty.get_type_display }}
+<div class="documents-list">
+  <h1 class="page-title">Parties for {{ current_org }}</h1>
+  <div class="content-box documents-list__search">
+    <div class="row justify-content-between">
+      <div class="col-6">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search" aria-label="Search">
+          <div class="input-group-append">
+            <button class="btn btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
           </div>
-        </td>
-        <td>
-          {{ pty.business_id }}
-        </td>
-        <td>{{ pty.name }}</td>
-        <td>{{ pty.country }}</td>
-      </tr>
-    {% endfor %}
-  </table>
-  {% paginate %}
+          <div class="input-group-append">
+            <button class="btn btn-link" type="button">Advance filter</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-4 text-right">
+        <a href="{% url 'documents:party-create' %}" class="btn btn-primary">+ Add a party</a>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content-box documents-list__table">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Business ID</th>
+            <th>Name</th>
+            <th>Country</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% autopaginate object_list 10 %}
+          {% for pty in object_list %}
+            <tr>
+              <td>
+                <a href="{% url 'documents:party-detail' pty.pk %}">
+                  {{ pty.pk }}
+                </a>
+              </td>
+              <td>
+                <div class="badge badge-pill badge-info">
+                  {{ pty.get_type_display }}
+                </div>
+              </td>
+              <td>
+                {{ pty.business_id }}
+              </td>
+              <td>{{ pty.name }}</td>
+              <td>{{ pty.country }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% paginate %}
+    </div>
+  </div>
 </div>
 {% endblock content %}
