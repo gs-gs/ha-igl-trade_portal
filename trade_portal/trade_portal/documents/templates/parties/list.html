@@ -6,28 +6,25 @@
 {% block title %}Parties{% endblock %}
 
 {% block content %}
-<div class="documents-list">
+<div class="items-list">
   <h1 class="page-title">Parties for {{ current_org }}</h1>
-  <div class="content-box documents-list__search">
+  <div class="content-box items-list__search">
     <div class="row justify-content-between">
       <div class="col-6">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search" aria-label="Search">
+          <input type="text" class="form-control form-control-md" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
-            <button class="btn btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
-          </div>
-          <div class="input-group-append">
-            <button class="btn btn-link" type="button">Advance filter</button>
+            <button class="btn btn-md btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
           </div>
         </div>
       </div>
       <div class="col-4 text-right">
-        <a href="{% url 'documents:party-create' %}" class="btn btn-primary">+ Add a party</a>
+        <a href="{% url 'documents:party-create' %}" class="btn btn-md btn-primary">+ Add a party</a>
       </div>
     </div>
     </div>
   </div>
-  <div class="content-box documents-list__table">
+  <div class="content-box items-list__table">
     <div class="table-responsive">
       <table class="table">
         <thead>

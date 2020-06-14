@@ -13,7 +13,9 @@ jQuery(document).ready(function ($) {
     $('[data-toggle="qr"]').popover({
         html: true,
         placement: 'left',
-        content: function () { return $('#' + $(this).data('qr')).html();  }
+        content: function () {
+            return $('#' + $(this).data('qr')).html();
+        }
     });
 
     $('[data-toggle="tooltip"]').tooltip();
@@ -27,9 +29,11 @@ jQuery(document).ready(function ($) {
         }
     });
 
+    $('.input-group.date').datepicker();
+
 });
 
-function copyToClipboard(fieldId){
+function copyToClipboard(fieldId) {
     var copyText = document.getElementById(fieldId);
 
     copyText.select();
