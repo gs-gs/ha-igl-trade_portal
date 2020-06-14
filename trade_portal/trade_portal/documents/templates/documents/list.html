@@ -4,30 +4,87 @@
 {% load pagination_tags %}
 
 {% block title %}Documents{% endblock %}
+{% block extra_head %}{% endblock %}
 
 {% block content %}
-<div class="documents-list">
-  <div class="content-box documents-list__search">
-    <div class="row justify-content-between">
-      <div class="col-6">
+<div class="items-list">
+  <div class="content-box items-list__search">
+    <div class="row justify-content-between items-list__search-row">
+      <div class="col-md-6 items-list__search-form">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search" aria-label="Search">
+          <input type="text" class="form-control form-control-md" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
-            <button class="btn btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
+            <button class="btn btn-md btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
           </div>
-          <div class="input-group-append">
-            <button class="btn btn-link" type="button">Advance filter</button>
+        </div>
+        <div class="desktop-advance-filter-btn">
+          <a class="btn btn-md btn-link btn-advance-filter" type="button" data-toggle="collapse" href="#advancedFilter" role="button" aria-expanded="false" aria-controls="collapseExample">Advance filter</a>
+        </div>
+      </div>
+      <div class="col-md-6 items-list__action">
+        <a href="{% url 'documents:create' %}" class="btn btn-md btn-primary">+ New Document</a>
+      </div>
+    </div>
+    <div class="mobile-advance-filter-btn">
+      <a class="btn btn-link btn-advance-filter" type="button" data-toggle="collapse" href="#advancedFilter" role="button" aria-expanded="false" aria-controls="collapseExample">Advance filter</a>
+    </div>
+    <div class="advanced-filter collapse" id="advancedFilter">
+      <div class="advanced-filter__title">Advanced filter</div>
+      <div class="advanced-filter__row">
+        <div class="advanced-filter__col">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Contain words">
+          </div>
+        </div>
+        <div class="advanced-filter__col">
+          <div class="form-group">
+            <div class="input-group date">
+              <input type="text" class="form-control" placeholder="Created after">
+              <div class="input-group-append">
+                <span class="input-group-text"><i class="icon icon-calendar"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="advanced-filter__col">
+          <div class="form-group">
+            <div class="input-group date">
+              <input type="text" class="form-control" placeholder="Created before">
+              <div class="input-group-append">
+                <span class="input-group-text"><i class="icon icon-calendar"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="advanced-filter__col">
+          <div class="form-group">
+            <select name="status_filter" class="form-control">
+              <option value="" disabled selected>Status</option>
+              <option>Draft</option>
+              <option>Submitted</option>
+              <option>Issued</option>
+              <option>Accepted</option>
+              <option>Acquitted</option>
+              <option>Expired</option>
+            </select>
+          </div>
+        </div>
+        <div class="advanced-filter__col">
+          <div class="form-group">
+            <select name="doc_type" class="form-control">
+              <option value="" disabled selected>Doc type</option>
+              <option>Type 1</option>
+              <option>Type 2</option>
+            </select>
           </div>
         </div>
       </div>
-      <div class="col-4 text-right">
-        <a href="{% url 'documents:create' %}" class="btn btn-primary">+ New Document</a>
+      <div class="advanced-filter__submit">
+        <button class="btn btn-md btn-primary">Save</button>
       </div>
-    </div>
-    </div>
   </div>
-
-  <div class="content-box documents-list__table">
+  </div>
+  <div class="content-box items-list__table">
     <div class="table-responsive">
       <table class="table">
         <thead>

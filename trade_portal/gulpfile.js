@@ -28,7 +28,7 @@ function style() {
         .pipe(sourcemaps.init())
 
         .pipe(sass({
-            includePaths: ['node_modules/bootstrap/scss/'],
+            includePaths: ['node_modules/bootstrap/scss/', 'node_modules/bootstrap-datepicker/dist/css/'],
             outputStyle: 'compressed',
             onError: browserSync.notify
         }))
@@ -41,6 +41,7 @@ function js() {
     return gulp.src([
         './node_modules/jquery/dist/jquery.min.js',
         './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
+        './node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
         paths.scripts.src
     ])
         .pipe(sourcemaps.init())

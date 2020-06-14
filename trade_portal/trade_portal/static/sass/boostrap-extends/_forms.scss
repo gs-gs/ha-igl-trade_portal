@@ -5,6 +5,15 @@
     background-position: right 16px top 50%;
     background-size: 17px 14px;
   }
+
+  &-md {
+    height: 42px;
+    padding: $input-padding-y-sm $input-padding-x-sm;
+    @include font-size($input-font-size-sm);
+    line-height: $input-line-height-sm;
+    @include border-radius($input-border-radius-sm);
+  }
+
 }
 
 .form-check {

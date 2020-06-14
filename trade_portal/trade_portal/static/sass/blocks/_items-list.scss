@@ -1,0 +1,125 @@
+.items-list {
+  &__search {
+    margin: 0 0 20px 0;
+
+    .btn-search {
+      border-top-right-radius: $border-radius !important;
+      border-bottom-right-radius: $border-radius !important;
+      font-size: 20px;
+      padding-left: 0;
+      padding-right: 0;
+      width: 3.25rem;
+    }
+
+    &-row {
+      @include media-breakpoint-down(sm) {
+        @include flex-direction(column-reverse);
+      }
+    }
+
+    &-form {
+      @include flexbox();
+
+      @include media-breakpoint-down(sm) {
+        margin-top: 1rem;
+      }
+
+      .btn-advance-filter {
+        white-space: nowrap;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+
+    .mobile-advance-filter-btn {
+      text-align: center;
+
+      .btn {
+        display: block;
+        margin: 1rem 0 0 0;
+      }
+
+      @include media-breakpoint-up(md) {
+        display: none;
+      }
+    }
+
+    .desktop-advance-filter-btn {
+      @include media-breakpoint-down(sm) {
+        display: none;
+      }
+    }
+  }
+
+  &__action {
+    text-align: right;
+
+    @include media-breakpoint-down(sm) {
+      margin: 10px 0 0 0;
+
+      .btn {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
+
+  &__table {
+    .qr-btn {
+      display: block;
+      color: $dark-blue-color;
+      cursor: pointer;
+    }
+  }
+}
+
+.advanced-filter {
+  margin: 1rem 0 0 0;
+
+  &__title {
+    font-size: 17px;
+    font-weight: $font-weight-bold;
+    margin: 0 0 0.5rem 0;
+  }
+
+  &__row {
+    @include media-breakpoint-up(md) {
+      margin-left: -($grid-gutter-width / 2);
+      margin-right: -($grid-gutter-width / 2);
+      @include flexbox();
+    }
+
+    @include media-breakpoint-between(sm, md) {
+      @include flex-wrap(wrap);
+    }
+  }
+
+  &__col {
+    @include media-breakpoint-up(md) {
+      @include flex(1 0 50%);
+      padding-left: $grid-gutter-width / 2;
+      padding-right: $grid-gutter-width / 2;
+    }
+
+    @include media-breakpoint-between(sm, md) {
+      &:first-child {
+        @include flex-basis(100%);
+      }
+    }
+
+    @include media-breakpoint-up(lg) {
+      @include flex(1 0 20%);
+    }
+  }
+
+  &__submit {
+    text-align: right;
+
+    @include media-breakpoint-down(sm) {
+      .btn {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
+}
