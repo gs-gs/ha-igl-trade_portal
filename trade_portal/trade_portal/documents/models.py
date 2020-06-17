@@ -258,6 +258,18 @@ class Document(models.Model):
         from trade_portal.edi3.certificates import CertificateRenderer
         return CertificateRenderer().render(self)
 
+    def get_status_history(self):
+        history = [
+            {"created_at": self.created_at, "type": "Event", "message": "created"},
+        ]
+        for nodemsg in self.nodemessage_set.all():
+            history.append({
+                "created_at": nodemsg.created_at,
+                "type": "NodeMessage",
+                "obj": nodemsg
+            })
+        return history
+
 
 def generate_docfile_filename(instance, filename):
     """

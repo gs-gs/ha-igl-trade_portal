@@ -3,11 +3,11 @@
 {% load our_utils %}
 {% load static %}
 
-{% block title %}Document #{{ object.short_id }}{% endblock %}
+{% block title %}Document #{{ object.document_number }}{% endblock %}
 
 {% block content %}
 <div class="content-box">
-  <h1 class="page-title">Document #{{ object.short_id }}</h1>
+  <h1 class="page-title">Document #{{ object.document_number }}</h1>
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       {% with object.status as s %}
@@ -93,26 +93,6 @@
     </dl>
   </div>
 
-  {% if object.status != object.STATUS_DRAFT %}
-  <div class="section-info">
-    <h2 class="subtitle section-info__title">EDI3 document</h2>
-    <textarea style="width: 100%; border: 0; height: 300px; font-size: 8pt" disabled>{{ object.get_rendered_json|json_render }}</textarea>
-  </div>
-  {% endif %}
-
-  {% if object.nodemessage_set.all %}
-    <div class="section-info">
-      {% for nm in object.nodemessage_set.all %}
-      {{ nm.get_status_display }}
-      {% if nm.is_outbound %}outbound{% else %}incoming{%endif %}
-      message:<br/>
-      <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
-      <small>{{ nm.history|join:", " }}</small>
-      <hr/>
-      {% endfor %}
-    </div>
-  {% endif %}
-
   <div class="section-info">
     {% if object.files.all %}
     <h2 class="subtitle section-info__title">Attachments</h2>
@@ -196,12 +176,31 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>18-05-2020 09:30</td>
-            <td>created</td>
-            <td>-</td>
-            <td>OpenATT</td>
-          </tr>
+          {% for item in object.get_status_history %}
+            <tr>
+              <td>{{ item.created_at }}</td>
+              <td>
+                {% if item.type == "NodeMessage" %}
+                  Node message sent
+                {% endif %}
+                {% if item.type == "Event" %}
+                  {{ item.message }}
+                {% endif %}
+              </td>
+              <td>
+                {% if item.type == "NodeMessage" %}
+                  <span class="help-icon" data-toggle="tooltip" title="{{ item.obj.body }}">(message)</span>
+                {% else %}
+                  &ndash;
+                {% endif %}
+              </td>
+              <td>
+                {% if item.type == "NodeMessage" %}
+                  {{ item.obj.body.obj }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
@@ -223,5 +222,26 @@
       {% endif %}
     </form>
   </div>
+
+  {% if object.status != object.STATUS_DRAFT %}
+  <div class="section-info">
+    <h2 class="subtitle section-info__title">EDI3 document</h2>
+    <textarea style="width: 100%; border: 0; height: 300px; font-size: 8pt" disabled>{{ object.get_rendered_json|json_render }}</textarea>
+  </div>
+  {% endif %}
+
+  {% if object.nodemessage_set.all %}
+    <div class="section-info">
+      {% for nm in object.nodemessage_set.all %}
+      {{ nm.get_status_display }}
+      {% if nm.is_outbound %}outbound{% else %}incoming{%endif %}
+      message:<br/>
+      <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
+      <small>{{ nm.history|join:", " }}</small>
+      <hr/>
+      {% endfor %}
+    </div>
+  {% endif %}
+
 </div>
 {% endblock content %}
