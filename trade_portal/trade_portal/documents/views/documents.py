@@ -1,12 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin as Login, AccessMixin
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from django.http import HttpResponse, Http404
+from django.shortcuts import redirect
 from django.views.generic import (
     DetailView, ListView, CreateView, UpdateView,
 )
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, Http404
 from django.urls import reverse
-from django.shortcuts import redirect
+
 
 from trade_portal.documents.forms import (
     DocumentCreateForm, DocumentUpdateForm,
@@ -64,6 +66,19 @@ class DocumentListView(Login, DocumentQuerysetMixin, ListView):
             qs = qs.filter(
                 type=type_filter
             )
+        exporter_filter = self.request.GET.get("exporter_filter", "").strip() or None
+        if exporter_filter:
+            qs = qs.filter(
+                Q(exporter__business_id__icontains=exporter_filter) |
+                Q(exporter__name__icontains=exporter_filter) |
+                Q(exporter__dot_separated_id__icontains=exporter_filter)
+            )
+        importer_filter = self.request.GET.get("importer_filter", "").strip() or None
+        if importer_filter:
+            qs = qs.filter(
+                importer_name__icontains=importer_filter
+            )
+
         q = self.request.GET.get("q", "").strip() or None
         if q:
             qs = qs.filter(search_field__icontains=q)

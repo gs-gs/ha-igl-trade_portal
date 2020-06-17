@@ -32,13 +32,6 @@
     <div class="advanced-filter collapse" id="advancedFilter">
       <div class="advanced-filter__title">Advanced filter</div>
       <div class="advanced-filter__row">
-        {% comment %}
-        <div class="advanced-filter__col">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Contain words" name="q">
-          </div>
-        </div>
-        {% endcomment %}
         <div class="advanced-filter__col">
           <div class="form-group">
             <div class="input-group date">
@@ -77,6 +70,18 @@
                 <option value="{{ item }}" {% if item == request.GET.type_filter %}selected{% endif %}>{{ title }}</option>
               {% endfor %}
             </select>
+          </div>
+        </div>
+      </div>
+      <div class="advanced-filter__row">
+        <div class="advanced-filter__col">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Exporter" name="exporter_filter" value="{{ request.GET.exporter_filter|default:'' }}">
+          </div>
+        </div>
+        <div class="advanced-filter__col">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Importer" name="importer_filter" value="{{ request.GET.importer_filter|default:'' }}">
           </div>
         </div>
       </div>
