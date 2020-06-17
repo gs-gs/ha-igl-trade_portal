@@ -21,7 +21,6 @@ class DocumentQuerysetMixin(AccessMixin):
     def get_queryset(self):
         qs = Document.objects.all()
         user = self.request.user
-
         # filter by the current org
         # (this assumes that current org is definitely available by the user)
         qs = qs.filter(
@@ -51,6 +50,29 @@ class DocumentListView(Login, DocumentQuerysetMixin, ListView):
     @statsd_timer("view.DocumentListView.dispatch")
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # TODO: implement start and end date after the date format is updated
+        status_filter = self.request.GET.get("status_filter", "").strip() or None
+        if status_filter:
+            qs = qs.filter(
+                status=status_filter
+            )
+        type_filter = self.request.GET.get("type_filter", "").strip() or None
+        if type_filter:
+            qs = qs.filter(
+                type=type_filter
+            )
+        q = self.request.GET.get("q", "").strip() or None
+        if q:
+            qs = qs.filter(search_field__icontains=q)
+        return qs
+
+    def get_context_data(self, *args, **kwargs):
+        c = super().get_context_data(*args, **kwargs)
+        c["Document"] = Document
+        return c
 
 
 class DocumentCreateView(Login, CreateView):

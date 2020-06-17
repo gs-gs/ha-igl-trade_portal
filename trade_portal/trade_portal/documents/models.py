@@ -191,6 +191,8 @@ class Document(models.Model):
         max_length=12, choices=STATUS_CHOICES, default=STATUS_DRAFT
     )
 
+    search_field = models.TextField(blank=True, default="")
+
     class Meta:
         ordering = ('-created_at',)
 
@@ -202,7 +204,24 @@ class Document(models.Model):
 
     @statsd_timer("model.Document.save")
     def save(self, *args, **kwargs):
+        self._fill_search_field()
         super().save(*args, **kwargs)
+
+    def _fill_search_field(self):
+        data = [
+            self.get_type_display(),
+            self.get_status_display(),
+            str(self.pk),
+            str(self.document_number),
+            self.invoice_number,
+            self.consignment_ref_doc_issuer,
+            self.consignment_ref_doc_number,
+            self.importing_country.name,
+            str(self.fta),
+            str(self.exporter),
+        ]
+        self.search_field = "\n".join(data)
+        return
 
     @property
     def short_id(self):

@@ -9,10 +9,11 @@
 {% block content %}
 <div class="items-list">
   <div class="content-box items-list__search">
+    <form style="display: inline" method="GET">
     <div class="row justify-content-between items-list__search-row">
       <div class="col-md-6 items-list__search-form">
         <div class="input-group">
-          <input type="text" class="form-control form-control-md" placeholder="Search" aria-label="Search">
+          <input type="text" class="form-control form-control-md" placeholder="Search" aria-label="Search" name="q" value="{{ request.GET.q|default:'' }}">
           <div class="input-group-append">
             <button class="btn btn-md btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
           </div>
@@ -31,15 +32,17 @@
     <div class="advanced-filter collapse" id="advancedFilter">
       <div class="advanced-filter__title">Advanced filter</div>
       <div class="advanced-filter__row">
+        {% comment %}
         <div class="advanced-filter__col">
           <div class="form-group">
-            <input type="text" class="form-control" placeholder="Contain words">
+            <input type="text" class="form-control" placeholder="Contain words" name="q">
           </div>
         </div>
+        {% endcomment %}
         <div class="advanced-filter__col">
           <div class="form-group">
             <div class="input-group date">
-              <input type="text" class="form-control" placeholder="Created after">
+              <input type="text" class="form-control" placeholder="Created after" name="created_after" value="{{ request.GET.created_after|default:'' }}">
               <div class="input-group-append">
                 <span class="input-group-text"><i class="icon icon-calendar"></i></span>
               </div>
@@ -49,7 +52,7 @@
         <div class="advanced-filter__col">
           <div class="form-group">
             <div class="input-group date">
-              <input type="text" class="form-control" placeholder="Created before">
+              <input type="text" class="form-control" placeholder="Created before" name="created_before" value="{{ request.GET.created_before|default:'' }}">
               <div class="input-group-append">
                 <span class="input-group-text"><i class="icon icon-calendar"></i></span>
               </div>
@@ -59,30 +62,29 @@
         <div class="advanced-filter__col">
           <div class="form-group">
             <select name="status_filter" class="form-control">
-              <option value="" disabled selected>Status</option>
-              <option>Draft</option>
-              <option>Submitted</option>
-              <option>Issued</option>
-              <option>Accepted</option>
-              <option>Acquitted</option>
-              <option>Expired</option>
+              <option value="" selected>Any status</option>
+              {% for item, title in Document.STATUS_CHOICES %}
+                <option value="{{ item }}" {% if item == request.GET.status_filter %}selected{% endif %}>{{ title }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
         <div class="advanced-filter__col">
           <div class="form-group">
-            <select name="doc_type" class="form-control">
-              <option value="" disabled selected>Doc type</option>
-              <option>Type 1</option>
-              <option>Type 2</option>
+            <select name="type_filter" class="form-control">
+              <option value="">Any doc type</option>
+              {% for item, title in Document.TYPE_CHOICES %}
+                <option value="{{ item }}" {% if item == request.GET.type_filter %}selected{% endif %}>{{ title }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
       </div>
       <div class="advanced-filter__submit">
-        <button class="btn btn-md btn-primary">Save</button>
+        <button class="btn btn-md btn-primary" type="submit">Save</button>
       </div>
-  </div>
+    </div>
+    </form>
   </div>
   <div class="content-box items-list__table">
     <div class="table-responsive">
