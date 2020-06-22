@@ -71,7 +71,7 @@
                 </li>
               {% endif %}
               <li class="site-nav__org">
-                <form class="form-inline" action="{% url 'users:change-org' %}?next={{ request.path_info }}" id='id-current-org-form' method="POST">
+                <form action="{% url 'users:change-org' %}?next={{ request.path_info }}" id='id-current-org-form' method="POST">
                   {% csrf_token %}
                   {% if user.orgs %}
                     <span>Acting as

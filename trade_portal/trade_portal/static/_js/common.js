@@ -29,7 +29,9 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $('.input-group.date').datepicker();
+    $('.input-group.date').datepicker({
+        format: 'dd/mm/yyyy'
+    });
 
 });
 

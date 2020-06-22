@@ -15,7 +15,7 @@ $home-max-width: 1280px;
 }
 
 .home-content {
-  padding: 20px $mobile-padding 35px $mobile-padding;
+  padding: 0 $mobile-padding 35px $mobile-padding;
 
   @include media-breakpoint-up(lg) {
     @include flexbox();
@@ -59,6 +59,10 @@ $home-max-width: 1280px;
     line-height: 50px;
     margin: 0 0 24px 0;
     padding: 0;
+
+    @include media-breakpoint-down(sm){
+      margin-bottom: 14px;
+    }
   }
 
   &__description {
