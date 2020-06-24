@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django_countries.fields import CountryField
 
-# from intergov_client.predicates import Predicates
+from intergov_client.predicates import Predicates
 
 from trade_portal.utils.qr import get_qrcode_image
 from trade_portal.utils.monitoring import statsd_timer
@@ -403,6 +403,12 @@ class NodeMessage(models.Model):
         We don't update business status based on the nodes status changes,
         because it needs a business message, not just transport state change
         """
+        if not self.is_outbound:
+            # could be interesting
+            if self.body.get("predicate") == Predicates.CO_ACQUITTED:
+                self.document.status = Document.STATUS_ACQUITTED
+                self.document.save()
+                logger.info("Changing document %s status to %s", self.document, self.document.status)
         # c = self.document
         # b = self.body
         # if new_status:
