@@ -64,7 +64,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "trade_portal.users.apps.UsersConfig",
     "trade_portal.documents",
-    "trade_portal.websub_receiver",
+    "trade_portal.websub_receiver.apps.WebSubReceiverAppConfig",
     "trade_portal",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

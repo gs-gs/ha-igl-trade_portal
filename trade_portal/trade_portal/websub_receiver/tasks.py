@@ -7,5 +7,5 @@ logger = logging.getLogger(__name__)
 
 
 @app.task(ignore_result=True, max_retries=3)
-def subscribe_to_notifications():
+def subscribe_to_new_messages():
     NodeService().subscribe_to_new_messages()
