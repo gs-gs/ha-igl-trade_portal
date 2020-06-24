@@ -50,6 +50,7 @@ class IntergovClient(object):
             },
         )
         if not str(resp.status_code).startswith("2"):
+            logger.warning("Non-2xx responce for message retrieval; %s", resp.content)
             return None
         return resp.json()
 
@@ -169,3 +170,4 @@ class IntergovClient(object):
                     resp, resp.text[:2000],
                 )
             )
+        return True

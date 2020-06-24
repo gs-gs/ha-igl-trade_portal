@@ -6,7 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 
-from trade_portal.documents.tasks import update_message_by_sender_ref
+from trade_portal.documents.tasks import (
+    update_message_by_sender_ref, store_message_by_ping_body,
+)
 from trade_portal.utils.monitoring import statsd_timer
 
 logger = logging.getLogger(__name__)
@@ -76,6 +78,19 @@ class MessageThinPing(BaseNotificationReceiveView):
         """
         sender_ref = self.kwargs["sender_ref"]
         update_message_by_sender_ref.delay(sender_ref)
+        return
+
+
+class IncomingMessageThinPing(BaseNotificationReceiveView):
+    is_thin = False  # it's thin in fact but we still read the body to get the msg id
+
+    @csrf_exempt
+    @statsd_timer("view.IncomingMessageThinPing.dispatch")
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def _process_notification(self, event):
+        store_message_by_ping_body.delay(event)
         return
 
 

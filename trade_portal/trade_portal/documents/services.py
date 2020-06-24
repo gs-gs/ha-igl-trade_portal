@@ -7,6 +7,7 @@ import mimetypes
 
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 
 from intergov_client import IntergovClient
 from intergov_client.auth import DjangoCachedCognitoOIDCAuth, DumbAuth
@@ -251,3 +252,65 @@ class NodeService(BaseIgService):
             new_status=msg_body["status"]
         )
         return
+
+    def subscribe_to_new_messages(self):
+        result = self.ig_client.subscribe(
+            predicate=f"message.*",
+            callback=(
+                settings.ICL_TRADE_PORTAL_HOST +
+                reverse("websub:message-incoming")
+            ),
+        )
+        if result:
+            logger.info("Re-subscribed to predicate message.*")
+
+    def store_message_by_ping_body(self, ping_body):
+        # Once new message notification arrives we have message sender ref
+        # and have to retrieve it
+        # Example of the body:
+        # {
+        #    'predicate': 'message.519c81d5-5cdd-4643-960c-cad49dbb06bd.status',
+        #    'sender_ref': 'CN:519c81d5-5cdd-4643-960c-cad49dbb06bd'
+        # }
+        sender_ref = ping_body["sender_ref"]
+
+        # 1. retrieve it
+        msg_body = self.ig_client.retrieve_message(sender_ref)
+        # 2. handle it locally (attaching to some document, etc)
+        if not msg_body:
+            logger.error(
+                "Processing notification about message which can't "
+                "be retrieved from the message API"
+            )
+            return False
+        # try to get existing document with the same subject
+        first_fit_message = NodeMessage.objects.exclude(
+            document__isnull=True
+        ).filter(
+            subject=msg_body["subject"],
+        ).first()
+        if first_fit_message:
+            document = first_fit_message.document
+        else:
+            document = None
+        if not first_fit_message or not document:
+            logger.warning("Received incoming message but can't find any conversation for it")
+            return False
+        msg, created = NodeMessage.objects.get_or_create(
+            sender_ref=msg_body["sender_ref"],
+            defaults=dict(
+                document=document,
+                status=msg_body["status"],
+                subject=msg_body["subject"],
+                is_outbound=False,
+                body=msg_body,
+                history=[
+                    f"Received at {timezone.now()}",
+                ]
+            )
+        )
+        if created:
+            msg.trigger_processing()
+        else:
+            logger.info("Message %s is already in the system", msg_body["sender_ref"])
+        return True

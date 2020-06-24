@@ -36,3 +36,9 @@ def lodge_document(document_id=None):
                  max_retries=3, interval_start=10, interval_step=10, interval_max=50)
 def update_message_by_sender_ref(self, sender_ref):
     NodeService().update_message_by_sender_ref(sender_ref)
+
+
+@celery_app.task(bind=True, ignore_result=True,
+                 max_retries=3, interval_start=10, interval_step=10, interval_max=50)
+def store_message_by_ping_body(self, ping_body):
+    NodeService().store_message_by_ping_body(ping_body)

@@ -1,11 +1,16 @@
 from django.urls import path
 
 from .views import (
-    MessageThinPing, ConversationPingView,
+    MessageThinPing, IncomingMessageThinPing, ConversationPingView,
 )
 
 app_name = "websub_receiver"
 urlpatterns = [
+    path(
+        "messages/incoming/",
+        view=IncomingMessageThinPing.as_view(),
+        name="message-incoming"
+    ),
     path(
         "messages/<str:sender_ref>/",
         view=MessageThinPing.as_view(),

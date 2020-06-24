@@ -181,7 +181,7 @@
               <td>{{ item.created_at }}</td>
               <td>
                 {% if item.type == "NodeMessage" %}
-                  Node message sent
+                  Node message {{ item.obj.is_outbound|yesno:"sent,received,?"}}
                 {% endif %}
                 {% if item.type == "Event" %}
                   {{ item.message }}

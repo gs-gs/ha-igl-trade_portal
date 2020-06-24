@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+import datetime
 import environ
 
 from . import Env
@@ -63,6 +64,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "trade_portal.users.apps.UsersConfig",
     "trade_portal.documents",
+    "trade_portal.websub_receiver",
     "trade_portal",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -172,6 +174,10 @@ CELERY_TASK_SOFT_TIME_LIMIT = 60
 
 
 CELERY_BEAT_SCHEDULE = {
+    'subscribe_to_new_messages': {
+        'task': 'trade_portal.websub_receiver.tasks.subscribe_to_new_messages',
+        'schedule': datetime.timedelta(minutes=30),
+    },
 }
 
 DEFAULT_FROM_EMAIL = env(
