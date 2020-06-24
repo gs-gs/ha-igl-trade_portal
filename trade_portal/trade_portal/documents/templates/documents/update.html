@@ -103,24 +103,6 @@
         {{ form.file|as_crispy_field }}
       </fieldset>
 
-      <fieldset class="form-section">
-        <div class="subtitle form-section__title">Document Declaration</div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="declaration">
-          <label class="form-check-label" for="declaration">I certify that the information herein is correct and that the described goods comply with the origin requirements of the specified Free Trade Agreement.</label>
-        </div>
-
-      </fieldset>
-
-      {% comment %}
-        for per-field basis:
-        <div class="row">
-          <div class="col-col-md-6 col-md-6">
-            {{ form.item_no|as_crispy_field }}
-          </div>
-          ...
-      {% endcomment %}
-
       <div class="form-actions">
         <a class="btn btn-outline-dark" href="../">Cancel</a>
 

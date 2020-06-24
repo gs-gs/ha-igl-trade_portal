@@ -104,9 +104,7 @@
             <tr>
               <th>Type</th>
               <th>File and author</th>
-              {% if object.can_be_updated %}
               <th></th>
-              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -127,13 +125,15 @@
                   <span class="document-owner">{{ doc.created_by }}</span>
                 </div>
               </td>
-              {% if object.can_be_updated %}
               <td>
-                <button type="submit" name="delete-document" value="{{ doc.pk }}" class="btn-sm btn">
-                  <img src="{% static 'images/delete_icon.png' %}" width="15" />
-                </button>
+                {% comment %}
+                  {% if object.can_be_updated %}
+                    <button type="submit" name="delete-document" value="{{ doc.pk }}" class="btn-sm btn">
+                      <img src="{% static 'images/delete_icon.png' %}" width="15" />
+                    </button>
+                  {% endif %}
+                {% endcomment %}
               </td>
-              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
