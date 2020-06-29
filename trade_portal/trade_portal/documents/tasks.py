@@ -26,10 +26,17 @@ logger = logging.getLogger(__name__)
 @celery_app.task(ignore_result=True,
                  max_retries=3, interval_start=10, interval_step=10, interval_max=50)
 def lodge_document(document_id=None):
-    DocumentService().lodge(
-        Document.objects.get(pk=document_id)
-    )
-    return
+    doc = Document.objects.get(pk=document_id)
+    try:
+        DocumentService().lodge(
+            doc
+        )
+    except Exception as e:
+        logger.exception(e)
+        if doc.status == Document.STATUS_ISSUED:
+            logger.info("Marking document %s as error", doc)
+            doc.status = Document.STATUS_ERROR
+            doc.save()
 
 
 @celery_app.task(bind=True, ignore_result=True,
