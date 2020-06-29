@@ -14,12 +14,6 @@
         <div class="alert alert-danger">Please fix the errors highlighted below</div>
       {% endif %}
 
-      <fieldset class="form-section form-section--first">
-        <div class="form-section__container">
-          {{ form.type|as_crispy_field }}
-        </div>
-      </fieldset>
-
       <fieldset class="form-section">
         <div class="subtitle form-section__title">Document Metadata</div>
 
@@ -88,7 +82,7 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" id='id_document_issuer_block'>
             <label for="consignmentDocIssuer">Document Issuer ABN</label>
             <div class="input-group">
               {# TODO: add consignmentDocIssuer ID #}
@@ -111,6 +105,7 @@
               </div>
               {% endcomment %}
             </div>
+            <span id="hint_id_consignment_ref_doc_issuer"></span>
           </div>
 
           <div class="form-group">
@@ -144,6 +139,34 @@
 
 {% block extra_script %}
   <script>
+    $("#id_consignment_ref_doc_issuer").keyup(function() {
+      let val = $("#id_consignment_ref_doc_issuer").val().replace(/\s/g, "");
+      if (val.length == 11) {
+        // could be full ABN entered
+        let hint = $("#hint_id_consignment_ref_doc_issuer");
+        hint.addClass('abn-info')
+        hint.html("Loading ABN info...");
+        $.ajax({
+          dataType: "json",
+          url: '/documents/api/abn-lookup/?abn=' + val,
+          data: null,
+          success: function(resp) {
+            hint.html(resp.snippet);
+          }
+        });
+      }
+    });
+
+    $("#id_consignment_ref_doc_type").change(function() {
+      const val = $(this).val();
+      if (val == "ConNote" || val == "HouseBill") {
+        $("#id_document_issuer_block").show();
+      } else {
+        $("#id_document_issuer_block").hide();
+      }
+    });
+    $("#id_consignment_ref_doc_type").change();
+
     $("#id_fta").change(function() {
       var protocol = $( "#id_fta option:selected" ).text();
       $("#id_importing_country option").each(function() {

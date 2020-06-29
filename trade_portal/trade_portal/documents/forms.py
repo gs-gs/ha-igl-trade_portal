@@ -168,3 +168,4 @@ class DocumentUpdateForm(DocumentCreateForm):
         self.fields["file"].required = False
         self.fields["file"].help_text = "Leave empty if you want to keep the old file"
         del self.fields["exporter"]
+        del self.fields["type"]

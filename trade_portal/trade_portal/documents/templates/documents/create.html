@@ -5,20 +5,17 @@
 {% block title %}Create document{% endblock %}
 
 {% block extra_head %}
-<style>
-  textarea {
-    max-height: 100px;
-  }
-</style>
+  <style>
+    textarea {
+      max-height: 100px;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
 <div class="content-box">
   <div class="document-form">
     <h1 class="page-title">New Document</h1>
-    {% comment %}
-    <h2>Issuer: {{ current_org }}</h2>
-    {% endcomment %}
 
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
@@ -121,7 +118,7 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" id='id_document_issuer_block'>
             <label for="consignmentDocIssuer">Document Issuer ABN</label>
             <div class="input-group">
               {# TODO: add consignmentDocIssuer ID #}
@@ -144,6 +141,9 @@
               </div>
               {% endcomment %}
             </div>
+
+            <span id="hint_id_consignment_ref_doc_issuer"></span>
+
           </div>
 
           <div class="form-group">
@@ -208,6 +208,34 @@
         });
       }
     });
+
+    $("#id_consignment_ref_doc_issuer").keyup(function() {
+      let val = $("#id_consignment_ref_doc_issuer").val().replace(/\s/g, "");
+      if (val.length == 11) {
+        // could be full ABN entered
+        let hint = $("#hint_id_consignment_ref_doc_issuer");
+        hint.addClass('abn-info')
+        hint.html("Loading ABN info...");
+        $.ajax({
+          dataType: "json",
+          url: '/documents/api/abn-lookup/?abn=' + val,
+          data: null,
+          success: function(resp) {
+            hint.html(resp.snippet);
+          }
+        });
+      }
+    });
+
+    $("#id_consignment_ref_doc_type").change(function() {
+      const val = $(this).val();
+      if (val == "ConNote" || val == "HouseBill") {
+        $("#id_document_issuer_block").show();
+      } else {
+        $("#id_document_issuer_block").hide();
+      }
+    });
+    $("#id_consignment_ref_doc_type").change();
 
     $("#id_fta").change(function() {
       var protocol = $( "#id_fta option:selected" ).text();
