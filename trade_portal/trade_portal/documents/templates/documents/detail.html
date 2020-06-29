@@ -208,17 +208,13 @@
 
   <div class="form-actions">
     {% if object.can_be_updated %}
-    <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
+    <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Save</a>
     {% endif %}
 
     <form action='#' method='post' style="display: inline">
       {% csrf_token %}
-      {% if object.status == object.STATUS_DRAFT or object.status == object.STATUS_NOT_ISSUED %}
-      <button type="submit" name="to_submitted" value="{{ obj.pk }}" class="btn btn-success">{{ object.get_status_display }} -> Submitted</button>
-      {% endif %}
-      {% if object.status == object.STATUS_SUBMITTED %}
-      <button type="submit" name="issue" value="{{ obj.pk }}" class="btn btn-success">Issue (send to the node)</button>
-      <button type="submit" name="not-issue" value="{{ obj.pk }}" class="btn btn-warning">Return (for re-work)</button>
+      {% if object.status == object.STATUS_DRAFT or object.status == object.STATUS_NOT_ISSUED or object.status == object.STATUS_SUBMITTED %}
+      <button type="submit" name="issue" value="{{ obj.pk }}" class="btn btn-success">Submit</button>
       {% endif %}
     </form>
   </div>

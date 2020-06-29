@@ -33,10 +33,20 @@ class PartyUpdateForm(PartyCreateForm):
 
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
-    exporter = forms.CharField(max_length=32, help_text="Please enter 11-digit ABN")
+    exporter = forms.CharField(
+        label="Exporter ABN",
+        max_length=32, help_text="Please enter 11-digit ABN"
+    )
     consignment_ref_doc_issuer = forms.CharField(
+        label="Document Issuer ABN",
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Consignment doc issuer'}
+        ),
+        required=False
+    )
+    consignment_ref_doc_number = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control'}
         ),
         required=False
     )
@@ -57,6 +67,20 @@ class DocumentCreateForm(forms.ModelForm):
         self.user = kwargs.pop('user')
         self.current_org = kwargs.pop('current_org')
         super().__init__(*args, **kwargs)
+        self.fields["type"].choices = [
+            ('', 'Please Select Document Type...'),
+        ] + self.fields["type"].choices[1:]
+
+        self.fields["origin_criteria"].choices = [
+            ('', 'Please Select Origin Criteria...'),
+        ] + self.fields["origin_criteria"].choices[1:]
+
+        self.fields["consignment_ref_doc_type"].choices = [
+            ('', 'Please Select Document Type...'),
+        ] + self.fields["consignment_ref_doc_type"].choices[1:]
+
+
+        self.fields["fta"].empty_label = 'Please Select FTA...'
 
         self.fields['importing_country'].choices = []
         for fta in FTA.objects.all():
@@ -67,6 +91,9 @@ class DocumentCreateForm(forms.ModelForm):
         self.fields['importing_country'].help_text = (
             "Countries list is limited to the trade agreements entered in the system"
         )
+        self.fields["importer_name"].label = "Importer Name (if known)"
+        self.fields["consignment_ref_doc_type"].widget.attrs["class"] = "form-control"
+        self.fields["exporter"].widget.attrs["class"] = "form-control"
 
         importers_added = Party.objects.filter(
             created_by_org=self.current_org,

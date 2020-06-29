@@ -29,7 +29,7 @@
             {% if request.user.is_authenticated %}
               <div class="header__user">
                 <div class="header__user-name">{{ user }}</div>
-                <div class="header__user-org">ACME Pty Ltd</div>
+                <div class="header__user-org">{{ current_org.name }}</div>
               </div>
             {% else %}
               <a href="/accounts/signup/" class="btn btn-primary header__nav-btn">Sign up</a>

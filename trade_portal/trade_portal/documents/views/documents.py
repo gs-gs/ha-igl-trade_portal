@@ -141,17 +141,13 @@ class DocumentDetailView(Login, DetailView):
 
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
-        if 'to_submitted' in request.POST:
-            if obj.status in (Document.STATUS_DRAFT, Document.STATUS_NOT_ISSUED):
-                obj.status = Document.STATUS_SUBMITTED
-                obj.save()
-                messages.success(request, "The document status has been changed to Submitted")
-        elif 'not-issue' in request.POST:
-            if obj.status == Document.STATUS_SUBMITTED:
-                obj.status = Document.STATUS_NOT_ISSUED
-                obj.save()
-        elif 'issue' in request.POST:
-            if obj.status == Document.STATUS_SUBMITTED:
+        if 'issue' in request.POST:
+            sts = [
+                Document.STATUS_SUBMITTED,
+                Document.STATUS_DRAFT,
+                Document.STATUS_NOT_ISSUED,
+            ]
+            if obj.status in sts:
                 obj.status = Document.STATUS_ISSUED
                 obj.save()
                 lodge_document.apply_async(
