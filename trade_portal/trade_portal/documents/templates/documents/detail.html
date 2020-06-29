@@ -7,15 +7,13 @@
 
 {% block content %}
 <div class="content-box">
+  <a href="logs/" style="float: right"  class="btn btn-primary btn-sm">Logs</a>
+
   <h1 class="page-title">Document #{{ object.document_number }}</h1>
+
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       {% with object.status as s %}
-        <li class="breadcrumb-item {% if s == 'draft' %}active{% endif %}">Draft</li>
-        <li class="breadcrumb-item {% if s == 'submitted' %}active{% endif %}">Submitted</li>
-        {% if s.status == "not-issued" %}
-          <li class="breadcrumb-item {% if s == 'not-issued' %}active{% endif %}">Not Issued</li>
-        {% endif %}
         <li class="breadcrumb-item {% if s == 'issued' %}active{% endif %}">Issued</li>
         {% if s != 'rejected' %}
           {% if s.status == "disputed" %}
@@ -31,6 +29,7 @@
       {% endwith %}
     </ol>
   </nav>
+
   <div class="section-info">
     <dl class="info-list">
       <dt>Document Type</dt>
@@ -104,7 +103,6 @@
             <tr>
               <th>Type</th>
               <th>File and author</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -125,25 +123,12 @@
                   <span class="document-owner">{{ doc.created_by }}</span>
                 </div>
               </td>
-              <td>
-                {% comment %}
-                  {% if object.can_be_updated %}
-                    <button type="submit" name="delete-document" value="{{ doc.pk }}" class="btn-sm btn">
-                      <img src="{% static 'images/delete_icon.png' %}" width="15" />
-                    </button>
-                  {% endif %}
-                {% endcomment %}
-              </td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </form>
-    {% else %}
-      {% if obj.status == obj.status_draft %}
-        <p class="alert alert-primary">Please fill all the required certificate details.</p>
-      {% endif %}
     {% endif %}
   </div>
 
@@ -162,82 +147,5 @@
       {% endfor %}
     </div>
   {% endif %}
-
-  <div class="section-info section-info--no-border">
-    <div class="subtitle section-info__title">Document status history</div>
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Data/Time</th>
-            <th>Status</th>
-            <th>IGL Message Log</th>
-            <th>Related Document</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in object.get_status_history %}
-            <tr>
-              <td>{{ item.created_at }}</td>
-              <td>
-                {% if item.type == "NodeMessage" %}
-                  Node message {{ item.obj.is_outbound|yesno:"sent,received,?"}}
-                {% endif %}
-                {% if item.type == "Event" %}
-                  {{ item.message }}
-                {% endif %}
-              </td>
-              <td>
-                {% if item.type == "NodeMessage" %}
-                  <span class="help-icon" data-toggle="tooltip" title="{{ item.obj.body }}">(message)</span>
-                {% else %}
-                  &ndash;
-                {% endif %}
-              </td>
-              <td>
-                {% if item.type == "NodeMessage" %}
-                  {{ item.obj.body.obj }}
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="form-actions">
-    {% if object.can_be_updated %}
-    <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Save</a>
-    {% endif %}
-
-    <form action='#' method='post' style="display: inline">
-      {% csrf_token %}
-      {% if object.status == object.STATUS_DRAFT or object.status == object.STATUS_NOT_ISSUED or object.status == object.STATUS_SUBMITTED %}
-      <button type="submit" name="issue" value="{{ obj.pk }}" class="btn btn-success">Submit</button>
-      {% endif %}
-    </form>
-  </div>
-
-  {% if object.status != object.STATUS_DRAFT %}
-  <div class="section-info">
-    <h2 class="subtitle section-info__title">EDI3 document</h2>
-    <textarea style="width: 100%; border: 0; height: 300px; font-size: 8pt" disabled>{{ object.get_rendered_json|json_render }}</textarea>
-  </div>
-  {% endif %}
-
-  {% if object.nodemessage_set.all %}
-    <div class="section-info">
-      {% for nm in object.nodemessage_set.all %}
-      {{ nm.get_status_display }}
-      {% if nm.is_outbound %}outbound{% else %}incoming{%endif %}
-      message:<br/>
-      <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
-      <small>{{ nm.history|join:", " }}</small>
-      <hr/>
-      {% endfor %}
-    </div>
-  {% endif %}
-
 </div>
 {% endblock content %}

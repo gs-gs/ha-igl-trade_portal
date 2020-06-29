@@ -11,7 +11,7 @@ from django.urls import reverse
 
 
 from trade_portal.documents.forms import (
-    DocumentCreateForm, DocumentUpdateForm,
+    DocumentCreateForm,
 )
 from trade_portal.documents.models import Document
 from trade_portal.documents.tasks import lodge_document
@@ -107,58 +107,42 @@ class DocumentCreateView(Login, CreateView):
     def get_success_url(self):
         messages.success(
             self.request,
-            "The draft document has been created. You may continue filling it with"
-            " the data now"
+            "The document you have just created will be notarised and will be sent "
+            "to the importing country via the inter-government ledger."
         )
         return reverse('documents:detail', args=[self.object.pk])
 
 
-class DocumentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
-    template_name = 'documents/update.html'
-    form_class = DocumentUpdateForm
+# class DocumentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
+#     template_name = 'documents/update.html'
+#     form_class = DocumentUpdateForm
 
-    @statsd_timer("view.DocumentUpdateView.dispatch")
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+#     @statsd_timer("view.DocumentUpdateView.dispatch")
+#     def dispatch(self, *args, **kwargs):
+#         return super().dispatch(*args, **kwargs)
 
-    def get_form_kwargs(self):
-        k = super().get_form_kwargs()
-        k['user'] = self.request.user
-        k['current_org'] = self.request.user.get_current_org(self.request.session)
-        return k
+#     def get_form_kwargs(self):
+#         k = super().get_form_kwargs()
+#         k['user'] = self.request.user
+#         k['current_org'] = self.request.user.get_current_org(self.request.session)
+#         return k
 
-    def get_success_url(self):
-        messages.success(
-            self.request,
-            "The document has been updated"
-        )
-        return reverse('documents:detail', args=[self.object.pk])
+#     def get_success_url(self):
+#         messages.success(
+#             self.request,
+#             "The document has been updated"
+#         )
+#         return reverse('documents:detail', args=[self.object.pk])
 
 
 class DocumentDetailView(Login, DetailView):
     template_name = 'documents/detail.html'
     model = Document
 
-    def post(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if 'issue' in request.POST:
-            sts = [
-                Document.STATUS_SUBMITTED,
-                Document.STATUS_DRAFT,
-                Document.STATUS_NOT_ISSUED,
-            ]
-            if obj.status in sts:
-                obj.status = Document.STATUS_ISSUED
-                obj.save()
-                lodge_document.apply_async(
-                    [obj.pk],
-                    countdown=2
-                )
-                messages.success(
-                    request,
-                    'The document has been issued and will be sent to node in background'
-                )
-        return redirect(obj.get_absolute_url())
+
+class DocumentLogsView(Login, DetailView):
+    template_name = 'documents/logs.html'
+    model = Document
 
 
 class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):

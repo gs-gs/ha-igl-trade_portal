@@ -28,10 +28,5 @@
       </dd>
     </dl>
   </div>
-  <div class="form-actions">
-    {% if object.can_be_updated %}
-    <a href="{% url 'documents:update' object.pk %}" class="btn btn-primary">Update</a>
-    {% endif %}
-  </div>
 </div>
 {% endblock content %}

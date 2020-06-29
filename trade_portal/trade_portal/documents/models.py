@@ -77,10 +77,7 @@ class Party(models.Model):
 
 class Document(models.Model):
     # Business status
-    STATUS_DRAFT = 'draft'
-    STATUS_SUBMITTED = 'submitted'
     STATUS_ISSUED = 'issued'
-    STATUS_NOT_ISSUED = 'not-issued'
     STATUS_ACCEPTED = 'accepted'
     STATUS_DISPUTED = 'disputed'
     STATUS_EXPIRED = 'expired'
@@ -90,10 +87,7 @@ class Document(models.Model):
     STATUS_ERROR = 'error'
 
     STATUS_CHOICES = (
-        (STATUS_DRAFT, 'Draft'),
-        (STATUS_SUBMITTED, 'Submitted'),
         (STATUS_ISSUED, 'Issued'),
-        (STATUS_NOT_ISSUED, 'Not issued'),
         (STATUS_ACCEPTED, 'Accepted'),
         (STATUS_DISPUTED, 'Disputed'),
         (STATUS_REJECTED, 'Rejected'),
@@ -188,7 +182,7 @@ class Document(models.Model):
     )
     # https://edi3.org/specs/edi3-regulatory/develop/certificates/#state-lifecycle
     status = models.CharField(
-        max_length=12, choices=STATUS_CHOICES, default=STATUS_DRAFT
+        max_length=12, choices=STATUS_CHOICES, default=STATUS_ISSUED
     )
 
     search_field = models.TextField(blank=True, default="")
@@ -227,17 +221,7 @@ class Document(models.Model):
     def short_id(self):
         return str(self.id)[-6:]
 
-    @property
-    def can_be_updated(self):
-        return self.status in [
-            self.STATUS_DRAFT,
-            self.STATUS_SUBMITTED,
-            self.STATUS_NOT_ISSUED,
-        ]
-
     def get_igid_text(self):
-        if self.status == self.STATUS_DRAFT:
-            return None
         if not self.intergov_details.get('object_hash'):
             return None
         return f"https://testnet.trustbridge.io/v/{self.intergov_details.get('object_hash')}"

@@ -17,7 +17,7 @@
   <div class="document-form">
     <h1 class="page-title">New Document</h1>
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" onSubmit="return confirm('Are you sure?')">
       {% csrf_token %}
       {% if form.errors %}
         <div class="alert alert-danger">Please fix the errors highlighted below</div>
@@ -173,17 +173,10 @@
 
       </fieldset>
 
-      {% comment %}
-      {{ form|crispy }}
-      for per-field basis:
-          {{ form.item_no|as_crispy_field }}
-        ...
-        {% endcomment %}
-
-        <div class="form-actions">
-          <button type="submit" class="btn btn-dark">Save as draft</button>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
+      <div class="form-actions">
+        <a href="{% url 'documents:list' %}" class="btn btn-dark">Cancel</a>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
     </form>
   </div>
 </div>

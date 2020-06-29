@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load our_utils %}
+{% load static %}
+
+{% block title %}Logs for #{{ object.document_number }}{% endblock %}
+
+{% block content %}
+<div class="content-box">
+  <a href="../" style="float: right"  class="btn btn-primary btn-sm">Go back to the document</a>
+
+  <h1 class="page-title">Logs for #{{ object.document_number }}</h1>
+
+  {% if object.acquitted_details %}
+    <div class="certificate-detail-document">
+      <h2 class="subtitle section-info__title">Acquittals</h2>
+      {% for row in object.acquitted_details %}
+      <table class="table table-sm">
+        {% for key, value in row.items %}
+        <tr>
+          <th>{{ key }}</th>
+          <td><em>{{ value }}</em></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="section-info section-info--no-border">
+    <div class="subtitle section-info__title">Document status history</div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Data/Time</th>
+            <th>Status</th>
+            <th>IGL Message Log</th>
+            <th>Related Document</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in object.get_status_history %}
+            <tr>
+              <td>{{ item.created_at }}</td>
+              <td>
+                {% if item.type == "NodeMessage" %}
+                  Node message {{ item.obj.is_outbound|yesno:"sent,received,?"}}
+                {% endif %}
+                {% if item.type == "Event" %}
+                  {{ item.message }}
+                {% endif %}
+              </td>
+              <td>
+                {% if item.type == "NodeMessage" %}
+                  <span class="help-icon" data-toggle="tooltip" title="{{ item.obj.body }}">{{ item.obj.body.sender_ref }}</span>
+                {% else %}
+                  &ndash;
+                {% endif %}
+              </td>
+              <td>
+                {% if item.type == "NodeMessage" %}
+                  {{ item.obj.body.obj }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-info">
+    <h3 class="subtitle section-info__title">Document</h3>
+    <textarea style="width: 100%; border: 0; height: 300px; font-size: 8pt" disabled>{{ object.get_rendered_json|json_render }}</textarea>
+  </div>
+
+  {% if object.nodemessage_set.all %}
+    <div class="section-info">
+      <h3 class="subtitle section-info__title">
+      {% for nm in object.nodemessage_set.all %}
+      {{ nm.get_status_display }}
+      {% if nm.is_outbound %}outbound{% else %}incoming{%endif %}
+      message {{ nm.body.sender_ref }}</h3>
+      <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
+      <small>{{ nm.history|join:", " }}</small>
+      <hr/>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock content %}

@@ -3,6 +3,7 @@ from django.conf import settings
 
 from trade_portal.legi.abr import fetch_abn_info
 
+from .tasks import lodge_document
 from .models import Party, Document, DocumentFile, FTA
 
 
@@ -159,13 +160,18 @@ class DocumentCreateForm(forms.ModelForm):
                 created_by=self.user,
             )
             df.save()
+
+        lodge_document.apply_async(
+            [result.pk],
+            countdown=2
+        )
         return result
 
 
-class DocumentUpdateForm(DocumentCreateForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["file"].required = False
-        self.fields["file"].help_text = "Leave empty if you want to keep the old file"
-        del self.fields["exporter"]
-        del self.fields["type"]
+# class DocumentUpdateForm(DocumentCreateForm):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields["file"].required = False
+#         self.fields["file"].help_text = "Leave empty if you want to keep the old file"
+#         del self.fields["exporter"]
+#         del self.fields["type"]

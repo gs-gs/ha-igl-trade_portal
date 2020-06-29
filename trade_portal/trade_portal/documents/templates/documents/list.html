@@ -104,7 +104,7 @@
             <th>Exporter</th>
             <th>Importer</th>
             <th>Consignment ref.</th>
-            <th>IGID</th>
+            <th></th>
           </tr>
         </thead>
         {% autopaginate object_list 30 %}
@@ -123,15 +123,13 @@
             <td>
               {% if doc.exporter %}
                 {{ doc.exporter }}
-              {% else %}
-                <a href="{% url 'documents:update' doc.pk %}">+ Add</a>
               {% endif %}
             </td>
             <td>
               {% if doc.importer_name %}
                 {{ doc.importer_name }}
               {% else %}
-                <a href="{% url 'documents:update' doc.pk %}">+ Add</a>
+                {# <a href="{% url 'documents:update' doc.pk %}">+ Add</a> #}
               {% endif %}
             </td>
             <td>
@@ -141,7 +139,8 @@
               {{ doc.invoice_number }}
             </td>
             <td>
-              {# {{ doc.get_igid_text|default:"(not provided for draft)" }} #}
+              <a href="{% url 'documents:logs' doc.pk %}">Logs</a>
+              {% comment %}
               {% with doc.get_igid_image_base64 as qrcode_image %}
                 {% if qrcode_image %}
                   <span class="qr-btn" data-toggle="qr" data-qr="{{ doc.short_id }}">QRCode</span>
@@ -150,6 +149,7 @@
                   </div>
                 {% endif %}
               {% endwith %}
+              {% endcomment %}
             </td>
           </tr>
         {% endfor %}
