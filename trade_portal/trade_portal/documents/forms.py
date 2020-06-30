@@ -146,6 +146,9 @@ class DocumentCreateForm(forms.ModelForm):
         )
         self.instance.issuer = issuer_party
 
+        if self.instance.consignment_ref_doc_type not in ("ConNote", "HouseBill"):
+            self.instance.consignment_ref_doc_issuer = ""
+
         result = super().save(*args, **kwargs)
         uploaded_file = self.cleaned_data.get("file")
         if uploaded_file:
