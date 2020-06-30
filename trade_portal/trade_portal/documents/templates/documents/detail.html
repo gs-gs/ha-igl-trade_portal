@@ -15,7 +15,7 @@
     <ol class="breadcrumb">
       {% with object.status as s %}
         <li class="breadcrumb-item {% if s == 'issued' %}active{% endif %}">Issued</li>
-        {% if s != 'rejected' %}
+        {% if s != 'rejected' and s != 'error' %}
           {% if s.status == "disputed" %}
             <li class="breadcrumb-item {% if s == 'disputed' %}active{% endif %}">Disputed</li>
           {% endif %}
@@ -25,6 +25,9 @@
         {% endif %}
         {% if s == 'rejected' %}
           <li class="breadcrumb-item active">Rejected</li>
+        {% endif %}
+        {% if s == 'error' %}
+          <li class="breadcrumb-item active">Error</li>
         {% endif %}
       {% endwith %}
     </ol>
