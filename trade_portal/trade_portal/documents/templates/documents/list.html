@@ -2,11 +2,13 @@
 
 {% load static %}
 {% load pagination_tags %}
+{% load render_table from django_tables2 %}
 
 {% block title %}Documents{% endblock %}
 {% block extra_head %}{% endblock %}
 
 {% block content %}
+
 <div class="items-list">
   <div class="content-box items-list__search">
     <form style="display: inline" method="GET">
@@ -93,69 +95,74 @@
   </div>
   <div class="content-box items-list__table">
     <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Document No.</th>
-            <th>Status</th>
-            <th>Trading Country</th>
-            <th>Created Date</th>
-            <th>Issuer</th>
-            <th>Exporter</th>
-            <th>Importer</th>
-            <th>Consignment ref.</th>
-            <th></th>
-          </tr>
-        </thead>
-        {% autopaginate object_list 30 %}
-        {% for doc in object_list %}
-          <tr>
-            <td>
-              <a href="{% url 'documents:detail' doc.pk %}">
-                {{ doc.document_number|default:doc.short_id }}
-              </a>
-              <div class="badge badge-pill badge-info">{{ doc.get_type_display }}</div>
-            </td>
-            <td>{{ doc.get_status_display }}</td>
-            <td>{{ doc.importing_country.name }}</td>
-            <td>{{ doc.created_at }}</td>
-            <td>{{ doc.issuer }}</td>
-            <td>
-              {% if doc.exporter %}
-                {{ doc.exporter }}
-              {% endif %}
-            </td>
-            <td>
-              {% if doc.importer_name %}
-                {{ doc.importer_name }}
-              {% else %}
-                {# <a href="{% url 'documents:update' doc.pk %}">+ Add</a> #}
-              {% endif %}
-            </td>
-            <td>
-              {{ doc.consignment_ref_doc_number }}
-              {{ doc.consignment_ref_doc_type }}
-              {{ doc.consignment_ref_doc_issuer }}
-              {{ doc.invoice_number }}
-            </td>
-            <td>
-              <a href="{% url 'documents:logs' doc.pk %}">Logs</a>
-              {% comment %}
-              {% with doc.get_igid_image_base64 as qrcode_image %}
-                {% if qrcode_image %}
-                  <span class="qr-btn" data-toggle="qr" data-qr="{{ doc.short_id }}">QRCode</span>
-                  <div class="qr-code__content" id="{{ doc.short_id }}" style="display: none;">
-                    <img class="qr-code__image" src="data:image/png;base64,{{ qrcode_image }}" alt="{{ doc.get_igid_text }}"/>
-                  </div>
+      {% render_table table %}
+
+      {% comment %}
+        this big manual table is replaced by django-tables which gives us
+        sortable columns but is slower
+        <br/><br/><br/>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Document No.</th>
+              <th>Status</th>
+              <th>Trading Country</th>
+              <th>Created Date</th>
+              <th>Issuer</th>
+              <th>Exporter</th>
+              <th>Importer</th>
+              <th>Consignment ref.</th>
+              <th></th>
+            </tr>
+          </thead>
+          {% autopaginate object_list 5 %}
+          {% for doc in object_list %}
+            <tr>
+              <td>
+                <a href="{% url 'documents:detail' doc.pk %}">
+                  {{ doc.document_number|default:doc.short_id }}
+                </a>
+                <div class="badge badge-pill badge-info">{{ doc.get_type_display }}</div>
+              </td>
+              <td>{{ doc.get_status_display }}</td>
+              <td>{{ doc.importing_country.name }}</td>
+              <td>{{ doc.created_at }}</td>
+              <td>{{ doc.issuer }}</td>
+              <td>
+                {% if doc.exporter %}
+                  {{ doc.exporter }}
                 {% endif %}
-              {% endwith %}
-              {% endcomment %}
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
+              </td>
+              <td>
+                {% if doc.importer_name %}
+                  {{ doc.importer_name }}
+                {% else %}
+                  {# <a href="{% url 'documents:update' doc.pk %}">+ Add</a> #}
+                {% endif %}
+              </td>
+              <td>
+                {{ doc.consignment_ref_doc_number }}
+                {{ doc.consignment_ref_doc_type }}
+                {{ doc.consignment_ref_doc_issuer }}
+                {{ doc.invoice_number }}
+              </td>
+              <td>
+                <a href="{% url 'documents:logs' doc.pk %}">Logs</a>
+                {% with doc.get_igid_image_base64 as qrcode_image %}
+                  {% if qrcode_image %}
+                    <span class="qr-btn" data-toggle="qr" data-qr="{{ doc.short_id }}">QRCode</span>
+                    <div class="qr-code__content" id="{{ doc.short_id }}" style="display: none;">
+                      <img class="qr-code__image" src="data:image/png;base64,{{ qrcode_image }}" alt="{{ doc.get_igid_text }}"/>
+                    </div>
+                  {% endif %}
+                {% endwith %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endcomment %}
     </div>
-    {% paginate %}
+    {# % paginate % #}
   </div>
 </div>
 {% endblock content %}

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.functional import cached_property
 
 
 class User(AbstractUser):
@@ -8,7 +9,7 @@ class User(AbstractUser):
         fullname = f"{self.first_name} {self.last_name}".strip()
         return fullname or self.email or self.username or super().__str__()
 
-    @property
+    @cached_property
     def orgs(self):
         # fixme: could be duplicates
         if self.is_staff:

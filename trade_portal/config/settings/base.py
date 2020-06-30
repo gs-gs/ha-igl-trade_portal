@@ -59,6 +59,7 @@ THIRD_PARTY_APPS = [
     "widget_tweaks",
     "constance",
     "constance.backends.database",
+    "django_tables2",
 ]
 
 LOCAL_APPS = [

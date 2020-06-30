@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.views.generic import (
     DetailView, ListView, CreateView, UpdateView,
 )
+from django_tables2 import SingleTableView
 from django.urls import reverse
 
 
@@ -14,6 +15,7 @@ from trade_portal.documents.forms import (
     DocumentCreateForm,
 )
 from trade_portal.documents.models import Document
+from trade_portal.documents.tables import DocumentsTable
 from trade_portal.documents.tasks import lodge_document
 from trade_portal.utils.monitoring import statsd_timer
 
@@ -27,6 +29,8 @@ class DocumentQuerysetMixin(AccessMixin):
         # (this assumes that current org is definitely available by the user)
         qs = qs.filter(
             created_by_org=user.get_current_org(self.request.session)
+        ).select_related(
+            "issuer", "exporter"
         )
         return qs
 
@@ -45,9 +49,13 @@ class DocumentQuerysetMixin(AccessMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-class DocumentListView(Login, DocumentQuerysetMixin, ListView):
+class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
     template_name = 'documents/list.html'
     model = Document
+    table_class = DocumentsTable
+    table_pagination = {
+        "per_page": 15,
+    }
 
     @statsd_timer("view.DocumentListView.dispatch")
     def dispatch(self, *args, **kwargs):

@@ -43,3 +43,7 @@ python-statsd==2.1.0
 
 # QR code rendering
 qrcode==6.1
+
+
+# nice sortable tables
+django-tables2==2.3.1
