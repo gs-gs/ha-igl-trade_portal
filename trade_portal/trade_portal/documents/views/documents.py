@@ -108,6 +108,7 @@ class DocumentCreateView(Login, CreateView):
 
     def get_form_kwargs(self):
         k = super().get_form_kwargs()
+        k['dtype'] = self.kwargs['dtype']
         k['user'] = self.request.user
         k['current_org'] = self.request.user.get_current_org(self.request.session)
         return k

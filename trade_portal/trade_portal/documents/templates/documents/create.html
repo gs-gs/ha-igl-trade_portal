@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block title %}Create document{% endblock %}
+{% block title %}Create {{ form.instance.get_type_display }}{% endblock %}
 
 {% block extra_head %}
   <style>
@@ -15,7 +15,7 @@
 {% block content %}
 <div class="content-box">
   <div class="document-form">
-    <h1 class="page-title">New Document</h1>
+    <h1 class="page-title">New {{ form.instance.get_type_display }}</h1>
 
     <form method="POST" enctype="multipart/form-data" onSubmit="return confirm('Are you sure?')">
       {% csrf_token %}
@@ -23,11 +23,13 @@
         <div class="alert alert-danger">Please fix the errors highlighted below</div>
       {% endif %}
 
+      {% comment %}
       <fieldset class="form-section form-section--first">
         <div class="form-section__container">
           {{ form.type|as_crispy_field }}
         </div>
       </fieldset>
+      {% endcomment %}
 
       <fieldset class="form-section">
         <div class="subtitle form-section__title">Document Metadata</div>

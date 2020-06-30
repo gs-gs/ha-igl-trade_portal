@@ -25,7 +25,16 @@
         </div>
       </div>
       <div class="col-md-6 items-list__action">
-        <a href="{% url 'documents:create' %}" class="btn btn-md btn-primary">+ New Document</a>
+        <div class="dropdown">
+          <button class="btn btn-md btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            + New Document
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% for dtype, display_name in Document.TYPE_CHOICES %}
+              <a class="dropdown-item" href="{% url 'documents:create' dtype %}">{{ display_name }}</a>
+            {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
     <div class="mobile-advance-filter-btn">

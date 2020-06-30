@@ -55,7 +55,6 @@ class DocumentCreateForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = (
-            'type',
             'document_number', 'fta', 'importing_country', 'exporter',
             'importer_name',
             'file',
@@ -65,13 +64,11 @@ class DocumentCreateForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
+        self.dtype = kwargs.pop('dtype')
         self.user = kwargs.pop('user')
         self.current_org = kwargs.pop('current_org')
         super().__init__(*args, **kwargs)
-        self.fields["type"].choices = [
-            ('', 'Please Select Document Type...'),
-        ] + self.fields["type"].choices[1:]
-
+        self.instance.type = self.dtype
         self.fields["origin_criteria"].choices = [
             ('', 'Please Select Origin Criteria...'),
         ] + self.fields["origin_criteria"].choices[1:]
@@ -125,6 +122,7 @@ class DocumentCreateForm(forms.ModelForm):
         return exporter_party
 
     def save(self, *args, **kwargs):
+        self.instance.type = self.dtype
         self.instance.created_by_user = self.user
         self.instance.created_by_org = self.current_org
 
