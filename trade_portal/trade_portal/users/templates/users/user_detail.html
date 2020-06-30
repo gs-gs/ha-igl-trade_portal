@@ -9,55 +9,78 @@
 
 {% block content %}
 <div class="content-box profile">
-  <h1 class="page-title">{{ current_org.name }}</h1>
-  <div class="profile-row">
-    <div class="row">
-      <div class="col-md-3">
-        <h2 class="subtitle">Identity</h2>
-      </div>
-      <div class="col-md-9 profile-row__content">
-        <div class="row mb-3">
-          <div class="col-md-3">ABN</div>
-          <div class="col-md-9"><a href="https://abr.business.gov.au/ABN/View?abn={{ current_org.business_id }}" target="_blank">{{ current_org.business_id }}</a></div>
+  <div style="float: right">
+    <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">Change my info</a>
+    <a class="btn btn-primary" href="{% url 'account_email' %}" role="button">E-Mail management</a>
+    <a class="btn btn-primary" href="{% url 'account_change_password' %}" role="button">Change password</a>
+  </div>
+
+  {% for org_ms in user.orgmembership_set.all %}
+    <h1 class="page-title">{{ org_ms.org.name }} {% if org_ms.org == current_org %}(current){% endif %}</h1>
+    <div class="profile-row">
+      <div class="row">
+        <div class="col-md-3">
+          <h2 class="subtitle">Identity</h2>
         </div>
-        <div class="row mb-3">
-          <div class="col-md-3">Domain name:</div>
-          <div class="col-md-9"><a href="//{{ current_org.dot_separated_id }}" target="_blank">{{ current_org.dot_separated_id }}</a></div>
-        </div>
-        <div class="row">
-          <div class="col-md-3">Verified:</div>
-          <div class="col-md-9"><img src="{% static 'images/MyGovID_logo.svg' %}" alt=""></div>
+        <div class="col-md-9 profile-row__content">
+          <div class="row mb-3">
+            <div class="col-md-3">ABN</div>
+            <div class="col-md-9"><a href="https://abr.business.gov.au/ABN/View?abn={{ org_ms.org.business_id }}" target="_blank">{{ org_ms.org.business_id }}</a></div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-3">Domain name:</div>
+            <div class="col-md-9"><a href="//{{ org_ms.org.dot_separated_id }}" target="_blank">{{ org_ms.org.dot_separated_id }}</a></div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">Verified:</div>
+            <div class="col-md-9">
+              {# <img src="{% static 'images/MyGovID_logo.svg' %}" alt="">#}
+              Manually<br/>
+              since {{ org_ms.since }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="profile-row">
+    <div class="profile-row">
     <div class="row">
       <div class="col-md-3">
         <h2 class="subtitle">Authorised Roles</h2>
       </div>
       <div class="col-md-9 profile-row__content">
-        <div class="row mb-3 user-row">
-          <div class="col-md-3 user-row__name">AU Business (default):</div>
-          <div class="col-md-9 user-row__content"><strong>Verified <i class="icon icon-check-circle"></i></strong> <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">+ Add document</button></div>
-        </div>
-        <div class="row mb-3 user-row">
-          <div class="col-md-3 user-row__name">Certification Authority:</div>
-          <div class="col-md-9 user-row__content">
-            <strong>Verified <i class="icon icon-check-circle"></i></strong> <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">+ Add document</button>
+        {% if org_ms.org.type == org_ms.org.TYPE_EXPORTER %}
+          <div class="row mb-3 user-row">
+            <div class="col-md-3 user-row__name">AU Business (exporter):</div>
+            <div class="col-md-9 user-row__content"><strong>Verified <i class="icon icon-check-circle"></i></strong>
+              <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">Verified manually</button>
+              {% comment %}
+                <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">+ Add document</button>
+              {% endcomment %}
+            </div>
           </div>
-          <div class="col">
-            <p class="authorised-roles__description">
-              Preferential Certificates of Origin<br/>
-              Non-Preferential Certificates of Origin
-            </p>
+        {% endif %}
+        {% if org_ms.org.type == org_ms.org.TYPE_CHAMBERS %}
+          <div class="row mb-3 user-row">
+            <div class="col-md-3 user-row__name">Certification Authority:</div>
+            <div class="col-md-9 user-row__content">
+              <strong>Verified <i class="icon icon-check-circle"></i></strong>
+              <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">Verified manually</button>
+            </div>
+            <div class="col">
+              <p class="authorised-roles__description">
+                Preferential Certificates of Origin<br/>
+                Non-Preferential Certificates of Origin
+              </p>
+            </div>
           </div>
-        </div>
+        {% endif %}
       </div>
     </div>
   </div>
 
+  {% endfor %}
+
+  {% comment %}
   <div class="profile-row">
     <div class="row">
       <div class="col-md-3">
@@ -88,33 +111,12 @@
       </div>
     </div>
   </div>
+  {% endcomment %}
 
-  <div class="form-actions form-actions--bordered">
-    <button type="submit" class="btn btn-primary">Save</button>
-  </div>
-
-
-  <br/><br/>
-  <div>
-    {% if not user.is_staff %}
-      You are member of the next organisatons:<br/>
-      <ul>
-        {% for ms in user.orgmembership_set.all %}
-          <li><strong>{{ ms.org }}</strong>: {{ ms.get_role_display }} (since {{ ms.since }})</li>
-        {% empty %}
-          <li>(None)</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      You are staff member and already have access to all organisations.
-    {% endif %}
-  </div>
-  <div>To become a member of a new one - please login with the method supporting organisation assignment or request a staff member to assign them manually.</div>
-
-<div class="form-actions">
-  <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">Change my info</a>
-  <a class="btn btn-primary" href="{% url 'account_email' %}" role="button">E-Mail management</a>
-  <a class="btn btn-primary" href="{% url 'account_change_password' %}" role="button">Change password</a>
-</div>
+  {% comment %}
+    <div class="form-actions form-actions--bordered">
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  {% endcomment %}
 </div>
 {% endblock content %}
