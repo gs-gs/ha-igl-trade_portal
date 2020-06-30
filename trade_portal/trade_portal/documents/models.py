@@ -384,15 +384,34 @@ class NodeMessage(models.Model):
 
     def trigger_processing(self, new_status=None):
         """
-        We don't update business status based on the nodes status changes,
+        We don't update business status based on the status changes from nodes,
         because it needs a business message, not just transport state change
+        (apart of errors)
+
+        but we handle business messages from other nodes here
         """
-        if not self.is_outbound:
+        if self.is_outbound:
+            # change status to error if any outboud message is rejected
+            if new_status == "rejected":
+                self.document.status = Document.STATUS_ERROR
+                self.document.save()
+                logger.warning(
+                    "Change document %s status to Error due to rejected message %s",
+                    self.document,
+                    self
+                )
+        else:  # not self.is_outbound
             # could be interesting
             if self.body.get("predicate") == Predicates.CO_ACQUITTED:
-                self.document.status = Document.STATUS_ACQUITTED
-                self.document.save()
-                logger.info("Changing document %s status to %s", self.document, self.document.status)
+                if self.document.status in (Document.STATUS_ISSUED, Document.STATUS_ISSUED):
+                    self.document.status = Document.STATUS_ACQUITTED
+                    self.document.save()
+                    logger.info("Changing document %s status to %s", self.document, self.document.status)
+                else:
+                    logger.warning(
+                        "Not changing document %s status to %s - wrong source status",
+                        self.document, self.document.status
+                    )
         # c = self.document
         # b = self.body
         # if new_status:
