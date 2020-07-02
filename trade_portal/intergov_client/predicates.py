@@ -4,3 +4,5 @@ class Predicates(object):
 
     SDO_CREATED = "UN.CEFACT.Trade.DeclarationOfOrigin.created"
     SDO_ACQUITTED = "UN.CEFACT.Trade.DeclarationOfOrigin.acquitted"
+
+    CoO_ISSUED = "UN.CEFACT.Regulation.CoO.issued"

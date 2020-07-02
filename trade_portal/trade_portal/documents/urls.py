@@ -16,6 +16,7 @@ app_name = "documents"
 urlpatterns = [
     # Documents
     path("", view=DocumentListView.as_view(), name="list"),
+    path("create-<str:dtype>/<uuid:oa>/", view=DocumentCreateView.as_view(), name="create-specific"),
     path("create-<str:dtype>/", view=DocumentCreateView.as_view(), name="create"),
     path("<uuid:pk>/", view=DocumentDetailView.as_view(), name="detail"),
     path("<uuid:pk>/logs/", view=DocumentLogsView.as_view(), name="logs"),

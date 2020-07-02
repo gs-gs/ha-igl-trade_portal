@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect
 from django.views.generic import (
-    DetailView, ListView, CreateView, UpdateView,
+    DetailView, ListView, CreateView,  # UpdateView,
 )
 from django_tables2 import SingleTableView
 from django.urls import reverse
@@ -14,9 +14,9 @@ from django.urls import reverse
 from trade_portal.documents.forms import (
     DocumentCreateForm,
 )
-from trade_portal.documents.models import Document
+from trade_portal.documents.models import Document, OaUrl
 from trade_portal.documents.tables import DocumentsTable
-from trade_portal.documents.tasks import lodge_document
+# from trade_portal.documents.tasks import lodge_document
 from trade_portal.utils.monitoring import statsd_timer
 
 
@@ -106,11 +106,31 @@ class DocumentCreateView(Login, CreateView):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
+    def get(self, *args, **kwargs):
+        # auth mixin is already applied here - no need to think about it
+        # if there is no "oa-pk" kwarg then we must create some oa credential
+        # and redirect user to the creation page for this specific one - so the QR
+        # code is shown
+        if not self.kwargs.get('oa'):
+            oa = OaUrl.retrieve_new(
+                for_org=self.request.user.get_current_org(self.request.session)
+            )
+            return redirect(
+                'documents:create-specific',
+                dtype=self.kwargs['dtype'], oa=oa.pk
+            )
+        return super().get(*args, **kwargs)
+
     def get_form_kwargs(self):
         k = super().get_form_kwargs()
+        current_org = self.request.user.get_current_org(self.request.session)
         k['dtype'] = self.kwargs['dtype']
+        k['oa'] = OaUrl.objects.get(
+            pk=self.kwargs['oa'],
+            created_for=current_org
+        )
         k['user'] = self.request.user
-        k['current_org'] = self.request.user.get_current_org(self.request.session)
+        k['current_org'] = current_org
         return k
 
     def get_success_url(self):

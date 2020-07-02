@@ -64,6 +64,7 @@ class DocumentCreateForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
+        self.oa = kwargs.pop('oa')
         self.dtype = kwargs.pop('dtype')
         self.user = kwargs.pop('user')
         self.current_org = kwargs.pop('current_org')
@@ -76,7 +77,6 @@ class DocumentCreateForm(forms.ModelForm):
         self.fields["consignment_ref_doc_type"].choices = [
             ('', 'Please Select Document Type...'),
         ] + self.fields["consignment_ref_doc_type"].choices[1:]
-
 
         self.fields["fta"].empty_label = 'Please Select FTA...'
 
@@ -122,6 +122,7 @@ class DocumentCreateForm(forms.ModelForm):
         return exporter_party
 
     def save(self, *args, **kwargs):
+        self.instance.oa = self.oa
         self.instance.type = self.dtype
         self.instance.created_by_user = self.user
         self.instance.created_by_org = self.current_org

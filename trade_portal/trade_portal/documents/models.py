@@ -75,6 +75,43 @@ class Party(models.Model):
         verbose_name_plural = "parties"
 
 
+class OaUrl(models.Model):
+    # tradetrust://
+    # {
+    #     "uri":"https://salty-wildwood-95924.herokuapp.com/abc123
+    #            #
+    #            b3d1961f047eba5eb5ff5582ed3b7fea408bed8860b63bf80c7028c2d8ab356e"
+    # }
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    created_for = models.ForeignKey("users.Organisation", models.CASCADE)
+    uri = models.CharField(max_length=3000)
+    key = models.CharField(max_length=3000)
+
+    class Meta:
+        ordering = ('created_at',)
+
+    def __str__(self):
+        return self.uri
+
+    def url_repr(self):
+        return 'tradetrust://{' + f'"uri":"{self.uri}#{self.key}"' + '}'
+
+    @classmethod
+    def retrieve_new(cls, for_org):
+        return cls.objects.create(
+            created_for=for_org,
+            uri=f"https://mocked-uri/randomvalue{random.randint(100000, 99999999)}",
+            key=f"TODODEMOKEY{random.randint(100000, 99999999)}"
+        )
+
+    def get_qr_image(self):
+        return get_qrcode_image(self.url_repr())
+
+    def get_qr_image_base64(self):
+        return b64encode(self.get_qr_image()).decode("utf-8")
+
+
 class Document(models.Model):
     # Business status
     STATUS_ISSUED = 'issued'
@@ -106,6 +143,7 @@ class Document(models.Model):
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
 
+    oa = models.ForeignKey(OaUrl, models.CASCADE, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     created_by_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, models.SET_NULL,
@@ -220,23 +258,6 @@ class Document(models.Model):
     @property
     def short_id(self):
         return str(self.id)[-6:]
-
-    def get_igid_text(self):
-        if not self.intergov_details.get('object_hash'):
-            return None
-        return f"https://testnet.trustbridge.io/v/{self.intergov_details.get('object_hash')}"
-
-    def get_igid_image(self):
-        text = self.get_igid_text()
-        if not text:
-            return None
-        return get_qrcode_image(text)
-
-    def get_igid_image_base64(self):
-        text = self.get_igid_text()
-        if not text:
-            return None
-        return b64encode(self.get_igid_image()).decode("utf-8")
 
     def get_rendered_json(self):
         from trade_portal.edi3.certificates import CertificateRenderer

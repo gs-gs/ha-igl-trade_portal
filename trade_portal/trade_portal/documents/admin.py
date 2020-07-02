@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (
     FTA, Party,
-    Document, DocumentFile,
+    OaUrl, Document, DocumentFile,
     NodeMessage,
 )
 
@@ -15,6 +15,11 @@ class FTAAdmin(admin.ModelAdmin):
 @admin.register(Party)
 class PartyAdmin(admin.ModelAdmin):
     list_display = ('business_id', 'name', 'country')
+
+
+@admin.register(OaUrl)
+class OaUrlAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created_for', 'uri', 'key', 'url_repr')
 
 
 @admin.register(Document)

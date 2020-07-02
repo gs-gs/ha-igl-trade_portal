@@ -1,4 +1,3 @@
-import boto3
 import logging
 
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
