@@ -1,3 +1,4 @@
+import os
 import random
 import mimetypes
 import string
@@ -99,17 +100,24 @@ class OaUrl(models.Model):
 
     @classmethod
     def retrieve_new(cls, for_org):
-        return cls.objects.create(
+        new_uuid = uuid.uuid4()
+        obj = cls.objects.create(
+            id=new_uuid,
             created_for=for_org,
-            uri=f"https://mocked-uri/randomvalue{random.randint(100000, 99999999)}",
-            key=f"TODODEMOKEY{random.randint(100000, 99999999)}"
+            uri=f"{settings.BASE_URL}/{str(new_uuid)}",
+            key=cls._generate_aes_key()
         )
+        return obj
 
     def get_qr_image(self):
         return get_qrcode_image(self.url_repr())
 
     def get_qr_image_base64(self):
         return b64encode(self.get_qr_image()).decode("utf-8")
+
+    @classmethod
+    def _generate_aes_key(cls, key_len=256):
+        return os.urandom(key_len // 8).hex().upper()
 
 
 class Document(models.Model):
