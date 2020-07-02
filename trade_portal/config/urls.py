@@ -10,6 +10,7 @@ from trade_portal.feedback.views import FeedbackView
 from trade_portal.views import (
     HomeView, LogoutInitiateView, LogoutPerformView,
 )
+from trade_portal.documents.views.oa import OaCyphertextRetrieve
 
 from .healthcheck import HealthcheckView
 
@@ -18,6 +19,7 @@ urlpatterns = [
     path("about/", TemplateView.as_view(template_name="pages/about.html")),
 
     path("documents/", include("trade_portal.documents.urls", namespace="documents")),
+    path("oa/<str:key>/", OaCyphertextRetrieve.as_view(), name="oa-cyphertext-retrieve"),
     path("profile/", include("trade_portal.users.urls", namespace="users")),
     path("feedback/", FeedbackView.as_view(), name="feedback"),
     path("websub/", include("trade_portal.websub_receiver.urls", namespace="websub")),

@@ -89,6 +89,10 @@ class OaUrl(models.Model):
     uri = models.CharField(max_length=3000)
     key = models.CharField(max_length=3000)
 
+    # after we have it wrapper and issued we store the cyphertext here
+    # so it can be returned per request
+    ciphertext = models.TextField(blank=True)
+
     class Meta:
         ordering = ('created_at',)
 
@@ -104,7 +108,7 @@ class OaUrl(models.Model):
         obj = cls.objects.create(
             id=new_uuid,
             created_for=for_org,
-            uri=f"{settings.BASE_URL}/{str(new_uuid)}",
+            uri=f"{settings.BASE_URL}/oa/{str(new_uuid)}",
             key=cls._generate_aes_key()
         )
         return obj
