@@ -14,7 +14,7 @@ from django.urls import reverse
 from trade_portal.documents.forms import (
     DocumentCreateForm,
 )
-from trade_portal.documents.models import Document, OaUrl
+from trade_portal.documents.models import Document, OaDetails
 from trade_portal.documents.tables import DocumentsTable
 # from trade_portal.documents.tasks import lodge_document
 from trade_portal.utils.monitoring import statsd_timer
@@ -112,7 +112,7 @@ class DocumentCreateView(Login, CreateView):
         # and redirect user to the creation page for this specific one - so the QR
         # code is shown
         if not self.kwargs.get('oa'):
-            oa = OaUrl.retrieve_new(
+            oa = OaDetails.retrieve_new(
                 for_org=self.request.user.get_current_org(self.request.session)
             )
             return redirect(
@@ -125,7 +125,7 @@ class DocumentCreateView(Login, CreateView):
         k = super().get_form_kwargs()
         current_org = self.request.user.get_current_org(self.request.session)
         k['dtype'] = self.kwargs['dtype']
-        k['oa'] = OaUrl.objects.get(
+        k['oa'] = OaDetails.objects.get(
             pk=self.kwargs['oa'],
             created_for=current_org
         )

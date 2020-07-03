@@ -76,7 +76,7 @@ class Party(models.Model):
         verbose_name_plural = "parties"
 
 
-class OaUrl(models.Model):
+class OaDetails(models.Model):
     # tradetrust://
     # {
     #     "uri":"https://salty-wildwood-95924.herokuapp.com/abc123
@@ -155,7 +155,7 @@ class Document(models.Model):
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
 
-    oa = models.ForeignKey(OaUrl, models.CASCADE, null=True)
+    oa = models.ForeignKey(OaDetails, models.CASCADE, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     created_by_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, models.SET_NULL,
@@ -271,7 +271,7 @@ class Document(models.Model):
     def short_id(self):
         return str(self.id)[-6:]
 
-    def get_rendered_json(self):
+    def get_rendered_edi3_document(self):
         from trade_portal.edi3.certificates import CertificateRenderer
         return CertificateRenderer().render(self)
 
@@ -286,6 +286,33 @@ class Document(models.Model):
                 "obj": nodemsg
             })
         return history
+
+
+class DocumentHistoryItem(models.Model):
+    document = models.ForeignKey(Document, models.CASCADE, related_name="history")
+    created_at = models.DateTimeField(default=timezone.now)
+    type = models.CharField(max_length=200)
+    message = models.TextField(max_length=2000, blank=True)
+    object_body = models.TextField(blank=True)
+    linked_obj_id = models.CharField(max_length=128)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return self.message
+
+    @property
+    def related_object(self):
+        if self.type == "nodemessage":
+            try:
+                return NodeMessage.objects.get(
+                    document=self.document,
+                    pk=self.linked_obj_id
+                )
+            except Exception:
+                return '(wrong ref)'
+        return None
 
 
 def generate_docfile_filename(instance, filename):

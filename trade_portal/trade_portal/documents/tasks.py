@@ -1,7 +1,7 @@
 import logging
 
 from trade_portal.documents.models import (
-    Document,
+    Document, DocumentHistoryItem,
 )
 from trade_portal.documents.services import DocumentService, NodeService
 from config import celery_app
@@ -27,11 +27,14 @@ logger = logging.getLogger(__name__)
                  max_retries=3, interval_start=10, interval_step=10, interval_max=50)
 def lodge_document(document_id=None):
     doc = Document.objects.get(pk=document_id)
+    DocumentHistoryItem.objects.create(
+        document=doc,
+        message="Starting the issue step..."
+    )
     try:
-        DocumentService().lodge(
-            doc
-        )
+        DocumentService().issue(doc)
     except Exception as e:
+        raise
         logger.exception(e)
         if doc.status == Document.STATUS_ISSUED:
             logger.info("Marking document %s as error", doc)

@@ -4,7 +4,7 @@ from django.conf import settings
 from trade_portal.legi.abr import fetch_abn_info
 
 from .tasks import lodge_document
-from .models import Party, Document, DocumentFile, FTA
+from .models import Party, Document, DocumentHistoryItem, DocumentFile, FTA
 
 
 class PartyCreateForm(forms.ModelForm):
@@ -162,6 +162,12 @@ class DocumentCreateForm(forms.ModelForm):
                 created_by=self.user,
             )
             df.save()
+
+        DocumentHistoryItem.objects.create(
+            type="nodemessage",
+            document=result,
+            message=f"The document has been created by {self.user}",
+        )
 
         lodge_document.apply_async(
             [result.pk],

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (
     FTA, Party,
-    OaUrl, Document, DocumentFile,
+    OaDetails, Document, DocumentFile, DocumentHistoryItem,
     NodeMessage,
 )
 
@@ -17,15 +17,22 @@ class PartyAdmin(admin.ModelAdmin):
     list_display = ('business_id', 'name', 'country')
 
 
-@admin.register(OaUrl)
-class OaUrlAdmin(admin.ModelAdmin):
+@admin.register(OaDetails)
+class OaDetailsAdmin(admin.ModelAdmin):
     list_display = ('id', 'created_for', 'uri', 'key', 'url_repr')
+
+
+class DocumentHistoryItemInlineAdmin(admin.TabularInline):
+    model = DocumentHistoryItem
+    extra = 0
+    fields = ['created_at', 'message']
 
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ('created_at', 'status', 'type', 'importing_country', 'status')
     list_filter = ('status', 'type', 'importing_country')
+    inlines = [DocumentHistoryItemInlineAdmin]
 
 
 @admin.register(DocumentFile)

@@ -40,6 +40,17 @@
           </tr>
         </thead>
         <tbody>
+          {% for history_item in object.history.all %}
+            <tr>
+              <td>{{ history_item.created_at }}</td>
+              <td>{{ history_item.message }}</td>
+              <td>
+                <textarea>{{ history_item.object_body }}</textarea>
+              </td>
+              <td>{{ history_item.related_object }}</td>
+            </tr>
+          {% endfor %}
+          {% comment %}
           {% for item in object.get_status_history %}
             <tr>
               <td>{{ item.created_at }}</td>
@@ -52,11 +63,7 @@
                 {% endif %}
               </td>
               <td>
-                {% if item.type == "NodeMessage" %}
-                  <span class="help-icon" data-toggle="tooltip" title="{{ item.obj.body }}">{{ item.obj.body.sender_ref }}</span>
-                {% else %}
-                  &ndash;
-                {% endif %}
+
               </td>
               <td>
                 {% if item.type == "NodeMessage" %}
@@ -65,6 +72,7 @@
               </td>
             </tr>
           {% endfor %}
+          {% endcomment %}
         </tbody>
       </table>
     </div>

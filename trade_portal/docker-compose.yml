@@ -48,6 +48,16 @@ services:
     networks:
       - internal
 
+  # needed only for local development - because on Linux you can't
+  # access the host container in any other reliable way
+  # And things like OA API are usually started separately
+  docker-host:
+    image: qoomon/docker-host
+    cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
+    restart: on-failure
+    networks:
+      - internal
+
   postgres:
     image: postgres:11.3-alpine
     logging:
