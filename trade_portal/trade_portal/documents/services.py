@@ -97,12 +97,26 @@ class DocumentService(BaseIgService):
         )
 
         # step 3, slow: wrap OA document using external api for wrapping documents
-        oa_doc_wrapped_resp = requests.post(
-            config.OA_WRAP_API_URL + "/document/wrap",
-            json={
-                "document": oa_doc,
-            }
-        )
+        try:
+            oa_doc_wrapped_resp = requests.post(
+                config.OA_WRAP_API_URL + "/document/wrap",
+                json={
+                    "document": oa_doc,
+                }
+            )
+        except Exception as e:
+            logger.exception(e)
+            DocumentHistoryItem.objects.create(
+                type="error",
+                document=document,
+                message=(
+                    f"Error: OA document wrap failed with error {str(e)}"
+                ),
+                object_body=oa_doc_wrapped_resp.json(),
+            )
+            document.status = Document.STATUS_ERROR
+            document.save()
+            return False
 
         if oa_doc_wrapped_resp.status_code == 200:
             oa_doc_wrapped = oa_doc_wrapped_resp.json()
@@ -125,7 +139,7 @@ class DocumentService(BaseIgService):
             )
             document.status = Document.STATUS_ERROR
             document.save()
-            return
+            return False
 
         # now the OA document contains attachment (binary, if any) and CoO EDI3 document
         # and it's prepared for the notarisation
@@ -146,12 +160,25 @@ class DocumentService(BaseIgService):
         oa_uploaded_info = self.ig_client.post_text_document(
             document.importing_country, oa_wrapped_body
         )
-        DocumentHistoryItem.objects.create(
-            type="text",
-            document=document,
-            message="Uploaded OA document as a message object",
-            object_body=json.dumps(oa_uploaded_info),
-        )
+        if oa_uploaded_info:
+            DocumentHistoryItem.objects.create(
+                type="text",
+                document=document,
+                message="Uploaded OA document as a message object",
+                object_body=json.dumps(oa_uploaded_info),
+            )
+        else:
+            DocumentHistoryItem.objects.create(
+                type="error",
+                document=document,
+                message=(
+                    "Error: Can't upload OA document as a message object"
+                ),
+                object_body=oa_doc_wrapped_resp.json(),
+            )
+            document.status = Document.STATUS_ERROR
+            document.save()
+            return False
 
         # Post the message
         message_json = self._render_intergov_message(
@@ -163,7 +190,8 @@ class DocumentService(BaseIgService):
         if not posted_message:
             DocumentHistoryItem.objects.create(
                 document=document,
-                message="Error: unable to post Node message"
+                message="Error: unable to post Node message",
+                object_body=message_json
             )
             document.status = Document.STATUS_ERROR
             document.save()
@@ -186,7 +214,7 @@ class DocumentService(BaseIgService):
             document=document,
             message="The node message has been dispatched",
             object_body=json.dumps(posted_message),
-            linked_obj_id=msg.pk,
+            linked_obj_id=msg.id,
         )
 
         logging.info("Posted message %s", posted_message)
@@ -439,7 +467,7 @@ class NodeService(BaseIgService):
 
     def subscribe_to_new_messages(self):
         result = self.ig_client.subscribe(
-            predicate=f"message.*",
+            predicate="message.*",
             callback=(
                 settings.ICL_TRADE_PORTAL_HOST +
                 reverse("websub:message-incoming")

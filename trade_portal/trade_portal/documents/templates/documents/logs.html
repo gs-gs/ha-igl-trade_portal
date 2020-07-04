@@ -33,19 +33,19 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Data/Time</th>
-            <th>Status</th>
-            <th>IGL Message Log</th>
+            <th>Message</th>
+            <th>Details</th>
             <th>Related Document</th>
           </tr>
         </thead>
         <tbody>
           {% for history_item in object.history.all %}
             <tr>
-              <td>{{ history_item.created_at }}</td>
-              <td>{{ history_item.message }}</td>
+              <td>{{ history_item.message }}<br/>{{ history_item.created_at }}</td>
               <td>
-                <textarea>{{ history_item.object_body }}</textarea>
+                {% if history_item.object_body %}
+                  <textarea style="font-size: 7pt; width: 200px; height: 100px;" readonly>{{ history_item.object_body }}</textarea>
+                {% endif %}
               </td>
               <td>{{ history_item.related_object }}</td>
             </tr>

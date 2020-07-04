@@ -95,6 +95,7 @@ class OaDetails(models.Model):
 
     class Meta:
         ordering = ('created_at',)
+        verbose_name_plural = "OA details"
 
     def __str__(self):
         return self.uri
@@ -297,7 +298,7 @@ class DocumentHistoryItem(models.Model):
     linked_obj_id = models.CharField(max_length=128)
 
     class Meta:
-        ordering = ('-created_at',)
+        ordering = ('created_at',)
 
     def __str__(self):
         return self.message
@@ -459,6 +460,12 @@ class NodeMessage(models.Model):
                     "Change document %s status to Error due to rejected message %s",
                     self.document,
                     self
+                )
+                DocumentHistoryItem.objects.create(
+                    type="nodemessage",
+                    document=self.document,
+                    message="The document marked as Error because the outbound message has been rejected",
+                    linked_obj_id=self.id,
                 )
         else:  # not self.is_outbound
             # could be interesting

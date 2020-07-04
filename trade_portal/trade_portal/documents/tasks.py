@@ -1,5 +1,7 @@
 import logging
 
+from django.conf import settings
+
 from trade_portal.documents.models import (
     Document, DocumentHistoryItem,
 )
@@ -34,7 +36,8 @@ def lodge_document(document_id=None):
     try:
         DocumentService().issue(doc)
     except Exception as e:
-        raise
+        if settings.DEBUG:
+            raise
         logger.exception(e)
         if doc.status == Document.STATUS_ISSUED:
             logger.info("Marking document %s as error", doc)

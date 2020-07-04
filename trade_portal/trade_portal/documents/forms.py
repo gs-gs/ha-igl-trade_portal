@@ -164,7 +164,7 @@ class DocumentCreateForm(forms.ModelForm):
             df.save()
 
         DocumentHistoryItem.objects.create(
-            type="nodemessage",
+            type="message",
             document=result,
             message=f"The document has been created by {self.user}",
         )
