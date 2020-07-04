@@ -23,3 +23,8 @@ services:
     networks:
       - au-ig-apis-external
       - internal
+
+  celerybeat:
+    networks:
+      - au-ig-apis-external
+      - internal
