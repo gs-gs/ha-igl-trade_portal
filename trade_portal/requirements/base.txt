@@ -47,3 +47,7 @@ qrcode==6.1
 
 # nice sortable tables
 django-tables2==2.3.1
+
+
+# AES encryption is used for OA documents
+pycrypto==2.6.1

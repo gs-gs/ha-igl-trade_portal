@@ -6,6 +6,8 @@ import datetime
 import json
 import logging
 import mimetypes
+from Crypto.Cipher import AES
+from Crypto import Random
 
 import requests
 from constance import config
@@ -22,6 +24,31 @@ from trade_portal.documents.models import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class AESCipher:
+    BS = 256 // 8
+
+    def __init__(self, key):
+        self.key = bytes.fromhex(key)
+
+    def pad(self, s):
+        return s + (self.BS - len(s) % self.BS) * chr(self.BS - len(s) % self.BS)
+
+    def unpad(self, s):
+        return s[:-ord(s[len(s)-1:])]
+
+    def encrypt(self, raw):
+        raw = self.pad(raw)
+        iv = Random.new().read(AES.block_size)
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return base64.b64encode(iv + cipher.encrypt(raw))
+
+    def decrypt(self, enc):
+        enc = base64.b64decode(enc)
+        iv = enc[:16]
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return self.unpad(cipher.decrypt(enc[16:]))
 
 
 class BaseIgService:
@@ -148,9 +175,16 @@ class DocumentService(BaseIgService):
 
         # step4. encrypt and publish ciphertext
         # oa_wrapped_body
-        document.oa.ciphertext = "imagine it's encrypted" + oa_wrapped_body
+        document.oa.ciphertext = self._aes_encrypt(
+            oa_wrapped_body,
+            document.oa.key
+        ).decode("utf-8")
         document.oa.save()
-        logger.warning("We should encrypt and publish document %s now but it's not implemented", document)
+        DocumentHistoryItem.objects.create(
+            type="text",
+            document=document,
+            message="OA document encrypted and ciphertext saved",
+        )
 
         # step5. Notarize the document
         logger.warning("We should notarize document %s now but it's not implemented", document)
@@ -266,6 +300,10 @@ class DocumentService(BaseIgService):
             "attachments": attachments
         }
         return doc
+
+    def _aes_encrypt(self, opentext, key):
+        cipher = AESCipher(key)
+        return cipher.encrypt(opentext)
 
     # def lodge(self, document):
     #     """

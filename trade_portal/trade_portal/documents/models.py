@@ -91,6 +91,10 @@ class OaDetails(models.Model):
 
     # after we have it wrapper and issued we store the cyphertext here
     # so it can be returned per request
+    # please note the ciphertext contains binary attachments base64 representations,
+    # which may be quite space-consuming and generally should'nt be storted in
+    # database
+    # TODO: fix it and store it as file somewhere
     ciphertext = models.TextField(blank=True)
 
     class Meta:
@@ -122,6 +126,7 @@ class OaDetails(models.Model):
 
     @classmethod
     def _generate_aes_key(cls, key_len=256):
+        # key1 = Random.new().read(key_bytes) ?
         return os.urandom(key_len // 8).hex().upper()
 
 
