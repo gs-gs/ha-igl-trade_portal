@@ -36,7 +36,8 @@ def lodge_document(document_id=None):
     try:
         DocumentService().issue(doc)
     except Exception as e:
-        if settings.DEBUG:
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False) is True:
+            # for local setups it's handy to raise exception
             raise
         logger.exception(e)
         if doc.status == Document.STATUS_ISSUED:

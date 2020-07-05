@@ -92,33 +92,15 @@ class DocumentService(BaseIgService):
             document.short_id,
         )
 
-        # step 1. Render things to be attached to the OA doc
-        uploaded_files_rendered = self._render_uploaded_files(document)
-        uploaded_files_rendered.append(
-            {
-                "type": "EDI3-document",
-                "filename": "edi3_coo.json",
-                # "mimeType": "application/json",
-                "mimeType": "application/pdf",
-                "data": base64.b64encode(
-                    json.dumps(
-                        document.get_rendered_edi3_document()
-                    ).encode("utf-8")
-                ).decode("utf-8")
-            }
+        # step 2. Render the OAv2 doc with attachments
+        oa_doc = self._render_oa_v2_document(
+            document, subject
         )
-
-        # step 2. Render the OA doc
-        oa_doc = self._render_oa_document(
-            document, subject, uploaded_files_rendered
-        )
-        # TODO: should we save oa_doc somewhere just for debug and fun?
-        # document.oa.cleartext = json.dumps(oa_doc)
-        # document.oa.save()
+        # step 2. Append EDI3 document, merging them on the root level
+        oa_doc.update(document.get_rendered_edi3_document())
 
         DocumentHistoryItem.objects.create(
-            type="text",
-            document=document,
+            type="text", document=document,
             message=f"OA document has been generated, size: {len(json.dumps(oa_doc))}b",
             object_body=json.dumps(oa_doc)
         )
@@ -129,16 +111,16 @@ class DocumentService(BaseIgService):
                 config.OA_WRAP_API_URL + "/document/wrap",
                 json={
                     "document": oa_doc,
+                    "params": {
+                        "version": 'https://schema.openattestation.com/2.0/schema.json',
+                    }
                 }
             )
         except Exception as e:
             logger.exception(e)
             DocumentHistoryItem.objects.create(
-                type="error",
-                document=document,
-                message=(
-                    f"Error: OA document wrap failed with error {str(e)}"
-                ),
+                type="error",document=document,
+                message=f"Error: OA document wrap failed with error {str(e)}",
                 object_body=oa_doc_wrapped_resp.json(),
             )
             document.status = Document.STATUS_ERROR
@@ -149,19 +131,15 @@ class DocumentService(BaseIgService):
             oa_doc_wrapped = oa_doc_wrapped_resp.json()
             oa_doc_wrapped_json = json.dumps(oa_doc_wrapped)
             DocumentHistoryItem.objects.create(
-                type="text",
-                document=document,
+                type="text", document=document,
                 message=f"OA document has been wrapped, new size: {len(oa_doc_wrapped_json)}b",
                 object_body=oa_doc_wrapped_json
             )
         else:
             logger.warning("Received responce %s for oa doc wrap step", oa_doc_wrapped_resp)
             DocumentHistoryItem.objects.create(
-                type="error",
-                document=document,
-                message=(
-                    f"Error: OA document wrap failed with result {oa_doc_wrapped_resp.status_code}"
-                ),
+                type="error", document=document,
+                message=f"Error: OA document wrap failed with result {oa_doc_wrapped_resp.status_code}",
                 object_body=oa_doc_wrapped_resp.json(),
             )
             document.status = Document.STATUS_ERROR
@@ -181,8 +159,7 @@ class DocumentService(BaseIgService):
         ).decode("utf-8")
         document.oa.save()
         DocumentHistoryItem.objects.create(
-            type="text",
-            document=document,
+            type="text", document=document,
             message="OA document encrypted and ciphertext saved",
         )
 
@@ -196,18 +173,14 @@ class DocumentService(BaseIgService):
         )
         if oa_uploaded_info:
             DocumentHistoryItem.objects.create(
-                type="text",
-                document=document,
+                type="text", document=document,
                 message="Uploaded OA document as a message object",
                 object_body=json.dumps(oa_uploaded_info),
             )
         else:
             DocumentHistoryItem.objects.create(
-                type="error",
-                document=document,
-                message=(
-                    "Error: Can't upload OA document as a message object"
-                ),
+                type="error", document=document,
+                message="Error: Can't upload OA document as a message object",
                 object_body=oa_doc_wrapped_resp.json(),
             )
             document.status = Document.STATUS_ERROR
@@ -223,7 +196,7 @@ class DocumentService(BaseIgService):
         posted_message = self.ig_client.post_message(message_json)
         if not posted_message:
             DocumentHistoryItem.objects.create(
-                document=document,
+                type="error", document=document,
                 message="Error: unable to post Node message",
                 object_body=message_json
             )
@@ -244,11 +217,9 @@ class DocumentService(BaseIgService):
             is_outbound=True
         )
         DocumentHistoryItem.objects.create(
-            type="nodemessage",
-            document=document,
+            type="nodemessage", document=document,
             message="The node message has been dispatched",
-            object_body=json.dumps(posted_message),
-            linked_obj_id=msg.id,
+            object_body=json.dumps(posted_message), linked_obj_id=msg.id,
         )
 
         logging.info("Posted message %s", posted_message)
@@ -262,153 +233,42 @@ class DocumentService(BaseIgService):
             mt, enc = mimetypes.guess_type(file.filename, strict=False)
             uploaded.append(
                 {
-                    "type": "DocumentVerification2018",
+                    "type": mt or 'binary/octet-stream',
                     "filename": file.filename,
-                    "mimeType": mt or 'binary/octet-stream',
                     "data": base64.b64encode(file.file.read()).decode("utf-8")
                 }
             )
         return uploaded
 
-    def _render_oa_document(self, document, subject, attachments):
+    def _render_oa_v2_document(self, document, subject):
         doc = {
+            "version": "open-attestation/2.0",
             "reference": subject,
             "name": f"OA document for {document.get_type_display()}",
             "validFrom": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "template": {
-                # TODO
-                "name": "CUSTOM_TEMPLATE",
-                "type": "EMBEDDED_RENDERER",
-                "url": "https://TODO.todo/renderer"
+            "$template": {
+              "name": "custom",
+              "type": "EMBEDDED_RENDERER",
+              "url": "https://chafta.tradetrust.io"
             },
-            "issuer": {
-                "id": settings.BASE_URL.replace(
-                    '://',
-                    f'://{document.issuer.business_id}.'
-                ),
-                "name": document.issuer.name,
-                "identityProof": {
+            # OAv2 field
+            "issuers": [
+                {
+                  "name": document.issuer.name,
+                  "documentStore": config.OA_NOTARY_CONTRACT,
+                  "identityProof": {
                     "type": "DNS-TXT",
-                    "location": settings.BASE_URL,
+                    "location": settings.BASE_URL.replace("https://", "").replace("http://", "")
+                  }
                 }
-            },
-            "proof": {
-                "type": "OpenAttestationSignature2018",
-                "method": "DOCUMENT_STORE",
-                "value": config.OA_NOTARY_CONTRACT
-            },
-            "attachments": attachments
+              ],
+            "attachments": self._render_uploaded_files(document)
         }
         return doc
 
     def _aes_encrypt(self, opentext, key):
         cipher = AESCipher(key)
         return cipher.encrypt(opentext)
-
-    # def lodge(self, document):
-    #     """
-    #     Render document as a message and send it to the upstream
-    #     * upload all documents which must be uploaded to the upstream
-    #     * create the message.object
-    #       * link uploaded documents there
-    #     * upload message object as well
-    #     * send the message, linking to message object, which links to uploaded docs
-    #     * save all details to the certificate object just for fun
-    #     """
-    #     assert document.status == Document.STATUS_ISSUED
-
-    #     # For each attached document we have - upload it to the intergov
-    #     # ideally this should be a celery chord with retries and so on
-    #     uploaded_documents_links = self._lodge_upload_files(document)
-
-    #     # Upload the document itself
-    #     # as a rendered JSON body in a machine-readable document
-    #     cert_body_info = self.ig_client.post_text_document(
-    #         document.importing_country, self._lodge_render_document(document)
-    #     )
-    #     uploaded_documents_links.append(
-    #         {
-    #             'TYPE1': 'certificate',
-    #             'TYPE2': 'EDI3.draft.2020-05-26.01',
-    #             'ct': 'application/json',
-    #             'link': cert_body_info['multihash']
-    #         }
-    #     )
-    #     logger.info(
-    #         "The following documents were uploaded for %s: %s",
-    #         document, uploaded_documents_links
-    #     )
-
-    #     # just save it for further reading
-    #     document.intergov_details['links'] = uploaded_documents_links
-    #     document.save()
-
-    #     # upload the object itself. which is just some JSON linking to things
-    #     object_info = self.ig_client.post_text_document(
-    #         document.importing_country, self._render_obj_body(uploaded_documents_links)
-    #     )
-    #     logger.info("Uploaded certificate object %s", object_info)
-
-    #     document.intergov_details['object_hash'] = object_info['multihash']
-    #     document.save()
-
-    #     # Post the message
-    #     message_json = self._render_intergov_message(
-    #         document,
-    #         object_info['multihash']
-    #     )
-    #     posted_message = self.ig_client.post_message(message_json)
-    #     if not posted_message:
-    #         raise Exception("Unable to post message, trying again")
-    #     document.save()
-
-    #     NodeMessage.objects.create(
-    #         status=NodeMessage.STATUS_SENT,
-    #         document=document,
-    #         sender_ref=posted_message["sender_ref"],
-    #         subject=posted_message["subject"],
-    #         body=posted_message,
-    #         history=[
-    #             f"Posted with status {posted_message['status']}"
-    #         ],
-    #         is_outbound=True
-    #     )
-    #     logging.info("Posted message %s", posted_message)
-    #     self._subscribe_to_message_updates(posted_message)
-    #     return
-
-    # def _lodge_upload_files(self, document):
-    #     uploaded = []
-
-    #     for file in document.files.all():
-    #         # upload the document
-    #         d_info = self.ig_client.post_binary_document(
-    #             str(document.importing_country),
-    #             file.file
-    #         )
-    #         mt, enc = mimetypes.guess_type(file.filename, strict=False)
-    #         uploaded.append(
-    #             {
-    #                 'TYPE1': 'document',
-    #                 'TYPE2': "Attachment",
-    #                 'name': file.filename,
-    #                 'ct': mt or 'binary/octet-stream',
-    #                 'link': d_info['multihash']
-    #             }
-    #         )
-    #     return uploaded
-
-    # def _lodge_render_document(self, document):
-    #     return json.dumps(document.get_rendered_json())
-
-    # def _render_obj_body(self, links):
-    #     return json.dumps({
-    #         # not much to include here by the way.
-    #         # it's just links field is interesting
-    #         'type': 'certificate-of-origin',
-    #         'format': '0.0.2',
-    #         'links': links,
-    #     })
 
     def _render_intergov_message(self, document, subject, obj_multihash):
         return {
