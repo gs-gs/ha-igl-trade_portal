@@ -25,7 +25,10 @@ USE_L10N = False
 USE_TZ = True
 LOCALE_PATHS = [ROOT_DIR.path("locale")]
 
-BASE_URL = env("ICL_APP_HOST", default="http://localhost:8050")  # no trailing slash
+BASE_URL = env(
+    "ICL_APP_HOST",
+    default=env("ICL_TRADE_PORTAL_HOST", default="http://localhost:8050")  # most preferred
+)  # no trailing slash
 
 # DATABASES
 DATABASES = {"default": env.db("DATABASE_URL")}
