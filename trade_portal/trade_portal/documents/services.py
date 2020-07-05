@@ -119,9 +119,9 @@ class DocumentService(BaseIgService):
         except Exception as e:
             logger.exception(e)
             DocumentHistoryItem.objects.create(
-                type="error",document=document,
-                message=f"Error: OA document wrap failed with error {str(e)}",
-                object_body=oa_doc_wrapped_resp.json(),
+                type="error", document=document,
+                message="Error: OA document wrap failed with error",
+                object_body=str(e),
             )
             document.status = Document.STATUS_ERROR
             document.save()
@@ -164,7 +164,16 @@ class DocumentService(BaseIgService):
         )
 
         # step5. Notarize the document
-        logger.warning("We should notarize document %s now but it's not implemented", document)
+        if NotaryService.notarize_file(subject, oa_wrapped_body):
+            DocumentHistoryItem.objects.create(
+                type="text", document=document,
+                message="OA document has been sent to the notary service",
+            )
+        else:
+            DocumentHistoryItem.objects.create(
+                type="error", document=document,
+                message="OA document has NOT been sent to the notary service",
+            )
 
         # and not the standard Intergov node communication
         # step6. Upload OA document to the node
@@ -424,3 +433,81 @@ class NodeService(BaseIgService):
         else:
             logger.info("Message %s is already in the system", msg_body["sender_ref"])
         return True
+
+
+class NotaryService():
+    """
+    Service made solely for files notarisation.
+    In it's current state it just puts some file to some bucket and ensurees that
+    remote OA worker will be informed about it.
+
+    In the future it could also handle notifiations from that service and handle
+    possible errors (the OA service is very sensitive to format issues)
+    """
+
+    @classmethod
+    def notarize_file(cls, doc_key, document_body):
+        import boto3  # local import because some setups may not even use it
+
+        if not config.OA_UNPROCESSED_BUCKET_NAME:
+            logger.warning("Asked to notarize file but the service is not configured well")
+            return False
+
+        s3_config = {
+            'aws_access_key_id': config.OA_AWS_ACCESS_KEYS.split(":")[0] or None,
+            'aws_secret_access_key': config.OA_AWS_ACCESS_KEYS.split(":")[1] or None,
+            'region_name': None,
+        }
+        s3res = boto3.resource('s3', **s3_config).Bucket(config.OA_UNPROCESSED_BUCKET_NAME)
+
+        body = document_body.encode('utf-8')
+        content_length = len(body)
+
+        date = str(timezone.now().date())
+        key = f"{date}/{doc_key}.json"
+        s3res.Object(key).put(
+            Body=body,
+            ContentLength=content_length
+        )
+        logger.info("The file %s to be notarized has been uploaded", key)
+        cls.send_manual_notification(key)
+        return True
+
+    @classmethod
+    def send_manual_notification(cls, key):
+        """
+        If the bucket itself doesn't send these notifications for some reason
+        We forge it so worker is aware. Another side effect is that we can
+        change the notification format, including our custom parameters
+        """
+        import boto3  # local import because some setups may not even use it
+
+        if not config.OA_UNPROCESSED_QUEUE_URL:
+            # it's fine, we don't want to send them
+            return
+
+        s3_config = {
+            'aws_access_key_id': config.OA_AWS_ACCESS_KEYS.split(":")[0] or None,
+            'aws_secret_access_key': config.OA_AWS_ACCESS_KEYS.split(":")[1] or None,
+            'region_name': 'ap-southeast-2',
+        }
+
+        unprocessed_queue = boto3.resource('sqs', **s3_config).Queue(
+            config.OA_UNPROCESSED_QUEUE_URL
+        )
+        unprocessed_queue.send_message(MessageBody=json.dumps({
+           "Records": [
+              {
+                 "s3": {
+                    "bucket": {
+                       "name": config.OA_UNPROCESSED_BUCKET_NAME
+                    },
+                    "object": {
+                       "key": key
+                    }
+                 }
+              }
+           ]
+        }))
+        logger.info("The notification about file %s to be notarized has been sent", key)
+        return

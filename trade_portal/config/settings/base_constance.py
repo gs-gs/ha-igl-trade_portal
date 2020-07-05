@@ -19,5 +19,21 @@ CONSTANCE_CONFIG = {
     'OA_WRAP_API_URL': (
         'http://docker-host:9090',
         'Either local or remote setup which is able to wrap documents'
+    ),
+    # Variables needed for notarisastion step, which relies on buckets/queues
+    # may be replaced by other mechanisms once they are defined
+    # You could use AWS cloud, minio or AWS localstack to provide these values
+    'OA_UNPROCESSED_QUEUE_URL': (
+        '',
+        'Do not send manual notifications if empty; must be available using the OA access keys'
+    ),
+    'OA_UNPROCESSED_BUCKET_NAME': (
+        '',
+        'Just a plain bucket name, do not send files to notarisation if empty',
+    ),
+    'OA_AWS_ACCESS_KEYS': (
+        ':',
+        'Values in format accesskey:secretkey, None if empty (policy defined)'
     )
+
 }
