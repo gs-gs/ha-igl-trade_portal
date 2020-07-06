@@ -13,7 +13,7 @@ IGL_APIS = {
     # always in the simplified format
     'subscription': env(
         "IGL_SUBSCRAPI_ENDPOINT",
-        default='http://subscriptions_api:80'
+        default='http://subscriptions_api:5000'
     ),
 }
 
@@ -30,7 +30,7 @@ else:
     IGL_APIS["message"] = "{}://{}:{}".format(
         env("IGL_MESSAGEAPI_SCHEMA", default='http'),
         env('IGL_MESSAGEAPI_HOST', default='message_api'),
-        env('IGL_MESSAGEAPI_PORT', default=env('IGL_MESSAGEAPPI_PORT', default='80')),
+        env('IGL_MESSAGEAPI_PORT', default=env('IGL_MESSAGEAPPI_PORT', default='5000')),
     )
 
 IGL_DOCUMENTAPI_ENDPOINT = env("IGL_DOCUMENTAPI_ENDPOINT", default=None)
@@ -42,7 +42,7 @@ else:
     IGL_APIS["document"] = "{}://{}:{}".format(
         env("IGL_DOCAPI_SCHEMA", default='http'),
         env('IGL_DOCAPI_HOST', default='document_api'),
-        env('IGL_DOCAPI_PORT', default='80'),
+        env('IGL_DOCAPI_PORT', default='5000'),
     )
 
 

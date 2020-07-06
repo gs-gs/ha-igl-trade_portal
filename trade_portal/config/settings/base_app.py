@@ -12,7 +12,7 @@ ICL_APP_COUNTRY = ICL_TRADE_PORTAL_COUNTRY
 # for the WebSub notifications
 ICL_TRADE_PORTAL_HOST = env(
     'ICL_TRADE_PORTAL_HOST',
-    default='http://trau-trade-portal-django.au-ig-apis-external:8050'
+    default='http://trau-trade-portal-django.igl-node-au-ig-apis-external:8050'
 )
 if ICL_TRADE_PORTAL_HOST.endswith("/"):
     ICL_TRADE_PORTAL_HOST = ICL_TRADE_PORTAL_HOST[:-1]

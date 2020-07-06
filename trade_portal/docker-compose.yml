@@ -1,8 +1,9 @@
-version: '3'
+version: '3.5'
 
 networks:
   internal:
     driver: bridge
+    name: ${COMPOSE_PROJECT_NAME}-internal
 
 volumes:
   # named volumes are needed because permissions don't work on Windows
@@ -24,23 +25,7 @@ services:
     volumes:
       - .:/app
     env_file:
-      - local.env
-    environment:
-      - PYTHONDONTWRITEBYTECODE=1
-      - REDIS_URL=redis://redis:6379/0
-      - USE_DOCKER=yes
-      - IPYTHONDIR=/app/.ipython
-      - DJANGO_DEBUG=True
-      - DJANGO_AWS_ACCESS_KEY_ID=minidemoaccess
-      - DJANGO_AWS_SECRET_ACCESS_KEY=miniodemosecret
-      - DJANGO_AWS_STORAGE_BUCKET_NAME=storage
-      - S3_ENDPOINT_URL=http://minio:9000
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=
-      - PYTHONUNBUFFERED=1
+      - devops/localdocker/common.env
     ports:
       - "8050:8050"
     command: /start
@@ -63,6 +48,7 @@ services:
     logging:
       driver: none
     environment:
+      # should be the same values as common.env has
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DB=postgres
@@ -121,13 +107,13 @@ services:
     entrypoint: sh
     command: -c 'mkdir -p /minio-data/storage && /usr/bin/minio server /minio-data'
     environment:
+      # should be the same values as common.env refers
       - MINIO_ACCESS_KEY=minidemoaccess
       - MINIO_SECRET_KEY=miniodemosecret
-      - MINIO_HTTP_TRACE=/minio-data/requests.log
-    # ports: ['9000:9000']
+      # - MINIO_HTTP_TRACE=/minio-data/requests.log
     restart: on-failure
     volumes:
-      - ./var/minio-data:/minio-data
+      - ./var/${COMPOSE_PROJECT_NAME}-minio-data:/minio-data
     logging:
       driver: none
     networks:

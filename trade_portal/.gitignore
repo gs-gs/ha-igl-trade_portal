@@ -1,5 +1,5 @@
 var/
-local.env
+*local.env
 test-results.xml
 ~$*
 
