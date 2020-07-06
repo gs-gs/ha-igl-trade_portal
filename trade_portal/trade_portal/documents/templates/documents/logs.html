@@ -44,7 +44,7 @@
               <td>{{ history_item.message }}<br/>{{ history_item.created_at }}</td>
               <td>
                 {% if history_item.object_body %}
-                  <textarea style="font-size: 7pt; width: 200px; height: 100px;" readonly>{{ history_item.object_body }}</textarea>
+                  <textarea style="font-size: 7pt; width: 200px; height: 100px;" readonly>{{ history_item.object_body|json_render }}</textarea>
                 {% endif %}
               </td>
               <td>{{ history_item.related_object }}</td>

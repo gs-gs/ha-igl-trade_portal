@@ -89,6 +89,9 @@ class OaDetails(models.Model):
     uri = models.CharField(max_length=3000)
     key = models.CharField(max_length=3000)
 
+    iv_base64 = models.TextField(blank=True)
+    tag_base64 = models.TextField(blank=True)
+
     # after we have it wrapper and issued we store the cyphertext here
     # so it can be returned per request
     # please note the ciphertext contains binary attachments base64 representations,

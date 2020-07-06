@@ -7,7 +7,6 @@ import json
 import logging
 import mimetypes
 from Crypto.Cipher import AES
-from Crypto import Random
 
 import requests
 from constance import config
@@ -38,17 +37,22 @@ class AESCipher:
     def unpad(self, s):
         return s[:-ord(s[len(s)-1:])]
 
-    def encrypt(self, raw):
-        raw = self.pad(raw)
-        iv = Random.new().read(AES.block_size)
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(raw))
+    def encrypt_with_params_separate(self, raw):
+        raw = self.pad(raw).encode("utf-8")
+        cipher = AES.new(self.key, AES.MODE_EAX)
+        ciphertext, tag = cipher.encrypt_and_digest(raw)
+        return (
+            base64.b64encode(cipher.nonce).decode("utf-8"),
+            base64.b64encode(tag).decode("utf-8"),
+            base64.b64encode(ciphertext).decode("utf-8")
+        )
 
-    def decrypt(self, enc):
-        enc = base64.b64decode(enc)
-        iv = enc[:16]
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return self.unpad(cipher.decrypt(enc[16:]))
+    def decrypt(self, iv, tag, ciphertext):
+        iv = base64.b64decode(iv)
+        tag = base64.b64decode(tag)
+        ciphertext = base64.b64decode(ciphertext)
+        cipher = AES.new(self.key, AES.MODE_EAX, iv)
+        return cipher.decrypt_and_verify(ciphertext, tag)
 
 
 class BaseIgService:
@@ -153,10 +157,12 @@ class DocumentService(BaseIgService):
 
         # step4. encrypt and publish ciphertext
         # oa_wrapped_body
-        document.oa.ciphertext = self._aes_encrypt(
+        (
+            document.oa.iv_base64, document.oa.tag_base64, document.oa.ciphertext
+        ) = self._aes_encrypt(
             oa_wrapped_body,
             document.oa.key
-        ).decode("utf-8")
+        )
         document.oa.save()
         DocumentHistoryItem.objects.create(
             type="text", document=document,
@@ -250,6 +256,11 @@ class DocumentService(BaseIgService):
         return uploaded
 
     def _render_oa_v2_document(self, document, subject):
+        tt_key_location = settings.BASE_URL.replace("https://", "").replace("http://", "")
+
+        if ":" in tt_key_location:
+            tt_key_location = tt_key_location.split(':', maxsplit=1)[0]
+
         doc = {
             "version": "open-attestation/2.0",
             "reference": subject,
@@ -267,7 +278,7 @@ class DocumentService(BaseIgService):
                   "documentStore": config.OA_NOTARY_CONTRACT,
                   "identityProof": {
                     "type": "DNS-TXT",
-                    "location": settings.BASE_URL.replace("https://", "").replace("http://", "")
+                    "location": tt_key_location,
                   }
                 }
               ],
@@ -277,7 +288,7 @@ class DocumentService(BaseIgService):
 
     def _aes_encrypt(self, opentext, key):
         cipher = AESCipher(key)
-        return cipher.encrypt(opentext)
+        return cipher.encrypt_with_params_separate(opentext)
 
     def _render_intergov_message(self, document, subject, obj_multihash):
         return {

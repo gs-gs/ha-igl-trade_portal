@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpResponse, Http404
 from django.views.generic import View
 
@@ -12,9 +14,25 @@ class OaCyphertextRetrieve(View):
             )
         except Exception:
             raise Http404()
+
+        result = {
+            "document": {
+                "cipherText": obj.ciphertext,
+                "iv": obj.iv_base64,  # "5O0HYHcYhTzB/Xmt",
+                "tag": obj.tag_base64,  # "Yo1q82WRHFQuKUSYHgnawQ==",
+                "type": "OPEN-ATTESTATION-TYPE-1"
+            }
+        }
         # by default the ciphertext is base64-encoded
         if self.request.GET.get("key"):
             from trade_portal.documents.services import AESCipher
-            cp = AESCipher(self.request.GET.get("key"))
-            return HttpResponse(cp.decrypt(obj.ciphertext), content_type='text/plain')
-        return HttpResponse(obj.ciphertext, content_type='text/plain')
+            try:
+                cp = AESCipher(self.request.GET.get("key"))
+                result["document"]["cleartext"] = cp.decrypt(
+                    obj.iv_base64,
+                    obj.tag_base64,
+                    obj.ciphertext,
+                ).decode("utf-8")
+            except Exception as e:
+                result["document"]["cleartext_error"] = str(e)
+        return HttpResponse(json.dumps(result), content_type='application/json')
