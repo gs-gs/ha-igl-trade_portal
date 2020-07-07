@@ -1,0 +1,38 @@
+version: '3.5'
+
+networks:
+  igl-node-sg-ig-apis-external:
+    external: true
+  internal:
+    driver: bridge
+    name: ${COMPOSE_PROJECT_NAME}-internal
+
+services:
+  django:
+    networks:
+      - igl-node-sg-ig-apis-external
+      - internal
+    env_file:
+      - devops/localdocker/common.env
+      - devops/localdocker/demo-sg.env
+      - devops/localdocker/demo-sg-local.env
+    ports:
+      - "8051:8050"
+
+  celeryworker:
+    networks:
+      - igl-node-sg-ig-apis-external
+      - internal
+    env_file:
+      - devops/localdocker/common.env
+      - devops/localdocker/demo-sg.env
+      - devops/localdocker/demo-sg-local.env
+
+  celerybeat:
+    networks:
+      - igl-node-sg-ig-apis-external
+      - internal
+    env_file:
+      - devops/localdocker/common.env
+      - devops/localdocker/demo-sg.env
+      - devops/localdocker/demo-sg-local.env

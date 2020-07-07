@@ -2,7 +2,10 @@ from . import Env
 
 env = Env()
 
-SESSION_COOKIE_NAME = "tr-prt-sess"
+SESSION_COOKIE_NAME = "tradeportal" + env(
+    'ICL_TRADE_PORTAL_COUNTRY',
+    default=env("ICL_COUNTRY", default="AU")
+) or "-default"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
