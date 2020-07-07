@@ -116,7 +116,7 @@ class OaDetails(models.Model):
         obj = cls.objects.create(
             id=new_uuid,
             created_for=for_org,
-            uri=f"{settings.BASE_URL}/oa/{str(new_uuid)}",
+            uri=f"{settings.BASE_URL}/oa/{str(new_uuid)}/",
             key=cls._generate_aes_key()
         )
         return obj
