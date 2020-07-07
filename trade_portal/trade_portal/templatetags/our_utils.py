@@ -16,5 +16,6 @@ def json_render(obj):
             obj = json.loads(obj)
 
         return escape_script_tags(json.dumps(obj, indent=2))
-    except Exception:
+    except Exception as e:
+        print(e)
         return escape_script_tags(obj)

@@ -61,12 +61,10 @@ def store_message_by_ping_body(self, ping_body):
 @celery_app.task(bind=True, ignore_result=True,
                  max_retries=6, interval_start=10, interval_step=20, interval_max=300)
 def process_incoming_document_received(self, document_pk):
+    from trade_portal.documents.services import IncomingDocumentService
+
     doc = Document.objects.get(pk=document_pk)
-    logger.info("Processing the incoming document in the background")
-    DocumentHistoryItem.objects.create(
-        type="text", document=doc,
-        message=(
-            "Started the incoming document retrieval..."
-        )
-    )
+    logger.info("Processing the incoming document %s", doc)
+
+    IncomingDocumentService().process_new(doc)
     return

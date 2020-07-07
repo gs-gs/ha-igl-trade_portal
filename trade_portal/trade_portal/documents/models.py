@@ -288,7 +288,15 @@ class Document(models.Model):
             from trade_portal.edi3.certificates import CertificateRenderer
             return CertificateRenderer().render(self)
         else:
-            # TODO: return the document from the remote party
+            if "oa_doc" in self.intergov_details:
+                return self.intergov_details["oa_doc"]
+            else:
+                the_first_file = DocumentFile.objects.filter(
+                    doc=self,
+                    filename=self.intergov_details.get("obj")
+                ).first()
+                if the_first_file:
+                    return the_first_file.file.read().decode("utf-8")
             return ''
 
     @property
@@ -354,7 +362,10 @@ class DocumentFile(models.Model):
         related_name="files"
     )
     created_at = models.DateTimeField(default=timezone.now)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, models.CASCADE,
+        blank=True, null=True,
+    )
 
     file = models.FileField(upload_to=generate_docfile_filename)
     filename = models.CharField(
@@ -405,11 +416,13 @@ class NodeMessage(models.Model):
     STATUS_SENT = "sent"
     STATUS_REJECTED = "rejected"
     STATUS_ACCEPTED = "accepted"
+    STATUS_INBOUND = "inbound"
 
     STATUSES = (
         (STATUS_SENT, "Sent"),
         (STATUS_ACCEPTED, "Accepted"),
         (STATUS_REJECTED, "Rejected"),
+        (STATUS_INBOUND, "Inbound"),
     )
 
     status = models.CharField(

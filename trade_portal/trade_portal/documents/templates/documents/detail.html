@@ -32,42 +32,62 @@
       {% endwith %}
     </ol>
   </nav>
+  {% if object.is_incoming %}
+    {# render incoming document in a nice but quick way #}
+    {% if object.intergov_details.oa_doc %}
+      <fieldset style="margin: 20px; padding: 20px; background-color: whitesmoke;"><legend style="padding-top: 30px">Incoming document data</legend>
+      {% for key, value in object.intergov_details.oa_doc.items %}
+        <strong>{{ key|capfirst }}</strong>:
+        {% if value.items %}
+          <div style='background-color: white; padding-left: 30px;'>
+          {% for subkey, subvalue in value.items %}
+            <strong>{{ subkey }}</strong>: {{ subvalue }}<br/>
+          {% endfor %}
+          </div>
+        {% else %}
+          {{ value }}
+        {% endif %}
+        <hr />
+      {% endfor %}
+      </fieldset>
+    {% endif %}
 
-  {% if not object.is_incoming %}
-  <div class="form-group">
-    <div class="label">IGL Document ID <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">Key</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">QR Code</a>
-      </li>
-    </ul>
-    <div class="tab-content">
-      <div class="tab-pane fade show active" id="igl-doc-key">
-        <div class="input-group">
-          <input type="text" class="form-control" readonly value="{{ object.oa.url_repr }}" id="igl-doc-key-input">
-          <div class="input-group-append">
-            <button type="button" class="btn btn-primary" id="copy-button" onclick="copyToClipboard('igl-doc-key-input')"><i class="icon icon-copy"></i></button>
+  {% else %}
+    <div class="form-group">
+      <div class="label">IGL Document ID <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">Key</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">QR Code</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="igl-doc-key">
+          <div class="input-group">
+            <input type="text" class="form-control" readonly value="{{ object.oa.url_repr }}" id="igl-doc-key-input">
+            <div class="input-group-append">
+              <button type="button" class="btn btn-primary" id="copy-button" onclick="copyToClipboard('igl-doc-key-input')"><i class="icon icon-copy"></i></button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="tab-pane fade" id="igl-doc-qrcode">
-        <div class="qrcode-box">
-          <div class="qrcode-box__picture">
-            <img class="igl-doc-qrcode__image" src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" style="width: 100px">
-          </div>
-          <div class="qrcode-box__content">
-            <p class="qrcode-box__description">Put this QR code on your document so that any third party can verify it using the trustbridge app</p>
-            <!-- <a class="btn btn-outline-white btn-sm qrcode-box__print" href="#"><i class="icon icon-print"></i>Print</a> -->
+        <div class="tab-pane fade" id="igl-doc-qrcode">
+          <div class="qrcode-box">
+            <div class="qrcode-box__picture">
+              <img class="igl-doc-qrcode__image" src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" style="width: 100px">
+            </div>
+            <div class="qrcode-box__content">
+              <p class="qrcode-box__description">Put this QR code on your document so that any third party can verify it using the trustbridge app</p>
+              <!-- <a class="btn btn-outline-white btn-sm qrcode-box__print" href="#"><i class="icon icon-print"></i>Print</a> -->
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   {% endif %}
 
+{% if not object.is_incoming %}
   <div class="section-info">
     <dl class="info-list">
       <dt>Document Type</dt>
@@ -131,6 +151,7 @@
       <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
     </dl>
   </div>
+{% endif %}
 
   <div class="section-info">
     {% if object.files.all %}

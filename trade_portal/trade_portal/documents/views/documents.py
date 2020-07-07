@@ -188,5 +188,5 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
         # standard file approach
         document = self.get_object()
         response = HttpResponse(document.file, content_type='application/octet-stream')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % document.file.name
+        response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
         return response

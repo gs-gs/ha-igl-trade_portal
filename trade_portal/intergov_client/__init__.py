@@ -138,6 +138,9 @@ class IntergovClient(object):
         endpoint = f'{self.ENDPOINTS["document"]}/{document_multihash}'
         resp = requests.get(
             endpoint,
+            {
+                "as_country": str(self.COUNTRY)
+            },
             headers={
                 auth_h_name: auth_h_value,
             },
@@ -145,7 +148,11 @@ class IntergovClient(object):
         if resp.status_code == 200:
             return resp.content
         else:
-            raise Exception(f"Unable to retrieve document: {resp.status_code}")
+            try:
+                error = resp.json()
+            except Exception:
+                error = resp.content.decode("utf-8")
+            raise Exception(f"Unable to retrieve document: {resp.status_code}, {error}")
 
     def subscribe(self, predicate=None, topic=None, callback=None):
         assert callback

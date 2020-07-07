@@ -6,11 +6,14 @@ import datetime
 import json
 import logging
 import mimetypes
+import uuid
 from Crypto.Cipher import AES
 
 import requests
 from constance import config
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.urls import reverse
 from django.utils import timezone
 
@@ -19,7 +22,7 @@ from intergov_client.predicates import Predicates
 from intergov_client.auth import DjangoCachedCognitoOIDCAuth, DumbAuth
 
 from trade_portal.documents.models import (
-    Document, DocumentHistoryItem, NodeMessage, OaDetails,
+    Document, DocumentHistoryItem, NodeMessage, OaDetails, DocumentFile,
 )
 from trade_portal.users.models import Organisation
 
@@ -434,7 +437,7 @@ class NodeService(BaseIgService):
                 sender_ref=msg_body["sender_ref"],
                 defaults=dict(
                     document=document,
-                    status=msg_body["status"],
+                    status=NodeMessage.STATUS_INBOUND,
                     subject=msg_body["subject"],
                     is_outbound=False,
                     body=msg_body,
@@ -486,7 +489,7 @@ class NodeService(BaseIgService):
             is_outbound=False,
             defaults=dict(
                 document=new_doc,
-                status=message_body["status"],
+                status=NodeMessage.STATUS_INBOUND,
                 subject=message_body["subject"],
                 is_outbound=False,
                 body=message_body,
@@ -587,3 +590,179 @@ class NotaryService():
         }))
         logger.info("The notification about file %s to be notarized has been sent", key)
         return
+
+
+class IncomingDocumentService(BaseIgService):
+
+    def process_new(self, doc):
+        DocumentHistoryItem.objects.create(
+            type="text", document=doc,
+            message="Started the incoming document retrieval..."
+        )
+        # 1. Download the obj from the document API
+        try:
+            binary_obj_content = self.ig_client.retrieve_document(
+                doc.intergov_details["obj"],
+            )
+        except Exception as e:
+            logger.exception(e)
+            DocumentHistoryItem.objects.create(
+                type="error", document=doc,
+                message="Failed to download obj from the message",
+                object_body=str(e),
+            )
+            doc.status = Document.STATUS_ERROR
+            doc.save()
+            return False
+        # 2. Save the object somewhere (it could be binary or text file)
+        # do we have it already?
+        try:
+            the_file = DocumentFile.objects.filter(
+                doc=doc,
+                filename=doc.intergov_details["obj"]
+            ).first()
+            if the_file:
+                logger.info("We already have that file, funny")
+            else:
+                the_file = DocumentFile.objects.create(
+                    doc=doc,
+                    filename=doc.intergov_details["obj"],
+                    size=len(binary_obj_content),
+                )
+
+            path = default_storage.save(
+                f'incoming/{doc.id}/{doc.intergov_details["obj"]}.json',
+                ContentFile(binary_obj_content)
+            )
+            # TODO: kill the old file before?
+            the_file.file = path
+            the_file.save()
+        except Exception as e:
+            DocumentHistoryItem.objects.create(
+                type="error", document=doc,
+                message="Failed to store obj from the message",
+                object_body=str(e),
+            )
+            doc.status = Document.STATUS_ERROR
+            doc.save()
+            return False
+
+        DocumentHistoryItem.objects.create(
+            type="docfile", document=doc,
+            message="Downloaded the obj from the root message",
+            object_body=the_file.filename,
+            linked_obj_id=the_file.pk
+        )
+        # we have saved the obj file, now we are able to parse it
+        try:
+            self.get_incoming_document_format(doc, binary_obj_content)
+        except Exception as e:
+            logger.exception(e)
+            self._complain_and_die(
+                doc,
+                "Unable to render the object attached to this message",
+            )
+        return True
+
+    def get_incoming_document_format(self, doc, binary_obj_content):
+        try:
+            json_content = json.loads(binary_obj_content)
+        except Exception:
+            json_content = None
+
+        if json_content:
+            logger.info("Found some JSON obj for incoming document %s", doc)
+        else:
+            return self._complain_and_die(
+                doc,
+                "Incoming document has no supported obj (can't parse it)"
+            )
+            return False
+
+        if not isinstance(json_content, dict):
+            return self._complain_and_die(
+                doc,
+                "While incoming document %s obj is json - it's still unsupported",
+                doc
+            )
+            return False
+
+        oa_version = json_content.get("version")
+        supported_versions = (
+            "https://schema.openattestation.com/2.0/schema.json",
+            "https://schema.openattestation.com/3.0/schema.json"
+        )
+
+        if oa_version not in supported_versions:
+            return self._complain_and_die(
+                doc,
+                "Incoming document %s obj format '%s' is not supported",
+                doc, oa_version
+            )
+
+        # wow, it's even OA document
+        DocumentHistoryItem.objects.create(
+            type="message", document=doc,
+            message="Found OA document",
+            object_body=oa_version
+        )
+
+        try:
+            unwrapped_oa = requests.post(
+                config.OA_WRAP_API_URL + "/document/unwrap",
+                json={
+                    "document": json_content,
+                    "params": {
+                        "version": oa_version,
+                    }
+                }
+            ).json()
+        except Exception as e:
+            logger.exception(e)
+            return self._complain_and_die(
+                doc,
+                "Can't unwrap %s document for %s",
+                oa_version, doc,
+            )
+
+        if oa_version == "https://schema.openattestation.com/2.0/schema.json":
+            self._process_oa2_document(doc, unwrapped_oa)
+        elif oa_version == "https://schema.openattestation.com/3.0/schema.json":
+            self._process_oa3_document(doc, unwrapped_oa)
+        return True
+
+    def _process_oa2_document(self, doc, data):
+        attachments = data.pop("attachments")
+        for attach in attachments:
+            bin_file = base64.b64decode(attach["data"].encode("utf-8"))
+            af = DocumentFile.objects.create(
+                doc=doc,
+                # type=type,
+                filename=attach.get("filename") or "unknown.bin",
+                size=len(bin_file)
+            )
+            path = default_storage.save(
+                f'incoming/{doc.id}/attach-{str(uuid.uuid4())}',
+                ContentFile(bin_file)
+            )
+            af.file = path
+            af.save()
+
+        doc.document_number = data.get("id")
+        doc.intergov_details["oa_doc"] = data
+        doc.save()
+        return
+
+    def _process_oa3_document(self, doc, data):
+        return self._complain_and_die(
+            doc,
+            "Sorry, we don't support OAv3 documents yet",
+        )
+
+    def _complain_and_die(self, doc, message, *message_args):
+        logger.info(message, *message_args)
+        DocumentHistoryItem.objects.create(
+            type="error", document=doc,
+            message=message % message_args,
+        )
+        return False
