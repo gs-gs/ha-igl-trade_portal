@@ -5,8 +5,21 @@ from django.views.generic import View
 
 from trade_portal.documents.models import OaDetails
 
+class AllowCORSMixin(object):
 
-class OaCyphertextRetrieve(View):
+    def add_access_control_headers(self, response):
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Max-Age"] = "1000"
+        response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
+
+    def options(self, request, *args, **kwargs):
+        response = HttpResponse()
+        self.add_access_control_headers(response)
+        return response
+
+
+class OaCyphertextRetrieve(AllowCORSMixin, View):
     def get(self, *args, **kwargs):
         try:
             obj = OaDetails.objects.get(
@@ -35,4 +48,7 @@ class OaCyphertextRetrieve(View):
                 ).decode("utf-8")
             except Exception as e:
                 result["document"]["cleartext_error"] = str(e)
-        return HttpResponse(json.dumps(result), content_type='application/json')
+
+        response = HttpResponse(json.dumps(result), content_type='application/json')
+        self.add_access_control_headers(response)
+        return response
