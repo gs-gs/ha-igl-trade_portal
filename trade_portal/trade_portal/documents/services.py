@@ -19,8 +19,9 @@ from intergov_client.predicates import Predicates
 from intergov_client.auth import DjangoCachedCognitoOIDCAuth, DumbAuth
 
 from trade_portal.documents.models import (
-    Document, DocumentHistoryItem, NodeMessage,
+    Document, DocumentHistoryItem, NodeMessage, OaDetails,
 )
+from trade_portal.users.models import Organisation
 
 logger = logging.getLogger(__name__)
 
@@ -424,26 +425,90 @@ class NodeService(BaseIgService):
         else:
             document = None
         if not first_fit_message or not document:
-            logger.warning("Received incoming message but can't find any conversation for it")
-            return False
-        msg, created = NodeMessage.objects.get_or_create(
-            sender_ref=msg_body["sender_ref"],
+            # start a new conversation
+            logger.info("Starting a new document/conversation for the %s", msg_body)
+            self._start_new_conversation(msg_body)
+            return True
+        else:
+            msg, created = NodeMessage.objects.get_or_create(
+                sender_ref=msg_body["sender_ref"],
+                defaults=dict(
+                    document=document,
+                    status=msg_body["status"],
+                    subject=msg_body["subject"],
+                    is_outbound=False,
+                    body=msg_body,
+                    history=[
+                        f"Received at {timezone.now()}",
+                    ]
+                )
+            )
+            if created:
+                msg.trigger_processing()
+            else:
+                logger.info("Message %s is already in the system", msg_body["sender_ref"])
+            return True
+
+    def _start_new_conversation(self, message_body):
+        from trade_portal.documents.tasks import process_incoming_document_received
+
+        NEW_DOC_PREDICATES = [
+            Predicates.CoO_ISSUED,
+            Predicates.SDO_CREATED,
+            Predicates.CO_CREATED,
+        ]
+        if message_body["predicate"] not in NEW_DOC_PREDICATES:
+            logger.warning(
+                "Received conversation starting message with predicate %s which is not a document-starting",
+                message_body["predicate"]
+            )
+            return
+
+        first_chambers = Organisation.objects.filter(
+            type=Organisation.TYPE_CHAMBERS
+        ).first()
+        oad = OaDetails.objects.create(
+            created_for=first_chambers,
+            uri="(empty)"
+        )
+        new_doc = Document.objects.create(
+            oa=oad,
+            created_by_org=first_chambers,
+            status=Document.STATUS_ISSUED,  # TODO: based on the message predicate
+            # type= TODO - determine from the object on the next step
+            # document_number - next step
+            sending_jurisdiction=message_body["sender"],
+            importing_country=message_body["receiver"],
+            intergov_details=message_body,
+        )
+        msg, message_created = NodeMessage.objects.get_or_create(
+            sender_ref=message_body["sender_ref"],
+            is_outbound=False,
             defaults=dict(
-                document=document,
-                status=msg_body["status"],
-                subject=msg_body["subject"],
+                document=new_doc,
+                status=message_body["status"],
+                subject=message_body["subject"],
                 is_outbound=False,
-                body=msg_body,
+                body=message_body,
                 history=[
                     f"Received at {timezone.now()}",
                 ]
             )
         )
-        if created:
-            msg.trigger_processing()
-        else:
-            logger.info("Message %s is already in the system", msg_body["sender_ref"])
-        return True
+        DocumentHistoryItem.objects.create(
+            type="nodemessage", document=new_doc,
+            message=(
+                "First message in the conversation has been received and "
+                "the document processing has been scheduled in the background"
+            ),
+            object_body=json.dumps(message_body),
+            linked_obj_id=msg.pk,
+        )
+        process_incoming_document_received.apply_async(
+            [new_doc.pk],
+            countdown=2
+        )
+        return
 
 
 class NotaryService():

@@ -177,7 +177,9 @@ class Document(models.Model):
     type = models.CharField("Document type", max_length=64, choices=TYPE_CHOICES)
     document_number = models.CharField(max_length=256, blank=False, default="")
 
-    fta = models.ForeignKey(FTA, models.PROTECT, verbose_name="FTA")
+    fta = models.ForeignKey(FTA, models.PROTECT, verbose_name="FTA", blank=False, null=True)
+
+    sending_jurisdiction = CountryField(default=settings.ICL_APP_COUNTRY)
     importing_country = CountryField()
     issuer = models.ForeignKey(
         Party, models.CASCADE,
@@ -281,8 +283,17 @@ class Document(models.Model):
         return str(self.id)[-6:]
 
     def get_rendered_edi3_document(self):
-        from trade_portal.edi3.certificates import CertificateRenderer
-        return CertificateRenderer().render(self)
+        if self.importing_country != settings.ICL_APP_COUNTRY:
+            # outbound
+            from trade_portal.edi3.certificates import CertificateRenderer
+            return CertificateRenderer().render(self)
+        else:
+            # TODO: return the document from the remote party
+            return ''
+
+    @property
+    def is_incoming(self):
+        return self.sending_jurisdiction != settings.ICL_APP_COUNTRY
 
 
 class DocumentHistoryItem(models.Model):

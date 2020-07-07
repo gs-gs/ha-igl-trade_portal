@@ -9,7 +9,7 @@
 <div class="content-box">
   <a href="logs/" style="float: right"  class="btn btn-primary btn-sm">Logs</a>
 
-  <h1 class="page-title">Document #{{ object.document_number }}</h1>
+  <h1 class="page-title">{% if object.is_incoming %}Incoming{% endif %} Document #{{ object.document_number }}</h1>
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -33,6 +33,7 @@
     </ol>
   </nav>
 
+  {% if not object.is_incoming %}
   <div class="form-group">
     <div class="label">IGL Document ID <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
     <ul class="nav nav-tabs">
@@ -65,16 +66,16 @@
       </div>
     </div>
   </div>
-
+  {% endif %}
 
   <div class="section-info">
     <dl class="info-list">
       <dt>Document Type</dt>
-      <dd>{{ object.get_type_display }}</dd>
+      <dd>{{ object.get_type_display|default:"(unknown)" }}</dd>
       <dt>Current status</dt>
-      <dd>{{ object.get_status_display }}</dd>
+      <dd>{{ object.get_status_display|default:"(unknown)" }}</dd>
       <dt>Issuer</dt>
-      <dd>{{ object.issuer }}</dd>
+      <dd>{{ object.issuer|default:"(unknown)" }}</dd>
       <dt>Created by</dt>
       <dd>
         <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
@@ -89,18 +90,20 @@
     <dl class="info-list">
       <dt>Doc number</dt>
       <dd>{{ object.document_number|default:"(not specified)" }}</dd>
-      <dt>IGL Document ID</dt>
-      <dd>
-        {{ object.pk }}<br/>
-          {% with object.get_igid_image_base64 as qrcode_image %}
-            {% if qrcode_image %}
-              <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
-            {% else %}
-              <p>The certificate must be issued to show the QR code;
-                We need it to ensure that no changes will be made.</p>
-            {% endif %}
-          {% endwith %}
-      </dd>
+      {% if not document.is_incoming %}
+        <dt>IGL Document ID</dt>
+        <dd>
+          {{ object.pk }}<br/>
+            {% with object.get_igid_image_base64 as qrcode_image %}
+              {% if qrcode_image %}
+                <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
+              {% else %}
+                <p>The certificate must be issued to show the QR code;
+                  We need it to ensure that no changes will be made.</p>
+              {% endif %}
+            {% endwith %}
+        </dd>
+      {% endif %}
       <dt>FTA</dt>
       <dd>{{ object.fta }}</dd>
       <dt>Importing country</dt>

@@ -56,3 +56,17 @@ def update_message_by_sender_ref(self, sender_ref):
                  max_retries=3, interval_start=10, interval_step=10, interval_max=50)
 def store_message_by_ping_body(self, ping_body):
     NodeService().store_message_by_ping_body(ping_body)
+
+
+@celery_app.task(bind=True, ignore_result=True,
+                 max_retries=6, interval_start=10, interval_step=20, interval_max=300)
+def process_incoming_document_received(self, document_pk):
+    doc = Document.objects.get(pk=document_pk)
+    logger.info("Processing the incoming document in the background")
+    DocumentHistoryItem.objects.create(
+        type="text", document=doc,
+        message=(
+            "Started the incoming document retrieval..."
+        )
+    )
+    return
