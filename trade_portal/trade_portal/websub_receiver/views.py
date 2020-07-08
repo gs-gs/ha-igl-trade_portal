@@ -38,6 +38,10 @@ class BaseNotificationReceiveView(View):
     def _process_notification(self, *args, **kwargs):
         raise NotImplementedError()
 
+    def get(self, request, *args, **kwargs):
+        # just accept all for the time being
+        return HttpResponse(self.request.GET.get("hub.challenge"))
+
     def post(self, request, *args, **kwargs):
         # websub spec says that we process the object async, but
         # for MVP it's fine to do it sync, but quickly
