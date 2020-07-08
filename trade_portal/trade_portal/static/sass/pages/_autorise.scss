@@ -8,7 +8,7 @@ $home-max-width: 1280px;
       background-size: 60% auto;
     }
     @include media-breakpoint-up(xl) {
-      background-size: 58% auto;
+      background-size: 57% auto;
     }
   }
 
@@ -18,7 +18,7 @@ $home-max-width: 1280px;
       background-size: 60% auto;
     }
     @include media-breakpoint-up(xl) {
-      background-size: 58% auto;
+      background-size: 57% auto;
     }
   }
 
@@ -168,6 +168,7 @@ $home-max-width: 1280px;
 
     &__description {
       color: $white-color;
+      text-shadow: 0 0 2px $blue-color;
       font-size: 17px;
       line-height: 23px;
       max-width: 520px;
@@ -175,6 +176,7 @@ $home-max-width: 1280px;
 
     &__btn {
       min-width: 184px;
+      box-shadow: 0 0 2px $blue-color;
 
       @include media-breakpoint-down(lg) {
         padding-top: 0.625rem;

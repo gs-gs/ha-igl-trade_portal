@@ -15,7 +15,7 @@ $home-max-width: 1280px;
 }
 
 .home-content {
-  padding: 0 $mobile-padding 35px $mobile-padding;
+  padding: 50px $mobile-padding 35px $mobile-padding;
 
   @include media-breakpoint-up(lg) {
     @include flexbox();
@@ -100,18 +100,16 @@ $home-max-width: 1280px;
   border-top-width: 7px;
   background-color: $white-color;
   padding: 15px 15px 36px 28px;
-  margin: 0 5px;
+  margin: 20px 0 0 0;
 
-  @include media-breakpoint-down(md) {
-    margin: 20px 0 0 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
+  &:first-child {
+    margin-top: 0;
   }
 
   @include media-breakpoint-up(md) {
+    margin: 0 5px;
     flex-basis: calc(25% - 10px);
+
   }
 
   &.usp-verification {
