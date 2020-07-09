@@ -9,6 +9,7 @@ import mimetypes
 import uuid
 from Crypto.Cipher import AES
 
+import dateutil.parser
 import requests
 from constance import config
 from django.conf import settings
@@ -22,7 +23,8 @@ from intergov_client.predicates import Predicates
 from intergov_client.auth import DjangoCachedCognitoOIDCAuth, DumbAuth
 
 from trade_portal.documents.models import (
-    Document, DocumentHistoryItem, NodeMessage, OaDetails, DocumentFile,
+    FTA, Party, Document, DocumentHistoryItem,
+    NodeMessage, OaDetails, DocumentFile,
 )
 from trade_portal.users.models import Organisation
 
@@ -756,6 +758,52 @@ class IncomingDocumentService(BaseIgService):
             af.save()
 
         doc.document_number = data.get("id")
+
+        try:
+            # these actions are dangerous in terms of exceptions,
+            # so we use catchall to handle them one by one if they occure
+
+            issueDateTime = data.get("issueDateTime")
+            if issueDateTime:
+                issueDateTime = dateutil.parser.isoparse(issueDateTime)
+                if issueDateTime:
+                    doc.created_at = issueDateTime
+
+            if (data.get("name") or "").lower().endswith("Certificate of Origin".lower()):
+                # Certificate of Origin
+                if data.get("isPreferential") is True:
+                    doc.type = Document.TYPE_PREF_COO
+                if data.get("isPreferential") is False:
+                    doc.type = Document.TYPE_NONPREF_COO
+            supplyChainConsignment = data.get("supplyChainConsignment") or {}
+            if supplyChainConsignment:
+                exporter = supplyChainConsignment.get("exporter") or {}
+                if exporter:
+                    doc.exporter, created = Party.objects.get_or_create(
+                        created_by_org=doc.created_by_org,
+                        business_id=exporter.get("id"),
+                        type=Party.TYPE_EXPORTER,
+                        defaults={
+                            "name": exporter.get("name") or "",
+                        }
+                    )
+            issuer = data.get("issuer")
+            if issuer:
+                doc.issuer, created = Party.objects.get_or_create(
+                    created_by_org=doc.created_by_org,
+                    business_id=issuer.get("id"),
+                    defaults={
+                        "name": issuer.get("name") or "",
+                    }
+                )
+            freeTradeAgreement = data.get("freeTradeAgreement")
+            if freeTradeAgreement:
+                try:
+                    doc.fta = FTA.objects.get(name=freeTradeAgreement)
+                except Exception:
+                    pass
+        except Exception as e:
+            logger.exception(e)
         doc.intergov_details["oa_doc"] = data
         doc.save()
         return

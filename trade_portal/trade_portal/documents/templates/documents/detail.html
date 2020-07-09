@@ -9,7 +9,7 @@
 <div class="content-box">
   <a href="logs/" style="float: right"  class="btn btn-primary btn-sm">Logs</a>
 
-  <h1 class="page-title">{% if object.is_incoming %}Incoming{% endif %} Document #{{ object.document_number }}</h1>
+  <h1 class="page-title">{% if object.is_incoming %}Incoming{% endif %} {{ object.get_type_display }} {{ object.document_number }}</h1>
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -32,30 +32,7 @@
       {% endwith %}
     </ol>
   </nav>
-  {% if object.is_incoming %}
-    {% if object.status == object.STATUS_ERROR %}
-      <div class="alert alert-danger">This document has been received with an error; see the Logs page for details. It usually means the technical error, not the certificate one.</div>
-    {% endif %}
-    {# render incoming document in a nice but quick way #}
-    {% if object.intergov_details.oa_doc %}
-      <fieldset style="margin: 20px; padding: 20px; background-color: whitesmoke;"><legend style="padding-top: 30px">Incoming document data</legend>
-      {% for key, value in object.intergov_details.oa_doc.items %}
-        <strong>{{ key|capfirst }}</strong>:
-        {% if value.items %}
-          <div style='background-color: white; padding-left: 30px;'>
-          {% for subkey, subvalue in value.items %}
-            <strong>{{ subkey }}</strong>: {{ subvalue }}<br/>
-          {% endfor %}
-          </div>
-        {% else %}
-          {{ value }}
-        {% endif %}
-        <hr />
-      {% endfor %}
-      </fieldset>
-    {% endif %}
-
-  {% else %}
+  {% if not object.is_incoming %}
     <div class="form-group">
       <div class="label">IGL Document ID <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
       <ul class="nav nav-tabs">
@@ -90,7 +67,6 @@
     </div>
   {% endif %}
 
-{% if not object.is_incoming %}
   <div class="section-info">
     <dl class="info-list">
       <dt>Document Type</dt>
@@ -101,11 +77,13 @@
       <dd>{{ object.issuer|default:"(unknown)" }}</dd>
       <dt>Created by</dt>
       <dd>
-        <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
-        at <strong>{{ object.created_by_org }}</strong>
+        {% if object.is_incoming %}Remote party{% else %}
+          <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
+          at <strong>{{ object.created_by_org }}</strong>
+        {% endif %}
       </dd>
       <dt>Created at</dt>
-      <dd>{{ object.created_at }}</dd>
+      <dd>{{ object.created_at }} {{ object.created_at.tzinfo }}</dd>
     </dl>
   </div>
   <div class="section-info">
@@ -129,6 +107,8 @@
       {% endif %}
       <dt>FTA</dt>
       <dd>{{ object.fta }}</dd>
+      <dt>Exporting country</dt>
+      <dd>{{ object.sending_jurisdiction.name }}</dd>
       <dt>Importing country</dt>
       <dd>{{ object.importing_country.name }}</dd>
       <dt>Exporter</dt>
@@ -154,7 +134,6 @@
       <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
     </dl>
   </div>
-{% endif %}
 
   <div class="section-info">
     {% if object.files.all %}
@@ -184,7 +163,7 @@
                 </a>
                 <div class="document-info">
                   {{ doc.created_at }} by
-                  <span class="document-owner">{{ doc.created_by }}</span>
+                  <span class="document-owner">{{ doc.created_by|default:"system" }}</span>
                 </div>
               </td>
             </tr>
@@ -211,5 +190,34 @@
       {% endfor %}
     </div>
   {% endif %}
+
+  {% if object.is_incoming %}
+    {% if object.status == object.STATUS_ERROR %}
+      <div class="alert alert-danger">This document has been received with an error; see the Logs page for details. It usually means the technical error, not the certificate one.</div>
+    {% endif %}
+    {# render incoming document in a nice but quick way #}
+    {% if object.intergov_details.oa_doc %}
+    <div class="section-info">
+    <div class="subtitle section-info__title">Raw incoming data</div>
+    <dl class="info-list">
+      {% for key, value in object.intergov_details.oa_doc.items %}
+        <dt>{{ key|capfirst }}</dt>
+        <dd>
+          {% if value.items %}
+            <div style='background-color: whitesmoke;'>
+            {% for subkey, subvalue in value.items %}
+              <strong>{{ subkey }}</strong>: {{ subvalue }}<br/>
+            {% endfor %}
+            </div>
+          {% else %}
+            {{ value }}
+          {% endif %}
+        </dd>
+      {% endfor %}
+      </fieldset>
+    {% endif %}
+  {% endif %}
+
+
 </div>
 {% endblock content %}

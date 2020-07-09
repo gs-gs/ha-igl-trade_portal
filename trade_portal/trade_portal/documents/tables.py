@@ -13,7 +13,7 @@ class DocumentsTable(tables.Table):
             </a>
         """
     )
-    importing_country = tables.Column(verbose_name="Trading Country")
+    importing_country = tables.Column(verbose_name="Importing Country")
     consignment_details = tables.TemplateColumn(
         verbose_name='Consignment Ref.',
         template_code="""
@@ -36,7 +36,7 @@ class DocumentsTable(tables.Table):
         model = Document
         template_name = "tables_bt4.html"
         fields = (
-            "document_number", "type", "status", "importing_country",
+            "document_number", "type", "status", "sending_jurisdiction", "importing_country",
             "created_at", "issuer", "exporter", "importer_name",
             "consignment_details", "logs_link",
         )
