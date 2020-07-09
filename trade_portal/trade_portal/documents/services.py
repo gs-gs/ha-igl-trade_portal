@@ -107,11 +107,16 @@ class DocumentService(BaseIgService):
         # step 2. Append EDI3 document, merging them on the root level
         oa_doc.update(document.get_rendered_edi3_document())
 
-        DocumentHistoryItem.objects.create(
+        d = DocumentHistoryItem.objects.create(
             type="text", document=document,
             message=f"OA document has been generated, size: {len(json.dumps(oa_doc))}b",
-            object_body=json.dumps(oa_doc)
+            # object_body=json.dumps(oa_doc)
+            related_file=default_storage.save(
+                f'incoming/{document.id}/oa-doc.json',
+                ContentFile(json.dumps(oa_doc, indent=2).encode("utf-8"))
+            )
         )
+        print(d.related_file)
 
         # step 3, slow: wrap OA document using external api for wrapping documents
         try:
@@ -141,7 +146,10 @@ class DocumentService(BaseIgService):
             DocumentHistoryItem.objects.create(
                 type="text", document=document,
                 message=f"OA document has been wrapped, new size: {len(oa_doc_wrapped_json)}b",
-                object_body=oa_doc_wrapped_json
+                related_file=default_storage.save(
+                    f'incoming/{document.id}/oa-doc-wrapped.json',
+                    ContentFile(oa_doc_wrapped_json.encode("utf-8"))
+                )
             )
         else:
             logger.warning("Received responce %s for oa doc wrap step", oa_doc_wrapped_resp)
@@ -200,7 +208,6 @@ class DocumentService(BaseIgService):
             DocumentHistoryItem.objects.create(
                 type="error", document=document,
                 message="Error: Can't upload OA document as a message object",
-                object_body=oa_doc_wrapped_resp.json(),
             )
             document.status = Document.STATUS_ERROR
             document.save()

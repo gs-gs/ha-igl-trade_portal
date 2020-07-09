@@ -25,7 +25,7 @@ class OaDetailsAdmin(admin.ModelAdmin):
 class DocumentHistoryItemInlineAdmin(admin.TabularInline):
     model = DocumentHistoryItem
     extra = 0
-    fields = ['created_at', 'message', 'linked_obj_id']
+    fields = ['created_at', 'message', 'linked_obj_id', 'related_file']
 
 
 @admin.register(Document)

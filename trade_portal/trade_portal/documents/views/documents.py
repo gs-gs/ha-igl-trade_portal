@@ -190,3 +190,23 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
         response = HttpResponse(document.file, content_type='application/octet-stream')
         response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
         return response
+
+
+class DocumentHistoryFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
+
+    def get_object(self):
+        try:
+            c = self.get_queryset().get(pk=self.kwargs['pk'])
+            historyitem = c.history.get(id=self.kwargs['history_item_id'])
+            if not historyitem.related_file:
+                raise ObjectDoesNotExist()
+        except ObjectDoesNotExist:
+            raise Http404()
+        return historyitem
+
+    def get(self, *args, **kwargs):
+        # standard file approach
+        historyitem = self.get_object()
+        response = HttpResponse(historyitem.related_file, content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % historyitem.related_file.name
+        return response

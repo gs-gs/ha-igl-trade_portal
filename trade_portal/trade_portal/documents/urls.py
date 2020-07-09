@@ -3,7 +3,7 @@ from django.urls import path
 from trade_portal.documents.views.documents import (
     DocumentListView, DocumentCreateView,
     DocumentDetailView, DocumentLogsView,
-    DocumentFileDownloadView,
+    DocumentFileDownloadView, DocumentHistoryFileDownloadView,
 )
 from trade_portal.documents.views.parties import (
     PartiesListView, PartyDetailView,
@@ -25,6 +25,11 @@ urlpatterns = [
         "<uuid:pk>/documents/<uuid:file_pk>/",
         view=DocumentFileDownloadView.as_view(),
         name="file-download"
+    ),
+    path(
+        "<uuid:pk>/historyfile/<int:history_item_id>/",
+        view=DocumentHistoryFileDownloadView.as_view(),
+        name="history-file-download"
     ),
 
     # Related objects - Parties

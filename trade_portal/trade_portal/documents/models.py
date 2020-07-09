@@ -312,6 +312,9 @@ class DocumentHistoryItem(models.Model):
     object_body = models.TextField(blank=True)
     linked_obj_id = models.CharField(max_length=128)
 
+    # sometimes we want to save large file (like OA unwrapped one)
+    related_file = models.FileField(blank=True)
+
     class Meta:
         ordering = ('created_at',)
 

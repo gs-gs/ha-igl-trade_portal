@@ -33,6 +33,9 @@
     </ol>
   </nav>
   {% if object.is_incoming %}
+    {% if object.status == object.STATUS_ERROR %}
+      <div class="alert alert-danger">This document has been received with an error; see the Logs page for details. It usually means the technical error, not the certificate one.</div>
+    {% endif %}
     {# render incoming document in a nice but quick way #}
     {% if object.intergov_details.oa_doc %}
       <fieldset style="margin: 20px; padding: 20px; background-color: whitesmoke;"><legend style="padding-top: 30px">Incoming document data</legend>
