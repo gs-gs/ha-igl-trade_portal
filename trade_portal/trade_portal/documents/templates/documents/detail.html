@@ -114,7 +114,12 @@
       <dt>Exporter</dt>
       <dd>
         Entity: {{ object.exporter.name }}<br/>
-        ABN: <a href="https://abr.business.gov.au/ABN/View?abn={{ object.exporter.business_id }}" target="_blank">{{ object.exporter.business_id }}</a>
+        {% if BID_NAME == "ABN" %}
+          ABN: <a href="https://abr.business.gov.au/ABN/View?abn={{ object.exporter.business_id }}" target="_blank">{{ object.exporter.business_id }}</a>
+        {% endif %}
+        {% if BID_NAME == "UEN" %}
+          ABN: <a href="https://www.uen.gov.sg/" target="_blank">{{ object.exporter.business_id }}</a>
+        {% endif %}
       </dd>
       <dt>Importer name</dt>
       <dd>{{ object.importer_name|default:"(not specified)" }}</dd>

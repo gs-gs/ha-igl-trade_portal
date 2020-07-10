@@ -63,7 +63,7 @@ class Party(models.Model):
 
     # exporter or importer
     type = models.CharField(max_length=1, blank=True, choices=TYPE_CHOICES, default=TYPE_OTHER)
-    business_id = models.CharField(max_length=256, help_text="Abn for example", blank=True)
+    business_id = models.CharField(max_length=256, help_text="ABN or UEN for example", blank=True)
     dot_separated_id = models.CharField(max_length=256, blank=True, default="a.b.c")
     name = models.CharField(max_length=256, blank=True)
     country = CountryField(blank=True)

@@ -1,3 +1,10 @@
+try:
+    from django.conf import settings
+    BID_NAME = settings.BID_NAME
+except ImportError:
+    BID_NAME = "ABN"
+
+
 class CertificateRenderer:
 
     def render(self, document_obj):
@@ -26,7 +33,9 @@ class CertificateRenderer:
               "code": str(doc.exporter.country),
             },
             "exporter": {
-              "id": f"abr.gov.au:abn:{doc.exporter.business_id}",
+              "id": (
+                f"abr.gov.au:abn:{doc.exporter.business_id}"
+              ) if settings.BID_NAME == "ABN" else f"gov.sg:UEN:{doc.exporter.business_id}",
               "name": doc.exporter.name
             },
             "importCountry": {

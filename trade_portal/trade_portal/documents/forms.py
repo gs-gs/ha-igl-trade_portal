@@ -35,11 +35,13 @@ class PartyUpdateForm(PartyCreateForm):
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
     exporter = forms.CharField(
-        label="Exporter ABN",
-        max_length=32, help_text="Please enter 11-digit ABN"
+        label=f"Exporter {settings.BID_NAME}",
+        max_length=32, help_text=(
+            "Please enter 11-digit ABN"
+        ) if settings.BID_NAME == "ABN" else "Please enter 8 digits + letter"
     )
     consignment_ref_doc_issuer = forms.CharField(
-        label="Document Issuer ABN",
+        label=f"Document Issuer {settings.BID_NAME}",
         widget=forms.TextInput(
             attrs={'class': 'form-control', 'placeholder': 'Consignment doc issuer'}
         ),
@@ -104,17 +106,22 @@ class DocumentCreateForm(forms.ModelForm):
 
     def clean_exporter(self):
         value = self.cleaned_data.get("exporter").strip().replace(" ", "")
-        if not value or len(value) != 11:
-            raise forms.ValidationError("The value must be 11 digits")
-        exporter_data = fetch_abn_info(value)
-        if not exporter_data or not exporter_data.get("Abn"):
-            raise forms.ValidationError("Please provide a valid ABN in this field")
+        if not value:
+            raise forms.ValidationError("Please enter this value")
+        if settings.BID_NAME == "ABN":
+            if len(value) != 11:
+                raise forms.ValidationError("The value must be 11 digits")
+            exporter_data = fetch_abn_info(value)
+            if not exporter_data or not exporter_data.get("Abn"):
+                raise forms.ValidationError("Please provide a valid ABN in this field")
+        else:
+            exporter_data = {}
         exporter_party, created = Party.objects.get_or_create(
-            business_id=exporter_data["Abn"],
+            business_id=value,
             created_by_org=self.current_org,
             defaults={
                 "created_by_user": self.user,
-                "name": exporter_data["EntityName"],
+                "name": exporter_data.get("EntityName") or "",
                 "type": Party.TYPE_EXPORTER,
                 "country": settings.ICL_APP_COUNTRY,
             }

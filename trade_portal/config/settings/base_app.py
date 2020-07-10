@@ -9,6 +9,13 @@ ICL_TRADE_PORTAL_COUNTRY = env(
 )
 ICL_APP_COUNTRY = ICL_TRADE_PORTAL_COUNTRY
 
+if ICL_APP_COUNTRY == "AU":
+    BID_NAME = "ABN"
+elif ICL_APP_COUNTRY == "SG":
+    BID_NAME = "UEN"
+else:
+    BID_NAME = "BusinessID"
+
 # for the WebSub notifications
 ICL_TRADE_PORTAL_HOST = env(
     'ICL_TRADE_PORTAL_HOST',

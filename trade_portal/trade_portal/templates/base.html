@@ -20,8 +20,14 @@
     <header class="header {% block header_class %}{% endblock %}">
       <div class="header__container">
         <a class="header__logo" href="/">
-          <img src="{% static 'images/logo.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--default" />
-          <img src="{% static 'images/logo-white.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white" />
+          {% if ICL_APP_COUNTRY == "AU" %}
+            <img src="{% static 'images/logoAU.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--default" />
+            <img src="{% static 'images/logo-whiteAU.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white" />
+          {% else %}{% if ICL_APP_COUNTRY == "SG" %}
+            <img src="{% static 'images/logoSG.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--default" style="border: 1px solid gray" />
+            <img src="{% static 'images/logo-whiteSG.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white"/>
+          {% endif %}
+          {% endif %}
           <span class="header__logo-text">Inter-Government Ledger Trade Portal</span>
         </a>
         <div class="header__nav">
@@ -130,7 +136,12 @@
 
     <footer class="footer mt-auto">
       <div class="footer__logo">
-        <img src="{% static 'images/footer-logo.png' %}" alt="">
+        {% if ICL_APP_COUNTRY == "AU" %}
+          <img src="{% static 'images/footer-logoAU.png' %}" alt="" />
+        {% endif %}
+        {% if ICL_APP_COUNTRY == "SG" %}
+          <img src="{% static 'images/footer-logoSG.png' %}" alt="" />
+        {% endif %}
       </div>
       <div class="footer-menu footer__menu">
         <ul class="footer-menu__list">
