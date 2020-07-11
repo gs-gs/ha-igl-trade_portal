@@ -74,7 +74,12 @@
       <dt>Current status</dt>
       <dd>{{ object.get_status_display|default:"(unknown)" }}</dd>
       <dt>Issuer</dt>
-      <dd>{{ object.issuer|default:"(unknown)" }}</dd>
+      <dd>
+        {{ object.issuer.name }}<br/>
+        {% if object.issuer.register_url %}
+          {{ object.issuer.readable_identifier_name }}: <a href="{{ object.issuer.register_url }}" target="_blank">{{ object.issuer.business_id }}</a>
+        {% endif %}
+      </dd>
       <dt>Created by</dt>
       <dd>
         {% if object.is_incoming %}Remote party{% else %}
@@ -114,11 +119,8 @@
       <dt>Exporter</dt>
       <dd>
         Entity: {{ object.exporter.name }}<br/>
-        {% if BID_NAME == "ABN" %}
-          ABN: <a href="https://abr.business.gov.au/ABN/View?abn={{ object.exporter.business_id }}" target="_blank">{{ object.exporter.business_id }}</a>
-        {% endif %}
-        {% if BID_NAME == "UEN" %}
-          ABN: <a href="https://www.uen.gov.sg/" target="_blank">{{ object.exporter.business_id }}</a>
+        {% if object.exporter.register_url %}
+          {{ object.exporter.readable_identifier_name }}: <a href="{{ object.exporter.register_url }}" target="_blank">{{ object.exporter.business_id }}</a>
         {% endif %}
       </dd>
       <dt>Importer name</dt>

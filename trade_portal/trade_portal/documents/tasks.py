@@ -58,13 +58,48 @@ def store_message_by_ping_body(self, ping_body):
     NodeService().store_message_by_ping_body(ping_body)
 
 
-@celery_app.task(bind=True, ignore_result=True,
-                 max_retries=6, interval_start=10, interval_step=20, interval_max=300)
+@celery_app.task(bind=True, ignore_result=True, max_retries=6)
 def process_incoming_document_received(self, document_pk):
     from trade_portal.documents.services import IncomingDocumentService
 
     doc = Document.objects.get(pk=document_pk)
     logger.info("Processing the incoming document %s", doc)
-
-    IncomingDocumentService().process_new(doc)
+    try:
+        IncomingDocumentService().process_new(doc)
+    except Exception as e:
+        if getattr(e, "is_retryable", None) is True:
+            # try to retry (no document has been downloaded yet from the remote or something)
+            if self.request.retries < self.max_retries:
+                logger.warning(
+                    "Retrying the doc %s processing task %sth time",
+                    doc,
+                    self.request.retries
+                )
+                DocumentHistoryItem.objects.create(
+                    type="error", document=doc,
+                    message="Error, will be trying again",
+                    object_body=str(e),
+                )
+                self.retry(countdown=5 + 10 * self.request.retries)
+            else:
+                logger.error("Max retries reached for the document %s, marking as error", doc)
+                DocumentHistoryItem.objects.create(
+                    type="error", document=doc,
+                    message=f"Unable to process document after {self.request.retries} retries",
+                    object_body=str(e),
+                )
+                doc.status = Document.STATUS_ERROR
+                doc.save()
+                return False
+        else:
+            # non-retryable exception
+            logger.exception(e)
+            DocumentHistoryItem.objects.create(
+                type="error", document=doc,
+                message="Unable to process document, non-retryable exception",
+                object_body=str(e),
+            )
+            doc.status = Document.STATUS_ERROR
+            doc.save()
+            return False
     return

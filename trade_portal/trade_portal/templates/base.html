@@ -14,6 +14,19 @@
     <link rel="icon" href="{% static 'images/favicon.png' %}">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     {% block extra_head %}{% endblock %}
+    {% if ICL_APP_COUNTRY == "SG" %}
+      <style>
+        a {
+          color: #c22;
+        }
+        h2.subtitle.section-info__title {
+          color: #822;
+        }
+        span.header__logo-text {
+          color: #822;
+        }
+      </style>
+    {% endif %}
   </head>
 
   <body class="d-flex flex-column {% block body_class %}{% endblock %}{% if request.user.is_authenticated %} authenticated{% endif %}">

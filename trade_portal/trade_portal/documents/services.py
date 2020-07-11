@@ -31,6 +31,12 @@ from trade_portal.users.models import Organisation
 logger = logging.getLogger(__name__)
 
 
+class IncomingDocumentProcessingError(Exception):
+    def __init__(self, *args, **kwargs):
+        self.is_retryable = kwargs.pop("is_retryable", False)
+        super().__init__(*args, **kwargs)
+
+
 class AESCipher:
     BS = 256 // 8
 
@@ -118,7 +124,6 @@ class DocumentService(BaseIgService):
                 ContentFile(json.dumps(oa_doc, indent=2).encode("utf-8"))
             )
         )
-        print(d.related_file)
 
         # step 3, slow: wrap OA document using external api for wrapping documents
         try:
@@ -295,7 +300,10 @@ class DocumentService(BaseIgService):
                   }
                 }
               ],
-            "attachments": self._render_uploaded_files(document)
+            "attachments": self._render_uploaded_files(document),
+            "recipient": {
+                "name": document.importer_name or "",
+            },
         }
         return doc
 
@@ -614,15 +622,7 @@ class IncomingDocumentService(BaseIgService):
                 doc.intergov_details["obj"],
             )
         except Exception as e:
-            logger.exception(e)
-            DocumentHistoryItem.objects.create(
-                type="error", document=doc,
-                message="Failed to download obj from the message",
-                object_body=str(e),
-            )
-            doc.status = Document.STATUS_ERROR
-            doc.save()
-            return False
+            raise IncomingDocumentProcessingError(str(e), is_retryable=True)
         # 2. Save the object somewhere (it could be binary or text file)
         # do we have it already?
         try:
@@ -783,6 +783,7 @@ class IncomingDocumentService(BaseIgService):
                         created_by_org=doc.created_by_org,
                         business_id=exporter.get("id"),
                         type=Party.TYPE_EXPORTER,
+                        country=doc.sending_jurisdiction,
                         defaults={
                             "name": exporter.get("name") or "",
                         }
@@ -792,6 +793,7 @@ class IncomingDocumentService(BaseIgService):
                 doc.issuer, created = Party.objects.get_or_create(
                     created_by_org=doc.created_by_org,
                     business_id=issuer.get("id"),
+                    country=doc.sending_jurisdiction,
                     defaults={
                         "name": issuer.get("name") or "",
                     }
@@ -802,6 +804,11 @@ class IncomingDocumentService(BaseIgService):
                     doc.fta = FTA.objects.get(name=freeTradeAgreement)
                 except Exception:
                     pass
+            importer = data.get("importer", {})
+            if importer and isinstance(importer, dict):
+                importer_name = importer.get("name")
+                doc.importer_name = importer_name
+
         except Exception as e:
             logger.exception(e)
         doc.intergov_details["oa_doc"] = data

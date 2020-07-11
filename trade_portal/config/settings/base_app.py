@@ -11,8 +11,10 @@ ICL_APP_COUNTRY = ICL_TRADE_PORTAL_COUNTRY
 
 if ICL_APP_COUNTRY == "AU":
     BID_NAME = "ABN"
+    BID_PREFIX = "abr.gov.au:abn"
 elif ICL_APP_COUNTRY == "SG":
     BID_NAME = "UEN"
+    BID_PREFIX = "gov.sg:UEN"
 else:
     BID_NAME = "BusinessID"
 

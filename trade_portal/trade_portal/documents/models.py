@@ -75,6 +75,37 @@ class Party(models.Model):
         ordering = ('name',)
         verbose_name_plural = "parties"
 
+    @property
+    def full_business_id(self):
+        if self.country == settings.ICL_APP_COUNTRY:
+            return f"{settings.BID_PREFIX}:{self.business_id}"
+        else:
+            return self.business_id
+
+    @property
+    def register_url(self):
+        URLS = {
+            "abr.gov.au:abn": f"https://abr.business.gov.au/ABN/View?abn={self.business_id}",
+            "gov.sg:UEN": "https://www.uen.gov.sg/",
+        }
+        normalized_business_id = self.full_business_id
+        for bid_prefix, url in URLS.items():
+            if normalized_business_id.startswith(bid_prefix):
+                return url
+        return None
+
+    @property
+    def readable_identifier_name(self):
+        URLS = {
+            "abr.gov.au:abn": "ABN",
+            "gov.sg:UEN": "UEN",
+        }
+        normalized_business_id = self.full_business_id
+        for bid_prefix, type_value in URLS.items():
+            if normalized_business_id.startswith(bid_prefix):
+                return type_value
+        return "Government Identifier"
+
 
 class OaDetails(models.Model):
     # tradetrust://
