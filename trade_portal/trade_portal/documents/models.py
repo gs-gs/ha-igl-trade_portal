@@ -341,7 +341,7 @@ class DocumentHistoryItem(models.Model):
     type = models.CharField(max_length=200)
     message = models.TextField(max_length=2000, blank=True)
     object_body = models.TextField(blank=True)
-    linked_obj_id = models.CharField(max_length=128)
+    linked_obj_id = models.CharField(max_length=128, blank=True)
 
     # sometimes we want to save large file (like OA unwrapped one)
     related_file = models.FileField(blank=True)
