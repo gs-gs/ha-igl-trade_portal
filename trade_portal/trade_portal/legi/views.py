@@ -34,6 +34,10 @@ class AbnLookupView(View):
                 "abn": abn,
             })
         else:
+            try:
+                abn_info.pop("BusinessName", None)
+            except Exception as e:
+                logger.exception(e)
             snippet = abn_info.get("Message") or "".join(
                 f"<p><strong>{escape(a)}:</strong><span>{escape(b)}</span></p>\n"
                 for a, b in abn_info.items()
