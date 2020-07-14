@@ -84,8 +84,11 @@ class Party(models.Model):
 
     @property
     def register_url(self):
+        pure_business_id = self.business_id
+        if ":" in pure_business_id:
+            pure_business_id = pure_business_id.split(":")[-1]
         URLS = {
-            "abr.gov.au:abn": f"https://abr.business.gov.au/ABN/View?abn={self.business_id}",
+            "abr.gov.au:abn": f"https://abr.business.gov.au/ABN/View?abn={pure_business_id}",
             "gov.sg:UEN": "https://www.uen.gov.sg/",
         }
         normalized_business_id = self.full_business_id
