@@ -47,8 +47,11 @@
           <div class="header__nav-actions">
             {% if request.user.is_authenticated %}
               <div class="header__user">
-                <div class="header__user-name">{{ user }}</div>
-                <div class="header__user-org">{{ current_org.name }}</div>
+                <div class="header__user-name">
+                  {{ user }}
+                  {% if user.is_superuser %}(Superuser){% endif %}
+                </div>
+                <div class="header__user-org">{{ current_org.name }} ({{ current_org.get_type_display }})</div>
               </div>
             {% else %}
               <a href="/accounts/signup/" class="btn btn-primary header__nav-btn">Sign up</a>
@@ -96,7 +99,7 @@
                     <span>Acting as
                       <select class="form-control" onChange="$('#id-current-org-form').submit()" name="current_org">
                         {% for org in user.orgs %}
-                          <option value="{{ org.pk }}" {% if org.id == current_org.id %}selected{% endif %}>{{ org }}</option>
+                          <option value="{{ org.pk }}" {% if org.id == current_org.id %}selected{% endif %}>{{ org }} ({{ org.get_type_display }})</option>
                         {% endfor %}
                       </select>
                     </span>

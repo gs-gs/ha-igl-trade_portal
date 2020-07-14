@@ -25,11 +25,34 @@ class DocumentQuerysetMixin(AccessMixin):
     def get_queryset(self):
         qs = Document.objects.all()
         user = self.request.user
-        # filter by the current org
-        # (this assumes that current org is definitely available by the user)
-        qs = qs.filter(
-            created_by_org=user.get_current_org(self.request.session)
-        ).select_related(
+        current_org = user.get_current_org(self.request.session)
+        if current_org.is_regulator:
+            # regulator can see everything
+            pass
+        elif current_org.is_chambers:
+            # chambers can see only their own documents
+            qs = qs.filter(
+                created_by_org=current_org
+            )
+        elif current_org.is_trader:
+            qs = qs.filter(
+                importer_name__in=(
+                    current_org.name,
+                    current_org.business_id,
+                )
+            ) | qs.filter(
+                exporter__clear_business_id=current_org.business_id
+            ).exclude(
+                exporter__clear_business_id=""
+            ) | qs.filter(
+                exporter__name=current_org.name
+            ).exclude(
+                exporter__name=""
+            )
+        else:
+            qs = Document.objects.none()
+
+        qs = qs.select_related(
             "issuer", "exporter"
         )
         return qs
@@ -104,6 +127,10 @@ class DocumentCreateView(Login, CreateView):
 
     @statsd_timer("view.DocumentCreateView.dispatch")
     def dispatch(self, *args, **kwargs):
+        current_org = self.request.user.get_current_org(self.request.session)
+        if not current_org.is_chambers:
+            messages.error(self.request, "Only chambers can create new documents")
+            return redirect('/documents/')
         return super().dispatch(*args, **kwargs)
 
     def get(self, *args, **kwargs):

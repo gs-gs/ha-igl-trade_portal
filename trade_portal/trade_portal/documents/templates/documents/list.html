@@ -25,6 +25,7 @@
         </div>
       </div>
       <div class="col-md-6 items-list__action">
+        {% if current_org.is_chambers %}
         <div class="dropdown">
           <button class="btn btn-md btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             + New Document
@@ -35,6 +36,7 @@
             {% endfor %}
           </div>
         </div>
+        {% endif %}
       </div>
     </div>
     <div class="mobile-advance-filter-btn">

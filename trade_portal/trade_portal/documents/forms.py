@@ -97,7 +97,7 @@ class DocumentCreateForm(forms.ModelForm):
 
         importers_added = Party.objects.filter(
             created_by_org=self.current_org,
-            type=Party.TYPE_IMPORTER,
+            type=Party.TYPE_TRADER,
         )
         if importers_added:
             self.fields["importer_name"].help_text = "For example: " + ', '.join(
@@ -122,7 +122,7 @@ class DocumentCreateForm(forms.ModelForm):
             defaults={
                 "created_by_user": self.user,
                 "name": exporter_data.get("EntityName") or "",
-                "type": Party.TYPE_EXPORTER,
+                "type": Party.TYPE_TRADER,
                 "country": settings.ICL_APP_COUNTRY,
             }
         )
@@ -143,8 +143,8 @@ class DocumentCreateForm(forms.ModelForm):
             defaults={
                 "created_by_user": self.user,
                 "type": (
-                    Party.TYPE_EXPORTER
-                    if self.current_org.type == self.current_org.TYPE_EXPORTER
+                    Party.TYPE_TRADER
+                    if self.current_org.is_trader
                     else Party.TYPE_CHAMBERS
                 ),
                 "dot_separated_id": self.current_org.dot_separated_id,

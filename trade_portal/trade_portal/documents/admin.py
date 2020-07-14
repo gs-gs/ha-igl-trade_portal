@@ -14,7 +14,10 @@ class FTAAdmin(admin.ModelAdmin):
 
 @admin.register(Party)
 class PartyAdmin(admin.ModelAdmin):
-    list_display = ('business_id', 'name', 'country')
+    list_display = (
+        'business_id', 'type', 'bid_prefix', 'clear_business_id',
+        'name', 'country',
+    )
 
 
 @admin.register(OaDetails)
@@ -30,8 +33,8 @@ class DocumentHistoryItemInlineAdmin(admin.TabularInline):
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'status', 'type', 'importing_country', 'status')
-    list_filter = ('status', 'type', 'importing_country')
+    list_display = ('created_at', 'status', 'type', 'importing_country')
+    list_filter = ('status', 'type')
     inlines = [DocumentHistoryItemInlineAdmin]
 
 

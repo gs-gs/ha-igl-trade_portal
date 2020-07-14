@@ -48,9 +48,9 @@
         <h2 class="subtitle">Authorised Roles</h2>
       </div>
       <div class="col-md-9 profile-row__content">
-        {% if org_ms.org.type == org_ms.org.TYPE_EXPORTER %}
+        {% if org_ms.org.is_trader %}
           <div class="row mb-3 user-row">
-            <div class="col-md-3 user-row__name">AU Business (exporter):</div>
+            <div class="col-md-3 user-row__name">Business (Trader):</div>
             <div class="col-md-9 user-row__content"><strong>Verified <i class="icon icon-check-circle"></i></strong>
               <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">Verified manually</button>
               {% comment %}
@@ -59,7 +59,7 @@
             </div>
           </div>
         {% endif %}
-        {% if org_ms.org.type == org_ms.org.TYPE_CHAMBERS %}
+        {% if org_ms.org.is_chambers %}
           <div class="row mb-3 user-row">
             <div class="col-md-3 user-row__name">Certification Authority:</div>
             <div class="col-md-9 user-row__content">
@@ -70,6 +70,20 @@
               <p class="authorised-roles__description">
                 Preferential Certificates of Origin<br/>
                 Non-Preferential Certificates of Origin
+              </p>
+            </div>
+          </div>
+        {% endif %}
+        {% if org_ms.org.is_regulator %}
+          <div class="row mb-3 user-row">
+            <div class="col-md-3 user-row__name">Regulator:</div>
+            <div class="col-md-9 user-row__content">
+              <strong>Verified <i class="icon icon-check-circle"></i></strong>
+              <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">Verified manually</button>
+            </div>
+            <div class="col">
+              <p class="authorised-roles__description">
+                Can view any document for that jurisdiction but can't create them.
               </p>
             </div>
           </div>

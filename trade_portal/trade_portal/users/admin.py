@@ -22,7 +22,10 @@ class UserAdmin(auth_admin.UserAdmin):
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ("pk", "name", "type", "business_id")
+    list_display = (
+        "pk", "name", "business_id", "dot_separated_id",
+        "is_trader", "is_chambers", "is_regulator"
+    )
 
 
 @admin.register(OrgMembership)

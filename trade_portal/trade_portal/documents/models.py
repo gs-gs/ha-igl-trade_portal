@@ -39,14 +39,12 @@ class Party(models.Model):
     # This is business field, just a dictionary of values to click on
     # and bears no access right meaning (apart of business ID, which
     # gives access to organisations owning it)
-    TYPE_EXPORTER = 'e'
-    TYPE_IMPORTER = 'i'
+    TYPE_TRADER = 't'
     TYPE_CHAMBERS = 'c'
     TYPE_OTHER = 'o'
 
     TYPE_CHOICES = (
-        (TYPE_EXPORTER, "Exporter"),
-        (TYPE_IMPORTER, "Importer"),
+        (TYPE_TRADER, "Trader"),
         (TYPE_CHAMBERS, "Chambers"),
         (TYPE_OTHER, "Other"),
     )
@@ -61,8 +59,9 @@ class Party(models.Model):
         blank=True, null=True
     )
 
-    # exporter or importer
     type = models.CharField(max_length=1, blank=True, choices=TYPE_CHOICES, default=TYPE_OTHER)
+    bid_prefix = models.CharField(max_length=64, blank=True, default="")
+    clear_business_id = models.CharField(max_length=128, blank=True, default="")
     business_id = models.CharField(max_length=256, help_text="ABN or UEN for example", blank=True)
     dot_separated_id = models.CharField(max_length=256, blank=True, default="a.b.c")
     name = models.CharField(max_length=256, blank=True)
@@ -74,6 +73,14 @@ class Party(models.Model):
     class Meta:
         ordering = ('name',)
         verbose_name_plural = "parties"
+
+    def save(self, *args, **kwargs):
+        if ":" in self.business_id and not self.bid_prefix and not self.clear_business_id:
+            self.bid_prefix, self.clear_business_id = self.business_id.rsplit(":", maxsplit=1)
+        else:
+            if not self.clear_business_id and ":" not in self.business_id:
+                self.clear_business_id = self.business_id
+        super().save(*args, **kwargs)
 
     @property
     def full_business_id(self):
@@ -119,7 +126,10 @@ class OaDetails(models.Model):
     # }
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     created_at = models.DateTimeField(default=timezone.now)
-    created_for = models.ForeignKey("users.Organisation", models.CASCADE)
+    created_for = models.ForeignKey(
+        "users.Organisation", models.CASCADE,
+        blank=True, null=True,
+    )
     uri = models.CharField(max_length=3000)
     key = models.CharField(max_length=3000)
 
@@ -168,24 +178,35 @@ class OaDetails(models.Model):
 
 
 class Document(models.Model):
-    # Business status
-    STATUS_ISSUED = 'issued'
-    STATUS_ACCEPTED = 'accepted'
-    STATUS_DISPUTED = 'disputed'
-    STATUS_EXPIRED = 'expired'
-    STATUS_ACQUITTED = 'acquitted'
-    STATUS_REJECTED = 'rejected'
-    # some error, mostly the internal one
-    STATUS_ERROR = 'error'
+    # # Business status
+    # STATUS_ISSUED = 'issued'
+    # STATUS_ACCEPTED = 'accepted'
+    # STATUS_DISPUTED = 'disputed'
+    # STATUS_EXPIRED = 'expired'
+    # STATUS_ACQUITTED = 'acquitted'
+    # STATUS_REJECTED = 'rejected'
+    # # some error, mostly the internal one
+    # STATUS_ERROR = 'error'
+
+    # STATUS_CHOICES = (
+    #     (STATUS_ISSUED, 'Issued'),
+    #     (STATUS_ACCEPTED, 'Accepted'),
+    #     (STATUS_DISPUTED, 'Disputed'),
+    #     (STATUS_REJECTED, 'Rejected'),
+    #     (STATUS_ACQUITTED, 'Acquitted'),
+    #     (STATUS_EXPIRED, 'Expired'),
+    #     (STATUS_ERROR, 'Error'),
+    # )
+    STATUS_PENDING = "pending"
+    STATUS_FAILED = "failed"
+    STATUS_VALIDATED = "validated"
+    STATUS_INCOMING = "incoming"
 
     STATUS_CHOICES = (
-        (STATUS_ISSUED, 'Issued'),
-        (STATUS_ACCEPTED, 'Accepted'),
-        (STATUS_DISPUTED, 'Disputed'),
-        (STATUS_REJECTED, 'Rejected'),
-        (STATUS_ACQUITTED, 'Acquitted'),
-        (STATUS_EXPIRED, 'Expired'),
-        (STATUS_ERROR, 'Error'),
+        (STATUS_PENDING, "Pending"),
+        (STATUS_FAILED, "Failed"),
+        (STATUS_VALIDATED, "Validated"),
+        (STATUS_INCOMING, "Incoming"),
     )
 
     TYPE_PREF_COO = "pref_coo"
@@ -226,7 +247,8 @@ class Document(models.Model):
         related_name="documents_exported"
     )
     importer_name = models.CharField(
-        max_length=256, help_text="If known", blank=True, default=""
+        max_length=256, help_text="Organisation name or business ID (ABN, UEN)",
+        blank=True, default=""
     )
 
     consignment_ref_doc_number = models.CharField(
@@ -277,7 +299,7 @@ class Document(models.Model):
     )
     # https://edi3.org/specs/edi3-regulatory/develop/certificates/#state-lifecycle
     status = models.CharField(
-        max_length=12, choices=STATUS_CHOICES, default=STATUS_ISSUED
+        max_length=12, choices=STATUS_CHOICES, default=STATUS_PENDING
     )
 
     search_field = models.TextField(blank=True, default="")
@@ -511,44 +533,20 @@ class NodeMessage(models.Model):
         if self.is_outbound:
             # change status to error if any outboud message is rejected
             if new_status == "rejected":
-                self.document.status = Document.STATUS_ERROR
+                self.document.status = Document.STATUS_FAILED
                 self.document.save()
                 logger.warning(
-                    "Change document %s status to Error due to rejected message %s",
+                    "Change document %s status to Failed due to rejected message %s",
                     self.document,
                     self
                 )
                 DocumentHistoryItem.objects.create(
                     type="nodemessage",
                     document=self.document,
-                    message="The document marked as Error because the outbound message has been rejected",
+                    message="The document marked as Failed because the outbound message has been rejected",
                     linked_obj_id=self.id,
                 )
-        else:  # not self.is_outbound
-            # could be interesting
-            if self.body.get("predicate") == Predicates.CO_ACQUITTED:
-                if self.document.status in (Document.STATUS_ISSUED, Document.STATUS_ISSUED):
-                    self.document.status = Document.STATUS_ACQUITTED
-                    self.document.save()
-                    logger.info("Changing document %s status to %s", self.document, self.document.status)
-                else:
-                    logger.warning(
-                        "Not changing document %s status to %s - wrong source status",
-                        self.document, self.document.status
-                    )
-        # c = self.document
-        # b = self.body
-        # if new_status:
-        #     if b["predicate"] == Predicates.CO_CREATED and self.is_outbound:
-        #         if new_status == "accepted" and c.status != c.STATUS_ACCEPTED:
-        #             c.status = c.STATUS_ACCEPTED
-        #             logger.info("Changing document %s status to accepted", c.short_id)
-        #             c.save()
-        #             return
-        #         if new_status == "rejected" and c.status != c.STATUS_REJECTED:
-        #             c.status = c.STATUS_REJECTED
-        #             logger.info("Changing document %s status to rejected", c.short_id)
-        #             c.save()
-        #             return
-        #     # TODO: the same for Acquitted and received
+            elif new_status == "accepted":
+                self.document.status = Document.STATUS_VALIDATED
+                self.document.save()
         return

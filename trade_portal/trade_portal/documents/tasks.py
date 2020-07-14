@@ -40,9 +40,9 @@ def lodge_document(document_id=None):
             # for local setups it's handy to raise exception
             raise
         logger.exception(e)
-        if doc.status == Document.STATUS_ISSUED:
-            logger.info("Marking document %s as error", doc)
-            doc.status = Document.STATUS_ERROR
+        if doc.status == Document.STATUS_PENDING:
+            logger.info("Marking document %s as failed", doc)
+            doc.status = Document.STATUS_FAILED
             doc.save()
 
 
@@ -88,7 +88,7 @@ def process_incoming_document_received(self, document_pk):
                     message=f"Unable to process document after {self.request.retries} retries",
                     object_body=str(e),
                 )
-                doc.status = Document.STATUS_ERROR
+                doc.status = Document.STATUS_FAILED
                 doc.save()
                 return False
         else:
@@ -99,7 +99,7 @@ def process_incoming_document_received(self, document_pk):
                 message="Unable to process document, non-retryable exception",
                 object_body=str(e),
             )
-            doc.status = Document.STATUS_ERROR
+            doc.status = Document.STATUS_FAILED
             doc.save()
             return False
     return

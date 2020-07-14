@@ -14,20 +14,16 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       {% with object.status as s %}
-        <li class="breadcrumb-item {% if s == 'issued' %}active{% endif %}">Issued</li>
-        {% if s != 'rejected' and s != 'error' %}
-          {% if s.status == "disputed" %}
-            <li class="breadcrumb-item {% if s == 'disputed' %}active{% endif %}">Disputed</li>
+        {% if s == "incoming" %}
+          <li class="breadcrumb-item active">Incoming</li>
+        {% else %}
+          <li class="breadcrumb-item active">Pending</li>
+          {% if s == 'failed' %}
+            <li class="breadcrumb-item active">Failed</li>
           {% endif %}
-          <li class="breadcrumb-item {% if s == 'accepted' %}active{% endif %}">Accepted</li>
-          <li class="breadcrumb-item {% if s == 'acquitted' %}active{% endif %}">Acquitted</li>
-          <li class="breadcrumb-item {% if s == 'expired' %}active{% endif %}">Expired</li>
-        {% endif %}
-        {% if s == 'rejected' %}
-          <li class="breadcrumb-item active">Rejected</li>
-        {% endif %}
-        {% if s == 'error' %}
-          <li class="breadcrumb-item active" style="color: red; font-weight: bold">Error</li>
+          {% if s == 'validated' %}
+            <li class="breadcrumb-item active">Validated</li>
+          {% endif %}
         {% endif %}
       {% endwith %}
     </ol>
@@ -137,8 +133,10 @@
       <dd>{{ object.consignment_ref_doc_type|default:"(not specified)" }}</dd>
       <dt>Doc issuer</dt>
       <dd>{{ object.consignment_ref_doc_issuer|default:"(not specified)" }}</dd>
-      <dt>Data provided by </dt>
-      <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
+      {% if created_by_org %}
+        <dt>Data provided by </dt>
+        <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
+      {% endif %}
     </dl>
   </div>
 
@@ -199,7 +197,7 @@
   {% endif %}
 
   {% if object.is_incoming %}
-    {% if object.status == object.STATUS_ERROR %}
+    {% if object.status == object.STATUS_FAILED %}
       <div class="alert alert-danger">This document has been received with an error; see the Logs page for details. It usually means the technical error, not the certificate one.</div>
     {% endif %}
     {# render incoming document in a nice but quick way #}

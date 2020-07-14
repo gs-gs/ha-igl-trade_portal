@@ -98,12 +98,10 @@ class BaseIgService:
 class DocumentService(BaseIgService):
 
     def issue(self, document):
-        assert document.status == Document.STATUS_ISSUED
-
         subject = "{}.{}.{}".format(
             settings.ICL_APP_COUNTRY.upper(),
             (
-                document.created_by_org.business_id or "chambers-app"
+                document.created_by_org.business_id
             ).replace('.', '-'),
             document.short_id,
         )
@@ -143,7 +141,7 @@ class DocumentService(BaseIgService):
                 message="Error: OA document wrap failed with error",
                 object_body=str(e),
             )
-            document.status = Document.STATUS_ERROR
+            document.status = Document.STATUS_FAILED
             document.save()
             return False
 
@@ -165,7 +163,7 @@ class DocumentService(BaseIgService):
                 message=f"Error: OA document wrap failed with result {oa_doc_wrapped_resp.status_code}",
                 object_body=oa_doc_wrapped_resp.json(),
             )
-            document.status = Document.STATUS_ERROR
+            document.status = Document.STATUS_FAILED
             document.save()
             return False
 
@@ -216,7 +214,7 @@ class DocumentService(BaseIgService):
                 type="error", document=document,
                 message="Error: Can't upload OA document as a message object",
             )
-            document.status = Document.STATUS_ERROR
+            document.status = Document.STATUS_FAILED
             document.save()
             return False
 
@@ -233,7 +231,7 @@ class DocumentService(BaseIgService):
                 message="Error: unable to post Node message",
                 object_body=message_json
             )
-            document.status = Document.STATUS_ERROR
+            document.status = Document.STATUS_FAILED
             document.save()
             return False
         document.save()
@@ -484,19 +482,14 @@ class NodeService(BaseIgService):
             )
             return
 
-        first_chambers = Organisation.objects.filter(
-            type=Organisation.TYPE_CHAMBERS
-        ).first()
         oad = OaDetails.objects.create(
-            created_for=first_chambers,
+            created_for=None,
             uri="(empty)"
         )
         new_doc = Document.objects.create(
             oa=oad,
-            created_by_org=first_chambers,
-            status=Document.STATUS_ISSUED,  # TODO: based on the message predicate
-            # type= TODO - determine from the object on the next step
-            # document_number - next step
+            created_by_org=None,
+            status=Document.STATUS_INCOMING,
             sending_jurisdiction=message_body["sender"],
             importing_country=message_body["receiver"],
             intergov_details=message_body,
@@ -652,7 +645,7 @@ class IncomingDocumentService(BaseIgService):
                 message="Failed to store obj from the message",
                 object_body=str(e),
             )
-            doc.status = Document.STATUS_ERROR
+            doc.status = Document.STATUS_FAILED
             doc.save()
             return False
 
@@ -782,7 +775,7 @@ class IncomingDocumentService(BaseIgService):
                     doc.exporter, created = Party.objects.get_or_create(
                         created_by_org=doc.created_by_org,
                         business_id=exporter.get("id"),
-                        type=Party.TYPE_EXPORTER,
+                        type=Party.TYPE_TRADER,
                         country=doc.sending_jurisdiction,
                         defaults={
                             "name": exporter.get("name") or "",
