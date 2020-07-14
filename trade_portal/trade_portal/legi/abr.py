@@ -79,4 +79,5 @@ def fetch_abn_info_api(abn):
     body = json.loads(body)
 
     cache.set(CACHE_KEY, body, 3600 * 48)  # 2 days
+    body.pop("BusinessName", None)
     return body

@@ -29,7 +29,6 @@ class DocumentsTable(tables.Table):
             {{ record.consignment_ref_doc_number }}
             {{ record.consignment_ref_doc_type }}
             {{ record.consignment_ref_doc_issuer }}
-            {{ record.invoice_number }}
         """,
         orderable=False,
     )
