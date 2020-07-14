@@ -7,31 +7,6 @@ from .tasks import lodge_document
 from .models import Party, Document, DocumentHistoryItem, DocumentFile, FTA
 
 
-class PartyCreateForm(forms.ModelForm):
-    class Meta:
-        model = Party
-        fields = (
-            'type',
-            'business_id', 'name', 'country',
-        )
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        self.current_org = kwargs.pop('current_org')
-        super().__init__(*args, **kwargs)
-
-    def save(self, *args, **kwargs):
-        self.instance.created_by_user = self.user
-        self.instance.created_by_org = self.current_org
-        return super().save(*args, **kwargs)
-
-
-class PartyUpdateForm(PartyCreateForm):
-    def save(self, *args, **kwargs):
-        # don't update created_by_* parameters
-        return super(PartyCreateForm, self).save(*args, **kwargs)
-
-
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
     exporter = forms.CharField(
@@ -61,7 +36,6 @@ class DocumentCreateForm(forms.ModelForm):
             'importer_name',
             'file',
             'consignment_ref_doc_number', 'consignment_ref_doc_type', 'consignment_ref_doc_issuer',
-
             'invoice_number', 'origin_criteria',
         )
 
@@ -183,10 +157,29 @@ class DocumentCreateForm(forms.ModelForm):
         return result
 
 
-# class DocumentUpdateForm(DocumentCreateForm):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields["file"].required = False
-#         self.fields["file"].help_text = "Leave empty if you want to keep the old file"
-#         del self.fields["exporter"]
-#         del self.fields["type"]
+class ConsignmentSectionUpdateForm(forms.ModelForm):
+    consignment_ref_doc_issuer = forms.CharField(
+        label=f"Document Issuer {settings.BID_NAME}",
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Consignment doc issuer'}
+        ),
+        required=False
+    )
+    consignment_ref_doc_number = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control'}
+        ),
+        required=False
+    )
+
+    class Meta:
+        model = Document
+        fields = (
+            'consignment_ref_doc_number',
+            'consignment_ref_doc_type',
+            'consignment_ref_doc_issuer',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["consignment_ref_doc_type"].widget.attrs["class"] = "form-control"

@@ -75,12 +75,13 @@ def process_incoming_document_received(self, document_pk):
                     doc,
                     self.request.retries
                 )
+                retry_delay = 15 + 30 * self.request.retries
                 DocumentHistoryItem.objects.create(
                     type="error", document=doc,
-                    message="Error, will be trying again",
+                    message=f"Error, will be trying again in {retry_delay}s",
                     object_body=str(e),
                 )
-                self.retry(countdown=5 + 10 * self.request.retries)
+                self.retry(countdown=retry_delay)
             else:
                 logger.error("Max retries reached for the document %s, marking as error", doc)
                 DocumentHistoryItem.objects.create(

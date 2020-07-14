@@ -125,6 +125,13 @@
   </div>
 
   <div class="section-info">
+    {% if not object.is_incoming %}
+      {% if current_org.is_chambers or current_org.is_trader %}
+        <div style="float: right">
+          <a href="{% url 'documents:consignment-update' object.pk %}" class="btn btn-sm btn-primary">Update</a>
+        </div>
+      {% endif %}
+    {% endif %}
     <h2 class="subtitle section-info__title">Consignment details</h2>
     <dl class="info-list">
       <dt>Doc number</dt>

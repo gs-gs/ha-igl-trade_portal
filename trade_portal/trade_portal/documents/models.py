@@ -13,8 +13,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django_countries.fields import CountryField
 
-from intergov_client.predicates import Predicates
-
 from trade_portal.utils.qr import get_qrcode_image
 from trade_portal.utils.monitoring import statsd_timer
 
