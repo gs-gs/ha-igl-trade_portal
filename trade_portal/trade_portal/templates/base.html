@@ -14,22 +14,44 @@
     <link rel="icon" href="{% static 'images/favicon.png' %}">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     {% block extra_head %}{% endblock %}
+    {% if ICL_APP_COUNTRY == "SG" %}
+      <style>
+        a {
+          color: #c22;
+        }
+        h2.subtitle.section-info__title {
+          color: #822;
+        }
+        span.header__logo-text {
+          color: #822;
+        }
+      </style>
+    {% endif %}
   </head>
 
   <body class="d-flex flex-column {% block body_class %}{% endblock %}{% if request.user.is_authenticated %} authenticated{% endif %}">
     <header class="header {% block header_class %}{% endblock %}">
       <div class="header__container">
         <a class="header__logo" href="/">
-          <img src="{% static 'images/logo.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--default" />
-          <img src="{% static 'images/logo-white.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white" />
+          {% if ICL_APP_COUNTRY == "AU" %}
+            <img src="{% static 'images/logoAU.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--default" />
+            <img src="{% static 'images/logo-whiteAU.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white" />
+          {% else %}{% if ICL_APP_COUNTRY == "SG" %}
+            <img src="{% static 'images/logoSG.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--default" style="border: 1px solid gray" />
+            <img src="{% static 'images/logo-whiteSG.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white"/>
+          {% endif %}
+          {% endif %}
           <span class="header__logo-text">Inter-Government Ledger Trade Portal</span>
         </a>
         <div class="header__nav">
           <div class="header__nav-actions">
             {% if request.user.is_authenticated %}
               <div class="header__user">
-                <div class="header__user-name">{{ user }}</div>
-                <div class="header__user-org">{{ current_org.name }}</div>
+                <div class="header__user-name">
+                  {{ user }}
+                  {% if user.is_superuser %}(Superuser){% endif %}
+                </div>
+                <div class="header__user-org">{{ current_org.name }} ({{ current_org.get_type_display }})</div>
               </div>
             {% else %}
               <a href="/accounts/signup/" class="btn btn-primary header__nav-btn">Sign up</a>
@@ -77,7 +99,7 @@
                     <span>Acting as
                       <select class="form-control" onChange="$('#id-current-org-form').submit()" name="current_org">
                         {% for org in user.orgs %}
-                          <option value="{{ org.pk }}" {% if org.id == current_org.id %}selected{% endif %}>{{ org }}</option>
+                          <option value="{{ org.pk }}" {% if org.id == current_org.id %}selected{% endif %}>{{ org }} ({{ org.get_type_display }})</option>
                         {% endfor %}
                       </select>
                     </span>
@@ -130,7 +152,12 @@
 
     <footer class="footer mt-auto">
       <div class="footer__logo">
-        <img src="{% static 'images/footer-logo.png' %}" alt="">
+        {% if ICL_APP_COUNTRY == "AU" %}
+          <img src="{% static 'images/footer-logoAU.png' %}" alt="" />
+        {% endif %}
+        {% if ICL_APP_COUNTRY == "SG" %}
+          <img src="{% static 'images/footer-logoSG.png' %}" alt="" />
+        {% endif %}
       </div>
       <div class="footer-menu footer__menu">
         <ul class="footer-menu__list">

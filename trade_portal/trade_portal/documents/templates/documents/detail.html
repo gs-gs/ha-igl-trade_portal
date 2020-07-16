@@ -9,50 +9,26 @@
 <div class="content-box">
   <a href="logs/" style="float: right"  class="btn btn-primary btn-sm">Logs</a>
 
-  <h1 class="page-title">{% if object.is_incoming %}Incoming{% endif %} Document #{{ object.document_number }}</h1>
+  <h1 class="page-title">{% if object.is_incoming %}Incoming{% endif %} {{ object.get_type_display }} {{ object.document_number }}</h1>
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       {% with object.status as s %}
-        <li class="breadcrumb-item {% if s == 'issued' %}active{% endif %}">Issued</li>
-        {% if s != 'rejected' and s != 'error' %}
-          {% if s.status == "disputed" %}
-            <li class="breadcrumb-item {% if s == 'disputed' %}active{% endif %}">Disputed</li>
+        {% if s == "incoming" %}
+          <li class="breadcrumb-item active">Incoming</li>
+        {% else %}
+          <li class="breadcrumb-item active">Pending</li>
+          {% if s == 'failed' %}
+            <li class="breadcrumb-item active">Failed</li>
           {% endif %}
-          <li class="breadcrumb-item {% if s == 'accepted' %}active{% endif %}">Accepted</li>
-          <li class="breadcrumb-item {% if s == 'acquitted' %}active{% endif %}">Acquitted</li>
-          <li class="breadcrumb-item {% if s == 'expired' %}active{% endif %}">Expired</li>
-        {% endif %}
-        {% if s == 'rejected' %}
-          <li class="breadcrumb-item active">Rejected</li>
-        {% endif %}
-        {% if s == 'error' %}
-          <li class="breadcrumb-item active" style="color: red; font-weight: bold">Error</li>
+          {% if s == 'validated' %}
+            <li class="breadcrumb-item active">Validated</li>
+          {% endif %}
         {% endif %}
       {% endwith %}
     </ol>
   </nav>
-  {% if object.is_incoming %}
-    {# render incoming document in a nice but quick way #}
-    {% if object.intergov_details.oa_doc %}
-      <fieldset style="margin: 20px; padding: 20px; background-color: whitesmoke;"><legend style="padding-top: 30px">Incoming document data</legend>
-      {% for key, value in object.intergov_details.oa_doc.items %}
-        <strong>{{ key|capfirst }}</strong>:
-        {% if value.items %}
-          <div style='background-color: white; padding-left: 30px;'>
-          {% for subkey, subvalue in value.items %}
-            <strong>{{ subkey }}</strong>: {{ subvalue }}<br/>
-          {% endfor %}
-          </div>
-        {% else %}
-          {{ value }}
-        {% endif %}
-        <hr />
-      {% endfor %}
-      </fieldset>
-    {% endif %}
-
-  {% else %}
+  {% if not object.is_incoming %}
     <div class="form-group">
       <div class="label">IGL Document ID <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
       <ul class="nav nav-tabs">
@@ -87,7 +63,6 @@
     </div>
   {% endif %}
 
-{% if not object.is_incoming %}
   <div class="section-info">
     <dl class="info-list">
       <dt>Document Type</dt>
@@ -95,14 +70,21 @@
       <dt>Current status</dt>
       <dd>{{ object.get_status_display|default:"(unknown)" }}</dd>
       <dt>Issuer</dt>
-      <dd>{{ object.issuer|default:"(unknown)" }}</dd>
+      <dd>
+        {{ object.issuer.name }}<br/>
+        {% if object.issuer.register_url %}
+          {{ object.issuer.readable_identifier_name }}: <a href="{{ object.issuer.register_url }}" target="_blank">{{ object.issuer.business_id }}</a>
+        {% endif %}
+      </dd>
       <dt>Created by</dt>
       <dd>
-        <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
-        at <strong>{{ object.created_by_org }}</strong>
+        {% if object.is_incoming %}Remote party{% else %}
+          <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
+          at <strong>{{ object.created_by_org }}</strong>
+        {% endif %}
       </dd>
       <dt>Created at</dt>
-      <dd>{{ object.created_at }}</dd>
+      <dd>{{ object.created_at }} {{ object.created_at.tzinfo }}</dd>
     </dl>
   </div>
   <div class="section-info">
@@ -126,12 +108,16 @@
       {% endif %}
       <dt>FTA</dt>
       <dd>{{ object.fta }}</dd>
+      <dt>Exporting country</dt>
+      <dd>{{ object.sending_jurisdiction.name }}</dd>
       <dt>Importing country</dt>
       <dd>{{ object.importing_country.name }}</dd>
       <dt>Exporter</dt>
       <dd>
         Entity: {{ object.exporter.name }}<br/>
-        ABN: <a href="https://abr.business.gov.au/ABN/View?abn={{ object.exporter.business_id }}" target="_blank">{{ object.exporter.business_id }}</a>
+        {% if object.exporter.register_url %}
+          {{ object.exporter.readable_identifier_name }}: <a href="{{ object.exporter.register_url }}" target="_blank">{{ object.exporter.business_id }}</a>
+        {% endif %}
       </dd>
       <dt>Importer name</dt>
       <dd>{{ object.importer_name|default:"(not specified)" }}</dd>
@@ -139,6 +125,13 @@
   </div>
 
   <div class="section-info">
+    {% if not object.is_incoming %}
+      {% if current_org.is_chambers or current_org.is_trader %}
+        <div style="float: right">
+          <a href="{% url 'documents:consignment-update' object.pk %}" class="btn btn-sm btn-primary">Update</a>
+        </div>
+      {% endif %}
+    {% endif %}
     <h2 class="subtitle section-info__title">Consignment details</h2>
     <dl class="info-list">
       <dt>Doc number</dt>
@@ -147,11 +140,12 @@
       <dd>{{ object.consignment_ref_doc_type|default:"(not specified)" }}</dd>
       <dt>Doc issuer</dt>
       <dd>{{ object.consignment_ref_doc_issuer|default:"(not specified)" }}</dd>
-      <dt>Data provided by </dt>
-      <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
+      {% if created_by_org %}
+        <dt>Data provided by </dt>
+        <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
+      {% endif %}
     </dl>
   </div>
-{% endif %}
 
   <div class="section-info">
     {% if object.files.all %}
@@ -181,7 +175,7 @@
                 </a>
                 <div class="document-info">
                   {{ doc.created_at }} by
-                  <span class="document-owner">{{ doc.created_by }}</span>
+                  <span class="document-owner">{{ doc.created_by|default:"system" }}</span>
                 </div>
               </td>
             </tr>
@@ -208,5 +202,34 @@
       {% endfor %}
     </div>
   {% endif %}
+
+  {% if object.is_incoming %}
+    {% if object.status == object.STATUS_FAILED %}
+      <div class="alert alert-danger">This document has been received with an error; see the Logs page for details. It usually means the technical error, not the certificate one.</div>
+    {% endif %}
+    {# render incoming document in a nice but quick way #}
+    {% if object.intergov_details.oa_doc %}
+    <div class="section-info">
+    <div class="subtitle section-info__title">Raw incoming data</div>
+    <dl class="info-list">
+      {% for key, value in object.intergov_details.oa_doc.items %}
+        <dt>{{ key|capfirst }}</dt>
+        <dd>
+          {% if value.items %}
+            <div style='background-color: whitesmoke;'>
+            {% for subkey, subvalue in value.items %}
+              <strong>{{ subkey }}</strong>: {{ subvalue }}<br/>
+            {% endfor %}
+            </div>
+          {% else %}
+            {{ value }}
+          {% endif %}
+        </dd>
+      {% endfor %}
+      </fieldset>
+    {% endif %}
+  {% endif %}
+
+
 </div>
 {% endblock content %}

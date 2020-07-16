@@ -47,7 +47,12 @@
                   <textarea style="font-size: 7pt; width: 200px; height: 100px;" readonly>{{ history_item.object_body|json_render }}</textarea>
                 {% endif %}
               </td>
-              <td>{{ history_item.related_object }}</td>
+              <td>
+                {% if history_item.related_file %}
+                  <a href="{% url 'documents:history-file-download' object.id history_item.id %}" target="_new">Download</a>
+                {% endif %}
+                {{ history_item.related_object|default:"" }}
+              </td>
             </tr>
           {% endfor %}
         </tbody>

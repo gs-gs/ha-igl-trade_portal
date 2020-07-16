@@ -5,14 +5,14 @@ from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect
 from django.views.generic import (
-    DetailView, ListView, CreateView,  # UpdateView,
+    DetailView, ListView, CreateView, UpdateView,
 )
 from django_tables2 import SingleTableView
 from django.urls import reverse
 
 
 from trade_portal.documents.forms import (
-    DocumentCreateForm,
+    DocumentCreateForm, ConsignmentSectionUpdateForm,
 )
 from trade_portal.documents.models import Document, OaDetails
 from trade_portal.documents.tables import DocumentsTable
@@ -25,11 +25,34 @@ class DocumentQuerysetMixin(AccessMixin):
     def get_queryset(self):
         qs = Document.objects.all()
         user = self.request.user
-        # filter by the current org
-        # (this assumes that current org is definitely available by the user)
-        qs = qs.filter(
-            created_by_org=user.get_current_org(self.request.session)
-        ).select_related(
+        current_org = user.get_current_org(self.request.session)
+        if current_org.is_regulator:
+            # regulator can see everything
+            pass
+        elif current_org.is_chambers:
+            # chambers can see only their own documents
+            qs = qs.filter(
+                created_by_org=current_org
+            )
+        elif current_org.is_trader:
+            qs = qs.filter(
+                importer_name__in=(
+                    current_org.name,
+                    current_org.business_id,
+                )
+            ) | qs.filter(
+                exporter__clear_business_id=current_org.business_id
+            ).exclude(
+                exporter__clear_business_id=""
+            ) | qs.filter(
+                exporter__name=current_org.name
+            ).exclude(
+                exporter__name=""
+            )
+        else:
+            qs = Document.objects.none()
+
+        qs = qs.select_related(
             "issuer", "exporter"
         )
         return qs
@@ -104,6 +127,10 @@ class DocumentCreateView(Login, CreateView):
 
     @statsd_timer("view.DocumentCreateView.dispatch")
     def dispatch(self, *args, **kwargs):
+        current_org = self.request.user.get_current_org(self.request.session)
+        if not current_org.is_chambers:
+            messages.error(self.request, "Only chambers can create new documents")
+            return redirect('/documents/')
         return super().dispatch(*args, **kwargs)
 
     def get(self, *args, **kwargs):
@@ -164,12 +191,12 @@ class DocumentCreateView(Login, CreateView):
 #         return reverse('documents:detail', args=[self.object.pk])
 
 
-class DocumentDetailView(Login, DetailView):
+class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
     template_name = 'documents/detail.html'
     model = Document
 
 
-class DocumentLogsView(Login, DetailView):
+class DocumentLogsView(Login, DocumentQuerysetMixin, DetailView):
     template_name = 'documents/logs.html'
     model = Document
 
@@ -190,3 +217,43 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
         response = HttpResponse(document.file, content_type='application/octet-stream')
         response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
         return response
+
+
+class DocumentHistoryFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
+
+    def get_object(self):
+        try:
+            c = self.get_queryset().get(pk=self.kwargs['pk'])
+            historyitem = c.history.get(id=self.kwargs['history_item_id'])
+            if not historyitem.related_file:
+                raise ObjectDoesNotExist()
+        except ObjectDoesNotExist:
+            raise Http404()
+        return historyitem
+
+    def get(self, *args, **kwargs):
+        # standard file approach
+        historyitem = self.get_object()
+        response = HttpResponse(historyitem.related_file, content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % historyitem.related_file.name
+        return response
+
+
+class ConsignmentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
+    template_name = 'documents/consignment-update.html'
+    form_class = ConsignmentSectionUpdateForm
+
+    def dispatch(self, *args, **kwargs):
+        # we don't check for document visibility because it's done by mixin
+        current_org = self.request.user.get_current_org(self.request.session)
+        if not current_org.is_chambers and not current_org.is_trader:
+            messages.error(self.request, "Only chambers and trade party can update these details")
+            return redirect('/documents/')
+        return super().dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        messages.success(
+            self.request,
+            "The consignment details have been saved successfully"
+        )
+        return reverse('documents:detail', args=[self.object.pk])

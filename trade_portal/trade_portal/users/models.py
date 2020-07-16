@@ -1,6 +1,10 @@
+import logging
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.functional import cached_property
+
+logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
@@ -25,25 +29,28 @@ class User(AbstractUser):
         """
         org = None
         current_org_id = session.get("current_org_id") or None
-
-        if self.is_staff:
-            if current_org_id:
-                org = Organisation.objects.get(pk=current_org_id)
+        try:
+            if self.is_staff:
+                if current_org_id:
+                    org = Organisation.objects.get(pk=current_org_id)
+                else:
+                    org = Organisation.objects.first()
             else:
-                org = Organisation.objects.first()
-        else:
-            current_org_ms = None
-            if current_org_id:
-                current_org_ms = OrgMembership.objects.filter(
-                    user=self,
-                    org_id=current_org_id
-                ).first()
-            if not current_org_ms:
-                current_org_ms = OrgMembership.objects.filter(
-                    user=self,
-                ).first()
-            if current_org_ms:
-                org = current_org_ms.org
+                current_org_ms = None
+                if current_org_id:
+                    current_org_ms = OrgMembership.objects.filter(
+                        user=self,
+                        org_id=current_org_id
+                    ).first()
+                if not current_org_ms:
+                    current_org_ms = OrgMembership.objects.filter(
+                        user=self,
+                    ).first()
+                if current_org_ms:
+                    org = current_org_ms.org
+        except Exception as e:
+            logger.exception(e)
+            org = None
         return org
 
 
@@ -66,20 +73,7 @@ class OrgMembership(models.Model):
 
 
 class Organisation(models.Model):
-    # This model is made for access permissions needs
-    TYPE_EXPORTER = 'e'
-    TYPE_CHAMBERS = 'c'
-
-    TYPES = (
-        # exporters can see all object created for parties with their business ID
-        (TYPE_EXPORTER, 'Exporter'),
-        # Chambers can see their own created objects
-        # and can create documents on behalf of exporters
-        (TYPE_CHAMBERS, 'Chambers'),
-    )
-
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=1, choices=TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
     users = models.ManyToManyField(
         "User", related_name="users",
@@ -95,8 +89,22 @@ class Organisation(models.Model):
         max_length=256, blank=True, default="fill.that.value.au"
     )
 
+    is_trader = models.BooleanField(default=False)
+    is_chambers = models.BooleanField(default=False)
+    is_regulator = models.BooleanField(default=False)
+
     class Meta:
         ordering = ("name",)
 
     def __str__(self):
         return self.name
+
+    def get_type_display(self):
+        roles = []
+        if self.is_trader:
+            roles.append("Trader")
+        if self.is_chambers:
+            roles.append("Chambers")
+        if self.is_regulator:
+            roles.append("Regulator")
+        return ', '.join(roles)

@@ -9,6 +9,7 @@ import mimetypes
 import uuid
 from Crypto.Cipher import AES
 
+import dateutil.parser
 import requests
 from constance import config
 from django.conf import settings
@@ -22,11 +23,18 @@ from intergov_client.predicates import Predicates
 from intergov_client.auth import DjangoCachedCognitoOIDCAuth, DumbAuth
 
 from trade_portal.documents.models import (
-    Document, DocumentHistoryItem, NodeMessage, OaDetails, DocumentFile,
+    FTA, Party, Document, DocumentHistoryItem,
+    NodeMessage, OaDetails, DocumentFile,
 )
 from trade_portal.users.models import Organisation
 
 logger = logging.getLogger(__name__)
+
+
+class IncomingDocumentProcessingError(Exception):
+    def __init__(self, *args, **kwargs):
+        self.is_retryable = kwargs.pop("is_retryable", False)
+        super().__init__(*args, **kwargs)
 
 
 class AESCipher:
@@ -90,12 +98,10 @@ class BaseIgService:
 class DocumentService(BaseIgService):
 
     def issue(self, document):
-        assert document.status == Document.STATUS_ISSUED
-
         subject = "{}.{}.{}".format(
             settings.ICL_APP_COUNTRY.upper(),
             (
-                document.created_by_org.business_id or "chambers-app"
+                document.created_by_org.business_id
             ).replace('.', '-'),
             document.short_id,
         )
@@ -107,10 +113,14 @@ class DocumentService(BaseIgService):
         # step 2. Append EDI3 document, merging them on the root level
         oa_doc.update(document.get_rendered_edi3_document())
 
-        DocumentHistoryItem.objects.create(
+        d = DocumentHistoryItem.objects.create(
             type="text", document=document,
             message=f"OA document has been generated, size: {len(json.dumps(oa_doc))}b",
-            object_body=json.dumps(oa_doc)
+            # object_body=json.dumps(oa_doc)
+            related_file=default_storage.save(
+                f'incoming/{document.id}/oa-doc.json',
+                ContentFile(json.dumps(oa_doc, indent=2).encode("utf-8"))
+            )
         )
 
         # step 3, slow: wrap OA document using external api for wrapping documents
@@ -131,7 +141,7 @@ class DocumentService(BaseIgService):
                 message="Error: OA document wrap failed with error",
                 object_body=str(e),
             )
-            document.status = Document.STATUS_ERROR
+            document.status = Document.STATUS_FAILED
             document.save()
             return False
 
@@ -141,7 +151,10 @@ class DocumentService(BaseIgService):
             DocumentHistoryItem.objects.create(
                 type="text", document=document,
                 message=f"OA document has been wrapped, new size: {len(oa_doc_wrapped_json)}b",
-                object_body=oa_doc_wrapped_json
+                related_file=default_storage.save(
+                    f'incoming/{document.id}/oa-doc-wrapped.json',
+                    ContentFile(oa_doc_wrapped_json.encode("utf-8"))
+                )
             )
         else:
             logger.warning("Received responce %s for oa doc wrap step", oa_doc_wrapped_resp)
@@ -150,7 +163,7 @@ class DocumentService(BaseIgService):
                 message=f"Error: OA document wrap failed with result {oa_doc_wrapped_resp.status_code}",
                 object_body=oa_doc_wrapped_resp.json(),
             )
-            document.status = Document.STATUS_ERROR
+            document.status = Document.STATUS_FAILED
             document.save()
             return False
 
@@ -200,9 +213,8 @@ class DocumentService(BaseIgService):
             DocumentHistoryItem.objects.create(
                 type="error", document=document,
                 message="Error: Can't upload OA document as a message object",
-                object_body=oa_doc_wrapped_resp.json(),
             )
-            document.status = Document.STATUS_ERROR
+            document.status = Document.STATUS_FAILED
             document.save()
             return False
 
@@ -219,7 +231,7 @@ class DocumentService(BaseIgService):
                 message="Error: unable to post Node message",
                 object_body=message_json
             )
-            document.status = Document.STATUS_ERROR
+            document.status = Document.STATUS_FAILED
             document.save()
             return False
         document.save()
@@ -286,7 +298,10 @@ class DocumentService(BaseIgService):
                   }
                 }
               ],
-            "attachments": self._render_uploaded_files(document)
+            "attachments": self._render_uploaded_files(document),
+            "recipient": {
+                "name": document.importer_name or "",
+            },
         }
         return doc
 
@@ -467,19 +482,14 @@ class NodeService(BaseIgService):
             )
             return
 
-        first_chambers = Organisation.objects.filter(
-            type=Organisation.TYPE_CHAMBERS
-        ).first()
         oad = OaDetails.objects.create(
-            created_for=first_chambers,
+            created_for=None,
             uri="(empty)"
         )
         new_doc = Document.objects.create(
             oa=oad,
-            created_by_org=first_chambers,
-            status=Document.STATUS_ISSUED,  # TODO: based on the message predicate
-            # type= TODO - determine from the object on the next step
-            # document_number - next step
+            created_by_org=None,
+            status=Document.STATUS_INCOMING,
             sending_jurisdiction=message_body["sender"],
             importing_country=message_body["receiver"],
             intergov_details=message_body,
@@ -605,15 +615,7 @@ class IncomingDocumentService(BaseIgService):
                 doc.intergov_details["obj"],
             )
         except Exception as e:
-            logger.exception(e)
-            DocumentHistoryItem.objects.create(
-                type="error", document=doc,
-                message="Failed to download obj from the message",
-                object_body=str(e),
-            )
-            doc.status = Document.STATUS_ERROR
-            doc.save()
-            return False
+            raise IncomingDocumentProcessingError(str(e), is_retryable=True)
         # 2. Save the object somewhere (it could be binary or text file)
         # do we have it already?
         try:
@@ -643,7 +645,7 @@ class IncomingDocumentService(BaseIgService):
                 message="Failed to store obj from the message",
                 object_body=str(e),
             )
-            doc.status = Document.STATUS_ERROR
+            doc.status = Document.STATUS_FAILED
             doc.save()
             return False
 
@@ -749,6 +751,59 @@ class IncomingDocumentService(BaseIgService):
             af.save()
 
         doc.document_number = data.get("id")
+
+        try:
+            # these actions are dangerous in terms of exceptions,
+            # so we use catchall to handle them one by one if they occure
+
+            issueDateTime = data.get("issueDateTime")
+            if issueDateTime:
+                issueDateTime = dateutil.parser.isoparse(issueDateTime)
+                if issueDateTime:
+                    doc.created_at = issueDateTime
+
+            if (data.get("name") or "").lower().endswith("Certificate of Origin".lower()):
+                # Certificate of Origin
+                if data.get("isPreferential") is True:
+                    doc.type = Document.TYPE_PREF_COO
+                if data.get("isPreferential") is False:
+                    doc.type = Document.TYPE_NONPREF_COO
+            supplyChainConsignment = data.get("supplyChainConsignment") or {}
+            if supplyChainConsignment:
+                exporter = supplyChainConsignment.get("exporter") or {}
+                if exporter:
+                    doc.exporter, created = Party.objects.get_or_create(
+                        created_by_org=doc.created_by_org,
+                        business_id=exporter.get("id"),
+                        type=Party.TYPE_TRADER,
+                        country=doc.sending_jurisdiction,
+                        defaults={
+                            "name": exporter.get("name") or "",
+                        }
+                    )
+            issuer = data.get("issuer")
+            if issuer:
+                doc.issuer, created = Party.objects.get_or_create(
+                    created_by_org=doc.created_by_org,
+                    business_id=issuer.get("id"),
+                    country=doc.sending_jurisdiction,
+                    defaults={
+                        "name": issuer.get("name") or "",
+                    }
+                )
+            freeTradeAgreement = data.get("freeTradeAgreement")
+            if freeTradeAgreement:
+                try:
+                    doc.fta = FTA.objects.get(name=freeTradeAgreement)
+                except Exception:
+                    pass
+            importer = data.get("importer", {})
+            if importer and isinstance(importer, dict):
+                importer_name = importer.get("name")
+                doc.importer_name = importer_name
+
+        except Exception as e:
+            logger.exception(e)
         doc.intergov_details["oa_doc"] = data
         doc.save()
         return

@@ -1,3 +1,13 @@
+try:
+    from django.conf import settings
+    BID_NAME = settings.BID_NAME
+    BID_PREFIX = settings.BID_PREFIX
+except ImportError:
+    # for non-Django environments just read this variable from somewhere else
+    BID_NAME = "ABN"
+    BID_PREFIX = "abr.gov.au:abn"
+
+
 class CertificateRenderer:
 
     def render(self, document_obj):
@@ -10,47 +20,64 @@ class CertificateRenderer:
             isPreferential = True
         else:
             isPreferential = False
-        return {
-          "id": f"{doc.issuer.dot_separated_id}:coo:{doc.document_number}",
-          "issueDateTime": doc.created_at.isoformat(),
-          "name": f"{doc.fta} {doc.get_type_display()}",
-          "issuer": {
-            "id": f"id:{doc.issuer.dot_separated_id}",
-            "name": doc.issuer.name
-          },
-          "status": "issued",
-          "isPreferential": isPreferential,
-          "freeTradeAgreement": str(doc.fta),
-          "supplyChainConsignment": {
-            "exportCountry": {
-              "code": str(doc.exporter.country),
+        cert = {
+            "id": f"{doc.issuer.dot_separated_id}:coo:{doc.document_number}",
+            "issueDateTime": doc.created_at.isoformat(),
+            "name": f"{doc.fta} {doc.get_type_display()}",
+            "issuer": {
+                "id": f"{doc.issuer.full_business_id}",
+                "name": doc.issuer.name
             },
-            "exporter": {
-              "id": f"abr.gov.au:abn:{doc.exporter.business_id}",
-              "name": doc.exporter.name
-            },
-            "importCountry": {
-              "code": doc.importing_country.code
-            },
-            "includedConsignmentItems": [
-              {
-                "crossBorderRegulatoryProcedure": {
-                  "originCriteriaText": doc.origin_criteria,
+            "status": "issued",
+            "isPreferential": isPreferential,
+            "freeTradeAgreement": str(doc.fta),
+            "supplyChainConsignment": {
+                "exportCountry": {
+                    "code": str(doc.exporter.country),
                 },
-                "tradeLineItems": [
-                  {
-                    "sequenceNumber": 1,
-                    "invoiceReference": {
-                      "id": f"tweglobal.com:invoice:{doc.invoice_number or None}"
-                    },
-                    "tradeProduct": {
-                      "harmonisedTariffCode": {
-                        "classCode": "2204.21"  # ?
-                      }
+                "exporter": {
+                    "id": f"{doc.exporter.full_business_id}",
+                    "name": doc.exporter.name,
+                    # "postalAddress": {
+                    #   "line1": "161 Collins Street",
+                    #   "cityName": "Melbourne",
+                    #   "postcode": "3000",
+                    #   "countrySubDivisionName": "VIC",
+                    #   "countryCode": "AU"
+                    # }
+                },
+                "importCountry": {
+                    "code": doc.importing_country.code
+                },
+                # note: the importer is filled below
+
+                "includedConsignmentItems": [
+                    # https://github.com/edi3/edi3-regulatory/blob/develop/docs/certificates/OA-Sample-full.json#L82
+                    {
+                        "crossBorderRegulatoryProcedure": {
+                            "originCriteriaText": doc.origin_criteria,
+                        },
+                        "tradeLineItems": [
+                            {
+                                "sequenceNumber": 1,
+                                "invoiceReference": {
+                                    "id": f"invoice:{doc.invoice_number or 'unknown'}"
+                                },
+                                "tradeProduct": {
+                                    "harmonisedTariffCode": {
+                                        "classCode": "2204.21"  # ?
+                                    }
+                                }
+                            }
+                        ]
                     }
-                  }
                 ]
-              }
-            ]
-          }
+            }
         }
+        if doc.importer_name:
+            cert["importer"] = {
+                # "id": "xxx",
+                "name": doc.importer_name,
+                # postal address is applicable as well
+            }
+        return cert

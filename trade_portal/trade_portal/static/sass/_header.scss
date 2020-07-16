@@ -89,11 +89,13 @@
         font-weight: $font-weight-bold;
         font-family: $second-font-family;
         color: $blue-color;
+        text-shadow: 1px 0 2px $white-color;
         font-size: 17px;
 
         .header--dark &{
           border-color: rgba($white-color, 0.2);
           color: $white-color;
+          text-shadow: 1px 0 2px $blue-color;
         }
 
         .authenticated & {

@@ -21,17 +21,12 @@ With the intergov node has already been started as docker-compose file (for each
     $ COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml -f demo-au.yml up
     $ COMPOSE_PROJECT_NAME=trsg docker-compose -f docker-compose.yml -f demo-sg.yml up
 
-Or you could still use the first variant, providing intergov endpoints as env variables
-in the local.env file.
-
-Please note that docker-compose project name must not be AU or CN or SG because 2-letter codes are already used by the intergov node; so we prefix them with CH letters.
-
-Please note that by default the app is started for AU jurisdiction, you may change it using env variables.
-
 To create a superuser:
 
     $ (the project variables) docker-compose run -rm django bash
     $ ./manage.py createsuperuser
+
+After it's done please get back to README.md to configure organisation manually (so you can create documents). Site note: navigate to .../admin/constance/config/ and set the OA_WRAP_API_URL to the correct one (for example https://openattestation.c1.devnet.trustbridge.io/ - we only use document/wrap and unwrap endpoints which are public).
 
 
 ## Test coverage

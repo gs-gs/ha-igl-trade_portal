@@ -40,9 +40,9 @@ def lodge_document(document_id=None):
             # for local setups it's handy to raise exception
             raise
         logger.exception(e)
-        if doc.status == Document.STATUS_ISSUED:
-            logger.info("Marking document %s as error", doc)
-            doc.status = Document.STATUS_ERROR
+        if doc.status == Document.STATUS_PENDING:
+            logger.info("Marking document %s as failed", doc)
+            doc.status = Document.STATUS_FAILED
             doc.save()
 
 
@@ -58,13 +58,49 @@ def store_message_by_ping_body(self, ping_body):
     NodeService().store_message_by_ping_body(ping_body)
 
 
-@celery_app.task(bind=True, ignore_result=True,
-                 max_retries=6, interval_start=10, interval_step=20, interval_max=300)
+@celery_app.task(bind=True, ignore_result=True, max_retries=6)
 def process_incoming_document_received(self, document_pk):
     from trade_portal.documents.services import IncomingDocumentService
 
     doc = Document.objects.get(pk=document_pk)
     logger.info("Processing the incoming document %s", doc)
-
-    IncomingDocumentService().process_new(doc)
+    try:
+        IncomingDocumentService().process_new(doc)
+    except Exception as e:
+        if getattr(e, "is_retryable", None) is True:
+            # try to retry (no document has been downloaded yet from the remote or something)
+            if self.request.retries < self.max_retries:
+                logger.warning(
+                    "Retrying the doc %s processing task %sth time",
+                    doc,
+                    self.request.retries
+                )
+                retry_delay = 15 + 30 * self.request.retries
+                DocumentHistoryItem.objects.create(
+                    type="error", document=doc,
+                    message=f"Error, will be trying again in {retry_delay}s",
+                    object_body=str(e),
+                )
+                self.retry(countdown=retry_delay)
+            else:
+                logger.error("Max retries reached for the document %s, marking as error", doc)
+                DocumentHistoryItem.objects.create(
+                    type="error", document=doc,
+                    message=f"Unable to process document after {self.request.retries} retries",
+                    object_body=str(e),
+                )
+                doc.status = Document.STATUS_FAILED
+                doc.save()
+                return False
+        else:
+            # non-retryable exception
+            logger.exception(e)
+            DocumentHistoryItem.objects.create(
+                type="error", document=doc,
+                message="Unable to process document, non-retryable exception",
+                object_body=str(e),
+            )
+            doc.status = Document.STATUS_FAILED
+            doc.save()
+            return False
     return
