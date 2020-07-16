@@ -15,16 +15,20 @@ $home-max-width: 1280px;
 }
 
 .home-content {
-  padding: 50px $mobile-padding 35px $mobile-padding;
+  padding: 20px $mobile-padding 35px $mobile-padding;
+
+  @include media-breakpoint-up(sm) {
+    padding-top: 40px;
+  }
 
   @include media-breakpoint-up(lg) {
     @include flexbox();
     @include justify-content(space-between);
-    padding: 82px 15px 92px 15px;
+    padding: 22px 15px 92px 15px;
   }
 
   @include media-breakpoint-up(xl) {
-    padding-top: 146px;
+    padding-top: 126px;
 
     .authenticated & {
       padding-top: 3rem;
@@ -54,14 +58,18 @@ $home-max-width: 1280px;
   &__title {
     color: $white-color;
     font-family: $second-font-family;
-    font-size: 37px;
+    font-size: 30px;
     font-weight: $font-weight-bold;
-    line-height: 50px;
     margin: 0 0 24px 0;
     padding: 0;
 
     @include media-breakpoint-down(sm){
       margin-bottom: 14px;
+    }
+
+    @include media-breakpoint-up(sm){
+      font-size: 37px;
+      line-height: 50px;
     }
   }
 
@@ -79,6 +87,7 @@ $home-max-width: 1280px;
     line-height: 51px;
     padding: 0;
     color: $dark-blue-color;
+    box-shadow: 0 0 5px $blue-color;
   }
 }
 
