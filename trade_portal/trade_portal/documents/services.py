@@ -26,7 +26,6 @@ from trade_portal.documents.models import (
     FTA, Party, Document, DocumentHistoryItem,
     NodeMessage, OaDetails, DocumentFile,
 )
-from trade_portal.users.models import Organisation
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +112,7 @@ class DocumentService(BaseIgService):
         # step 2. Append EDI3 document, merging them on the root level
         oa_doc.update(document.get_rendered_edi3_document())
 
-        d = DocumentHistoryItem.objects.create(
+        DocumentHistoryItem.objects.create(
             type="text", document=document,
             message=f"OA document has been generated, size: {len(json.dumps(oa_doc))}b",
             # object_body=json.dumps(oa_doc)
@@ -147,6 +146,7 @@ class DocumentService(BaseIgService):
 
         if oa_doc_wrapped_resp.status_code == 200:
             oa_doc_wrapped = oa_doc_wrapped_resp.json()
+            wrapped_doc_merkle_root = oa_doc_wrapped.get("signature", {}).get("merkleRoot") or subject
             oa_doc_wrapped_json = json.dumps(oa_doc_wrapped)
             DocumentHistoryItem.objects.create(
                 type="text", document=document,
@@ -221,7 +221,7 @@ class DocumentService(BaseIgService):
         # Post the message
         message_json = self._render_intergov_message(
             document,
-            subject=subject,
+            subject=wrapped_doc_merkle_root,
             obj_multihash=oa_uploaded_info['multihash']
         )
         posted_message = self.ig_client.post_message(message_json)
