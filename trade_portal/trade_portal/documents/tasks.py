@@ -5,24 +5,10 @@ from django.conf import settings
 from trade_portal.documents.models import (
     Document, DocumentHistoryItem,
 )
-from trade_portal.documents.services import DocumentService, NodeService
+from trade_portal.documents.services import DocumentService, NodeService, WatermarkService
 from config import celery_app
 
 logger = logging.getLogger(__name__)
-
-
-# @app.task
-# def notify_about_certificate_created(certificate_id):
-#     c = Document.objects.get(pk=certificate_id)
-#     send_mail(
-#         'Certificate application has been approved',
-#         """Just letting you know that your certificate {} has been lodged""".format(
-#             c
-#         ),
-#         settings.DEFAULT_FROM_EMAIL,
-#         [c.created_by.email],
-#         fail_silently=False,
-#     )
 
 
 @celery_app.task(ignore_result=True,
@@ -33,6 +19,9 @@ def lodge_document(document_id=None):
         document=doc,
         message="Starting the issue step..."
     )
+
+    WatermarkService().watermark_document(doc)
+
     try:
         DocumentService().issue(doc)
     except Exception as e:

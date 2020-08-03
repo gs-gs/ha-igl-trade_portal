@@ -52,3 +52,8 @@ django-tables2==2.3.1
 # AES encryption is used for OA documents
 # pycrypto==2.6.1
 pycryptodome==3.9.8
+
+
+# for ammending QrCode to the incoming PDFs
+pypdf2==1.26.0
+reportlab==3.5.46

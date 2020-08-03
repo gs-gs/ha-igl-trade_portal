@@ -176,25 +176,6 @@ class OaDetails(models.Model):
 
 
 class Document(models.Model):
-    # # Business status
-    # STATUS_ISSUED = 'issued'
-    # STATUS_ACCEPTED = 'accepted'
-    # STATUS_DISPUTED = 'disputed'
-    # STATUS_EXPIRED = 'expired'
-    # STATUS_ACQUITTED = 'acquitted'
-    # STATUS_REJECTED = 'rejected'
-    # # some error, mostly the internal one
-    # STATUS_ERROR = 'error'
-
-    # STATUS_CHOICES = (
-    #     (STATUS_ISSUED, 'Issued'),
-    #     (STATUS_ACCEPTED, 'Accepted'),
-    #     (STATUS_DISPUTED, 'Disputed'),
-    #     (STATUS_REJECTED, 'Rejected'),
-    #     (STATUS_ACQUITTED, 'Acquitted'),
-    #     (STATUS_EXPIRED, 'Expired'),
-    #     (STATUS_ERROR, 'Error'),
-    # )
     STATUS_PENDING = "pending"
     STATUS_FAILED = "failed"
     STATUS_VALIDATED = "validated"
@@ -284,12 +265,6 @@ class Document(models.Model):
             ("other", "Other"),
         )
     )
-
-    # acquitted_at = models.DateTimeField(blank=True, null=True)
-    # acquitted_details = JSONField(
-    #     default=list, blank=True,
-    #     help_text="Acquittal events received"
-    # )
 
     intergov_details = JSONField(
         default=dict, blank=True,
@@ -425,17 +400,28 @@ class DocumentFile(models.Model):
     )
 
     file = models.FileField(upload_to=generate_docfile_filename)
+    original_file = models.FileField(upload_to=generate_docfile_filename)
     filename = models.CharField(
         max_length=1000, blank=True, default="unknown.pdf",
         help_text="Original name of the uploaded file",
     )
     size = models.IntegerField(blank=True, default=None, null=True)
 
+    is_watermarked = models.NullBooleanField(
+        default=False,
+        help_text="None if doesn't need to be watermarked, False if pending and True if done"
+    )
+
     class Meta:
         ordering = ('-created_at',)
 
     def __str__(self):
         return str(self.filename)
+
+    def save(self, *args, **kwargs):
+        if not self.original_file:
+            self.original_file = self.file
+        super().save(*args, **kwargs)
 
     @property
     def short_filename(self):

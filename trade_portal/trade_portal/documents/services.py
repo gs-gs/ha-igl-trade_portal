@@ -4,6 +4,7 @@ Things related to the CoO packaging and sending to the upstream
 import base64
 import datetime
 import json
+import io
 import logging
 import mimetypes
 import uuid
@@ -821,3 +822,70 @@ class IncomingDocumentService(BaseIgService):
             message=message % message_args,
         )
         return False
+
+
+class WatermarkService:
+    """
+    Helper to add QR code to the uploaded PDF file assuming it doesn't have any
+    """
+    def watermark_document(self, document):
+        qrcode_image = document.oa.get_qr_image()
+        for docfile in document.files.filter(is_watermarked=False):
+            if docfile.filename.lower().endswith(".pdf"):
+                self.add_watermark(docfile, qrcode_image)
+        return
+
+    def add_watermark(self, docfile, qrcode_image):
+        # Local imports are used in case this functionality is disabled
+        # for some setups/envs
+        import PIL
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.utils import ImageReader
+        from reportlab.lib.units import cm
+        from reportlab.lib.pagesizes import A4
+        from PyPDF2 import PdfFileWriter, PdfFileReader
+
+        logging.info("Adding a watermark for %s", docfile)
+        qrcode_image = PIL.Image.open(io.BytesIO(qrcode_image))
+
+        # Prepare the PDF document containing only QR code
+        qrcode_stream = io.BytesIO()
+        c = canvas.Canvas(qrcode_stream, pagesize=A4)
+        c.drawImage(
+            ImageReader(qrcode_image),
+            A4[0] - 3 * cm - 1 * cm, A4[1] - 3 * cm - 1 * cm,
+            width=3*cm, height=3*cm, preserveAspectRatio=1,
+        )
+        c.save()
+
+        qrcode_stream.seek(0)
+        qrcode_doc = PdfFileReader(qrcode_stream)
+        orig_doc = PdfFileReader(docfile.original_file or docfile.file)
+        output_file = PdfFileWriter()
+
+        for page_number in range(orig_doc.getNumPages()):
+            input_page = orig_doc.getPage(page_number)
+            if page_number == 0:
+                # only for the first page
+                input_page.mergePage(qrcode_doc.getPage(0))
+            output_file.addPage(input_page)
+
+        outputStream = io.BytesIO()
+        output_file.write(outputStream)
+
+        old_filename_parts = docfile.file.name.rsplit(".", maxsplit=1)
+        new_filename = ".".join([
+            old_filename_parts[0].rstrip(".altered"),
+            "altered",
+            old_filename_parts[1]
+        ])
+        outputStream.seek(0)
+        new_saved_filename = default_storage.save(
+            new_filename,
+            ContentFile(outputStream.read())
+        )
+        docfile.file = new_saved_filename
+        logger.info("Saved altered PDF file as %s", new_saved_filename)
+        docfile.is_watermarked = True
+        docfile.save()
+        return
