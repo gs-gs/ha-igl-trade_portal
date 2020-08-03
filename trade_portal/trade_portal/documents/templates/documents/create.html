@@ -71,7 +71,9 @@
 
           {{ form.document_number|as_crispy_field }}
 
-          {{ form.fta|as_crispy_field }}
+          {% if form.fta %}
+            {{ form.fta|as_crispy_field }}
+          {% endif %}
 
           {{ form.importing_country|as_crispy_field }}
 

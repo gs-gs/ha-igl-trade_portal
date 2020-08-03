@@ -211,7 +211,9 @@ class Document(models.Model):
     type = models.CharField("Document type", max_length=64, choices=TYPE_CHOICES)
     document_number = models.CharField(max_length=256, blank=False, default="")
 
-    fta = models.ForeignKey(FTA, models.PROTECT, verbose_name="FTA", blank=False, null=True)
+    fta = models.ForeignKey(
+        FTA, models.PROTECT, verbose_name="FTA", blank=True, null=True
+    )
 
     sending_jurisdiction = CountryField(default=settings.ICL_APP_COUNTRY)
     importing_country = CountryField()

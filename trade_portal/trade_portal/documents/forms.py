@@ -78,6 +78,18 @@ class DocumentCreateForm(forms.ModelForm):
                 importers_added.exclude(name="").values_list("name", flat=True)
             )
 
+        if self.dtype == Document.TYPE_NONPREF_COO:
+            del self.fields['fta']
+
+            all_active_countries = set()
+            for fta in FTA.objects.all():
+                for c in fta.country:
+                    all_active_countries.add(c)
+
+            self.fields['importing_country'].choices = (
+                (c.code, c.name) for c in all_active_countries
+            )
+
     def clean_exporter(self):
         value = self.cleaned_data.get("exporter").strip().replace(" ", "")
         if not value:
