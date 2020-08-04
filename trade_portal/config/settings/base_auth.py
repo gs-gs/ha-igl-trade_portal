@@ -55,17 +55,16 @@ else:
 
 
 # django-allauth
-# env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
 ACCOUNT_ALLOW_REGISTRATION = True
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = "none"  # "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_ADAPTER = "trade_portal.users.adapters.AccountAdapter"
 SOCIALACCOUNT_ADAPTER = "trade_portal.users.adapters.SocialAccountAdapter"
 ACCOUNT_FORMS = {
     # 'login': 'allauth.account.forms.LoginForm',
-    # 'signup': 'trade_portal.users.forms.CustomSignupForm',
+    'signup': 'trade_portal.users.forms.CustomSignupForm',
     # 'add_email': 'allauth.account.forms.AddEmailForm',
     # 'change_password': 'allauth.account.forms.ChangePasswordForm',
     # 'set_password': 'allauth.account.forms.SetPasswordForm',

@@ -8,6 +8,18 @@ logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
+    initial_business_id = models.CharField(
+        max_length=500,
+        help_text="The value provided by user on registration step",
+        blank=True, default=""
+    )
+    mobile_number = models.CharField(
+        max_length=32, blank=True, default=""
+    )
+    verified_mobile_number = models.CharField(
+        max_length=32, blank=True, default="",
+        help_text="Value appears here only after validation"
+    )
 
     def __str__(self):
         fullname = f"{self.first_name} {self.last_name}".strip()

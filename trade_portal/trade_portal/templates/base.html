@@ -41,7 +41,7 @@
             <img src="{% static 'images/logo-whiteSG.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white"/>
           {% endif %}
           {% endif %}
-          <span class="header__logo-text">Secure Trade Lane Trade Portal</span>
+          <span class="header__logo-text">Secure Trade Lane Portal</span>
         </a>
         <div class="header__nav">
           <div class="header__nav-actions">
@@ -51,7 +51,9 @@
                   {{ user }}
                   {% if user.is_superuser %}(Superuser){% endif %}
                 </div>
-                <div class="header__user-org">{{ current_org.name }} ({{ current_org.get_type_display }})</div>
+                {% if current_org %}
+                  <div class="header__user-org">{{ current_org.name }} ({{ current_org.get_type_display }})</div>
+                {% endif %}
               </div>
             {% else %}
               <a href="/accounts/signup/" class="btn btn-primary header__nav-btn">Sign up</a>

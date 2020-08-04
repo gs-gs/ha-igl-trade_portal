@@ -3,7 +3,7 @@ from django.contrib.auth import admin as auth_admin
 from django.contrib.auth import get_user_model
 
 from trade_portal.users.models import Organisation, OrgMembership
-from trade_portal.users.forms import UserChangeForm, UserCreationForm
+from trade_portal.users.forms import UserChangeForm
 
 User = get_user_model()
 
@@ -11,13 +11,16 @@ User = get_user_model()
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
     form = UserChangeForm
-    add_form = UserCreationForm
+    # add_form = UserCreationForm
     list_display = [
         "pk", "username", "email",
         "first_name", "last_name", "is_staff", "is_superuser",
     ]
     list_filter = ["is_staff", "is_superuser"]
     search_fields = ["username", "email"]
+    fieldsets = auth_admin.UserAdmin.fieldsets + (
+        ("Business Data", {'fields': ('mobile_number', 'initial_business_id')}),
+    )
 
 
 @admin.register(Organisation)

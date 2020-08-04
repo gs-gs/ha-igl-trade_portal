@@ -8,15 +8,34 @@
 {% block body_class %}authorise authorise-signup{% endblock %}
 {% block main-container %}authorise__container{% endblock %}
 
+{% block extra_head %}
+  <style>
+    .page-main {
+      padding-top: 50px !important;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
 <div class="authorise__col authorise-form">
   <div class="authorise-form__container">
     <h1 class="authorise-form__title">{% trans "Sign up" %}</h1>
     <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
       {% csrf_token %}
-      {{ form|crispy }}
+
+      {{ form.first_name|as_crispy_field }}
+      {{ form.last_name|as_crispy_field }}
+      {{ form.initial_business_id|as_crispy_field }}
+
+      {{ form.email|as_crispy_field }}
+
+      {{ form.password1|as_crispy_field }}
+      {{ form.password2|as_crispy_field }}
+
+      {{ form.mobile_number|as_crispy_field }}
+
       {% if redirect_field_value %}
-      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
       {% endif %}
       <div class="form-actions">
         <button class="btn btn-primary" type="submit">{% trans "Sign Up" %}</button>
@@ -29,8 +48,32 @@
 <div class="authorise__col authorise-text">
   <div class="authorise-text__container">
     <h2 class="authorise-text__title">{% trans "Already have an account?" %}</h2>
-    <p class="authorise-text__description">Please use your real name and working email.</p>
     <a href="{{ login_url }}" class="btn btn-lg btn-white authorise-text__btn">{% trans "Sign in" %}</a>
   </div>
 </div>
+{% endblock %}
+
+
+{% block extra_script %}
+  <script>
+    {% if BID_NAME == "ABN" %}
+      $("#id_initial_business_id").keyup(function() {
+        let val = $("#id_initial_business_id").val().replace(/\s/g, "");
+        if (val.length == 11) {
+          // could be full ABN entered
+          let hint = $("#hint_id_initial_business_id");
+          hint.addClass('abn-info')
+          hint.html("Loading ABN info...");
+          $.ajax({
+            dataType: "json",
+            url: '/documents/api/abn-lookup/?abn=' + val,
+            data: null,
+            success: function(resp) {
+              hint.html(resp.snippet);
+            }
+          });
+        }
+      });
+    {% endif %}
+  </script>
 {% endblock %}

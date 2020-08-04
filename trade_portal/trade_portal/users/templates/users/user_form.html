@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}Profile update{% endblock %}
+{% block head_title %}Profile update{% endblock %}
 
 
 {% block breadcrumbs %}
@@ -20,4 +20,28 @@
         <button type="submit" class="btn btn-primary">Save changes</button>
     </div>
   </form>
+{% endblock %}
+
+{% block extra_script %}
+  <script>
+    {% if BID_NAME == "ABN" %}
+      $("#id_initial_business_id").keyup(function() {
+        let val = $("#id_initial_business_id").val().replace(/\s/g, "");
+        if (val.length == 11) {
+          // could be full ABN entered
+          let hint = $("#hint_id_initial_business_id");
+          hint.addClass('abn-info')
+          hint.html("Loading ABN info...");
+          $.ajax({
+            dataType: "json",
+            url: '/documents/api/abn-lookup/?abn=' + val,
+            data: null,
+            success: function(resp) {
+              hint.html(resp.snippet);
+            }
+          });
+        }
+      });
+    {% endif %}
+  </script>
 {% endblock %}
