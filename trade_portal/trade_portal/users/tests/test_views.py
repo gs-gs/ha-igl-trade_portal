@@ -2,7 +2,7 @@ import pytest
 from django.test import RequestFactory
 
 from trade_portal.users.models import User
-from trade_portal.users.views import UserRedirectView, UserUpdateView
+from trade_portal.users.views.users import UserRedirectView, UserUpdateView
 
 pytestmark = pytest.mark.django_db
 

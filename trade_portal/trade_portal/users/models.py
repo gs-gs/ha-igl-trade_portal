@@ -21,6 +21,9 @@ class User(AbstractUser):
         help_text="Value appears here only after validation"
     )
 
+    class Meta(AbstractUser.Meta):
+        ordering = ("date_joined",)
+
     def __str__(self):
         fullname = f"{self.first_name} {self.last_name}".strip()
         return fullname or self.email or self.username or super().__str__()
@@ -69,6 +72,7 @@ class User(AbstractUser):
         return Organisation.objects.filter(
             business_id=self.initial_business_id
         )
+
 
 class OrgMembership(models.Model):
     ROLE_ADMIN = 'a'

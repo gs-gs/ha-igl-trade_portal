@@ -1,9 +1,10 @@
 from django.urls import path
 
-from trade_portal.users.views import (
-    user_update_view,
-    user_detail_view,
-    ChangeOrgView, PendingUsersView,
+from trade_portal.users.views.users import (
+    user_update_view, user_detail_view, ChangeOrgView,
+)
+from trade_portal.users.views.management import (
+    PendingUsersView,
 )
 
 app_name = "users"
