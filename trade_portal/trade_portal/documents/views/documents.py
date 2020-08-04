@@ -164,7 +164,7 @@ class DocumentCreateView(Login, CreateView):
         messages.success(
             self.request,
             "The document you have just created will be notarised and will be sent "
-            "to the importing country via the inter-government ledger."
+            "to the importing country via the Secure Trade Lane."
         )
         return reverse('documents:detail', args=[self.object.pk])
 
