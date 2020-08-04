@@ -15,6 +15,35 @@
     <a class="btn btn-primary" href="{% url 'account_change_password' %}" role="button">Change password</a>
   </div>
 
+  <table class="table table-bordered" style="width: 300px">
+    <tbody>
+      <tr>
+        <th>Name</th>
+        <td>{{ user }}</td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td>{{ user.email }}</td>
+      </tr>
+      <tr>
+        <th>Mobile</th>
+        <td>
+          {% if user.mobile_number == user.verified_mobile_number %}
+            {{ user.verified_mobile_number }} (verified)
+          {% else %}
+            {{ user.mobile_number }} (not verified)
+          {% endif %}
+        </td>
+      </tr>
+      {% if not user.orgmembership_set.all %}
+        <tr>
+          <th>{{ BID_NAME }}</th>
+          <td>{{ user.initial_business_id }} (not verified)</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
   {% for org_ms in user.orgmembership_set.all %}
     <h1 class="page-title">{{ org_ms.org.name }} {% if org_ms.org == current_org %}(current){% endif %}</h1>
     <div class="profile-row">

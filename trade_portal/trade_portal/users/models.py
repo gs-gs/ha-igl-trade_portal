@@ -65,6 +65,10 @@ class User(AbstractUser):
             org = None
         return org
 
+    def get_orgs_with_provided_bid(self):
+        return Organisation.objects.filter(
+            business_id=self.initial_business_id
+        )
 
 class OrgMembership(models.Model):
     ROLE_ADMIN = 'a'

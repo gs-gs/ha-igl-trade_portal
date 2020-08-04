@@ -124,8 +124,13 @@
               <a class="account-nav__item-link{% if request.resolver_match.view_name == 'documents:list' %} active{% endif %}" href="{% url 'documents:list' %}">Documents</a>
             </li>
             <li class="account-nav__item">
-              <a class="account-nav__item-link" href="/profile/">Profile</a>
+              <a class="account-nav__item-link {% if request.resolver_match.view_name == 'users:detail' %} active{% endif %}" href="/profile/">Profile</a>
             </li>
+            {% if request.user.is_superuser %}
+              <li class="account-nav__item">
+                <a class="account-nav__item-link {% if request.resolver_match.view_name == 'users:pending' %} active{% endif %}" href="{% url 'users:pending' %}">Pending Users</a>
+              </li>
+            {% endif %}
           </ul>
           <ul class="account-nav__list">
             <li class="account-nav__item">
