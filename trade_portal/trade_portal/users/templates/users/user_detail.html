@@ -19,23 +19,31 @@
     <tbody>
       <tr>
         <th>Name</th>
-        <td>{{ user }}</td>
+        <td>{{ user.first_name }} {{ user.last_name }}</td>
       </tr>
       <tr>
         <th>Email</th>
         <td>{{ user.email }}</td>
       </tr>
       <tr>
+        <th>Joined</th>
+        <td>{{ user.date_joined }}</td>
+      </tr>
+      <tr>
         <th>Mobile</th>
         <td>
-          {% if user.mobile_number == user.verified_mobile_number %}
-            {{ user.verified_mobile_number }} (verified)
+          {% if user.mobile_number %}
+            {% if user.mobile_number == user.verified_mobile_number %}
+              {{ user.verified_mobile_number }} (verified)
+            {% else %}
+              {{ user.mobile_number }} (not verified)
+            {% endif %}
           {% else %}
-            {{ user.mobile_number }} (not verified)
+            (none)
           {% endif %}
         </td>
       </tr>
-      {% if not user.orgmembership_set.all %}
+      {% if not user.orgmembership_set.all and user.initial_business_id %}
         <tr>
           <th>{{ BID_NAME }}</th>
           <td>{{ user.initial_business_id }} (not verified)</td>
