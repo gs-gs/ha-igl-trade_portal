@@ -14,7 +14,7 @@
     {% if not request.user.is_authenticated %}
       <a href="/accounts/signup/" class="btn btn-light hero-box__action">Register</a>
     {% else %}
-      <a href="{% url 'documents:list' %}" class="btn btn-light hero-box__action">Documents</a>
+      <a href="{% url 'documents:list' %}" class="btn btn-light hero-box__action">My Documents</a>
     {% endif %}
   </div>
   <div class="news home-content__news">

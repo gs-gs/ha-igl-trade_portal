@@ -20,5 +20,9 @@ class RoleRequestView(LoginRequiredMixin, CreateView):
         return kw
 
     def get_success_url(self):
-        messages.success(self.request, "The role request has been placed")
+        messages.success(
+            self.request,
+            "The role request has been placed; "
+            "It typically takes 2 workings days to review it"
+        )
         return reverse('users:detail')

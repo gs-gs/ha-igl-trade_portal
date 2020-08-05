@@ -91,6 +91,10 @@ class RoleRequestForm(forms.ModelForm):
             (x.pk, str(x))
             for x in self.user.direct_orgs
         )
+        self.fields["evidence"].help_text = (
+            "This field is optional but uploading it will help the review. "
+            "Please make sure the image uploaded is clearly readable."
+        )
 
     def save(self, *args, **kwargs):
         self.instance.created_by = self.user

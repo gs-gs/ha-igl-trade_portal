@@ -123,7 +123,21 @@
                 <div class="col-md-3 user-row__name">{{ req.get_role_display }}:</div>
                 <div class="col-md-9 user-row__content">
                   <strong>{{ req.get_status_display }}</i></strong>
-                  <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">+ Add document</button>
+
+                  {% if req.status != "rejected" %}
+                    <form method="POST" enctype="multipart/form-data" style="display: inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="request_id" value="{{ req.pk }}" />
+                      <input type="file" name="evidence" style="display: none" onChange="$(this).parent().submit()" class="file-field" />
+                      <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document" onClick="$(this).parent().find('.file-field').click()">
+                        {% if req.evidence %}
+                          + Replace document
+                        {% else %}
+                          + Add document
+                        {% endif %}
+                      </button>
+                    </form>
+                  {% endif %}
                 </div>
                 <div class="col">
                   <p class="authorised-roles__description">

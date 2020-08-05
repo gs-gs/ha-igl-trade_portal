@@ -1,0 +1,79 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}Pending Role Requests{% endblock %}
+
+{% block extra_head %}
+  <style>
+    .table td {
+      vertical-align: middle;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Pending Role Requests</h2>
+  <p>These roles were requested by users for their organisations, here you can approve or deny them.</p>
+
+  {% autopaginate pending_requests 50 %}
+
+  <form action="#" method="POST" onSubmit="return confirm('Are you sure?')">
+    {% csrf_token %}
+    <div class="content-box items-list__table">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Organisation</th>
+              <th>Created by/at</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Evidence</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for preq in pending_requests %}
+              <tr>
+                <td style="max-width: 200px">{{ preq.org }}</td>
+                <td>
+                  {{ preq.created_by.first_name }} {{ preq.created_by.last_name }} {{ preq.created_by.email }}<br/>
+                  {{ preq.created_at }}
+                </td>
+                <td>{{ preq.get_role_display }}</td>
+                <td>{{ preq.get_status_display }}</td>
+                <td title="{{ preq.evidence }}">
+                  {% if preq.evidence %}
+                    <a href="{% url 'users:evidence-download' preq.pk %}">
+                      Download
+                    </a>
+                  {% endif %}
+                </td>
+                <td>
+                  <button type="submit" class="btn btn-success btn-sm" name="approve_request" value="{{ preq.pk }}">Approve</button>
+                  <button type="submit" class="btn btn-danger btn-sm" name="reject_request" value="{{ preq.pk }}">Reject</button><br/>
+                  <button type="submit" class="btn btn-primary btn-sm" name="evidence_required" value="{{ preq.pk }}">
+                    {% if preq.evidence %}
+                      Re-request evidence
+                    {% else %}
+                      Request evidence
+                    {% endif %}
+                  </button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% paginate %}
+  </form>
+
+  <br/>
+</div>
+{% endblock %}

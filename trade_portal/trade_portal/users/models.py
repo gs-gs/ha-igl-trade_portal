@@ -1,5 +1,6 @@
 import logging
 
+from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
@@ -166,7 +167,19 @@ class OrgRoleRequest(models.Model):
     status = models.CharField(
         max_length=16, default=STATUS_REQUESTED, choices=STATUS_CHOICES
     )
-    evidence = models.FileField(blank=True, null=True)
+    evidence = models.FileField(
+        blank=True, null=True,
+        validators=[FileExtensionValidator(allowed_extensions=[
+            'jpeg',
+            'jpg',
+            'png',
+            'pdf',
+            'doc',
+            'docx',
+            'odt',
+            'gif',
+        ])]
+    )
 
     handled_by = models.ForeignKey(
         User, models.SET_NULL, blank=True, null=True,

@@ -1,5 +1,6 @@
 import logging
 
+from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,7 +10,7 @@ from django.views.generic import (
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from trade_portal.users.models import Organisation
+from trade_portal.users.models import Organisation, OrgRoleRequest
 from trade_portal.users.forms import UserChangeForm
 
 logger = logging.getLogger(__name__)
@@ -20,6 +21,32 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
     def get_object(self):
         return self.request.user
+
+    def post(self, request, *args, **kwargs):
+        if "evidence" in request.FILES:
+            for validator in OrgRoleRequest._meta.get_field("evidence").validators:
+                try:
+                    validator(request.FILES["evidence"])
+                except ValidationError as e:
+                    messages.warning(request, e.messages[0])
+                    return redirect(request.path_info)
+
+            req = OrgRoleRequest.objects.get(
+                pk=request.POST.get("request_id"),
+                created_by=request.user,
+                status__in=[
+                    OrgRoleRequest.STATUS_EVIDENCE,
+                    OrgRoleRequest.STATUS_REQUESTED
+                ]
+            )
+            req.evidence = request.FILES["evidence"]
+            req.status = OrgRoleRequest.STATUS_REQUESTED
+            req.save()
+            messages.success(
+                request,
+                "The file has been uploaded as an evidence and the request has been sent to review"
+            )
+        return redirect(request.path_info)
 
 
 user_detail_view = UserDetailView.as_view()

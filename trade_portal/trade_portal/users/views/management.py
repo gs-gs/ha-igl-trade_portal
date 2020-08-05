@@ -4,12 +4,15 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import Http404, HttpResponse
 from django.views.generic import (
-    TemplateView,
+    TemplateView, DetailView,
 )
 from django.shortcuts import redirect
 
-from trade_portal.users.models import Organisation, OrgMembership
+from trade_portal.users.models import (
+    Organisation, OrgMembership, OrgRoleRequest,
+)
 from trade_portal.users.tasks import update_org_fields
 
 logger = logging.getLogger(__name__)
@@ -80,3 +83,78 @@ class PendingUsersView(UserPassesTestMixin, TemplateView):
             )
 
         return redirect(request.path_info)
+
+
+class RolesRequestsView(UserPassesTestMixin, TemplateView):
+    template_name = "users/roles-requests.html"
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_context_data(self, *args, **kwargs):
+        c = super().get_context_data(*args, **kwargs)
+        c["pending_requests"] = OrgRoleRequest.objects.filter(
+            status__in=(
+                OrgRoleRequest.STATUS_REQUESTED,
+                OrgRoleRequest.STATUS_EVIDENCE,
+            )
+        )
+        return c
+
+    def post(self, request, *args, **kwargs):
+        if "approve_request" in request.POST:
+            req = OrgRoleRequest.objects.get(
+                pk=request.POST.get("approve_request")
+            )
+            req.status = OrgRoleRequest.STATUS_APPROVED
+            req.save()
+            if req.role == req.ROLE_TRADER:
+                req.org.is_trader = True
+            elif req.role == req.ROLE_CHAMBERS:
+                req.org.is_chambers = True
+            req.org.save()
+            messages.success(
+                request,
+                f"Role {req.get_role_display()} has been granted to the {req.org}"
+            )
+        elif "reject_request" in request.POST:
+            req = OrgRoleRequest.objects.get(
+                pk=request.POST.get("reject_request")
+            )
+            req.status = OrgRoleRequest.STATUS_REJECTED
+            req.save()
+            messages.warning(
+                request,
+                f"Role {req.get_role_display()} has NOT been granted to the {req.org}"
+            )
+        elif "evidence_required" in request.POST:
+            req = OrgRoleRequest.objects.get(
+                pk=request.POST.get("evidence_required")
+            )
+            req.status = OrgRoleRequest.STATUS_EVIDENCE
+            req.save()
+            messages.info(
+                request,
+                "The request has been marked as 'Evidence Requested' "
+                "and will change it's status back once it's uploaded"
+            )
+        return redirect(request.path_info)
+
+
+class EvidenceDownloadView(UserPassesTestMixin, DetailView):
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_object(self):
+        try:
+            return OrgRoleRequest.objects.get(pk=self.kwargs["pk"])
+        except OrgRoleRequest.DoesNotExist:
+            raise Http404()
+
+    def get(self, *args, **kwargs):
+        # standard file approach
+        req = self.get_object()
+        response = HttpResponse(req.evidence, content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % req.evidence.name
+        return response
