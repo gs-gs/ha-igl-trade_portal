@@ -81,8 +81,8 @@
             <div class="row mb-3 user-row">
               <div class="col-md-3 user-row__name">Business (Trader):</div>
               <div class="col-md-9 user-row__content"><strong>Verified <i class="icon icon-check-circle"></i></strong>
-                <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">Verified manually</button>
                 {% comment %}
+                  <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">Verified manually</button>
                   <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">+ Add document</button>
                 {% endcomment %}
               </div>
@@ -93,7 +93,6 @@
               <div class="col-md-3 user-row__name">Certification Authority:</div>
               <div class="col-md-9 user-row__content">
                 <strong>Verified <i class="icon icon-check-circle"></i></strong>
-                <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">Verified manually</button>
               </div>
               <div class="col">
                 <p class="authorised-roles__description">
@@ -108,7 +107,6 @@
               <div class="col-md-3 user-row__name">Regulator:</div>
               <div class="col-md-9 user-row__content">
                 <strong>Verified <i class="icon icon-check-circle"></i></strong>
-                <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">Verified manually</button>
               </div>
               <div class="col">
                 <p class="authorised-roles__description">
@@ -117,7 +115,33 @@
               </div>
             </div>
           {% endif %}
-          <button type="button" class="btn btn-primary btn-sm">Request a role</button>
+
+          {# any possible pending role requests for that org #}
+          {% for req in org_ms.org.orgrolerequest_set.all %}
+            {% if req.status != "approved" %}
+              <div class="row mb-3 user-row">
+                <div class="col-md-3 user-row__name">{{ req.get_role_display }}:</div>
+                <div class="col-md-9 user-row__content">
+                  <strong>{{ req.get_status_display }}</i></strong>
+                  <button type="button" class="btn btn-sm btn-outline-white btn-add-user-document">+ Add document</button>
+                </div>
+                <div class="col">
+                  <p class="authorised-roles__description">
+                    {% if req.status == "requested" %}
+                      The role has been requested and will be reviewed by our staff soon.
+                    {% endif %}
+                    {% if req.status == "evidence" %}
+                      Please upload an evidence for that request.
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+
+
+
+          <a href="{% url 'users:role-request' %}" class="btn btn-primary btn-sm">Request a role</a>
         </div>
       </div>
     </div>

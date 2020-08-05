@@ -3,6 +3,8 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model, forms as auth_forms
 
+from trade_portal.users.models import OrgRoleRequest
+
 User = get_user_model()
 
 
@@ -75,3 +77,21 @@ class UserCreationForm(auth_forms.UserCreationForm):
             'first_name', 'last_name', 'email', 'password1', 'password2',
             'mobile_number',
         )
+
+
+class RoleRequestForm(forms.ModelForm):
+    class Meta:
+        model = OrgRoleRequest
+        fields = ('org', 'role', 'evidence')
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        self.fields["org"].choices = (
+            (x.pk, str(x))
+            for x in self.user.direct_orgs
+        )
+
+    def save(self, *args, **kwargs):
+        self.instance.created_by = self.user
+        return super().save(*args, **kwargs)

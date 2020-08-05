@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.contrib.auth import get_user_model
 
-from trade_portal.users.models import Organisation, OrgMembership
+from trade_portal.users.models import (
+    Organisation, OrgMembership, OrgRoleRequest,
+)
 from trade_portal.users.forms import UserChangeForm
 
 User = get_user_model()
@@ -34,3 +36,8 @@ class OrganisationAdmin(admin.ModelAdmin):
 @admin.register(OrgMembership)
 class OrgMembershipAdmin(admin.ModelAdmin):
     list_display = ("pk", "org", "user", "since", "role")
+
+
+@admin.register(OrgRoleRequest)
+class OrgRoleRequestAdmin(admin.ModelAdmin):
+    list_display = ("id", "org", "role", "status")

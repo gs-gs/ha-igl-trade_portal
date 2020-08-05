@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 from django.utils.functional import cached_property
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,11 @@ class User(AbstractUser):
         if self.is_staff:
             return Organisation.objects.all()
         else:
-            return [om.org for om in self.orgmembership_set.all()]
+            return self.direct_orgs
+
+    @cached_property
+    def direct_orgs(self):
+        return [om.org for om in self.orgmembership_set.all()]
 
     def get_current_org(self, session):
         """
@@ -128,3 +133,48 @@ class Organisation(models.Model):
         if self.is_regulator:
             roles.append("Regulator")
         return ', '.join(roles)
+
+
+class OrgRoleRequest(models.Model):
+    ROLE_TRADER = "trader"
+    ROLE_CHAMBERS = "chambers"
+
+    ROLE_CHOICES = (
+        (ROLE_TRADER, "Trader"),
+        (ROLE_CHAMBERS, "Chambers"),
+    )
+
+    STATUS_REQUESTED = 'requested'
+    STATUS_EVIDENCE = 'evidence'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+
+    STATUS_CHOICES = (
+        (STATUS_REQUESTED, "Requested"),
+        (STATUS_EVIDENCE, "Evidence"),
+        (STATUS_APPROVED, "Approved"),
+        (STATUS_REJECTED, "Rejected"),
+    )
+
+    org = models.ForeignKey(Organisation, models.CASCADE)
+    created_by = models.ForeignKey(
+        User, models.CASCADE, related_name="orgrequests_created"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    role = models.CharField(max_length=16, choices=ROLE_CHOICES)
+
+    status = models.CharField(
+        max_length=16, default=STATUS_REQUESTED, choices=STATUS_CHOICES
+    )
+    evidence = models.FileField(blank=True, null=True)
+
+    handled_by = models.ForeignKey(
+        User, models.SET_NULL, blank=True, null=True,
+        related_name="orgrequests_handled"
+    )
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return "{} for {}".format(self.get_role_display(), self.org)

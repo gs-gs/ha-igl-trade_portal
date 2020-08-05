@@ -1,0 +1,59 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}Request a role{% endblock %}
+
+{% block extra_head %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Request a role</h2>
+
+  <p>On this page you can request a new role for your organisation. Please note the action is approved manually and typically take 2 workings days.</p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>Description</th>
+        <th>Permissions</th>
+        <th>Accreditation criteria</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Trader</th>
+        <td>A business identified with an {{ BID_NAME }} that imports and/or exports goods</td>
+        <td>
+          <ul>
+            <li>Create declarations of origin</li>
+            <li>View certificates where your {{ BID_NAME }} is the exporter or importer</li>
+          </ul>
+        </td>
+        <td>Verification that user is an authorised member of the business</td>
+      </tr>
+      <tr>
+        <th>Chamber</th>
+        <td>An entity that is accredited to issue preferential or non preferential certificates of origin</td>
+        <td>Issue certificates of origin</td>
+        <td>Verification of your accreditation</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <form action="#" method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+
+    <div class="form-actions">
+      <a href="{% url 'users:detail' %}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Send the request</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
