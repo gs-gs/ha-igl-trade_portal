@@ -1,7 +1,6 @@
-{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}You are receiving this email because you have registered on the Secure Trade Line test system.
+You are receiving this email because you have registered on the Secure Trade Line test system.
+To continue using the system you must verify your email address.
 
 Click this link to verify your email {{ activate_url }}
 
-{% endblocktrans %}
-{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Please do not reply to this email.{% endblocktrans %}
-{% endautoescape %}
+Please do not reply to this email.
