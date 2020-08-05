@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 
 from trade_portal.feedback.views import FeedbackView
 from trade_portal.views import (
-    HomeView, LogoutInitiateView, LogoutPerformView,
+    HomeView, VerificationView, LogoutInitiateView, LogoutPerformView,
 )
 from trade_portal.documents.views.oa import OaCyphertextRetrieve
 
@@ -17,6 +17,7 @@ from .healthcheck import HealthcheckView
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("about/", TemplateView.as_view(template_name="pages/about.html")),
+    path("verification/", VerificationView.as_view()),
 
     path("documents/", include("trade_portal.documents.urls", namespace="documents")),
     path("oa/<str:key>/", OaCyphertextRetrieve.as_view(), name="oa-cyphertext-retrieve"),

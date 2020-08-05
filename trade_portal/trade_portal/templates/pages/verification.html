@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block body_class %}about{% endblock %}
+
+{% block extra_head %}
+  <style>
+    .authenticated .page-main {
+        padding: 0px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <iframe style="width: 100%; height: 600px" src="{{ verification_url }}">
+    (the validator could't load)
+  </iframe>
+{% endblock %}

@@ -9,6 +9,15 @@ class HomeView(TemplateView):
     template_name = "pages/home.html"
 
 
+class VerificationView(TemplateView):
+    template_name = "pages/verification.html"
+
+    def get_context_data(self, *args, **kwargs):
+        c = super().get_context_data(*args, **kwargs)
+        c["verification_url"] = settings.VERIFICATION_URL
+        return c
+
+
 class LogoutInitiateView(View):
     def get(self, request, *args, **kwargs):
         next_url = (

@@ -142,7 +142,7 @@ class OrgRoleRequest(models.Model):
 
     ROLE_CHOICES = (
         (ROLE_TRADER, "Trader"),
-        (ROLE_CHAMBERS, "Chambers"),
+        (ROLE_CHAMBERS, "Chamber"),
     )
 
     STATUS_REQUESTED = 'requested'

@@ -35,6 +35,8 @@ class PendingUsersView(UserPassesTestMixin, TemplateView):
             orgmembership__isnull=True,
             is_staff=False,
             is_superuser=False,
+        ).exclude(
+            initial_business_id=""
         )
 
     def post(self, request, *args, **kwargs):

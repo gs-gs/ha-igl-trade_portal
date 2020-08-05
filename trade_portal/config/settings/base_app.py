@@ -27,6 +27,11 @@ if ICL_TRADE_PORTAL_HOST.endswith("/"):
     ICL_TRADE_PORTAL_HOST = ICL_TRADE_PORTAL_HOST[:-1]
 
 
+VERIFICATION_URL = env(
+    "ICL_VERIFICATION_HOST",
+    default="https://verify.c1.devnet.trustbridge.io/"
+)
+
 # Just for the UI skin
 CSS_COUNTRY = env(
     'ICL_CSS_COUNTRY',
