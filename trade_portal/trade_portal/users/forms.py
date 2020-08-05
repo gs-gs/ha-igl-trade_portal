@@ -30,6 +30,7 @@ class CustomSignupForm(SignupForm):
         super().__init__(*args, **kwargs)
         self.fields["initial_business_id"].label = f"Your business {settings.BID_NAME}"
         self.fields["password1"].label = "Choose a password"
+        self.fields["email"].label = "Your business email address"
 
     def clean_mobile_number(self):
         phone = (self.cleaned_data.get("mobile_number") or "").strip().replace(" ", "")
