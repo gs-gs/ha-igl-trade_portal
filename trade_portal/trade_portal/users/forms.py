@@ -4,6 +4,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model, forms as auth_forms
 
 from trade_portal.users.models import OrgRoleRequest
+from trade_portal.users.tasks import (
+    notify_about_new_user_created, notify_role_requested,
+)
 
 User = get_user_model()
 
@@ -54,6 +57,10 @@ class CustomSignupForm(SignupForm):
         user.mobile_number = self.cleaned_data.get("mobile_number") or ""
         user.initial_business_id = self.cleaned_data.get("initial_business_id") or ""
         user.save()
+        notify_about_new_user_created.apply_async(
+            [user.pk],
+            countdown=5
+        )
         return user
 
 
@@ -99,4 +106,9 @@ class RoleRequestForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         self.instance.created_by = self.user
-        return super().save(*args, **kwargs)
+        req = super().save(*args, **kwargs)
+        notify_role_requested.apply_async(
+            [req.pk],
+            countdown=5
+        )
+        return req

@@ -1,0 +1,10 @@
+{% block subject %}[Trade Portal] New user has been registered{% endblock %}
+
+{% block html %}
+  <p>This is a notification to a staff member about new user to review.
+  Please navigate the <a href="{{ HOST }}/profile/pending/">Pending users</a> section to review it.</p>
+
+  <br/>
+  Email: {{ user.email }}<br/>
+  ABN: {{ user.initial_business_id }}<br/>
+{% endblock %}

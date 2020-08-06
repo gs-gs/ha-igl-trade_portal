@@ -1,0 +1,21 @@
+{% block subject %}[Trade Portal] The role request has been updated{% endblock %}
+
+{% block html %}
+
+  <p>
+  {% if req.status == req.STATUS_APPROVED %}
+    Your request for role {{ req.get_role_display }} has been approved.
+  {% endif %}
+
+  {% if req.status == req.STATUS_REJECTED %}
+    Your request for role {{ req.get_role_display }} has been rejected{% if req.reject_reason %} because of: {{ req.reject_reason }}{% endif %}.
+  {% endif %}
+
+  {% if req.status == req.STATUS_EVIDENCE %}
+    Your request for role {{ req.get_role_display }} is pending submission of evidence {{ req.evidence_name }}. Please upload it in <a href="{{ HOST }}/profile/">your profile</a>.
+  {% endif %}
+
+  </p>
+
+  <p>Please login to the Trade Portal for details.</p>
+{% endblock %}

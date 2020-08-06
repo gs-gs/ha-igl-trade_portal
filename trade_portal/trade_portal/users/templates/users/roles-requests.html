@@ -53,16 +53,27 @@
                     </a>
                   {% endif %}
                 </td>
-                <td>
+                <td style="width: 300px">
                   <button type="submit" class="btn btn-success btn-sm" name="approve_request" value="{{ preq.pk }}">Approve</button>
-                  <button type="submit" class="btn btn-danger btn-sm" name="reject_request" value="{{ preq.pk }}">Reject</button><br/>
-                  <button type="submit" class="btn btn-primary btn-sm" name="evidence_required" value="{{ preq.pk }}">
-                    {% if preq.evidence %}
-                      Re-request evidence
-                    {% else %}
-                      Request evidence
-                    {% endif %}
-                  </button>
+
+                  <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" placeholder="Reject reason" aria-label="Reject reason" name="reject_reason_{{ preq.pk }}">
+                    <div class="input-group-append">
+                      <button class="btn btn-danger btn-sm" name="reject_request" value="{{ preq.pk }}" type="submit">Reject</button>
+                    </div>
+                  </div>
+                  <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" placeholder="Evidence name" aria-label="Evidence name" name="evidence_name_{{ preq.pk }}">
+                    <div class="input-group-append">
+                      <button class="btn btn-primary btn-sm" name="evidence_required" value="{{ preq.pk }}" type="submit">
+                        {% if preq.evidence %}
+                          Re-request evidence
+                        {% else %}
+                          Request evidence
+                        {% endif %}
+                      </button>
+                    </div>
+                  </div>
                 </td>
               </tr>
             {% endfor %}

@@ -34,6 +34,12 @@ CONSTANCE_CONFIG = {
     'OA_AWS_ACCESS_KEYS': (
         ':',
         'Values in format accesskey:secretkey, None if empty (policy defined)'
+    ),
+
+    # misc
+    'USERS_NOTIFICATIONS_MAILBOX': (
+        '',
+        'The email where new notifications about registered users/etc will be sent'
     )
 
 }

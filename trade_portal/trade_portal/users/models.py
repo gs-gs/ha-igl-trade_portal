@@ -185,6 +185,8 @@ class OrgRoleRequest(models.Model):
         User, models.SET_NULL, blank=True, null=True,
         related_name="orgrequests_handled"
     )
+    reject_reason = models.CharField(max_length=1024, blank=True, default="")
+    evidence_name = models.CharField(max_length=1024, blank=True, default="")
 
     class Meta:
         ordering = ('-created_at',)

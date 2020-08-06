@@ -1,0 +1,8 @@
+{% block subject %}[Trade Portal] Your account has been approved{% endblock %}
+
+{% block html %}
+  <p>Please note that your account (recently created on the Trade Portal) has been
+  approved. Now you can login and see your organisation.</p>
+
+  <p>You'll need to request roles for your organisation if it's new.</p>
+{% endblock %}

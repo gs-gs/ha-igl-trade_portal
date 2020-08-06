@@ -23,6 +23,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         return self.request.user
 
     def post(self, request, *args, **kwargs):
+        from trade_portal.users.tasks import notify_staff_about_evidence_uploaded
         if "evidence" in request.FILES:
             for validator in OrgRoleRequest._meta.get_field("evidence").validators:
                 try:
@@ -40,7 +41,12 @@ class UserDetailView(LoginRequiredMixin, DetailView):
                 ]
             )
             req.evidence = request.FILES["evidence"]
-            req.status = OrgRoleRequest.STATUS_REQUESTED
+            if req.status == OrgRoleRequest.STATUS_EVIDENCE:
+                req.status = OrgRoleRequest.STATUS_REQUESTED
+                notify_staff_about_evidence_uploaded.apply_async(
+                    [req.id],
+                    countdown=1
+                )
             req.save()
             messages.success(
                 request,

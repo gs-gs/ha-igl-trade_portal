@@ -1,0 +1,10 @@
+{% block subject %}[Trade Portal] The evidence has been uploaded{% endblock %}
+
+{% block html %}
+  <p>This is a notification to a staff member about some user uploaded the evidence to some role request. <a href="{{ HOST }}/profile/roles-requests/">Review</a></p>
+
+  <br/>
+  User: {{ req.created_by }}<br/>
+  Org: {{ req.org }}<br/>
+  Role: {{ req.get_role_display }}<br/>
+{% endblock %}

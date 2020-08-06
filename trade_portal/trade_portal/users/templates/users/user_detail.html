@@ -149,6 +149,12 @@
                 </div>
                 <div class="col">
                   <p class="authorised-roles__description">
+                    {% if req.reject_reason %}
+                      Reject reason: {{ req.reject_reason }}<br/>
+                    {% endif %}
+                    {% if req.evidence_name %}
+                      Evidence required: {{ req.evidence_name }}<br/>
+                    {% endif %}
                     {% if req.status == "requested" %}
                       The role has been requested and will be reviewed by our staff soon.
                     {% endif %}

@@ -1,0 +1,12 @@
+{% block subject %}[Trade Portal] A role is requested{% endblock %}
+
+{% block html %}
+  <p>User "{{ req.created_by }}"" requested get_role_display "{{ req.role }}"" for organisation "{{ req.org }}".</p>
+
+  <a href="{{ HOST }}/profile/roles-requests/">Review requested roles</a>><br/>
+
+  <br/>
+  Organisation: {{ req.org }}<br/>
+  Role requested: {{ req.get_role_display }}<br/>
+  By: {{ req.created_by }}<br/>
+{% endblock %}

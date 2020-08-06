@@ -13,7 +13,10 @@ from django.shortcuts import redirect
 from trade_portal.users.models import (
     Organisation, OrgMembership, OrgRoleRequest,
 )
-from trade_portal.users.tasks import update_org_fields
+from trade_portal.users.tasks import (
+    notify_user_about_being_approved, notify_user_about_role_request_changed,
+    update_org_fields,
+)
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -56,6 +59,10 @@ class PendingUsersView(UserPassesTestMixin, TemplateView):
                 user=user,
             )
             messages.success(request, f"The user has been added to {org}")
+            notify_user_about_being_approved.apply_async(
+                [user.id, "added_to_org"],
+                countdown=5
+            )
         elif "create_org_for_user" in request.POST:
             user = self._get_pending_users().get(
                 pk=request.POST.get("create_org_for_user")
@@ -83,6 +90,10 @@ class PendingUsersView(UserPassesTestMixin, TemplateView):
                 request,
                 "The organisation has been created and this user got access to it"
             )
+            notify_user_about_being_approved.apply_async(
+                [user.id, "org_created"],
+                countdown=5
+            )
 
         return redirect(request.path_info)
 
@@ -109,6 +120,7 @@ class RolesRequestsView(UserPassesTestMixin, TemplateView):
                 pk=request.POST.get("approve_request")
             )
             req.status = OrgRoleRequest.STATUS_APPROVED
+            req.reject_reason = ""
             req.save()
             if req.role == req.ROLE_TRADER:
                 req.org.is_trader = True
@@ -119,26 +131,41 @@ class RolesRequestsView(UserPassesTestMixin, TemplateView):
                 request,
                 f"Role {req.get_role_display()} has been granted to the {req.org}"
             )
+
+            notify_user_about_role_request_changed.apply_async(
+                [req.id],
+                countdown=5
+            )
         elif "reject_request" in request.POST:
             req = OrgRoleRequest.objects.get(
                 pk=request.POST.get("reject_request")
             )
             req.status = OrgRoleRequest.STATUS_REJECTED
+            req.reject_reason = request.POST.get(f"reject_reason_{req.pk}") or ""
             req.save()
             messages.warning(
                 request,
-                f"Role {req.get_role_display()} has NOT been granted to the {req.org}"
+                f"The request from {req.org} has been rejected and the user has been notified."
+            )
+            notify_user_about_role_request_changed.apply_async(
+                [req.id],
+                countdown=5
             )
         elif "evidence_required" in request.POST:
             req = OrgRoleRequest.objects.get(
                 pk=request.POST.get("evidence_required")
             )
             req.status = OrgRoleRequest.STATUS_EVIDENCE
+            req.evidence_name = request.POST.get(f"evidence_name_{req.pk}") or ""
             req.save()
             messages.info(
                 request,
                 "The request has been marked as 'Evidence Requested' "
                 "and will change it's status back once it's uploaded"
+            )
+            notify_user_about_role_request_changed.apply_async(
+                [req.id],
+                countdown=5
             )
         return redirect(request.path_info)
 
