@@ -47,6 +47,7 @@ $home-max-width: 1280px;
   .page-main {
     @include flexbox();
     @include flex-shrink(1);
+    @include flex-direction(column);
     width: 100%;
     padding: 5rem 0 0 0;
 
