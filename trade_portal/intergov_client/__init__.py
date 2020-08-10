@@ -3,6 +3,8 @@ from http import HTTPStatus
 
 import requests
 
+from .auth import BaseAuthClass
+
 logger = logging.getLogger(__name__)
 VERSION = "0.0.3"
 VERSION_API = "20200501"
@@ -13,7 +15,7 @@ class IntergovClient(object):
     Helper class to perform the intergov API calls easily
     """
 
-    def __init__(self, country, endpoints, auth_class):
+    def __init__(self, country: str, endpoints: dict, auth_class: BaseAuthClass):
         """
         Country: 2-letter country code, example: AU, SG, CN
 
@@ -37,7 +39,7 @@ class IntergovClient(object):
         self.auth_class = auth_class
         self.ENDPOINTS = endpoints
 
-    def retrieve_message(self, sender_ref):
+    def retrieve_message(self, sender_ref: str) -> dict:
         """
         Retrieves message and returns None or JSON of it's body
         """
@@ -56,7 +58,7 @@ class IntergovClient(object):
             return None
         return resp.json()
 
-    def post_message(self, message_json):
+    def post_message(self, message_json: dict) -> dict:
         """
         Posts a message to message TX API, returns posted message body
         (with sender_ref supposedly to be attached).
@@ -89,7 +91,7 @@ class IntergovClient(object):
             )
         return resp.json()
 
-    def post_text_document(self, receiver, document_body):
+    def post_text_document(self, receiver: str, document_body) -> dict:
         """
         Accepts str with the document content,
         returns JSON with some document info (at least `multihash` str field)
@@ -113,7 +115,7 @@ class IntergovClient(object):
             raise Exception("Unable to post document: %s" % resp.text[:2000])
         return resp.json()
 
-    def post_binary_document(self, receiver, document_stream):
+    def post_binary_document(self, receiver: str, document_stream) -> dict:
         if not isinstance(self.ENDPOINTS.get("document"), str):
             raise Exception("Document API must be configured first")
 
@@ -136,7 +138,7 @@ class IntergovClient(object):
     def retrieve_text_document(self, *args, **kwargs):
         return self.retrieve_document(*args, **kwargs)
 
-    def retrieve_document(self, document_multihash):
+    def retrieve_document(self, document_multihash: str):
         if not isinstance(self.ENDPOINTS.get("document"), str):
             raise Exception("Document API must be configured first")
 
@@ -160,7 +162,7 @@ class IntergovClient(object):
                 error = resp.content.decode("utf-8")
             raise Exception(f"Unable to retrieve document: {resp.status_code}, {error}")
 
-    def subscribe(self, predicate=None, topic=None, callback=None):
+    def subscribe(self, predicate=None, topic=None, callback=None) -> bool:
         if not callback:
             raise Exception("The callback parameter is required")
         if not isinstance(self.ENDPOINTS.get("subscription"), str):
