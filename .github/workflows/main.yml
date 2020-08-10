@@ -17,4 +17,4 @@ jobs:
         with:
           # use relative pathes
           path:
-            ./trade_portal
+            ./trade_portal/trade_portal
