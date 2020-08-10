@@ -1,0 +1,8 @@
+[submodule ".github-actions/bandit"]
+	path = .github-actions/bandit
+	url = https://github.com/jpetrucciani/bandit-check.git
+	branch = master
+[submodule ".github-actions/njsscan"]
+	path = .github-actions/njsscan
+	url = https://github.com/ajinabraham/njsscan-action.git
+	branch = master

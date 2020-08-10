@@ -1,0 +1,20 @@
+name: static code analysis
+on: [push, pull_request]
+jobs:
+  static-code-analysis:
+    name: static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      # init repo
+      - uses: actions/checkout@v2
+        name: Pulling repo code
+      # don't forget about submodules
+      - uses: textbook/git-checkout-submodule-action@master
+        name: Pulling submodules code
+      # python checks
+      - uses: ./.github-actions/bandit
+        name: bandit scan trade_portal
+        with:
+          # use relative pathes
+          path:
+            ./trade_portal
