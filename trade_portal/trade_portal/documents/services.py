@@ -76,7 +76,7 @@ class BaseIgService:
             ig_client = self._get_ig_client()
         self.ig_client = ig_client
 
-    def _get_ig_client(self):
+    def _get_ig_client(self) -> IntergovClient:
         if settings.IGL_OAUTH_WELLKNOWN_URL:
             ig_token_url = DjangoCachedCognitoOIDCAuth.resolve_wellknown_to_token_url(
                 settings.IGL_OAUTH_WELLKNOWN_URL
@@ -99,7 +99,7 @@ class BaseIgService:
 
 class DocumentService(BaseIgService):
 
-    def issue(self, document):
+    def issue(self, document: Document) -> bool:
         subject = "{}.{}.{}".format(
             settings.ICL_APP_COUNTRY.upper(),
             (
@@ -258,9 +258,9 @@ class DocumentService(BaseIgService):
 
         logging.info("Posted message %s", posted_message)
         self._subscribe_to_message_updates(posted_message)
-        return
+        return True
 
-    def _render_uploaded_files(self, document):
+    def _render_uploaded_files(self, document: Document) -> list:
         uploaded = []
         for file in document.files.all():
             file.file
@@ -274,7 +274,7 @@ class DocumentService(BaseIgService):
             )
         return uploaded
 
-    def _render_oa_v2_document(self, document, subject):
+    def _render_oa_v2_document(self, document: Document, subject: str) -> dict:
         tt_key_location = settings.BASE_URL.replace("https://", "").replace("http://", "")
 
         if ":" in tt_key_location:
@@ -312,7 +312,7 @@ class DocumentService(BaseIgService):
         cipher = AESCipher(key)
         return cipher.encrypt_with_params_separate(opentext)
 
-    def _render_intergov_message(self, document, subject, obj_multihash):
+    def _render_intergov_message(self, document: Document, subject: str, obj_multihash: str) -> dict:
         return {
             "predicate": Predicates.CoO_ISSUED,
             "sender": settings.ICL_APP_COUNTRY,
@@ -321,7 +321,7 @@ class DocumentService(BaseIgService):
             "obj": obj_multihash,
         }
 
-    def _subscribe_to_message_updates(self, message):
+    def _subscribe_to_message_updates(self, message: dict) -> None:
         # subscribe to new messages about the same conversation
 
         # TODO: message POST endpoint should return the subscription details
@@ -357,7 +357,7 @@ class DocumentService(BaseIgService):
 
 class NodeService(BaseIgService):
 
-    def update_message_by_sender_ref(self, sender_ref):
+    def update_message_by_sender_ref(self, sender_ref: str) -> bool:
         """
         We received some light notification about the message updated,
         so now need to determine what the `cred` is, find that message and get
@@ -403,9 +403,9 @@ class NodeService(BaseIgService):
         node_msg.trigger_processing(
             new_status=msg_body["status"]
         )
-        return
+        return True
 
-    def subscribe_to_new_messages(self):
+    def subscribe_to_new_messages(self) -> None:
         result = self.ig_client.subscribe(
             predicate="message.*",
             callback=(
@@ -416,7 +416,7 @@ class NodeService(BaseIgService):
         if result:
             logger.info("Re-subscribed to predicate message.*")
 
-    def store_message_by_ping_body(self, ping_body):
+    def store_message_by_ping_body(self, ping_body: dict) -> bool:
         # Once new message notification arrives we have message sender ref
         # and have to retrieve it
         # Example of the body:
@@ -449,7 +449,6 @@ class NodeService(BaseIgService):
             # start a new conversation
             logger.info("Starting a new document/conversation for the %s", msg_body)
             self._start_new_conversation(msg_body)
-            return True
         else:
             msg, created = NodeMessage.objects.get_or_create(
                 sender_ref=msg_body["sender_ref"],
@@ -468,9 +467,9 @@ class NodeService(BaseIgService):
                 msg.trigger_processing()
             else:
                 logger.info("Message %s is already in the system", msg_body["sender_ref"])
-            return True
+        return True
 
-    def _start_new_conversation(self, message_body):
+    def _start_new_conversation(self, message_body: dict) -> None:
         from trade_portal.documents.tasks import process_incoming_document_received
 
         NEW_DOC_PREDICATES = [
@@ -538,7 +537,7 @@ class NotaryService():
     """
 
     @classmethod
-    def notarize_file(cls, doc_key, document_body):
+    def notarize_file(cls, doc_key: str, document_body: str):
         import boto3  # local import because some setups may not even use it
 
         if not config.OA_UNPROCESSED_BUCKET_NAME:
@@ -566,7 +565,7 @@ class NotaryService():
         return True
 
     @classmethod
-    def send_manual_notification(cls, key):
+    def send_manual_notification(cls, key: str):
         """
         If the bucket itself doesn't send these notifications for some reason
         We forge it so worker is aware. Another side effect is that we can
@@ -607,7 +606,7 @@ class NotaryService():
 
 class IncomingDocumentService(BaseIgService):
 
-    def process_new(self, doc):
+    def process_new(self, doc: Document):
         DocumentHistoryItem.objects.create(
             type="text", document=doc,
             message="Started the incoming document retrieval..."
@@ -669,7 +668,7 @@ class IncomingDocumentService(BaseIgService):
             )
         return True
 
-    def get_incoming_document_format(self, doc, binary_obj_content):
+    def get_incoming_document_format(self, doc: Document, binary_obj_content):
         try:
             json_content = json.loads(binary_obj_content)
         except Exception:
@@ -736,7 +735,7 @@ class IncomingDocumentService(BaseIgService):
             self._process_oa3_document(doc, unwrapped_oa)
         return True
 
-    def _process_oa2_document(self, doc, data):
+    def _process_oa2_document(self, doc: Document, data: dict):
         attachments = data.pop("attachments")
         for attach in attachments:
             bin_file = base64.b64decode(attach["data"].encode("utf-8"))
@@ -814,13 +813,13 @@ class IncomingDocumentService(BaseIgService):
         doc.save()
         return
 
-    def _process_oa3_document(self, doc, data):
+    def _process_oa3_document(self, doc: Document, data: dict):
         return self._complain_and_die(
             doc,
             "Sorry, we don't support OAv3 documents yet",
         )
 
-    def _complain_and_die(self, doc, message, *message_args):
+    def _complain_and_die(self, doc: Document, message, *message_args):
         logger.info(message, *message_args)
         DocumentHistoryItem.objects.create(
             type="error", document=doc,
@@ -833,14 +832,18 @@ class WatermarkService:
     """
     Helper to add QR code to the uploaded PDF file assuming it doesn't have any
     """
-    def watermark_document(self, document):
+    def watermark_document(self, document: Document):
         qrcode_image = document.oa.get_qr_image()
         for docfile in document.files.filter(is_watermarked=False):
             if docfile.filename.lower().endswith(".pdf"):
                 self.add_watermark(docfile, qrcode_image)
         return
 
-    def add_watermark(self, docfile, qrcode_image):
+    def add_watermark(self, docfile: DocumentFile, qrcode_image) -> None:
+        """
+        Draws given QR code over a PDF content in the top right cornder
+        and re-saves the file in place with updated result
+        """
         # Local imports are used in case this functionality is disabled
         # for some setups/envs
         import PIL
