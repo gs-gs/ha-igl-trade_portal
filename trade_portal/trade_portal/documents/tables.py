@@ -17,10 +17,18 @@ class DocumentsTable(tables.Table):
     status = tables.TemplateColumn(
         verbose_name="IGL Status",
         template_code="""
-        {% if record.status == 'pending' %}<span class=' badge  badge-warning'>{{ record.get_status_display }}</span>{% endif %}
-        {% if record.status == 'validated' %}<span  class=' badge  badge-success'>{{ record.get_status_display }}</span>{% endif %}
-        {% if record.status == 'failed' %}<span class=' badge  badge-danger'>{{ record.get_status_display }}</span>{% endif %}
-        {% if record.status == 'incoming' %}<span class=' badge  badge-primary'>{{ record.get_status_display }}</span>{% endif %}
+        {% if record.status == 'pending' %}
+            <span class='badge badge-warning'>{{ record.get_status_display }}</span>
+        {% endif %}
+        {% if record.status == 'validated' %}
+            <span class='badge badge-success'>{{ record.get_status_display }}</span>
+        {% endif %}
+        {% if record.status == 'failed' %}
+            <span class='badge badge-danger'>{{ record.get_status_display }}</span>
+        {% endif %}
+        {% if record.status == 'incoming' %}
+            <span class='badge badge-primary'>{{ record.get_status_display }}</span>
+        {% endif %}
         """
     )
     consignment_details = tables.TemplateColumn(
