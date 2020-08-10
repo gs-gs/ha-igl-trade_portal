@@ -5,6 +5,7 @@ from django.views.generic import View
 
 from trade_portal.documents.models import OaDetails
 
+
 class AllowCORSMixin(object):
 
     def add_access_control_headers(self, response):
