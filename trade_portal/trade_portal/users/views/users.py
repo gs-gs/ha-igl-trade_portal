@@ -73,10 +73,6 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         )
         return super().form_valid(form)
 
-    def post(self, request, *args, **kwargs):
-        assert request.user.is_authenticated
-        return super().post(request, *args, **kwargs)
-
 
 user_update_view = UserUpdateView.as_view()
 
@@ -96,7 +92,8 @@ class ChangeOrgView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         new_org_id = request.POST.get("current_org")
         next_url = request.GET.get("next") or request.POST.get("next") or "/"
-        assert next_url.startswith("/")
+        if not next_url.startswith("/"):
+            raise Exception("Incorrect next url")
 
         if request.user.is_staff:
             # no need to check the permissions for that org

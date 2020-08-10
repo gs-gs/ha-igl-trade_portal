@@ -30,7 +30,8 @@ class IntergovClient(object):
         interface
         """
         country = str(country)
-        assert len(country) == 2 and country.upper() == country
+        if len(country) != 2 or country.upper() != country:
+            raise Exception("Country parameter is invalid")
         self.COUNTRY = country
 
         self.auth_class = auth_class
@@ -40,7 +41,8 @@ class IntergovClient(object):
         """
         Retrieves message and returns None or JSON of it's body
         """
-        assert isinstance(self.ENDPOINTS.get("message"), str), "Message API must be configured first"
+        if not isinstance(self.ENDPOINTS.get("message"), str):
+            raise Exception("Message API must be configured first")
 
         auth_h_name, auth_h_value, exp = self.auth_class.get_message_auth_header()
         resp = requests.get(
@@ -60,7 +62,8 @@ class IntergovClient(object):
         (with sender_ref supposedly to be attached).
         Raises exceptions if any.
         """
-        assert isinstance(self.ENDPOINTS.get("message"), str), "Message API must be configured first"
+        if not isinstance(self.ENDPOINTS.get("message"), str):
+            raise Exception("Message API must be configured first")
 
         auth_h_name, auth_h_value, exp = self.auth_class.get_message_auth_header()
         resp = requests.post(
@@ -91,7 +94,8 @@ class IntergovClient(object):
         Accepts str with the document content,
         returns JSON with some document info (at least `multihash` str field)
         """
-        assert isinstance(self.ENDPOINTS.get("document"), str), "Document API must be configured first"
+        if not isinstance(self.ENDPOINTS.get("document"), str):
+            raise Exception("Document API must be configured first")
 
         auth_h_name, auth_h_value, exp = self.auth_class.get_document_auth_header()
         files = {
@@ -110,7 +114,8 @@ class IntergovClient(object):
         return resp.json()
 
     def post_binary_document(self, receiver, document_stream):
-        assert isinstance(self.ENDPOINTS.get("document"), str), "Document API must be configured first"
+        if not isinstance(self.ENDPOINTS.get("document"), str):
+            raise Exception("Document API must be configured first")
 
         auth_h_name, auth_h_value, exp = self.auth_class.get_document_auth_header()
         files = {
@@ -132,7 +137,8 @@ class IntergovClient(object):
         return self.retrieve_document(*args, **kwargs)
 
     def retrieve_document(self, document_multihash):
-        assert isinstance(self.ENDPOINTS.get("document"), str), "Document API must be configured first"
+        if not isinstance(self.ENDPOINTS.get("document"), str):
+            raise Exception("Document API must be configured first")
 
         auth_h_name, auth_h_value, exp = self.auth_class.get_document_auth_header()
         endpoint = f'{self.ENDPOINTS["document"]}/{document_multihash}'
@@ -155,8 +161,10 @@ class IntergovClient(object):
             raise Exception(f"Unable to retrieve document: {resp.status_code}, {error}")
 
     def subscribe(self, predicate=None, topic=None, callback=None):
-        assert callback
-        assert isinstance(self.ENDPOINTS.get("subscription"), str), "Subscription API must be configured first"
+        if not callback:
+            raise Exception("The callback parameter is required")
+        if not isinstance(self.ENDPOINTS.get("subscription"), str):
+            raise Exception("Subscription API must be configured first")
 
         auth_h_name, auth_h_value, exp = self.auth_class.get_subscr_auth_header()
         resp = requests.post(

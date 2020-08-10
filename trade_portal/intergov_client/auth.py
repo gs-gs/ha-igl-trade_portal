@@ -41,7 +41,8 @@ class CognitoOIDCAuth(BaseAuthClass):
         wellknown_content = requests.get(
             wellknown_url
         )
-        assert wellknown_content.status_code == 200
+        if not wellknown_content.status_code == 200:
+            raise Exception("Unable to resolve wellknown url to token url", wellknown_content.content)
         return wellknown_content.json().get("token_endpoint")
 
     def __init__(self, token_url, client_id, client_secret, scope):
@@ -63,7 +64,8 @@ class CognitoOIDCAuth(BaseAuthClass):
                 'Authorization': f'Basic {cognito_auth}',
             }
         )
-        assert token_resp.status_code == 200, token_resp.json()
+        if not token_resp.status_code == 200:
+            raise Exception("Unable to retrieve Cognito auth header", token_resp.json())
         json_resp = token_resp.json()
         logger.info("Retrieved new JWT; ends in %s", json_resp['expires_in'])
         return (

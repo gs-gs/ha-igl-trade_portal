@@ -8,6 +8,8 @@ import io
 import logging
 import mimetypes
 import uuid
+
+# TODO: replace to pyca/cryptography as Bandit advises (low)
 from Crypto.Cipher import AES
 
 import dateutil.parser
@@ -797,7 +799,10 @@ class IncomingDocumentService(BaseIgService):
                 try:
                     doc.fta = FTA.objects.get(name=freeTradeAgreement)
                 except Exception:
-                    pass
+                    logger.warning(
+                        "The FTA %s is passed in the inbound document but can't be found locally",
+                        freeTradeAgreement
+                    )
             importer = data.get("importer", {})
             if importer and isinstance(importer, dict):
                 importer_name = importer.get("name")

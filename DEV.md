@@ -41,5 +41,7 @@ To run the tests, check your test coverage, and generate an HTML coverage report
 ## Running tests
 
   $ py.test (from the inside of the django container)
+  $ flake8
+  $ bandit -r trade_portal
 
 The helper pytest.sh will run unittests, mypy check and flake8 check.
