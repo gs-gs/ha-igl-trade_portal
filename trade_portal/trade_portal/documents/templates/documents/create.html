@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
-{% block title %}Create {{ form.instance.get_type_display }}{% endblock %}
+{% block title %}{% blocktrans %}Create {{ form.instance.get_type_display }}{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
   <style>
@@ -16,12 +16,12 @@
 {% block content %}
 <div class="content-box">
   <div class="document-form">
-    <h1 class="page-title">New {{ form.instance.get_type_display }}</h1>
+    <h1 class="page-title">{% blocktrans %}New {{ form.instance.get_type_display }}{% endblocktrans %}</h1>
 
     <form method="POST" enctype="multipart/form-data" onSubmit="return confirm('Are you sure?')">
       {% csrf_token %}
       {% if form.errors %}
-        <div class="alert alert-danger">Please fix the errors highlighted below</div>
+        <div class="alert alert-danger">{% trans 'Please fix the errors highlighted below' %}</div>
       {% endif %}
 
       {% comment %}
@@ -33,13 +33,13 @@
       {% endcomment %}
 
       <div class="form-group">
-        <div class="label">IGL Document ID <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
+        <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">Key</a>
+            <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">QR Code</a>
+            <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">{% trans 'QR Code' %}</a>
           </li>
         </ul>
         <div class="tab-content">
@@ -57,7 +57,7 @@
                 <img class="igl-doc-qrcode__image" src="data:image/png;base64,{{ form.oa.get_qr_image_base64 }}" alt="{{ form.oa.url_repr }}" style="width: 100px">
               </div>
               <div class="qrcode-box__content">
-                <p class="qrcode-box__description">Put this QR code on your document so that any third party can verify it using the trustbridge app. If you refresh the page the QR code will persist, but if you choose new certificate from the dashboard the new one will be issued - the URL of the current page has the QR code binding. You can either print the code or copy it to the text editor. Please note that if you scan this QR code on the trustbridge app it won't be valid until you issue the document.</p>
+                <p class="qrcode-box__description">{% blocktrans %}Put this QR code on your document so that any third party can verify it using the trustbridge app. If you refresh the page the QR code will persist, but if you choose new certificate from the dashboard the new one will be issued - the URL of the current page has the QR code binding. You can either print the code or copy it to the text editor. Please note that if you scan this QR code on the trustbridge app it won't be valid until you issue the document.{% endblocktrans %}</p>
                 <!-- <a class="btn btn-outline-white btn-sm qrcode-box__print" href="#"><i class="icon icon-print"></i>Print</a> -->
               </div>
             </div>
@@ -66,7 +66,7 @@
       </div>
 
       <fieldset class="form-section">
-        <div class="subtitle form-section__title">Document Metadata</div>
+        <div class="subtitle form-section__title">{% trans 'Document Metadata' %}</div>
 
         <div class="form-section__container">
 
@@ -80,7 +80,7 @@
 
           <div class="form-group">
             <label for="consignmentDocIssuer">
-              Exporter {{ BID_NAME }}*
+              {% trans 'Exporter' %} {{ BID_NAME }}*
               <span class="help-icon" data-toggle="tooltip" title="Please enter the business identificator"><i class="icon icon-info"></i></span>
             </label>
             {% if form.exporter.errors %}
@@ -97,7 +97,7 @@
                     href="https://www.uen.gov.sg/"
                   {% endif %}
                   target="_new" role="button">
-                  {{ BID_NAME }} Search
+                  {{ BID_NAME }} {% trans 'Search' %}
                   <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M14.5 3A1.5 1.5 0 0 0 13 1.5H3A1.5 1.5 0 0 0 1.5 3v5a.5.5 0 0 0 1 0V3a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H9a.5.5 0 0 0 0 1h4a1.5 1.5 0 0 0 1.5-1.5V3z"/>
                     <path fill-rule="evenodd" d="M4.5 6a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6.5H5a.5.5 0 0 1-.5-.5z"/>
@@ -119,14 +119,14 @@
       </fieldset>
 
       <fieldset class="form-section">
-        <div class="subtitle form-section__title">Consignment Reference</div>
+        <div class="subtitle form-section__title">{% trans 'Consignment Reference' %}</div>
 
         <div class="form-section__container">
 
           <div class="form-group">
             <label for="consignmentDocIssuer">
-              Document Type
-              <span class="help-icon" data-toggle="tooltip" title="Consignment details"><i class="icon icon-info"></i></span>
+              {% trans 'Document Type' %}
+              <span class="help-icon" data-toggle="tooltip" title="{% trans 'Consignment details' %}"><i class="icon icon-info"></i></span>
             </label>
             <div class="input-group">
               {{ form.consignment_ref_doc_type }}
@@ -134,7 +134,7 @@
           </div>
 
           <div class="form-group" id='id_document_issuer_block'>
-            <label for="consignmentDocIssuer">Document Issuer {{ BID_NAME }}</label>
+            <label for="consignmentDocIssuer">{% trans 'Document Issuer' %} {{ BID_NAME }}</label>
             <div class="input-group">
               {# TODO: add consignmentDocIssuer ID #}
               {{ form.consignment_ref_doc_issuer }}
@@ -147,7 +147,7 @@
                     href="https://www.uen.gov.sg/"
                   {% endif %}
                   target="_new" role="button">
-                  {{ BID_NAME }} Search
+                  {{ BID_NAME }} {% trans 'Search' %}
                   <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M14.5 3A1.5 1.5 0 0 0 13 1.5H3A1.5 1.5 0 0 0 1.5 3v5a.5.5 0 0 0 1 0V3a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H9a.5.5 0 0 0 0 1h4a1.5 1.5 0 0 0 1.5-1.5V3z"/>
                     <path fill-rule="evenodd" d="M4.5 6a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6.5H5a.5.5 0 0 1-.5-.5z"/>
@@ -169,7 +169,7 @@
 
           <div class="form-group">
             <label for="consignmentDocIssuer">
-              Document Number
+              {% trans 'Document Number' %}
               <span class="help-icon" data-toggle="tooltip" title="Consignment details"><i class="icon icon-info"></i></span>
             </label>
             <div class="input-group">
@@ -181,22 +181,22 @@
       </fieldset>
 
       <fieldset class="form-section">
-        <div class="subtitle form-section__title">Attachment</div>
+        <div class="subtitle form-section__title">{% trans 'Attachment' %}</div>
         {{ form.file|as_crispy_field }}
       </fieldset>
 
       <fieldset class="form-section">
-        <div class="subtitle form-section__title">Document Declaration</div>
+        <div class="subtitle form-section__title">{% trans 'Document Declaration' %}</div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="declaration" required>
-          <label class="form-check-label" for="declaration">I certify that the information herein is correct and that the described goods comply with the origin requirements of the specified Free Trade Agreement.</label>
+          <label class="form-check-label" for="declaration">{% trans 'I certify that the information herein is correct and that the described goods comply with the origin requirements of the specified Free Trade Agreement.' %}</label>
         </div>
 
       </fieldset>
 
       <div class="form-actions">
-        <a href="{% url 'documents:list' %}" class="btn btn-dark">Cancel</a>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'documents:list' %}" class="btn btn-dark">{% trans 'Cancel' %}</a>
+        <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
       </div>
     </form>
   </div>

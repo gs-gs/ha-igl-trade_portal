@@ -4,26 +4,26 @@
 {% load crispy_forms_tags %}
 {% load our_utils %}
 
-{% block title %}Document #{{ object.document_number }}{% endblock %}
+{% block title %}{% trans 'Document' %} #{{ object.document_number }}{% endblock %}
 
 {% block content %}
 <div class="content-box">
   <a href="logs/" style="float: right"  class="btn btn-primary btn-sm">Logs</a>
 
-  <h1 class="page-title">{% if object.is_incoming %}Incoming{% endif %} {{ object.get_type_display }} {{ object.document_number }}</h1>
+  <h1 class="page-title">{% if object.is_incoming %}{% trans 'Incoming' %}{% endif %} {{ object.get_type_display }} {{ object.document_number }}</h1>
 
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       {% with object.status as s %}
         {% if s == "incoming" %}
-          <li class="breadcrumb-item active">Incoming</li>
+          <li class="breadcrumb-item active">{% trans 'Incoming' %}</li>
         {% else %}
-          <li class="breadcrumb-item active">Pending</li>
+          <li class="breadcrumb-item active">{% trans 'Pending' %}</li>
           {% if s == 'failed' %}
-            <li class="breadcrumb-item active">Failed</li>
+            <li class="breadcrumb-item active">{% trans 'Failed' %}</li>
           {% endif %}
           {% if s == 'validated' %}
-            <li class="breadcrumb-item active">Validated</li>
+            <li class="breadcrumb-item active">{% trans 'Validated' %}</li>
           {% endif %}
         {% endif %}
       {% endwith %}
@@ -31,13 +31,13 @@
   </nav>
   {% if not object.is_incoming %}
     <div class="form-group">
-      <div class="label">IGL Document ID <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
+      <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
       <ul class="nav nav-tabs">
         <li class="nav-item">
-          <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">Key</a>
+          <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">QR Code</a>
+          <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">{% trans 'QR Code' %}</a>
         </li>
       </ul>
       <div class="tab-content">
@@ -55,7 +55,7 @@
               <img class="igl-doc-qrcode__image" src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" style="width: 100px">
             </div>
             <div class="qrcode-box__content">
-              <p class="qrcode-box__description">Put this QR code on your document so that any third party can verify it using the trustbridge app</p>
+              <p class="qrcode-box__description">{% trans 'Put this QR code on your document so that any third party can verify it using the trustbridge app' %}</p>
               <!-- <a class="btn btn-outline-white btn-sm qrcode-box__print" href="#"><i class="icon icon-print"></i>Print</a> -->
             </div>
           </div>
@@ -66,61 +66,58 @@
 
   <div class="section-info">
     <dl class="info-list">
-      <dt>Document Type</dt>
+      <dt>{% trans 'Document Type' %}</dt>
       <dd>{{ object.get_type_display|default:"(unknown)" }}</dd>
-      <dt>Current status</dt>
+      <dt>{% trans 'Current status' %}</dt>
       <dd>{{ object.get_status_display|default:"(unknown)" }}</dd>
-      <dt>Issuer</dt>
+      <dt>{% trans 'Issuer' %}</dt>
       <dd>
         {{ object.issuer.name }}<br/>
         {% if object.issuer.register_url %}
           {{ object.issuer.readable_identifier_name }}: <a href="{{ object.issuer.register_url }}" target="_blank">{{ object.issuer.business_id }}</a>
         {% endif %}
       </dd>
-      <dt>Created by</dt>
+      <dt>{% trans 'Created by' %}</dt>
       <dd>
-        {% if object.is_incoming %}Remote party{% else %}
-          <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> user<br/>
+        {% if object.is_incoming %}{% trans 'Remote party' %}{% else %}
+          <strong>{{ object.created_by_user.email|default:object.created_by_user }}</strong> {% trans 'user' %}<br/>
           at <strong>{{ object.created_by_org }}</strong>
         {% endif %}
       </dd>
-      <dt>Created at</dt>
+      <dt>{% trans 'Created at' %}</dt>
       <dd>{{ object.created_at }} {{ object.created_at.tzinfo }}</dd>
     </dl>
   </div>
   <div class="section-info">
-    <div class="subtitle section-info__title">Document metadata</div>
+    <div class="subtitle section-info__title">{% trans 'Document metadata' %}</div>
     <dl class="info-list">
-      <dt>Doc number</dt>
+      <dt>{% trans 'Doc number' %}</dt>
       <dd>{{ object.document_number|default:"(not specified)" }}</dd>
       {% if not document.is_incoming %}
-        <dt>IGL Document ID</dt>
+        <dt>{% trans 'IGL Document ID' %}</dt>
         <dd>
           {{ object.pk }}<br/>
-            {% with object.get_igid_image_base64 as qrcode_image %}
-              {% if qrcode_image %}
-                <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
-              {% else %}
-                <p>The certificate must be issued to show the QR code;
-                  We need it to ensure that no changes will be made.</p>
-              {% endif %}
-            {% endwith %}
+          {% with object.get_igid_image_base64 as qrcode_image %}
+            {% if qrcode_image %}
+              <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
+            {% endif %}
+          {% endwith %}
         </dd>
       {% endif %}
-      <dt>FTA</dt>
+      <dt>{% trans 'FTA' %}</dt>
       <dd>{{ object.fta }}</dd>
-      <dt>Exporting country</dt>
+      <dt>{% trans 'Exporting country' %}</dt>
       <dd>{{ object.sending_jurisdiction.name }}</dd>
-      <dt>Importing country</dt>
+      <dt>{% trans 'Importing country' %}</dt>
       <dd>{{ object.importing_country.name }}</dd>
-      <dt>Exporter</dt>
+      <dt>{% trans 'Exporter' %}</dt>
       <dd>
-        Entity: {{ object.exporter.name }}<br/>
+        {% trans 'Entity' %}: {{ object.exporter.name }}<br/>
         {% if object.exporter.register_url %}
           {{ object.exporter.readable_identifier_name }}: <a href="{{ object.exporter.register_url }}" target="_blank">{{ object.exporter.business_id }}</a>
         {% endif %}
       </dd>
-      <dt>Importer name</dt>
+      <dt>{% trans 'Importer name' %}</dt>
       <dd>{{ object.importer_name|default:"(not specified)" }}</dd>
     </dl>
   </div>
@@ -129,20 +126,20 @@
     {% if not object.is_incoming %}
       {% if current_org.is_chambers or current_org.is_trader %}
         <div style="float: right">
-          <a href="{% url 'documents:consignment-update' object.pk %}" class="btn btn-sm btn-primary">Update</a>
+          <a href="{% url 'documents:consignment-update' object.pk %}" class="btn btn-sm btn-primary">{% trans 'Update' %}</a>
         </div>
       {% endif %}
     {% endif %}
-    <h2 class="subtitle section-info__title">Consignment details</h2>
+    <h2 class="subtitle section-info__title">{% trans 'Consignment details' %}</h2>
     <dl class="info-list">
-      <dt>Doc number</dt>
+      <dt>{% trans 'Doc number' %}</dt>
       <dd>{{ object.consignment_ref_doc_number|default:"(not specified)" }}</dd>
-      <dt>Doc type</dt>
+      <dt>{% trans 'Doc type'  %}</dt>
       <dd>{{ object.consignment_ref_doc_type|default:"(not specified)" }}</dd>
-      <dt>Doc issuer</dt>
+      <dt>{% trans 'Doc issuer' %}</dt>
       <dd>{{ object.consignment_ref_doc_issuer|default:"(not specified)" }}</dd>
       {% if created_by_org %}
-        <dt>Data provided by </dt>
+        <dt>{% trans 'Data provided by' %}</dt>
         <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
       {% endif %}
     </dl>
@@ -150,15 +147,15 @@
 
   <div class="section-info">
     {% if object.files.all %}
-    <h2 class="subtitle section-info__title">Attachments</h2>
+    <h2 class="subtitle section-info__title">{% trans 'Attachments' %}</h2>
     <form action="#" method="POST" onSubmit="return confirm('Are you sure?')">
       {% csrf_token %}
       <div class="table-responsive">
         <table class="table">
           <thead>
             <tr>
-              <th>Type</th>
-              <th>File and author</th>
+              <th>{% trans 'Type' %}</th>
+              <th>{% trans 'File and author' %}</th>
             </tr>
           </thead>
           <tbody>
@@ -169,7 +166,7 @@
               </td>
               <td title="{{ doc.filename }}">
                 {% if doc.is_upstream %}
-                <span class="oi oi-eye" style="font-size: 1em" title="The document will be sent to remote party"></span>
+                <span class="oi oi-eye" style="font-size: 1em" title="{% trans 'The document will be sent to remote party' %}"></span>
                 {% endif %}
                 <a href="{% url 'documents:file-download' object.id doc.id %}">
                   {{ doc.short_filename }}
@@ -188,30 +185,14 @@
     {% endif %}
   </div>
 
-  {% if object.acquitted_details %}
-    <div class="certificate-detail-document">
-      <h2 class="subtitle section-info__title">Acquittals</h2>
-      {% for row in object.acquitted_details %}
-      <table class="table table-sm">
-        {% for key, value in row.items %}
-        <tr>
-          <th>{{ key }}</th>
-          <td><em>{{ value }}</em></td>
-        </tr>
-        {% endfor %}
-      </table>
-      {% endfor %}
-    </div>
-  {% endif %}
-
   {% if object.is_incoming %}
     {% if object.status == object.STATUS_FAILED %}
-      <div class="alert alert-danger">This document has been received with an error; see the Logs page for details. It usually means the technical error, not the certificate one.</div>
+      <div class="alert alert-danger">{% trans 'This document has been received with an error; see the Logs page for details. It usually means the technical error, not the certificate one.' %}</div>
     {% endif %}
     {# render incoming document in a nice but quick way #}
     {% if object.intergov_details.oa_doc %}
     <div class="section-info">
-    <div class="subtitle section-info__title">Raw incoming data</div>
+    <div class="subtitle section-info__title">{% trans 'Raw incoming data' %}</div>
     <dl class="info-list">
       {% for key, value in object.intergov_details.oa_doc.items %}
         <dt>{{ key|capfirst }}</dt>
@@ -230,7 +211,6 @@
       </fieldset>
     {% endif %}
   {% endif %}
-
 
 </div>
 {% endblock content %}

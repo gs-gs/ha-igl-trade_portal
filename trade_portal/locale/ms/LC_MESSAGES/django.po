@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-11 21:54+1000\n"
+"POT-Creation-Date: 2020-08-12 05:44+1000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,9 @@ msgid "English"
 msgstr "Bahasa Inggeris"
 
 #: config/settings/base.py:31
-msgid "Malay"
+#, fuzzy
+#| msgid "Malay"
+msgid "Malayalam"
 msgstr "Bahasa Melayu"
 
 #: config/settings/base.py:32
@@ -66,18 +68,23 @@ msgid "OA details"
 msgstr "Perincian OA"
 
 #: trade_portal/documents/models.py:192
+#: trade_portal/documents/templates/documents/detail.html:21
 msgid "Pending"
 msgstr "Belum selesai"
 
 #: trade_portal/documents/models.py:193
+#: trade_portal/documents/templates/documents/detail.html:23
 msgid "Failed"
 msgstr "Gagal"
 
 #: trade_portal/documents/models.py:194
+#: trade_portal/documents/templates/documents/detail.html:26
 msgid "Validated"
 msgstr "Disahkan"
 
 #: trade_portal/documents/models.py:195
+#: trade_portal/documents/templates/documents/detail.html:13
+#: trade_portal/documents/templates/documents/detail.html:19
 msgid "Incoming"
 msgstr "Masuk"
 
@@ -94,6 +101,7 @@ msgid "Document type"
 msgstr "Jenis dokumen"
 
 #: trade_portal/documents/models.py:222
+#: trade_portal/documents/templates/documents/detail.html:107
 msgid "FTA"
 msgstr "FTA"
 
@@ -102,19 +110,25 @@ msgid "Organisation name or business ID (ABN, UEN)"
 msgstr "Nama organisasi atau ID perniagaan (ABN, UEN)"
 
 #: trade_portal/documents/models.py:243
+#: trade_portal/documents/templates/documents/create.html:174
 msgid "Document Number"
 msgstr "Nombor Dokumen"
 
 #: trade_portal/documents/models.py:244 trade_portal/documents/models.py:249
 #: trade_portal/documents/models.py:259
+#: trade_portal/documents/templates/documents/create.html:130
+#: trade_portal/documents/templates/documents/detail.html:133
 msgid "Consignment details"
 msgstr "Perincian konsainan"
 
 #: trade_portal/documents/models.py:248
+#: trade_portal/documents/templates/documents/create.html:129
+#: trade_portal/documents/templates/documents/detail.html:69
 msgid "Document Type"
 msgstr "Jenis Dokumen"
 
 #: trade_portal/documents/models.py:258
+#: trade_portal/documents/templates/documents/create.html:138
 msgid "Document Issuer"
 msgstr "Penerbit Dokumen"
 
@@ -185,6 +199,225 @@ msgstr "Perubahan status dan peristiwa sejarah lain dalam format yang mudah"
 msgid ""
 "The document marked as Failed because the outbound message has been rejected"
 msgstr "Dokumen ditanda sebagai Gagal kerana mesej keluar telah ditolak"
+
+#: trade_portal/documents/templates/documents/create.html:6
+#, python-format
+msgid "Create %(form.instance.get_type_display)s"
+msgstr "Cipta %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:19
+#, python-format
+msgid "New %(form.instance.get_type_display)s"
+msgstr "Baru %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:24
+msgid "Please fix the errors highlighted below"
+msgstr "Sila betulkan ralat yang diserlahkan di bawah"
+
+#: trade_portal/documents/templates/documents/create.html:37
+#: trade_portal/documents/templates/documents/detail.html:34
+#: trade_portal/documents/templates/documents/detail.html:97
+#, fuzzy
+#| msgid "Document Issuer"
+msgid "IGL Document ID"
+msgstr "Penerbit Dokumen"
+
+#: trade_portal/documents/templates/documents/create.html:40
+#: trade_portal/documents/templates/documents/detail.html:37
+msgid "Key"
+msgstr "Kunci"
+
+#: trade_portal/documents/templates/documents/create.html:43
+#: trade_portal/documents/templates/documents/detail.html:40
+msgid "QR Code"
+msgstr "Kod QR"
+
+#: trade_portal/documents/templates/documents/create.html:61
+msgid ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app. If you refresh the page the QR code will persist,"
+" but if you choose new certificate from the dashboard the new one will be "
+"issued - the URL of the current page has the QR code binding. You can either"
+" print the code or copy it to the text editor. Please note that if you scan "
+"this QR code on the trustbridge app it won't be valid until you issue the "
+"document."
+msgstr ""
+"Masukkan kod QR ini pada dokumen anda supaya mana-mana pihak ketiga boleh "
+"mengesahkannya menggunakan aplikasi trustbridge. Jika anda memuat semula "
+"halaman kod QR akan berterusan, tetapi jika anda memilih sijil baru dari "
+"papan pemuka, yang baru akan dikeluarkan - URL halaman semasa mempunyai kod "
+"QR yang mengikat. Anda boleh mencetak kod atau menyalinnya ke editor teks. "
+"Sila ambil perhatian bahawa jika anda mengimbas kod QR ini pada aplikasi "
+"trustbridge, ia tidak akan sah sehingga anda mengeluarkan dokumen."
+
+#: trade_portal/documents/templates/documents/create.html:70
+#, fuzzy
+#| msgid "Document type"
+msgid "Document Metadata"
+msgstr "Jenis dokumen"
+
+#: trade_portal/documents/templates/documents/create.html:84
+#: trade_portal/documents/templates/documents/detail.html:113
+msgid "Exporter"
+msgstr "Pengeksport"
+
+#: trade_portal/documents/templates/documents/create.html:101
+#: trade_portal/documents/templates/documents/create.html:151
+msgid "Search"
+msgstr "Cari"
+
+#: trade_portal/documents/templates/documents/create.html:123
+#, fuzzy
+#| msgid "Consignment details"
+msgid "Consignment Reference"
+msgstr "Perincian konsainan"
+
+#: trade_portal/documents/templates/documents/create.html:186
+msgid "Attachment"
+msgstr "Lampiran"
+
+#: trade_portal/documents/templates/documents/create.html:191
+#, fuzzy
+#| msgid "Document Number"
+msgid "Document Declaration"
+msgstr "Nombor Dokumen"
+
+#: trade_portal/documents/templates/documents/create.html:194
+msgid ""
+"I certify that the information herein is correct and that the described "
+"goods comply with the origin requirements of the specified Free Trade "
+"Agreement."
+msgstr ""
+"Saya mengesahkan bahawa maklumat di sini adalah betul dan barangan yang "
+"diterangkan mematuhi keperluan asal Perjanjian Perdagangan Bebas yang "
+"ditetapkan."
+
+#: trade_portal/documents/templates/documents/create.html:200
+msgid "Cancel"
+msgstr "Batal"
+
+#: trade_portal/documents/templates/documents/create.html:201
+msgid "Submit"
+msgstr "Hantar"
+
+#: trade_portal/documents/templates/documents/detail.html:7
+#, fuzzy
+#| msgid "Documents"
+msgid "Document"
+msgstr "Dokumen"
+
+#: trade_portal/documents/templates/documents/detail.html:58
+msgid ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app"
+msgstr ""
+"Masukkan kod QR ini pada dokumen anda supaya mana-mana pihak ketiga boleh "
+"mengesahkannya menggunakan aplikasi trustbridge"
+
+#: trade_portal/documents/templates/documents/detail.html:71
+msgid "Current status"
+msgstr "Status semasa"
+
+#: trade_portal/documents/templates/documents/detail.html:73
+msgid "Issuer"
+msgstr "Penerbit"
+
+#: trade_portal/documents/templates/documents/detail.html:80
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#: trade_portal/documents/templates/documents/detail.html:82
+msgid "Remote party"
+msgstr "Parti jauh"
+
+#: trade_portal/documents/templates/documents/detail.html:83
+#, fuzzy
+#| msgid "Superuser"
+msgid "user"
+msgstr "Superuser"
+
+#: trade_portal/documents/templates/documents/detail.html:87
+msgid "Created at"
+msgstr "Dibuat pada"
+
+#: trade_portal/documents/templates/documents/detail.html:92
+#, fuzzy
+#| msgid "Document Number"
+msgid "Document metadata"
+msgstr "Nombor Dokumen"
+
+#: trade_portal/documents/templates/documents/detail.html:94
+#: trade_portal/documents/templates/documents/detail.html:135
+#, fuzzy
+#| msgid "Document Number"
+msgid "Doc number"
+msgstr "Nombor Dokumen"
+
+#: trade_portal/documents/templates/documents/detail.html:109
+msgid "Exporting country"
+msgstr "Negara pengeksport"
+
+#: trade_portal/documents/templates/documents/detail.html:111
+msgid "Importing country"
+msgstr "Mengimport negara"
+
+#: trade_portal/documents/templates/documents/detail.html:115
+msgid "Entity"
+msgstr "Entiti"
+
+#: trade_portal/documents/templates/documents/detail.html:120
+msgid "Importer name"
+msgstr "Nama pengimport"
+
+#: trade_portal/documents/templates/documents/detail.html:129
+msgid "Update"
+msgstr "Kemas kini"
+
+#: trade_portal/documents/templates/documents/detail.html:137
+#, fuzzy
+#| msgid "Document type"
+msgid "Doc type"
+msgstr "Jenis dokumen"
+
+#: trade_portal/documents/templates/documents/detail.html:139
+#, fuzzy
+#| msgid "Document Issuer"
+msgid "Doc issuer"
+msgstr "Penerbit Dokumen"
+
+#: trade_portal/documents/templates/documents/detail.html:142
+msgid "Data provided by"
+msgstr "Data yang disediakan oleh"
+
+#: trade_portal/documents/templates/documents/detail.html:150
+#, fuzzy
+#| msgid "Documents"
+msgid "Attachments"
+msgstr "Dokumen"
+
+#: trade_portal/documents/templates/documents/detail.html:157
+msgid "Type"
+msgstr "Jenis"
+
+#: trade_portal/documents/templates/documents/detail.html:158
+msgid "File and author"
+msgstr "Fail dan pengarang"
+
+#: trade_portal/documents/templates/documents/detail.html:169
+msgid "The document will be sent to remote party"
+msgstr "Dokumen tersebut akan dihantar kepada pihak jauh"
+
+#: trade_portal/documents/templates/documents/detail.html:190
+msgid ""
+"This document has been received with an error; see the Logs page for "
+"details. It usually means the technical error, not the certificate one."
+msgstr ""
+"Dokumen ini telah diterima dengan kesalahan; lihat halaman Log untuk "
+"rincian. Ia biasanya bermaksud ralat teknikal, bukan sijil."
+
+#: trade_portal/documents/templates/documents/detail.html:195
+msgid "Raw incoming data"
+msgstr "Data masuk mentah"
 
 #: trade_portal/templates/account/account_inactive.html:5
 #: trade_portal/templates/account/account_inactive.html:8
@@ -462,6 +695,7 @@ msgid "Trade Portal"
 msgstr "Portal Perdagangan"
 
 #: trade_portal/templates/base.html:45
+#: trade_portal/templates/pages/home.html:12
 msgid "IGL Trade Portal"
 msgstr "Portal Perdagangan IGL"
 
@@ -477,7 +711,7 @@ msgstr "Rumah"
 msgid "Login"
 msgstr "Log masuk"
 
-#: trade_portal/templates/base.html:84
+#: trade_portal/templates/base.html:84 trade_portal/templates/base.html:148
 msgid "Documents"
 msgstr "Dokumen"
 
@@ -485,13 +719,152 @@ msgstr "Dokumen"
 msgid "Admin Panel"
 msgstr "Panel Pentadbir"
 
-#: trade_portal/templates/base.html:95
+#: trade_portal/templates/base.html:95 trade_portal/templates/base.html:155
 msgid "Pending Users"
 msgstr "Pengguna Tertangguh"
 
-#: trade_portal/templates/base.html:98
+#: trade_portal/templates/base.html:98 trade_portal/templates/base.html:158
 msgid "Roles Requests"
 msgstr "Permintaan Peranan"
+
+#: trade_portal/templates/base.html:102 trade_portal/templates/base.html:164
+msgid "Logout"
+msgstr "Log keluar"
+
+#: trade_portal/templates/base.html:119
+msgid "Staff member"
+msgstr "Ahli Staf"
+
+#: trade_portal/templates/base.html:151
+#, fuzzy
+#| msgid "Profile update"
+msgid "Profile"
+msgstr "Kemas kini profil"
+
+#: trade_portal/templates/base.html:198
+msgid "Who we are"
+msgstr "Siapa kita"
+
+#: trade_portal/templates/base.html:199
+msgid "Our Ministers"
+msgstr "Menteri Kami"
+
+#: trade_portal/templates/base.html:200
+msgid "Careers"
+msgstr "Kerjaya"
+
+#: trade_portal/templates/base.html:201
+msgid "About us"
+msgstr "Tentang kami"
+
+#: trade_portal/templates/base.html:202
+msgid "Contact us"
+msgstr "Hubungi kami"
+
+#: trade_portal/templates/base.html:205
+msgid "Copyright Department of Home Affairs"
+msgstr "Hak Cipta Jabatan Hal Ehwal Dalam Negeri"
+
+#: trade_portal/templates/pages/home.html:13
+msgid ""
+"The Inter Government Ledger (IGL) is a global platform that supoorts the "
+"digitisation of cross-border trade.  Documents such as certificates of "
+"origin, phyto-certificates, and others that are currently paper documents "
+"can be digitised and linked to the relevant consignment."
+msgstr ""
+"Inter Government Ledger (IGL) adalah platform global yang supoorts "
+"pendigitalan perdagangan merentas perbatasan. Dokumen seperti sijil asal, "
+"sijil phyto, dan lain-lain yang kini dokumen kertas boleh didigitalkan dan "
+"dipautkan kepada konsainan yang berkaitan."
+
+#: trade_portal/templates/pages/home.html:15
+msgid "Register"
+msgstr "Daftar"
+
+#: trade_portal/templates/pages/home.html:17
+#, fuzzy
+#| msgid "Documents"
+msgid "My Documents"
+msgstr "Dokumen"
+
+#: trade_portal/templates/pages/home.html:19
+#, fuzzy
+#| msgid "Documents"
+msgid "Verify a Document"
+msgstr "Dokumen"
+
+#: trade_portal/templates/pages/home.html:23
+msgid "Start using the portal"
+msgstr "Mula menggunakan portal"
+
+#: trade_portal/templates/pages/home.html:24
+msgid ""
+"A simple and intuitive user interface, tailored to your role helps to get "
+"you started."
+msgstr ""
+"Antara muka pengguna yang mudah dan intuitif, disesuaikan dengan peranan "
+"anda membantu anda memulakan."
+
+#: trade_portal/templates/pages/home.html:27
+msgid "Easily scale to high volumes using the API"
+msgstr "Skalakan dengan volume tinggi dengan mudah menggunakan API"
+
+#: trade_portal/templates/pages/home.html:28
+msgid ""
+"Well documented international standards compliant APIs allow your IT team to"
+" plug your systems into the IGL to operate at scale."
+msgstr ""
+"API mematuhi piawaian antarabangsa yang didokumenkan dengan baik membolehkan"
+" pasukan IT anda memasangkan sistem anda ke dalam IGL untuk beroperasi pada "
+"skala."
+
+#: trade_portal/templates/pages/home.html:36
+msgid "Authorised Bodies"
+msgstr "Badan Yang Dibenarkan"
+
+#: trade_portal/templates/pages/home.html:37
+msgid ""
+"Enhance your documents with digital verification and receive confirmation of"
+" validity from the importing regulator."
+msgstr ""
+"Tingkatkan dokumen anda dengan pengesahan digital dan terima pengesahan "
+"kesahihan daripada pengatur pengimport."
+
+#: trade_portal/templates/pages/home.html:43
+msgid "Exporters/Importers"
+msgstr "Pengeksport/Pengimport"
+
+#: trade_portal/templates/pages/home.html:44
+msgid ""
+"Improve efficiency and reduce non-compliance risks through increased "
+"visibility and end-to-end digitisation and trust."
+msgstr ""
+"Meningkatkan efisiensi dan mengurangi risiko ketidakpatuhan melalui "
+"peningkatan visibilitas dan pendigitalan dan kepercayaan end-to-end."
+
+#: trade_portal/templates/pages/home.html:50
+msgid "Logistics Providers"
+msgstr "Penyedia Logistik"
+
+#: trade_portal/templates/pages/home.html:51
+msgid ""
+"Attach your consignment references to certificates and other documents for "
+"automated matching and processing by importing regulators."
+msgstr ""
+"Lampirkan rujukan konsainan anda kepada sijil dan dokumen lain untuk "
+"pemadanan dan pemprosesan automatik dengan mengimport pengawal selia."
+
+#: trade_portal/templates/pages/home.html:57
+msgid "Regulators"
+msgstr "Pengawal selia"
+
+#: trade_portal/templates/pages/home.html:58
+msgid ""
+"Improve trade facilitation and compliance outcomes through trusted digital "
+"data exchange with your international counterparties."
+msgstr ""
+"Meningkatkan kemudahan perdagangan dan hasil pematuhan melalui pertukaran "
+"data digital yang dipercayai dengan rakan niaga antarabangsa anda."
 
 #: trade_portal/users/apps.py:7
 msgid "Users"

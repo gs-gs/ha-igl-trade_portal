@@ -99,7 +99,7 @@
                     </li>
                   {% endif %}
                   <li class="site-nav__item">
-                    <a class="site-nav__item-link" href="/logout/">Logout</a>
+                    <a class="site-nav__item-link" href="/logout/">{% trans 'Logout' %}</a>
                   </li>
                 </li>
               {% endif %}
@@ -116,7 +116,7 @@
                     </span>
                   {% else %}
                     {% if user.is_staff %}
-                      <span style="color: white">Staff member</span>
+                      <span style="color: white">{% trans 'Staff member' %}</span>
                     {% endif %}
                   {% endif %}
                 </form>
@@ -145,23 +145,23 @@
         <div class="account-nav__container">
           <ul class="account-nav__list">
             <li class="account-nav__item">
-              <a class="account-nav__item-link{% if request.resolver_match.view_name == 'documents:list' %} active{% endif %}" href="{% url 'documents:list' %}">Documents</a>
+              <a class="account-nav__item-link{% if request.resolver_match.view_name == 'documents:list' %} active{% endif %}" href="{% url 'documents:list' %}">{% trans 'Documents' %}</a>
             </li>
             <li class="account-nav__item">
-              <a class="account-nav__item-link {% if request.resolver_match.view_name == 'users:detail' %} active{% endif %}" href="/profile/">Profile</a>
+              <a class="account-nav__item-link {% if request.resolver_match.view_name == 'users:detail' %} active{% endif %}" href="/profile/">{% trans 'Profile' %}</a>
             </li>
             {% if request.user.is_superuser %}
               <li class="account-nav__item">
-                <a class="account-nav__item-link {% if request.resolver_match.view_name == 'users:pending' %} active{% endif %}" href="{% url 'users:pending' %}">Pending Users</a>
+                <a class="account-nav__item-link {% if request.resolver_match.view_name == 'users:pending' %} active{% endif %}" href="{% url 'users:pending' %}">{% trans 'Pending Users' %}</a>
               </li>
               <li class="account-nav__item">
-                <a class="account-nav__item-link {% if request.resolver_match.view_name == 'users:roles-requests' %} active{% endif %}" href="{% url 'users:roles-requests' %}">Roles Requests</a>
+                <a class="account-nav__item-link {% if request.resolver_match.view_name == 'users:roles-requests' %} active{% endif %}" href="{% url 'users:roles-requests' %}">{% trans 'Roles Requests' %}</a>
               </li>
             {% endif %}
           </ul>
           <ul class="account-nav__list">
             <li class="account-nav__item">
-              <a class="account-nav__item-link" href="/logout/">Logout</a>
+              <a class="account-nav__item-link" href="/logout/">{% trans 'Logout' %}</a>
             </li>
           </ul>
         </div>
@@ -195,14 +195,14 @@
       </div>
       <div class="footer-menu footer__menu">
         <ul class="footer-menu__list">
-          <li class="footer-menu__item"><a href="#" class="footer-menu__item-link">Who we are</a></li>
-          <li class="footer-menu__item"><a href="#" class="footer-menu__item-link">Our Ministers</a></li>
-          <li class="footer-menu__item"><a href="#" class="footer-menu__item-link">Careers</a></li>
-          <li class="footer-menu__item"><a href="/about/" class="footer-menu__item-link">About us</a></li>
-          <li class="footer-menu__item"><a href="#" class="footer-menu__item-link">Contact us</a></li>
+          <li class="footer-menu__item"><a href="#" class="footer-menu__item-link">{% trans 'Who we are' %}</a></li>
+          <li class="footer-menu__item"><a href="#" class="footer-menu__item-link">{% trans 'Our Ministers' %}</a></li>
+          <li class="footer-menu__item"><a href="#" class="footer-menu__item-link">{% trans 'Careers' %}</a></li>
+          <li class="footer-menu__item"><a href="/about/" class="footer-menu__item-link">{% trans 'About us' %}</a></li>
+          <li class="footer-menu__item"><a href="#" class="footer-menu__item-link">{% trans 'Contact us' %}</a></li>
         </ul>
       </div>
-      <div class="footer__copyright"><p class="footer__copyright-text">Copyright Department of Home Affairs &copy; 2020</p></div>
+      <div class="footer__copyright"><p class="footer__copyright-text">{% trans 'Copyright Department of Home Affairs' %} &copy; 2020</p></div>
     </footer>
     <script src="{% static 'js/scripts.js' %}"></script>
     {% block extra_script %}{% endblock %}

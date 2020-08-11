@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-11 21:11+1000\n"
+"POT-Creation-Date: 2020-08-12 05:44+1000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: config/settings/base.py:30
+msgid "English"
+msgstr "English"
+
+#: config/settings/base.py:31
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: config/settings/base.py:32
+msgid "German"
+msgstr "German"
+
+#: config/settings/base.py:33
+msgid "French"
+msgstr "French"
 
 #: trade_portal/documents/models.py:46
 msgid "Trader"
@@ -51,18 +67,23 @@ msgid "OA details"
 msgstr "OA details"
 
 #: trade_portal/documents/models.py:192
+#: trade_portal/documents/templates/documents/detail.html:21
 msgid "Pending"
 msgstr "Pending"
 
 #: trade_portal/documents/models.py:193
+#: trade_portal/documents/templates/documents/detail.html:23
 msgid "Failed"
 msgstr "Failed"
 
 #: trade_portal/documents/models.py:194
+#: trade_portal/documents/templates/documents/detail.html:26
 msgid "Validated"
 msgstr "Validated"
 
 #: trade_portal/documents/models.py:195
+#: trade_portal/documents/templates/documents/detail.html:13
+#: trade_portal/documents/templates/documents/detail.html:19
 msgid "Incoming"
 msgstr "Incoming"
 
@@ -79,6 +100,7 @@ msgid "Document type"
 msgstr "Document type"
 
 #: trade_portal/documents/models.py:222
+#: trade_portal/documents/templates/documents/detail.html:107
 msgid "FTA"
 msgstr "FTA"
 
@@ -87,19 +109,25 @@ msgid "Organisation name or business ID (ABN, UEN)"
 msgstr "Organisation name or business ID (ABN, UEN)"
 
 #: trade_portal/documents/models.py:243
+#: trade_portal/documents/templates/documents/create.html:174
 msgid "Document Number"
 msgstr "Document Number"
 
 #: trade_portal/documents/models.py:244 trade_portal/documents/models.py:249
 #: trade_portal/documents/models.py:259
+#: trade_portal/documents/templates/documents/create.html:130
+#: trade_portal/documents/templates/documents/detail.html:133
 msgid "Consignment details"
 msgstr "Consignment details"
 
 #: trade_portal/documents/models.py:248
+#: trade_portal/documents/templates/documents/create.html:129
+#: trade_portal/documents/templates/documents/detail.html:69
 msgid "Document Type"
 msgstr "Document Type"
 
 #: trade_portal/documents/models.py:258
+#: trade_portal/documents/templates/documents/create.html:138
 msgid "Document Issuer"
 msgstr "Document Issuer"
 
@@ -170,6 +198,225 @@ msgid ""
 "The document marked as Failed because the outbound message has been rejected"
 msgstr ""
 "The document marked as Failed because the outbound message has been rejected"
+
+#: trade_portal/documents/templates/documents/create.html:6
+#, python-format
+msgid "Create %(form.instance.get_type_display)s"
+msgstr "Create %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:19
+#, python-format
+msgid "New %(form.instance.get_type_display)s"
+msgstr "New %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:24
+msgid "Please fix the errors highlighted below"
+msgstr "Please fix the errors highlighted below"
+
+#: trade_portal/documents/templates/documents/create.html:37
+#: trade_portal/documents/templates/documents/detail.html:34
+#: trade_portal/documents/templates/documents/detail.html:97
+#, fuzzy
+#| msgid "Document Issuer"
+msgid "IGL Document ID"
+msgstr "Document Issuer"
+
+#: trade_portal/documents/templates/documents/create.html:40
+#: trade_portal/documents/templates/documents/detail.html:37
+msgid "Key"
+msgstr "Key"
+
+#: trade_portal/documents/templates/documents/create.html:43
+#: trade_portal/documents/templates/documents/detail.html:40
+msgid "QR Code"
+msgstr "QR Code"
+
+#: trade_portal/documents/templates/documents/create.html:61
+msgid ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app. If you refresh the page the QR code will persist,"
+" but if you choose new certificate from the dashboard the new one will be "
+"issued - the URL of the current page has the QR code binding. You can either"
+" print the code or copy it to the text editor. Please note that if you scan "
+"this QR code on the trustbridge app it won't be valid until you issue the "
+"document."
+msgstr ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app. If you refresh the page the QR code will persist,"
+" but if you choose new certificate from the dashboard the new one will be "
+"issued - the URL of the current page has the QR code binding. You can either"
+" print the code or copy it to the text editor. Please note that if you scan "
+"this QR code on the trustbridge app it won't be valid until you issue the "
+"document."
+
+#: trade_portal/documents/templates/documents/create.html:70
+#, fuzzy
+#| msgid "Document type"
+msgid "Document Metadata"
+msgstr "Document type"
+
+#: trade_portal/documents/templates/documents/create.html:84
+#: trade_portal/documents/templates/documents/detail.html:113
+msgid "Exporter"
+msgstr "Exporter"
+
+#: trade_portal/documents/templates/documents/create.html:101
+#: trade_portal/documents/templates/documents/create.html:151
+msgid "Search"
+msgstr "Search"
+
+#: trade_portal/documents/templates/documents/create.html:123
+#, fuzzy
+#| msgid "Consignment details"
+msgid "Consignment Reference"
+msgstr "Consignment details"
+
+#: trade_portal/documents/templates/documents/create.html:186
+msgid "Attachment"
+msgstr "Attachment"
+
+#: trade_portal/documents/templates/documents/create.html:191
+#, fuzzy
+#| msgid "Document Number"
+msgid "Document Declaration"
+msgstr "Document Number"
+
+#: trade_portal/documents/templates/documents/create.html:194
+msgid ""
+"I certify that the information herein is correct and that the described "
+"goods comply with the origin requirements of the specified Free Trade "
+"Agreement."
+msgstr ""
+"I certify that the information herein is correct and that the described "
+"goods comply with the origin requirements of the specified Free Trade "
+"Agreement."
+
+#: trade_portal/documents/templates/documents/create.html:200
+msgid "Cancel"
+msgstr "Cancel"
+
+#: trade_portal/documents/templates/documents/create.html:201
+msgid "Submit"
+msgstr "Submit"
+
+#: trade_portal/documents/templates/documents/detail.html:7
+#, fuzzy
+#| msgid "Documents"
+msgid "Document"
+msgstr "Documents"
+
+#: trade_portal/documents/templates/documents/detail.html:58
+msgid ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app"
+msgstr ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app"
+
+#: trade_portal/documents/templates/documents/detail.html:71
+msgid "Current status"
+msgstr "Current status"
+
+#: trade_portal/documents/templates/documents/detail.html:73
+msgid "Issuer"
+msgstr "Issuer"
+
+#: trade_portal/documents/templates/documents/detail.html:80
+msgid "Created by"
+msgstr "Created by"
+
+#: trade_portal/documents/templates/documents/detail.html:82
+msgid "Remote party"
+msgstr "Remote party"
+
+#: trade_portal/documents/templates/documents/detail.html:83
+#, fuzzy
+#| msgid "Superuser"
+msgid "user"
+msgstr "Superuser"
+
+#: trade_portal/documents/templates/documents/detail.html:87
+msgid "Created at"
+msgstr "Created at"
+
+#: trade_portal/documents/templates/documents/detail.html:92
+#, fuzzy
+#| msgid "Document Number"
+msgid "Document metadata"
+msgstr "Document Number"
+
+#: trade_portal/documents/templates/documents/detail.html:94
+#: trade_portal/documents/templates/documents/detail.html:135
+#, fuzzy
+#| msgid "Document Number"
+msgid "Doc number"
+msgstr "Document Number"
+
+#: trade_portal/documents/templates/documents/detail.html:109
+msgid "Exporting country"
+msgstr "Exporting country"
+
+#: trade_portal/documents/templates/documents/detail.html:111
+msgid "Importing country"
+msgstr "Importing country"
+
+#: trade_portal/documents/templates/documents/detail.html:115
+msgid "Entity"
+msgstr "Entity"
+
+#: trade_portal/documents/templates/documents/detail.html:120
+msgid "Importer name"
+msgstr "Importer name"
+
+#: trade_portal/documents/templates/documents/detail.html:129
+msgid "Update"
+msgstr "Update"
+
+#: trade_portal/documents/templates/documents/detail.html:137
+#, fuzzy
+#| msgid "Document type"
+msgid "Doc type"
+msgstr "Document type"
+
+#: trade_portal/documents/templates/documents/detail.html:139
+#, fuzzy
+#| msgid "Document Issuer"
+msgid "Doc issuer"
+msgstr "Document Issuer"
+
+#: trade_portal/documents/templates/documents/detail.html:142
+msgid "Data provided by"
+msgstr "Data provided by"
+
+#: trade_portal/documents/templates/documents/detail.html:150
+#, fuzzy
+#| msgid "Documents"
+msgid "Attachments"
+msgstr "Documents"
+
+#: trade_portal/documents/templates/documents/detail.html:157
+msgid "Type"
+msgstr "Type"
+
+#: trade_portal/documents/templates/documents/detail.html:158
+msgid "File and author"
+msgstr "File and author"
+
+#: trade_portal/documents/templates/documents/detail.html:169
+msgid "The document will be sent to remote party"
+msgstr "The document will be sent to remote party"
+
+#: trade_portal/documents/templates/documents/detail.html:190
+msgid ""
+"This document has been received with an error; see the Logs page for "
+"details. It usually means the technical error, not the certificate one."
+msgstr ""
+"This document has been received with an error; see the Logs page for "
+"details. It usually means the technical error, not the certificate one."
+
+#: trade_portal/documents/templates/documents/detail.html:195
+msgid "Raw incoming data"
+msgstr "Raw incoming data"
 
 #: trade_portal/templates/account/account_inactive.html:5
 #: trade_portal/templates/account/account_inactive.html:8
@@ -445,6 +692,7 @@ msgid "Trade Portal"
 msgstr "Trade Portal"
 
 #: trade_portal/templates/base.html:45
+#: trade_portal/templates/pages/home.html:12
 msgid "IGL Trade Portal"
 msgstr "IGL Trade Portal"
 
@@ -460,7 +708,7 @@ msgstr "Home"
 msgid "Login"
 msgstr "Login"
 
-#: trade_portal/templates/base.html:84
+#: trade_portal/templates/base.html:84 trade_portal/templates/base.html:148
 msgid "Documents"
 msgstr "Documents"
 
@@ -468,13 +716,151 @@ msgstr "Documents"
 msgid "Admin Panel"
 msgstr "Admin Panel"
 
-#: trade_portal/templates/base.html:95
+#: trade_portal/templates/base.html:95 trade_portal/templates/base.html:155
 msgid "Pending Users"
 msgstr "Pending Users"
 
-#: trade_portal/templates/base.html:98
+#: trade_portal/templates/base.html:98 trade_portal/templates/base.html:158
 msgid "Roles Requests"
 msgstr "Roles Requests"
+
+#: trade_portal/templates/base.html:102 trade_portal/templates/base.html:164
+msgid "Logout"
+msgstr "Logout"
+
+#: trade_portal/templates/base.html:119
+msgid "Staff member"
+msgstr "Staff member"
+
+#: trade_portal/templates/base.html:151
+#, fuzzy
+#| msgid "Profile update"
+msgid "Profile"
+msgstr "Profile update"
+
+#: trade_portal/templates/base.html:198
+msgid "Who we are"
+msgstr "Who we are"
+
+#: trade_portal/templates/base.html:199
+msgid "Our Ministers"
+msgstr "Our Ministers"
+
+#: trade_portal/templates/base.html:200
+msgid "Careers"
+msgstr "Careers"
+
+#: trade_portal/templates/base.html:201
+msgid "About us"
+msgstr "About us"
+
+#: trade_portal/templates/base.html:202
+msgid "Contact us"
+msgstr "Contact us"
+
+#: trade_portal/templates/base.html:205
+msgid "Copyright Department of Home Affairs"
+msgstr "Copyright Department of Home Affairs"
+
+#: trade_portal/templates/pages/home.html:13
+msgid ""
+"The Inter Government Ledger (IGL) is a global platform that supoorts the "
+"digitisation of cross-border trade.  Documents such as certificates of "
+"origin, phyto-certificates, and others that are currently paper documents "
+"can be digitised and linked to the relevant consignment."
+msgstr ""
+"The Inter Government Ledger (IGL) is a global platform that supoorts the "
+"digitisation of cross-border trade. Documents such as certificates of "
+"origin, phyto-certificates, and others that are currently paper documents "
+"can be digitised and linked to the relevant consignment."
+
+#: trade_portal/templates/pages/home.html:15
+msgid "Register"
+msgstr "Register"
+
+#: trade_portal/templates/pages/home.html:17
+#, fuzzy
+#| msgid "Documents"
+msgid "My Documents"
+msgstr "Documents"
+
+#: trade_portal/templates/pages/home.html:19
+#, fuzzy
+#| msgid "Documents"
+msgid "Verify a Document"
+msgstr "Documents"
+
+#: trade_portal/templates/pages/home.html:23
+msgid "Start using the portal"
+msgstr "Start using the portal"
+
+#: trade_portal/templates/pages/home.html:24
+msgid ""
+"A simple and intuitive user interface, tailored to your role helps to get "
+"you started."
+msgstr ""
+"A simple and intuitive user interface, tailored to your role helps to get "
+"you started."
+
+#: trade_portal/templates/pages/home.html:27
+msgid "Easily scale to high volumes using the API"
+msgstr "Easily scale to high volumes using the API"
+
+#: trade_portal/templates/pages/home.html:28
+msgid ""
+"Well documented international standards compliant APIs allow your IT team to"
+" plug your systems into the IGL to operate at scale."
+msgstr ""
+"Well documented international standards compliant APIs allow your IT team to"
+" plug your systems into the IGL to operate at scale."
+
+#: trade_portal/templates/pages/home.html:36
+msgid "Authorised Bodies"
+msgstr "Authorised Bodies"
+
+#: trade_portal/templates/pages/home.html:37
+msgid ""
+"Enhance your documents with digital verification and receive confirmation of"
+" validity from the importing regulator."
+msgstr ""
+"Enhance your documents with digital verification and receive confirmation of"
+" validity from the importing regulator."
+
+#: trade_portal/templates/pages/home.html:43
+msgid "Exporters/Importers"
+msgstr "Exporters/Importers"
+
+#: trade_portal/templates/pages/home.html:44
+msgid ""
+"Improve efficiency and reduce non-compliance risks through increased "
+"visibility and end-to-end digitisation and trust."
+msgstr ""
+"Improve efficiency and reduce non-compliance risks through increased "
+"visibility and end-to-end digitisation and trust."
+
+#: trade_portal/templates/pages/home.html:50
+msgid "Logistics Providers"
+msgstr "Logistics Providers"
+
+#: trade_portal/templates/pages/home.html:51
+msgid ""
+"Attach your consignment references to certificates and other documents for "
+"automated matching and processing by importing regulators."
+msgstr ""
+"Attach your consignment references to certificates and other documents for "
+"automated matching and processing by importing regulators."
+
+#: trade_portal/templates/pages/home.html:57
+msgid "Regulators"
+msgstr "Regulators"
+
+#: trade_portal/templates/pages/home.html:58
+msgid ""
+"Improve trade facilitation and compliance outcomes through trusted digital "
+"data exchange with your international counterparties."
+msgstr ""
+"Improve trade facilitation and compliance outcomes through trusted digital "
+"data exchange with your international counterparties."
 
 #: trade_portal/users/apps.py:7
 msgid "Users"
