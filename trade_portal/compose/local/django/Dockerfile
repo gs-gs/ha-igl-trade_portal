@@ -42,5 +42,6 @@ COPY . /app
 WORKDIR /app
 
 RUN DATABASE_URL="postgres://" python /app/manage.py collectstatic --noinput  > /dev/null
+RUN DATABASE_URL="postgres://" python /app/manage.py compilemessages > /dev/null
 
 ENTRYPOINT ["/entrypoint"]

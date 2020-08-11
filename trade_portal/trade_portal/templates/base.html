@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en" class="h-100">
 
+{% load i18n %}
 {% load static %}
 
   <head>
@@ -34,14 +35,14 @@
       <div class="header__container">
         <a class="header__logo" href="/">
           {% if ICL_APP_COUNTRY == "AU" %}
-            <img src="{% static 'images/logoAU.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--default" />
-            <img src="{% static 'images/logo-whiteAU.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white" />
+            <img src="{% static 'images/logoAU.svg' %}" alt="{% trans 'Trade Portal' %}" class="header__logo-image header__logo-image--default" />
+            <img src="{% static 'images/logo-whiteAU.svg' %}" alt="{% trans 'Trade Portal' %}" class="header__logo-image header__logo-image--white" />
           {% else %}{% if ICL_APP_COUNTRY == "SG" %}
-            <img src="{% static 'images/logoSG.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--default" style="border: 1px solid gray" />
-            <img src="{% static 'images/logo-whiteSG.svg' %}" alt="Trade Portal" class="header__logo-image header__logo-image--white"/>
+            <img src="{% static 'images/logoSG.svg' %}" alt="{% trans 'Trade Portal' %}" class="header__logo-image header__logo-image--default" style="border: 1px solid gray" />
+            <img src="{% static 'images/logo-whiteSG.svg' %}" alt="{% trans 'Trade Portal' %}" class="header__logo-image header__logo-image--white"/>
           {% endif %}
           {% endif %}
-          <span class="header__logo-text">IGL Trade Portal</span>
+          <span class="header__logo-text">{% trans 'IGL Trade Portal' %}</span>
         </a>
         <div class="header__nav">
           <div class="header__nav-actions">
@@ -49,14 +50,14 @@
               <div class="header__user">
                 <div class="header__user-name">
                   {{ user }}
-                  {% if user.is_superuser %}(Superuser){% endif %}
+                  {% if user.is_superuser %}({% trans 'Superuser' %}){% endif %}
                 </div>
                 {% if current_org %}
                   <div class="header__user-org">{{ current_org.name }} ({{ current_org.get_type_display }})</div>
                 {% endif %}
               </div>
             {% else %}
-              <a href="/accounts/signup/" class="btn btn-primary header__nav-btn">Sign up</a>
+              <a href="/accounts/signup/" class="btn btn-primary header__nav-btn">{% trans 'Sign up' %}</a>
               {# <a href="/accounts/login/" class="btn header__nav-btn header__nav-btn--mygovid">MyGovID</a> #}
             {% endif %}
             <button class="header__menu-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,18 +73,18 @@
             </div>
             <ul class="site-nav__list">
               <li class="site-nav__item"> {#  active #}
-                <a class="site-nav__item-link" href="/">Home</a>
+                <a class="site-nav__item-link" href="/">{% trans 'Home' %}</a>
               </li>
               {% if not request.user.is_authenticated %}
                 <li class="site-nav__item">
-                  <a class="site-nav__item-link" href="/accounts/login/">Login</a>
+                  <a class="site-nav__item-link" href="/accounts/login/">{% trans 'Login' %}</a>
                 </li>
               {% else %}
                 <li class="site-nav__item">
-                  <a class="site-nav__item-link" href="{% url 'documents:list' %}"> Documents</a>
+                  <a class="site-nav__item-link" href="{% url 'documents:list' %}"> {% trans 'Documents' %}</a>
                   {% if request.user.is_staff %}
                     <li class="site-nav__item">
-                      <a class="site-nav__item-link" href="/admin/" target="_new">Admin Panel</a>
+                      <a class="site-nav__item-link" href="/admin/" target="_new">{% trans 'Admin Panel' %}</a>
                     </li>
                   {% endif %}
                   <li class="site-nav__item">
@@ -91,10 +92,10 @@
                   </li>
                   {% if request.user.is_superuser %}
                     <li class="site-nav__item">
-                    <a class="site-nav__item-link" href="{% url 'users:pending' %}">Pending Users</a>
+                    <a class="site-nav__item-link" href="{% url 'users:pending' %}">{% trans 'Pending Users' %}</a>
                     </li>
                     <li class="site-nav__item">
-                    <a class="site-nav__item-link" href="{% url 'users:roles-requests' %}">Roles Requests</a>
+                    <a class="site-nav__item-link" href="{% url 'users:roles-requests' %}">{% trans 'Roles Requests' %}</a>
                     </li>
                   {% endif %}
                   <li class="site-nav__item">
@@ -118,6 +119,21 @@
                       <span style="color: white">Staff member</span>
                     {% endif %}
                   {% endif %}
+                </form>
+              </li>
+              <li class="site-nav__org">
+                <form action="{% url 'set_language' %}" method="post" id="id_lang_form">{% csrf_token %}
+                  <input name="next" type="hidden" value="{{ request.path_info }}">
+                  <select  class="form-control" name="language" onChange="$('#id_lang_form').submit()">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% get_available_languages as LANGUAGES %}
+                    {% get_language_info_list for LANGUAGES as languages %}
+                    {% for language in languages %}
+                      <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                        {{ language.name_local }} ({{ language.code }})
+                      </option>
+                    {% endfor %}
+                  </select>
                 </form>
               </li>
             </ul>

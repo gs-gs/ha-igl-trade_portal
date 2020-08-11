@@ -48,6 +48,7 @@ RUN sed -i 's/\r$//g' /start-flower && \
 COPY --chown=django:django . /app
 
 RUN DJANGO_SETTINGS_MODULE="config.settings.production" DJANGO_SECRET_KEY="123" DATABASE_URL="postgres://" python /app/manage.py collectstatic --noinput > /dev/null
+RUN DJANGO_SETTINGS_MODULE="config.settings.production" DJANGO_SECRET_KEY="123" DATABASE_URL="postgres://" python /app/manage.py compilemessages > /dev/null
 
 RUN chmod -R 777 /tmp
 

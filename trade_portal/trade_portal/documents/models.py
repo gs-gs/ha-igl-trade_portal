@@ -11,6 +11,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 from trade_portal.utils.qr import get_qrcode_image
@@ -42,9 +43,9 @@ class Party(models.Model):
     TYPE_OTHER = 'o'
 
     TYPE_CHOICES = (
-        (TYPE_TRADER, "Trader"),
-        (TYPE_CHAMBERS, "Chambers"),
-        (TYPE_OTHER, "Other"),
+        (TYPE_TRADER, _("Trader")),
+        (TYPE_CHAMBERS, _("Chambers")),
+        (TYPE_OTHER, _("Other")),
     )
 
     created_by_user = models.ForeignKey(
@@ -57,10 +58,14 @@ class Party(models.Model):
         blank=True, null=True
     )
 
-    type = models.CharField(max_length=1, blank=True, choices=TYPE_CHOICES, default=TYPE_OTHER)
+    type = models.CharField(
+        max_length=1, blank=True, choices=TYPE_CHOICES, default=TYPE_OTHER
+    )
     bid_prefix = models.CharField(max_length=64, blank=True, default="")
     clear_business_id = models.CharField(max_length=128, blank=True, default="")
-    business_id = models.CharField(max_length=256, help_text="ABN or UEN for example", blank=True)
+    business_id = models.CharField(
+        max_length=256, help_text=_("ABN or UEN for example"), blank=True
+    )
     dot_separated_id = models.CharField(max_length=256, blank=True, default="a.b.c")
     name = models.CharField(max_length=256, blank=True)
     country = CountryField(blank=True)
@@ -70,7 +75,8 @@ class Party(models.Model):
 
     class Meta:
         ordering = ('name',)
-        verbose_name_plural = "parties"
+        verbose_name = _('party')
+        verbose_name_plural = _("parties")
 
     def save(self, *args, **kwargs):
         if ":" in self.business_id and not self.bid_prefix and not self.clear_business_id:
@@ -112,7 +118,7 @@ class Party(models.Model):
         for bid_prefix, type_value in URLS.items():
             if normalized_business_id.startswith(bid_prefix):
                 return type_value
-        return "Government Identifier"
+        return _("Government Identifier")
 
 
 class OaDetails(models.Model):
@@ -144,7 +150,8 @@ class OaDetails(models.Model):
 
     class Meta:
         ordering = ('created_at',)
-        verbose_name_plural = "OA details"
+        verbose_name = _("OA details")
+        verbose_name_plural = _("OA details")
 
     def __str__(self):
         return self.uri
@@ -182,18 +189,18 @@ class Document(models.Model):
     STATUS_INCOMING = "incoming"
 
     STATUS_CHOICES = (
-        (STATUS_PENDING, "Pending"),
-        (STATUS_FAILED, "Failed"),
-        (STATUS_VALIDATED, "Validated"),
-        (STATUS_INCOMING, "Incoming"),
+        (STATUS_PENDING, _("Pending")),
+        (STATUS_FAILED, _("Failed")),
+        (STATUS_VALIDATED, _("Validated")),
+        (STATUS_INCOMING, _("Incoming")),
     )
 
     TYPE_PREF_COO = "pref_coo"
     TYPE_NONPREF_COO = "non_pref_coo"
 
     TYPE_CHOICES = (
-        (TYPE_PREF_COO, "Preferential Certificate of Origin"),
-        (TYPE_NONPREF_COO, "Non-preferential Certificate of Origin"),
+        (TYPE_PREF_COO, _("Preferential Certificate of Origin")),
+        (TYPE_NONPREF_COO, _("Non-preferential Certificate of Origin")),
     )
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
@@ -208,11 +215,11 @@ class Document(models.Model):
         blank=True, null=True
     )
 
-    type = models.CharField("Document type", max_length=64, choices=TYPE_CHOICES)
+    type = models.CharField(_("Document type"), max_length=64, choices=TYPE_CHOICES)
     document_number = models.CharField(max_length=256, blank=False, default="")
 
     fta = models.ForeignKey(
-        FTA, models.PROTECT, verbose_name="FTA", blank=True, null=True
+        FTA, models.PROTECT, verbose_name=_("FTA"), blank=True, null=True
     )
 
     sending_jurisdiction = CountryField(default=settings.ICL_APP_COUNTRY)
@@ -228,18 +235,18 @@ class Document(models.Model):
         related_name="documents_exported"
     )
     importer_name = models.CharField(
-        max_length=256, help_text="Organisation name or business ID (ABN, UEN)",
+        max_length=256, help_text=_("Organisation name or business ID (ABN, UEN)"),
         blank=True, default=""
     )
 
     consignment_ref_doc_number = models.CharField(
-        "Document Number",
-        help_text="Consignment details",
+        _("Document Number"),
+        help_text=_("Consignment details"),
         max_length=256, blank=True, default=""
     )
     consignment_ref_doc_type = models.CharField(
-        "Document Type",
-        help_text="Consignment details",
+        _("Document Type"),
+        help_text=_("Consignment details"),
         max_length=100, blank=True,
         choices=(
             ("ConNote", "ConNote"),
@@ -248,29 +255,29 @@ class Document(models.Model):
         ),
     )
     consignment_ref_doc_issuer = models.CharField(
-        "Document Issuer",
-        help_text="Consignment details",
+        _("Document Issuer"),
+        help_text=_("Consignment details"),
         max_length=200, blank=True, default=""
     )
 
     invoice_number = models.CharField(
-        "Invoice Number",
+        _("Invoice Number"),
         max_length=256, blank=True, default=""
     )
     origin_criteria = models.CharField(
-        "Origin Criteria",
+        _("Origin Criteria"),
         max_length=32, blank=True, default="",
         choices=(
             ("WO", "WO"),
             ("WP", "WP"),
             ("PSR", "PSR"),
-            ("other", "Other"),
+            ("other", _("Other")),
         )
     )
 
     intergov_details = JSONField(
         default=dict, blank=True,
-        help_text="Details about communication with the Intergov"
+        help_text=_("Details about communication with the Intergov")
     )
     # https://edi3.org/specs/edi3-regulatory/develop/certificates/#state-lifecycle
     status = models.CharField(
@@ -361,7 +368,7 @@ class DocumentHistoryItem(models.Model):
                     pk=self.linked_obj_id
                 )
             except Exception:
-                return '(wrong ref)'
+                return _('(wrong ref)')
         return None
 
 
@@ -405,13 +412,13 @@ class DocumentFile(models.Model):
     original_file = models.FileField(upload_to=generate_docfile_filename)
     filename = models.CharField(
         max_length=1000, blank=True, default="unknown.pdf",
-        help_text="Original name of the uploaded file",
+        help_text=_("Original name of the uploaded file"),
     )
     size = models.IntegerField(blank=True, default=None, null=True)
 
     is_watermarked = models.NullBooleanField(
         default=False,
-        help_text="None if doesn't need to be watermarked, False if pending and True if done"
+        help_text=_("None if doesn't need to be watermarked, False if pending and True if done")
     )
 
     class Meta:
@@ -464,10 +471,10 @@ class NodeMessage(models.Model):
     STATUS_INBOUND = "inbound"
 
     STATUSES = (
-        (STATUS_SENT, "Sent"),
-        (STATUS_ACCEPTED, "Accepted"),
-        (STATUS_REJECTED, "Rejected"),
-        (STATUS_INBOUND, "Inbound"),
+        (STATUS_SENT, _("Sent")),
+        (STATUS_ACCEPTED, _("Accepted")),
+        (STATUS_REJECTED, _("Rejected")),
+        (STATUS_INBOUND, _("Inbound")),
     )
 
     status = models.CharField(
@@ -480,9 +487,9 @@ class NodeMessage(models.Model):
         blank=True, null=True
     )
     created_at = models.DateTimeField(
-        "Created in the system",
+        _("Created in the system"),
         default=timezone.now,
-        help_text="For received messages - when received by us",
+        help_text=_("For received messages - when received by us"),
     )
 
     sender_ref = models.CharField(
@@ -490,15 +497,15 @@ class NodeMessage(models.Model):
     )
     subject = models.CharField(
         max_length=200, blank=True, default="",
-        help_text="Conversation identificator"
+        help_text=_("Conversation identificator")
     )
     body = JSONField(
         default=dict, blank=True,
-        help_text="generic discrete format, exactly like API returns"
+        help_text=_("generic discrete format, exactly like API returns")
     )
     history = JSONField(
         default=list, blank=True,
-        help_text="Status changes and other historical events in a simple format"
+        help_text=_("Status changes and other historical events in a simple format")
     )
     is_outbound = models.BooleanField(default=False)
 
@@ -529,7 +536,7 @@ class NodeMessage(models.Model):
                 DocumentHistoryItem.objects.create(
                     type="nodemessage",
                     document=self.document,
-                    message="The document marked as Failed because the outbound message has been rejected",
+                    message=_("The document marked as Failed because the outbound message has been rejected"),
                     linked_obj_id=self.id,
                 )
             elif new_status == "accepted":

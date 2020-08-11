@@ -4,9 +4,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# # collecstatic on any start is fine for local setups
-# python manage.py collectstatic --noinput > /dev/null
-
 python manage.py migrate
 while :
 do

@@ -3,6 +3,7 @@ Base settings to build other settings files upon.
 """
 import datetime
 import environ
+from django.utils.translation import gettext_lazy as _
 
 from . import Env
 
@@ -14,13 +15,26 @@ APPS_DIR = ROOT_DIR.path("trade_portal")
 env = Env()
 
 # GENERAL
+ICL_TRADE_PORTAL_COUNTRY = env(
+    'ICL_TRADE_PORTAL_COUNTRY',
+    default=env("ICL_COUNTRY", default="AU")
+)
 DEBUG = env.bool("DJANGO_DEBUG", False)
 IS_LAMBDA_DEPLOYMENT = env.bool('ICL_IS_LAMBDA', default=False)
 
 TIME_ZONE = env("IGL_TIMEZONE", default="Australia/Sydney")
 LANGUAGE_CODE = "en-us"
+LANGUAGE_COOKIE_NAME = f"tr{ICL_TRADE_PORTAL_COUNTRY}lang"
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('ml', _('Malayalam')),
+    ('de', _('German')),
+    ('fr', _('French')),
+]
+
 SITE_ID = 1
-USE_I18N = False
+USE_I18N = True
 USE_L10N = False
 USE_TZ = True
 LOCALE_PATHS = [ROOT_DIR.path("locale")]

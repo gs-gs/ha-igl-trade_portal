@@ -32,6 +32,8 @@ urlpatterns = [
     path("logout/", LogoutPerformView.as_view(), name="logout"),
     path("oidc/", include('mozilla_django_oidc.urls')),
 
+    path('i18n/', include('django.conf.urls.i18n')),
+
     path(settings.ADMIN_URL, admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
