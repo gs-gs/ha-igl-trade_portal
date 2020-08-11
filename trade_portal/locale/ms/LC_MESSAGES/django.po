@@ -19,239 +19,245 @@ msgstr ""
 
 #: config/settings/base.py:30
 msgid "English"
-msgstr ""
+msgstr "Bahasa Inggeris"
 
 #: config/settings/base.py:31
 msgid "Malay"
-msgstr ""
+msgstr "Bahasa Melayu"
 
 #: config/settings/base.py:32
 msgid "German"
-msgstr ""
+msgstr "Orang Jerman"
 
 #: config/settings/base.py:33
 msgid "French"
-msgstr ""
+msgstr "Bahasa Perancis"
 
 #: trade_portal/documents/models.py:46
 msgid "Trader"
-msgstr ""
+msgstr "Pedagang"
 
 #: trade_portal/documents/models.py:47
 msgid "Chambers"
-msgstr ""
+msgstr "Kamar"
 
 #: trade_portal/documents/models.py:48 trade_portal/documents/models.py:274
 msgid "Other"
-msgstr ""
+msgstr "Selain"
 
 #: trade_portal/documents/models.py:67
 msgid "ABN or UEN for example"
-msgstr ""
+msgstr "Contohnya ABN atau UEN"
 
 #: trade_portal/documents/models.py:78
 msgid "party"
-msgstr ""
+msgstr "parti"
 
 #: trade_portal/documents/models.py:79
 msgid "parties"
-msgstr ""
+msgstr "pihak"
 
 #: trade_portal/documents/models.py:121
 msgid "Government Identifier"
-msgstr ""
+msgstr "Pengenalpasti Kerajaan"
 
 #: trade_portal/documents/models.py:153 trade_portal/documents/models.py:154
 msgid "OA details"
-msgstr ""
+msgstr "Perincian OA"
 
 #: trade_portal/documents/models.py:192
 msgid "Pending"
-msgstr ""
+msgstr "Belum selesai"
 
 #: trade_portal/documents/models.py:193
 msgid "Failed"
-msgstr ""
+msgstr "Gagal"
 
 #: trade_portal/documents/models.py:194
 msgid "Validated"
-msgstr ""
+msgstr "Disahkan"
 
 #: trade_portal/documents/models.py:195
 msgid "Incoming"
-msgstr ""
+msgstr "Masuk"
 
 #: trade_portal/documents/models.py:202
 msgid "Preferential Certificate of Origin"
-msgstr ""
+msgstr "Sertifikat Asal Keutamaan"
 
 #: trade_portal/documents/models.py:203
 msgid "Non-preferential Certificate of Origin"
-msgstr ""
+msgstr "Sijil Asal Bukan Keutamaan"
 
 #: trade_portal/documents/models.py:218
 msgid "Document type"
-msgstr ""
+msgstr "Jenis dokumen"
 
 #: trade_portal/documents/models.py:222
 msgid "FTA"
-msgstr ""
+msgstr "FTA"
 
 #: trade_portal/documents/models.py:238
 msgid "Organisation name or business ID (ABN, UEN)"
-msgstr ""
+msgstr "Nama organisasi atau ID perniagaan (ABN, UEN)"
 
 #: trade_portal/documents/models.py:243
 msgid "Document Number"
-msgstr ""
+msgstr "Nombor Dokumen"
 
 #: trade_portal/documents/models.py:244 trade_portal/documents/models.py:249
 #: trade_portal/documents/models.py:259
 msgid "Consignment details"
-msgstr ""
+msgstr "Perincian konsainan"
 
 #: trade_portal/documents/models.py:248
 msgid "Document Type"
-msgstr ""
+msgstr "Jenis Dokumen"
 
 #: trade_portal/documents/models.py:258
 msgid "Document Issuer"
-msgstr ""
+msgstr "Penerbit Dokumen"
 
 #: trade_portal/documents/models.py:264
 msgid "Invoice Number"
-msgstr ""
+msgstr "Nombor Invois"
 
 #: trade_portal/documents/models.py:268
 msgid "Origin Criteria"
-msgstr ""
+msgstr "Kriteria asal"
 
 #: trade_portal/documents/models.py:280
 msgid "Details about communication with the Intergov"
-msgstr ""
+msgstr "Rincian tentang komunikasi dengan Intergov"
 
 #: trade_portal/documents/models.py:371
 msgid "(wrong ref)"
-msgstr ""
+msgstr "(Ref salah)"
 
 #: trade_portal/documents/models.py:415
 msgid "Original name of the uploaded file"
-msgstr ""
+msgstr "Nama asal bagi fail yang dimuat naik"
 
 #: trade_portal/documents/models.py:421
 msgid ""
 "None if doesn't need to be watermarked, False if pending and True if done"
 msgstr ""
+"Tidak ada jika tidak perlu watermarked, False jika tertunda dan Benar jika "
+"dilakukan"
 
 #: trade_portal/documents/models.py:474
 msgid "Sent"
-msgstr ""
+msgstr "Dihantar"
 
 #: trade_portal/documents/models.py:475
 msgid "Accepted"
-msgstr ""
+msgstr "Diterima"
 
 #: trade_portal/documents/models.py:476
 msgid "Rejected"
-msgstr ""
+msgstr "Ditolak"
 
 #: trade_portal/documents/models.py:477
 msgid "Inbound"
-msgstr ""
+msgstr "Masuk"
 
 #: trade_portal/documents/models.py:490
 msgid "Created in the system"
-msgstr ""
+msgstr "Dicipta dalam sistem"
 
 #: trade_portal/documents/models.py:492
 msgid "For received messages - when received by us"
-msgstr ""
+msgstr "Untuk mesej yang diterima - apabila diterima oleh kami"
 
 #: trade_portal/documents/models.py:500
 msgid "Conversation identificator"
-msgstr ""
+msgstr "icator Perbualan"
 
 #: trade_portal/documents/models.py:504
 msgid "generic discrete format, exactly like API returns"
-msgstr ""
+msgstr "format diskret generik, sama seperti pulangan API"
 
 #: trade_portal/documents/models.py:508
 msgid "Status changes and other historical events in a simple format"
-msgstr ""
+msgstr "Perubahan status dan peristiwa sejarah lain dalam format yang mudah"
 
 #: trade_portal/documents/models.py:539
 msgid ""
 "The document marked as Failed because the outbound message has been rejected"
-msgstr ""
+msgstr "Dokumen ditanda sebagai Gagal kerana mesej keluar telah ditolak"
 
 #: trade_portal/templates/account/account_inactive.html:5
 #: trade_portal/templates/account/account_inactive.html:8
 msgid "Account Inactive"
-msgstr ""
+msgstr "Akaun tidak aktif"
 
 #: trade_portal/templates/account/account_inactive.html:10
 msgid "This account is inactive."
-msgstr ""
+msgstr "Akaun ini tidak aktif."
 
 #: trade_portal/templates/account/email.html:7
 #: trade_portal/templates/account/email.html:15
 msgid "E-mail Addresses"
-msgstr ""
+msgstr "Alamat E-Mel"
 
 #: trade_portal/templates/account/email.html:18
 msgid "The following e-mail addresses are associated with your account:"
-msgstr ""
+msgstr "Alamat e-mel berikut dikaitkan dengan akaun anda:"
 
 #: trade_portal/templates/account/email.html:32
 msgid "Verified"
-msgstr ""
+msgstr "Disahkan"
 
 #: trade_portal/templates/account/email.html:34
 msgid "Unverified"
-msgstr ""
+msgstr "Tidak disahkan"
 
 #: trade_portal/templates/account/email.html:36
 msgid "Primary"
-msgstr ""
+msgstr "Utama"
 
 #: trade_portal/templates/account/email.html:43
 msgid "Make Primary"
-msgstr ""
+msgstr "Jadikan Utama"
 
 #: trade_portal/templates/account/email.html:44
 msgid "Re-send Verification"
-msgstr ""
+msgstr "Hantar Semula Pengesahan"
 
 #: trade_portal/templates/account/email.html:45
 msgid "Remove"
-msgstr ""
+msgstr "Keluarkan"
 
 #: trade_portal/templates/account/email.html:52
 msgid "Warning:"
-msgstr ""
+msgstr "Amaran:"
 
 #: trade_portal/templates/account/email.html:52
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
-"an e-mail address so you can receive notifications, reset your password, etc."
+"an e-mail address so you can receive notifications, reset your password, "
+"etc."
 msgstr ""
+"Anda kini tidak mempunyai sebarang alamat e-mel yang disediakan. Anda benar-"
+"benar harus menambah alamat e-mel supaya anda boleh menerima pemberitahuan, "
+"menetapkan semula kata laluan anda, dll."
 
 #: trade_portal/templates/account/email.html:57
 msgid "Add E-mail Address"
-msgstr ""
+msgstr "Tambah Alamat E-Mel"
 
 #: trade_portal/templates/account/email.html:62
 msgid "Add E-mail"
-msgstr ""
+msgstr "Tambah E-Mel"
 
 #: trade_portal/templates/account/email.html:72
 msgid "Do you really want to remove the selected e-mail address?"
-msgstr ""
+msgstr "Adakah anda pasti ingin mengalih keluar alamat e-mel yang dipilih?"
 
 #: trade_portal/templates/account/email_confirm.html:6
 #: trade_portal/templates/account/email_confirm.html:10
 msgid "Confirm E-mail Address"
-msgstr ""
+msgstr "Sahkan Alamat E-mel"
 
 #: trade_portal/templates/account/email_confirm.html:16
 #, python-format
@@ -259,43 +265,47 @@ msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
 msgstr ""
+"Sila sahkan bahawa <a href=\"mailto:%(email)s\">Format_email_end</a> adalah "
+"alamat e-mel untuk pengguna %(user_display)s."
 
 #: trade_portal/templates/account/email_confirm.html:20
 msgid "Confirm"
-msgstr ""
+msgstr "Sahkan"
 
 #: trade_portal/templates/account/email_confirm.html:27
 #, python-format
 msgid ""
-"This e-mail confirmation link expired or is invalid. Please <a href="
-"\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
+"Pautan pengesahan e-mel ini luput atau tidak sah. Sila <a "
+"href=\"%(email_url)s\">keluarkan permintaan pengesahan e-mel baru</a>."
 
 #: trade_portal/templates/account/login.html:19
 msgid "Sign in to your account"
-msgstr ""
+msgstr "Log masuk ke akaun anda"
 
 #: trade_portal/templates/account/login.html:27
 msgid "Forgot Password?"
-msgstr ""
+msgstr "Lupa Kata Laluan?"
 
 #: trade_portal/templates/account/login.html:30
 msgid "Sign In"
-msgstr ""
+msgstr "Daftar Masuk"
 
 #: trade_portal/templates/account/login.html:39
 msgid "Don’t have an account yet?"
-msgstr ""
+msgstr "Belum ada akaun lagi?"
 
 #: trade_portal/templates/account/logout.html:5
 #: trade_portal/templates/account/logout.html:8
 #: trade_portal/templates/account/logout.html:17
 msgid "Sign Out"
-msgstr ""
+msgstr "Daftar Keluar"
 
 #: trade_portal/templates/account/logout.html:10
 msgid "Are you sure you want to sign out?"
-msgstr ""
+msgstr "Apakah Anda yakin ingin keluar?"
 
 #: trade_portal/templates/account/password_change.html:6
 #: trade_portal/templates/account/password_change.html:14
@@ -305,98 +315,107 @@ msgstr ""
 #: trade_portal/templates/account/password_reset_from_key_done.html:4
 #: trade_portal/templates/account/password_reset_from_key_done.html:7
 msgid "Change Password"
-msgstr ""
+msgstr "Tukar Kata Laluan"
 
 #: trade_portal/templates/account/password_reset.html:7
 #: trade_portal/templates/account/password_reset.html:10
 #: trade_portal/templates/account/password_reset_done.html:6
 #: trade_portal/templates/account/password_reset_done.html:9
 msgid "Password Reset"
-msgstr ""
+msgstr "Set Semula Kata"
 
 #: trade_portal/templates/account/password_reset.html:15
 msgid ""
-"Forgotten your password? Enter your e-mail address below, and we'll send you "
-"an e-mail allowing you to reset it."
+"Forgotten your password? Enter your e-mail address below, and we'll send you"
+" an e-mail allowing you to reset it."
 msgstr ""
+"Lupa kata laluan anda? Masukkan alamat e-mel anda di bawah, dan kami akan "
+"menghantar e-mel yang membenarkan anda menetapkannya semula."
 
 #: trade_portal/templates/account/password_reset.html:20
 msgid "Please contact us if you have any trouble resetting your password."
 msgstr ""
+"Sila hubungi kami jika anda mempunyai sebarang masalah untuk menetapkan "
+"semula kata laluan anda."
 
 #: trade_portal/templates/account/password_reset.html:22
 msgid "Reset My Password"
-msgstr ""
+msgstr "Set Semula Kata Laluan Saya"
 
 #: trade_portal/templates/account/password_reset_done.html:15
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"Kami telah menghantar e-mel kepada anda. Sila hubungi kami jika anda tidak "
+"menerimanya dalam masa beberapa minit."
 
 #: trade_portal/templates/account/password_reset_from_key.html:8
 msgid "Bad Token"
-msgstr ""
+msgstr "Token buruk"
 
 #: trade_portal/templates/account/password_reset_from_key.html:12
 #, python-format
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
-"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
-"a>."
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
+"reset</a>."
 msgstr ""
+"Pautan penetapan semula kata laluan tidak sah, mungkin kerana ia telah "
+"digunakan. Sila minta set <a href=\"%(passwd_reset_url)s\">semula kata "
+"laluan baru</a>."
 
 #: trade_portal/templates/account/password_reset_from_key.html:19
 msgid "Change password"
-msgstr ""
+msgstr "Tukar kata laluan"
 
 #: trade_portal/templates/account/password_reset_from_key.html:23
 #: trade_portal/templates/account/password_reset_from_key_done.html:8
 msgid "Your password is now changed."
-msgstr ""
+msgstr "Kata sandi Anda sekarang berubah."
 
 #: trade_portal/templates/account/password_set.html:6
 #: trade_portal/templates/account/password_set.html:9
 #: trade_portal/templates/account/password_set.html:15
 msgid "Set Password"
-msgstr ""
+msgstr "Tetapkan Kata Laluan"
 
 #: trade_portal/templates/account/signup.html:6
 msgid "Signup"
-msgstr ""
+msgstr "Daftar"
 
 #: trade_portal/templates/account/signup.html:22
 #: trade_portal/templates/base.html:60
 msgid "Sign up"
-msgstr ""
+msgstr "Daftar"
 
 #: trade_portal/templates/account/signup.html:41
 msgid "Sign Up"
-msgstr ""
+msgstr "Daftar"
 
 #: trade_portal/templates/account/signup.html:50
 msgid "Already have an account?"
-msgstr ""
+msgstr "Sudah ada akaun?"
 
 #: trade_portal/templates/account/signup.html:51
 msgid "Sign in"
-msgstr ""
+msgstr "Daftar masuk"
 
 #: trade_portal/templates/account/signup_closed.html:5
 #: trade_portal/templates/account/signup_closed.html:8
 msgid "Sign Up Closed"
-msgstr ""
+msgstr "Daftar Ditutup"
 
 #: trade_portal/templates/account/signup_closed.html:10
 msgid "We are sorry, but the sign up is currently closed."
-msgstr ""
+msgstr "Kami minta maaf, tetapi pendaftaran ditutup pada masa ini."
 
 #: trade_portal/templates/account/verification_sent.html:5
 #: trade_portal/templates/account/verification_sent.html:8
 #: trade_portal/templates/account/verified_email_required.html:5
 #: trade_portal/templates/account/verified_email_required.html:8
 msgid "Verify Your E-mail Address"
-msgstr ""
+msgstr "Sahkan Alamat E-mel Anda"
 
 #: trade_portal/templates/account/verification_sent.html:10
 msgid ""
@@ -404,6 +423,9 @@ msgid ""
 "finalize the signup process. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"Kami telah menghantar e-mel kepada anda untuk pengesahan. Ikut pautan yang "
+"disediakan untuk memuktamadkan proses pendaftaran. Sila hubungi kami jika "
+"anda tidak menerimanya dalam masa beberapa minit."
 
 #: trade_portal/templates/account/verified_email_required.html:12
 msgid ""
@@ -411,6 +433,9 @@ msgid ""
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your e-mail address. "
 msgstr ""
+"Ini sebahagian daripada laman web ini memerlukan kami untuk mengesahkan bahawa\n"
+"anda adalah orang yang anda mendakwa. Untuk tujuan ini, kami mengharuskan Anda\n"
+"sahkan pemilikan alamat e-mel anda."
 
 #: trade_portal/templates/account/verified_email_required.html:16
 msgid ""
@@ -418,55 +443,60 @@ msgid ""
 "verification. Please click on the link inside this e-mail. Please\n"
 "contact us if you do not receive it within a few minutes."
 msgstr ""
+"Kami telah menghantar e-mel kepada anda untuk\n"
+"pengesahan. Sila klik pada pautan di dalam e-mel ini. Tolong\n"
+"hubungi kami jika anda tidak menerimanya dalam masa beberapa minit."
 
 #: trade_portal/templates/account/verified_email_required.html:20
 #, python-format
 msgid ""
-"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
-"mail address</a>."
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
+"e-mail address</a>."
 msgstr ""
+"<strong>Nota:</strong> anda masih boleh <a href=\"%(email_url)s\">menukar "
+"alamat e-mel anda</a>."
 
 #: trade_portal/templates/base.html:38 trade_portal/templates/base.html:39
 #: trade_portal/templates/base.html:41 trade_portal/templates/base.html:42
 msgid "Trade Portal"
-msgstr ""
+msgstr "Portal Perdagangan"
 
 #: trade_portal/templates/base.html:45
 msgid "IGL Trade Portal"
-msgstr ""
+msgstr "Portal Perdagangan IGL"
 
 #: trade_portal/templates/base.html:53
 msgid "Superuser"
-msgstr ""
+msgstr "Superuser"
 
 #: trade_portal/templates/base.html:76
 msgid "Home"
-msgstr ""
+msgstr "Rumah"
 
 #: trade_portal/templates/base.html:80
 msgid "Login"
-msgstr ""
+msgstr "Log masuk"
 
 #: trade_portal/templates/base.html:84
 msgid "Documents"
-msgstr ""
+msgstr "Dokumen"
 
 #: trade_portal/templates/base.html:87
 msgid "Admin Panel"
-msgstr ""
+msgstr "Panel Pentadbir"
 
 #: trade_portal/templates/base.html:95
 msgid "Pending Users"
-msgstr ""
+msgstr "Pengguna Tertangguh"
 
 #: trade_portal/templates/base.html:98
 msgid "Roles Requests"
-msgstr ""
+msgstr "Permintaan Peranan"
 
 #: trade_portal/users/apps.py:7
 msgid "Users"
-msgstr ""
+msgstr "Pengguna"
 
 #: trade_portal/users/templates/users/user_form.html:15
 msgid "Profile update"
-msgstr ""
+msgstr "Kemas kini profil"

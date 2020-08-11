@@ -77,6 +77,7 @@ THIRD_PARTY_APPS = [
     "constance",
     "constance.backends.database",
     "django_tables2",
+    # "django_amazon_translate",
 ]
 
 LOCAL_APPS = [

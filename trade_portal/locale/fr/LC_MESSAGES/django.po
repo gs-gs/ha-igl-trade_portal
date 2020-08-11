@@ -20,223 +20,230 @@ msgstr ""
 
 #: trade_portal/documents/models.py:46
 msgid "Trader"
-msgstr ""
+msgstr "Trader"
 
 #: trade_portal/documents/models.py:47
 msgid "Chambers"
-msgstr ""
+msgstr "Chambres"
 
 #: trade_portal/documents/models.py:48 trade_portal/documents/models.py:274
 msgid "Other"
-msgstr ""
+msgstr "Autre"
 
 #: trade_portal/documents/models.py:67
 msgid "ABN or UEN for example"
-msgstr ""
+msgstr "ABN ou UEN par exemple"
 
 #: trade_portal/documents/models.py:78
 msgid "party"
-msgstr ""
+msgstr "partie"
 
 #: trade_portal/documents/models.py:79
 msgid "parties"
-msgstr ""
+msgstr "parties"
 
 #: trade_portal/documents/models.py:121
 msgid "Government Identifier"
-msgstr ""
+msgstr "Identificateur du gouvernement"
 
 #: trade_portal/documents/models.py:153 trade_portal/documents/models.py:154
 msgid "OA details"
-msgstr ""
+msgstr "Détails sur l'OA"
 
 #: trade_portal/documents/models.py:192
 msgid "Pending"
-msgstr ""
+msgstr "En attente"
 
 #: trade_portal/documents/models.py:193
 msgid "Failed"
-msgstr ""
+msgstr "Échec"
 
 #: trade_portal/documents/models.py:194
 msgid "Validated"
-msgstr ""
+msgstr "Validé"
 
 #: trade_portal/documents/models.py:195
 msgid "Incoming"
-msgstr ""
+msgstr "Entrant"
 
 #: trade_portal/documents/models.py:202
 msgid "Preferential Certificate of Origin"
-msgstr ""
+msgstr "Certificat d'origine préférentiel"
 
 #: trade_portal/documents/models.py:203
 msgid "Non-preferential Certificate of Origin"
-msgstr ""
+msgstr "Certificat d'origine non préférentiel"
 
 #: trade_portal/documents/models.py:218
 msgid "Document type"
-msgstr ""
+msgstr "Type de document"
 
 #: trade_portal/documents/models.py:222
 msgid "FTA"
-msgstr ""
+msgstr "ALE"
 
 #: trade_portal/documents/models.py:238
 msgid "Organisation name or business ID (ABN, UEN)"
-msgstr ""
+msgstr "Nom de l'organisation ou ID de l'entreprise (ABN, UEN)"
 
 #: trade_portal/documents/models.py:243
 msgid "Document Number"
-msgstr ""
+msgstr "Numéro du document"
 
 #: trade_portal/documents/models.py:244 trade_portal/documents/models.py:249
 #: trade_portal/documents/models.py:259
 msgid "Consignment details"
-msgstr ""
+msgstr "Détails de l'envoi"
 
 #: trade_portal/documents/models.py:248
 msgid "Document Type"
-msgstr ""
+msgstr "Type de document"
 
 #: trade_portal/documents/models.py:258
 msgid "Document Issuer"
-msgstr ""
+msgstr "Émetteur de documents"
 
 #: trade_portal/documents/models.py:264
 msgid "Invoice Number"
-msgstr ""
+msgstr "Numéro de facture"
 
 #: trade_portal/documents/models.py:268
 msgid "Origin Criteria"
-msgstr ""
+msgstr "Critères d'origine"
 
 #: trade_portal/documents/models.py:280
 msgid "Details about communication with the Intergov"
-msgstr ""
+msgstr "Détails sur la communication avec Intergov"
 
 #: trade_portal/documents/models.py:371
 msgid "(wrong ref)"
-msgstr ""
+msgstr "(mauvaise référence)"
 
 #: trade_portal/documents/models.py:415
 msgid "Original name of the uploaded file"
-msgstr ""
+msgstr "Nom d'origine du fichier téléchargé"
 
 #: trade_portal/documents/models.py:421
 msgid ""
 "None if doesn't need to be watermarked, False if pending and True if done"
 msgstr ""
+"Aucun s'il n'a pas besoin d'être filigrané, False s'il est en attente et "
+"True s'il est fait"
 
 #: trade_portal/documents/models.py:474
 msgid "Sent"
-msgstr ""
+msgstr "Envoyé"
 
 #: trade_portal/documents/models.py:475
 msgid "Accepted"
-msgstr ""
+msgstr "Accepté"
 
 #: trade_portal/documents/models.py:476
 msgid "Rejected"
-msgstr ""
+msgstr "Rejeté"
 
 #: trade_portal/documents/models.py:477
 msgid "Inbound"
-msgstr ""
+msgstr "Entrant"
 
 #: trade_portal/documents/models.py:490
 msgid "Created in the system"
-msgstr ""
+msgstr "Créé dans le système"
 
 #: trade_portal/documents/models.py:492
 msgid "For received messages - when received by us"
-msgstr ""
+msgstr "Pour les messages reçus - lorsqu'ils sont reçus par nous"
 
 #: trade_portal/documents/models.py:500
 msgid "Conversation identificator"
-msgstr ""
+msgstr "Identificateur de conversation"
 
 #: trade_portal/documents/models.py:504
 msgid "generic discrete format, exactly like API returns"
-msgstr ""
+msgstr "format discret générique, exactement comme les retours API"
 
 #: trade_portal/documents/models.py:508
 msgid "Status changes and other historical events in a simple format"
 msgstr ""
+"Changements d'état et autres événements historiques dans un format simple"
 
 #: trade_portal/documents/models.py:539
 msgid ""
 "The document marked as Failed because the outbound message has been rejected"
-msgstr ""
+msgstr "Le document marqué comme Échec car le message sortant a été rejeté"
 
 #: trade_portal/templates/account/account_inactive.html:5
 #: trade_portal/templates/account/account_inactive.html:8
 msgid "Account Inactive"
-msgstr ""
+msgstr "Compte inactif"
 
 #: trade_portal/templates/account/account_inactive.html:10
 msgid "This account is inactive."
-msgstr ""
+msgstr "Ce compte est inactif."
 
 #: trade_portal/templates/account/email.html:7
 #: trade_portal/templates/account/email.html:15
 msgid "E-mail Addresses"
-msgstr ""
+msgstr "Adresses E-Mail"
 
 #: trade_portal/templates/account/email.html:18
 msgid "The following e-mail addresses are associated with your account:"
-msgstr ""
+msgstr "Les adresses e-mail suivantes sont associées à votre compte :"
 
 #: trade_portal/templates/account/email.html:32
 msgid "Verified"
-msgstr ""
+msgstr "Vérifié"
 
 #: trade_portal/templates/account/email.html:34
 msgid "Unverified"
-msgstr ""
+msgstr "Non vérifié"
 
 #: trade_portal/templates/account/email.html:36
 msgid "Primary"
-msgstr ""
+msgstr "Primaire"
 
 #: trade_portal/templates/account/email.html:43
 msgid "Make Primary"
-msgstr ""
+msgstr "Faire primaire"
 
 #: trade_portal/templates/account/email.html:44
 msgid "Re-send Verification"
-msgstr ""
+msgstr "Renvoyer la vérification"
 
 #: trade_portal/templates/account/email.html:45
 msgid "Remove"
-msgstr ""
+msgstr "Enlevez"
 
 #: trade_portal/templates/account/email.html:52
 msgid "Warning:"
-msgstr ""
+msgstr "Avertissement :"
 
 #: trade_portal/templates/account/email.html:52
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
-"an e-mail address so you can receive notifications, reset your password, etc."
+"an e-mail address so you can receive notifications, reset your password, "
+"etc."
 msgstr ""
+"Vous n'avez actuellement aucune adresse e-mail configurée. Vous devriez "
+"vraiment ajouter une adresse e-mail afin que vous puissiez recevoir des "
+"notifications, réinitialiser votre mot de passe, etc."
 
 #: trade_portal/templates/account/email.html:57
 msgid "Add E-mail Address"
-msgstr ""
+msgstr "Ajouter une adresse e-mail"
 
 #: trade_portal/templates/account/email.html:62
 msgid "Add E-mail"
-msgstr ""
+msgstr "Ajouter un e-mail"
 
 #: trade_portal/templates/account/email.html:72
 msgid "Do you really want to remove the selected e-mail address?"
-msgstr ""
+msgstr "Voulez-vous vraiment supprimer l'adresse e-mail sélectionnée ?"
 
 #: trade_portal/templates/account/email_confirm.html:6
 #: trade_portal/templates/account/email_confirm.html:10
 msgid "Confirm E-mail Address"
-msgstr ""
+msgstr "Confirmer l'adresse e-mail"
 
 #: trade_portal/templates/account/email_confirm.html:16
 #, python-format
@@ -244,43 +251,48 @@ msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
 msgstr ""
+"Veuillez confirmer que <a href=\"mailto:%(email)s\">format_email_end</a> est"
+" une adresse e-mail pour l'utilisateur %(user_display)s."
 
 #: trade_portal/templates/account/email_confirm.html:20
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmer"
 
 #: trade_portal/templates/account/email_confirm.html:27
 #, python-format
 msgid ""
-"This e-mail confirmation link expired or is invalid. Please <a href="
-"\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
+"Ce lien de confirmation par e-mail a expiré ou n'est pas valide. Veuillez <a"
+" href=\"%(email_url)s\">envoyer une nouvelle demande de confirmation par "
+"e-mail</a>."
 
 #: trade_portal/templates/account/login.html:19
 msgid "Sign in to your account"
-msgstr ""
+msgstr "Connectez-vous à votre compte"
 
 #: trade_portal/templates/account/login.html:27
 msgid "Forgot Password?"
-msgstr ""
+msgstr "Mot de passe oublié ?"
 
 #: trade_portal/templates/account/login.html:30
 msgid "Sign In"
-msgstr ""
+msgstr "Se connecter"
 
 #: trade_portal/templates/account/login.html:39
 msgid "Don’t have an account yet?"
-msgstr ""
+msgstr "Vous n'avez pas encore de compte ?"
 
 #: trade_portal/templates/account/logout.html:5
 #: trade_portal/templates/account/logout.html:8
 #: trade_portal/templates/account/logout.html:17
 msgid "Sign Out"
-msgstr ""
+msgstr "Se déconnecter"
 
 #: trade_portal/templates/account/logout.html:10
 msgid "Are you sure you want to sign out?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir vous déconnecter ?"
 
 #: trade_portal/templates/account/password_change.html:6
 #: trade_portal/templates/account/password_change.html:14
@@ -290,98 +302,107 @@ msgstr ""
 #: trade_portal/templates/account/password_reset_from_key_done.html:4
 #: trade_portal/templates/account/password_reset_from_key_done.html:7
 msgid "Change Password"
-msgstr ""
+msgstr "Modifier le mot de passe"
 
 #: trade_portal/templates/account/password_reset.html:7
 #: trade_portal/templates/account/password_reset.html:10
 #: trade_portal/templates/account/password_reset_done.html:6
 #: trade_portal/templates/account/password_reset_done.html:9
 msgid "Password Reset"
-msgstr ""
+msgstr "Réinitialiser le mot de passe"
 
 #: trade_portal/templates/account/password_reset.html:15
 msgid ""
-"Forgotten your password? Enter your e-mail address below, and we'll send you "
-"an e-mail allowing you to reset it."
+"Forgotten your password? Enter your e-mail address below, and we'll send you"
+" an e-mail allowing you to reset it."
 msgstr ""
+"Mot de passe oublié ? Entrez votre adresse e-mail ci-dessous et nous vous "
+"enverrons un e-mail vous permettant de la réinitialiser."
 
 #: trade_portal/templates/account/password_reset.html:20
 msgid "Please contact us if you have any trouble resetting your password."
 msgstr ""
+"Veuillez nous contacter si vous avez des difficultés à réinitialiser votre "
+"mot de passe."
 
 #: trade_portal/templates/account/password_reset.html:22
 msgid "Reset My Password"
-msgstr ""
+msgstr "Réinitialiser mon mot de passe"
 
 #: trade_portal/templates/account/password_reset_done.html:15
 msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"Nous vous avons envoyé un e-mail. Veuillez nous contacter si vous ne le "
+"recevez pas en quelques minutes."
 
 #: trade_portal/templates/account/password_reset_from_key.html:8
 msgid "Bad Token"
-msgstr ""
+msgstr "Mauvais jeton"
 
 #: trade_portal/templates/account/password_reset_from_key.html:12
 #, python-format
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
-"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
-"a>."
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
+"reset</a>."
 msgstr ""
+"Le lien de réinitialisation du mot de passe n'était pas valide, peut-être "
+"parce qu'il a déjà été utilisé. Veuillez demander une <a "
+"href=\"%(passwd_reset_url)s\">nouvelle réinitialisation du mot de passe</a>."
 
 #: trade_portal/templates/account/password_reset_from_key.html:19
 msgid "Change password"
-msgstr ""
+msgstr "Modifier le mot de passe"
 
 #: trade_portal/templates/account/password_reset_from_key.html:23
 #: trade_portal/templates/account/password_reset_from_key_done.html:8
 msgid "Your password is now changed."
-msgstr ""
+msgstr "Votre mot de passe est maintenant modifié."
 
 #: trade_portal/templates/account/password_set.html:6
 #: trade_portal/templates/account/password_set.html:9
 #: trade_portal/templates/account/password_set.html:15
 msgid "Set Password"
-msgstr ""
+msgstr "Définir le mot de passe"
 
 #: trade_portal/templates/account/signup.html:6
 msgid "Signup"
-msgstr ""
+msgstr "Inscription"
 
 #: trade_portal/templates/account/signup.html:22
 #: trade_portal/templates/base.html:60
 msgid "Sign up"
-msgstr ""
+msgstr "S'inscrire"
 
 #: trade_portal/templates/account/signup.html:41
 msgid "Sign Up"
-msgstr ""
+msgstr "S'inscrire"
 
 #: trade_portal/templates/account/signup.html:50
 msgid "Already have an account?"
-msgstr ""
+msgstr "Vous avez déjà un compte ?"
 
 #: trade_portal/templates/account/signup.html:51
 msgid "Sign in"
-msgstr ""
+msgstr "Se connecter"
 
 #: trade_portal/templates/account/signup_closed.html:5
 #: trade_portal/templates/account/signup_closed.html:8
 msgid "Sign Up Closed"
-msgstr ""
+msgstr "S'inscrire Fermé"
 
 #: trade_portal/templates/account/signup_closed.html:10
 msgid "We are sorry, but the sign up is currently closed."
-msgstr ""
+msgstr "Nous sommes désolés, mais l'inscription est actuellement fermée."
 
 #: trade_portal/templates/account/verification_sent.html:5
 #: trade_portal/templates/account/verification_sent.html:8
 #: trade_portal/templates/account/verified_email_required.html:5
 #: trade_portal/templates/account/verified_email_required.html:8
 msgid "Verify Your E-mail Address"
-msgstr ""
+msgstr "Vérifier votre adresse e-mail"
 
 #: trade_portal/templates/account/verification_sent.html:10
 msgid ""
@@ -389,6 +410,9 @@ msgid ""
 "finalize the signup process. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"Nous vous avons envoyé un e-mail pour vérification. Suivez le lien fourni "
+"pour finaliser le processus d'inscription. Veuillez nous contacter si vous "
+"ne le recevez pas en quelques minutes."
 
 #: trade_portal/templates/account/verified_email_required.html:12
 msgid ""
@@ -396,6 +420,9 @@ msgid ""
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your e-mail address. "
 msgstr ""
+"Cette partie du site exige que nous vérifiions que\n"
+"vous êtes ce que vous prétendez être. À cette fin, nous exigeons que vous\n"
+"vérifier la propriété de votre adresse e-mail."
 
 #: trade_portal/templates/account/verified_email_required.html:16
 msgid ""
@@ -403,55 +430,60 @@ msgid ""
 "verification. Please click on the link inside this e-mail. Please\n"
 "contact us if you do not receive it within a few minutes."
 msgstr ""
+"Nous vous avons envoyé un e-mail pour\n"
+"vérification. Veuillez cliquer sur le lien à l'intérieur de cet e-mail. S'il vous plaît\n"
+"contactez-nous si vous ne le recevez pas en quelques minutes."
 
 #: trade_portal/templates/account/verified_email_required.html:20
 #, python-format
 msgid ""
-"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
-"mail address</a>."
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
+"e-mail address</a>."
 msgstr ""
+"<strong>Remarque :</strong> vous pouvez toujours <a "
+"href=\"%(email_url)s\">modifier votre adresse e-mail</a>."
 
 #: trade_portal/templates/base.html:38 trade_portal/templates/base.html:39
 #: trade_portal/templates/base.html:41 trade_portal/templates/base.html:42
 msgid "Trade Portal"
-msgstr ""
+msgstr "Portail commercial"
 
 #: trade_portal/templates/base.html:45
 msgid "IGL Trade Portal"
-msgstr ""
+msgstr "Portail du commerce IGL"
 
 #: trade_portal/templates/base.html:53
 msgid "Superuser"
-msgstr ""
+msgstr "Superutilisateur"
 
 #: trade_portal/templates/base.html:76
 msgid "Home"
-msgstr ""
+msgstr "Accueil"
 
 #: trade_portal/templates/base.html:80
 msgid "Login"
-msgstr ""
+msgstr "Identifiant"
 
 #: trade_portal/templates/base.html:84
 msgid "Documents"
-msgstr ""
+msgstr "Documents"
 
 #: trade_portal/templates/base.html:87
 msgid "Admin Panel"
-msgstr ""
+msgstr "Panneau d'administration"
 
 #: trade_portal/templates/base.html:95
 msgid "Pending Users"
-msgstr ""
+msgstr "Utilisateurs en attente"
 
 #: trade_portal/templates/base.html:98
 msgid "Roles Requests"
-msgstr ""
+msgstr "Demandes de rôles"
 
 #: trade_portal/users/apps.py:7
 msgid "Users"
-msgstr ""
+msgstr "Utilisateurs"
 
 #: trade_portal/users/templates/users/user_form.html:15
 msgid "Profile update"
-msgstr ""
+msgstr "Mise à jour du profil"
