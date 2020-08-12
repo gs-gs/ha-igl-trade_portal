@@ -9,6 +9,7 @@ from django.views.generic import (
     TemplateView, DetailView,
 )
 from django.shortcuts import redirect
+from django.utils.translation import gettext as _
 
 from trade_portal.users.models import (
     Organisation, OrgMembership, OrgRoleRequest,
@@ -58,7 +59,10 @@ class PendingUsersView(UserPassesTestMixin, TemplateView):
                 org=org,
                 user=user,
             )
-            messages.success(request, f"The user has been added to {org}")
+            messages.success(
+                request,
+                _("The user has been added to the %s") % org
+            )
             notify_user_about_being_approved.apply_async(
                 [user.id, "added_to_org"],
                 countdown=5
@@ -67,7 +71,7 @@ class PendingUsersView(UserPassesTestMixin, TemplateView):
             user = self._get_pending_users().get(
                 pk=request.POST.get("create_org_for_user")
             )
-            org, _ = Organisation.objects.get_or_create(
+            org, created = Organisation.objects.get_or_create(
                 # warning: we assume that the ABN is valid here and user pressing that
                 # button ensured it
                 business_id=user.initial_business_id,
@@ -88,7 +92,7 @@ class PendingUsersView(UserPassesTestMixin, TemplateView):
             logger.info("Access to the org %s has been given to %s", org, user)
             messages.success(
                 request,
-                "The organisation has been created and this user got access to it"
+                _("The organisation has been created and this user got access to it")
             )
             notify_user_about_being_approved.apply_async(
                 [user.id, "org_created"],
@@ -129,9 +133,11 @@ class RolesRequestsView(UserPassesTestMixin, TemplateView):
             req.org.save()
             messages.success(
                 request,
-                f"Role {req.get_role_display()} has been granted to the {req.org}"
+                _("Role %(role)s has been granted to %(org)s") % {
+                    "role": req.get_role_display(),
+                    "org": req.org,
+                }
             )
-
             notify_user_about_role_request_changed.apply_async(
                 [req.id],
                 countdown=5
@@ -145,7 +151,9 @@ class RolesRequestsView(UserPassesTestMixin, TemplateView):
             req.save()
             messages.warning(
                 request,
-                f"The request from {req.org} has been rejected and the user has been notified."
+                _("The request from %(org)s has been rejected and the user has been notified.") % {
+                    "org": req.org,
+                }
             )
             notify_user_about_role_request_changed.apply_async(
                 [req.id],
@@ -160,8 +168,10 @@ class RolesRequestsView(UserPassesTestMixin, TemplateView):
             req.save()
             messages.info(
                 request,
-                "The request has been marked as 'Evidence Requested' "
-                "and will change it's status back once it's uploaded"
+                _(
+                    "The request has been marked as 'Evidence Requested' "
+                    "and will change it's status back once it's uploaded"
+                )
             )
             notify_user_about_role_request_changed.apply_async(
                 [req.id],

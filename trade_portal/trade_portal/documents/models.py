@@ -22,8 +22,14 @@ logger = logging.getLogger(__name__)
 
 class FTA(models.Model):
     # the Free Trading Agreement, per multiple countries (but may be just 2 of them)
-    name = models.CharField(max_length=256, blank=True, default='')
-    country = CountryField(multiple=True)
+    name = models.CharField(
+        max_length=256, blank=True, default='',
+        verbose_name=_("name")
+    )
+    country = CountryField(
+        multiple=True,
+        verbose_name=_("country")
+    )
 
     def __str__(self):
         return self.name
@@ -206,35 +212,52 @@ class Document(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
 
     oa = models.ForeignKey(OaDetails, models.CASCADE, null=True)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name=_("created at")
+    )
     created_by_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, models.SET_NULL,
-        blank=True, null=True)
+        blank=True, null=True,
+        verbose_name=_("created by user")
+    )
     created_by_org = models.ForeignKey(
         "users.Organisation", models.SET_NULL,
-        blank=True, null=True
+        blank=True, null=True,
+        verbose_name=_("created by org")
     )
 
     type = models.CharField(_("Document type"), max_length=64, choices=TYPE_CHOICES)
-    document_number = models.CharField(max_length=256, blank=False, default="")
+    document_number = models.CharField(
+        _("Document number"),
+        max_length=256, blank=False, default=""
+    )
 
     fta = models.ForeignKey(
         FTA, models.PROTECT, verbose_name=_("FTA"), blank=True, null=True
     )
 
-    sending_jurisdiction = CountryField(default=settings.ICL_APP_COUNTRY)
-    importing_country = CountryField()
+    sending_jurisdiction = CountryField(
+        default=settings.ICL_APP_COUNTRY,
+        verbose_name=_("Sending jurisdiction")
+    )
+    importing_country = CountryField(
+        verbose_name=_("Importing jurisdiction")
+    )
     issuer = models.ForeignKey(
         Party, models.CASCADE,
         blank=True, null=True,
-        related_name="documents_issued"
+        related_name="documents_issued",
+        verbose_name=_("issuer"),
     )
     exporter = models.ForeignKey(
         Party, models.CASCADE,
         blank=True, null=True,
-        related_name="documents_exported"
+        related_name="documents_exported",
+        verbose_name=_("exporter"),
     )
     importer_name = models.CharField(
+        _("Importer name"),
         max_length=256, help_text=_("Organisation name or business ID (ABN, UEN)"),
         blank=True, default=""
     )
@@ -281,6 +304,7 @@ class Document(models.Model):
     )
     # https://edi3.org/specs/edi3-regulatory/develop/certificates/#state-lifecycle
     status = models.CharField(
+        _("Status"),
         max_length=12, choices=STATUS_CHOICES, default=STATUS_PENDING
     )
 

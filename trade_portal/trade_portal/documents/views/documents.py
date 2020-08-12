@@ -9,6 +9,7 @@ from django.views.generic import (
 )
 from django_tables2 import SingleTableView
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 
 from trade_portal.documents.forms import (
@@ -65,8 +66,10 @@ class DocumentQuerysetMixin(AccessMixin):
             if not request.user.orgs:
                 messages.warning(
                     request,
-                    "You are not a member of any organisation - which is "
-                    "mandatory to access the documents page"
+                    _(
+                        "You are not a member of any organisation - which is "
+                        "mandatory to access the documents page"
+                    )
                 )
                 return redirect('users:detail')
         return super().dispatch(request, *args, **kwargs)
@@ -129,7 +132,7 @@ class DocumentCreateView(Login, CreateView):
     def dispatch(self, *args, **kwargs):
         current_org = self.request.user.get_current_org(self.request.session)
         if not current_org.is_chambers:
-            messages.error(self.request, "Only chambers can create new documents")
+            messages.error(self.request, _("Only chambers can create new documents"))
             return redirect('/documents/')
         return super().dispatch(*args, **kwargs)
 
@@ -163,32 +166,12 @@ class DocumentCreateView(Login, CreateView):
     def get_success_url(self):
         messages.success(
             self.request,
-            "The document you have just created will be notarised and will be sent "
-            "to the importing country via the Secure Trade Lane."
+            _(
+                "The document you have just created will be notarised and will be sent "
+                "to the importing country via the Secure Trade Lane."
+            )
         )
         return reverse('documents:detail', args=[self.object.pk])
-
-
-# class DocumentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
-#     template_name = 'documents/update.html'
-#     form_class = DocumentUpdateForm
-
-#     @statsd_timer("view.DocumentUpdateView.dispatch")
-#     def dispatch(self, *args, **kwargs):
-#         return super().dispatch(*args, **kwargs)
-
-#     def get_form_kwargs(self):
-#         k = super().get_form_kwargs()
-#         k['user'] = self.request.user
-#         k['current_org'] = self.request.user.get_current_org(self.request.session)
-#         return k
-
-#     def get_success_url(self):
-#         messages.success(
-#             self.request,
-#             "The document has been updated"
-#         )
-#         return reverse('documents:detail', args=[self.object.pk])
 
 
 class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
@@ -247,13 +230,16 @@ class ConsignmentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
         # we don't check for document visibility because it's done by mixin
         current_org = self.request.user.get_current_org(self.request.session)
         if not current_org.is_chambers and not current_org.is_trader:
-            messages.error(self.request, "Only chambers and trade party can update these details")
+            messages.error(
+                self.request,
+                _("Only chambers and trade party can update these details")
+            )
             return redirect('/documents/')
         return super().dispatch(*args, **kwargs)
 
     def get_success_url(self):
         messages.success(
             self.request,
-            "The consignment details have been saved successfully"
+            _("The consignment details have been saved successfully")
         )
         return reverse('documents:detail', args=[self.object.pk])

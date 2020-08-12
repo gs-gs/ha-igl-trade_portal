@@ -4,28 +4,28 @@
 {% load crispy_forms_tags %}
 
 
-{% block title %}Consignment Update{% endblock %}
+{% block title %}{% trans "Consignment Update" %}{% endblock %}
 
 {% block content %}
 <div class="content-box">
   <div class="document-form">
-    <h1 class="page-title">Update {{ form.instance.get_type_display }}</h1>
+    <h1 class="page-title">% trans "Update" %} {{ form.instance.get_type_display }}</h1>
 
     <form method="POST" enctype="multipart/form-data" onSubmit="return confirm('Are you sure?')">
       {% csrf_token %}
       {% if form.errors %}
-        <div class="alert alert-danger">Please fix the errors highlighted below</div>
+        <div class="alert alert-danger">{% trans "Please fix the errors highlighted below" %}</div>
       {% endif %}
 
       <fieldset class="form-section">
-        <div class="subtitle form-section__title">Consignment Reference</div>
+        <div class="subtitle form-section__title">{% trans "Consignment Reference" %}</div>
 
         <div class="form-section__container">
 
           <div class="form-group">
             <label for="consignmentDocIssuer">
-              Document Type
-              <span class="help-icon" data-toggle="tooltip" title="Consignment details"><i class="icon icon-info"></i></span>
+              {% trans "Document Type"  %}
+              <span class="help-icon" data-toggle="tooltip" title="{% trans 'Consignment details' %}"><i class="icon icon-info"></i></span>
             </label>
             <div class="input-group">
               {{ form.consignment_ref_doc_type }}
@@ -33,7 +33,7 @@
           </div>
 
           <div class="form-group" id='id_document_issuer_block'>
-            <label for="consignmentDocIssuer">Document Issuer {{ BID_NAME }}</label>
+            <label for="consignmentDocIssuer">{% trans 'Document Issuer' %} {{ BID_NAME }}</label>
             <div class="input-group">
               {{ form.consignment_ref_doc_issuer }}
 
@@ -45,7 +45,7 @@
                     href="https://www.uen.gov.sg/"
                   {% endif %}
                   target="_new" role="button">
-                  {{ BID_NAME }} Search
+                  {{ BID_NAME }} {% trans 'Search' %}
                   <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M14.5 3A1.5 1.5 0 0 0 13 1.5H3A1.5 1.5 0 0 0 1.5 3v5a.5.5 0 0 0 1 0V3a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H9a.5.5 0 0 0 0 1h4a1.5 1.5 0 0 0 1.5-1.5V3z"/>
                     <path fill-rule="evenodd" d="M4.5 6a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6.5H5a.5.5 0 0 1-.5-.5z"/>
@@ -53,12 +53,6 @@
                   </svg>
                 </a>
               </div>
-
-              {% comment %}
-              <div class="input-group-append">
-                <button class="btn btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
-              </div>
-              {% endcomment %}
             </div>
 
             <span id="hint_id_consignment_ref_doc_issuer"></span>
@@ -67,8 +61,8 @@
 
           <div class="form-group">
             <label for="consignmentDocIssuer">
-              Document Number
-              <span class="help-icon" data-toggle="tooltip" title="Consignment details"><i class="icon icon-info"></i></span>
+              {% trans 'Document Number' %}
+              <span class="help-icon" data-toggle="tooltip" title="{% trans 'Consignment details' %}"><i class="icon icon-info"></i></span>
             </label>
             <div class="input-group">
               {{ form.consignment_ref_doc_number }}
@@ -79,8 +73,8 @@
       </fieldset>
 
       <div class="form-actions">
-        <a href="../" class="btn btn-dark">Cancel</a>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="../" class="btn btn-dark">{% trans 'Cancel' %}</a>
+        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
       </div>
     </form>
   </div>

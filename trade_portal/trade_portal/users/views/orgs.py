@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views.generic import CreateView
+from django.utils.translation import gettext as _
 
 from trade_portal.users.forms import RoleRequestForm
 
@@ -22,7 +23,9 @@ class RoleRequestView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         messages.success(
             self.request,
-            "The role request has been placed; "
-            "It typically takes 2 workings days to review it"
+            _(
+                "The role request has been placed; "
+                "It typically takes 2 workings days to review it"
+            )
         )
         return reverse('users:detail')

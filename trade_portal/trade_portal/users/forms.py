@@ -2,6 +2,7 @@ from allauth.account.forms import SignupForm
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model, forms as auth_forms
+from django.utils.translation import gettext_lazy as _
 
 from trade_portal.users.models import OrgRoleRequest
 from trade_portal.users.tasks import (
@@ -12,13 +13,13 @@ User = get_user_model()
 
 
 class CustomSignupForm(SignupForm):
-    first_name = forms.CharField(label="First name")
-    last_name = forms.CharField(label="Last name")
+    first_name = forms.CharField(label=_("First name"))
+    last_name = forms.CharField(label=_("Last name"))
     initial_business_id = forms.CharField(
         label=settings.BID_NAME,
-        help_text="This value will be verified"
+        help_text=_("This value will be verified")
     )
-    mobile_number = forms.CharField(max_length=50, label="Mobile phone number")
+    mobile_number = forms.CharField(max_length=50, label=_("Mobile phone number"))
 
     class Meta:
         model = User
@@ -31,9 +32,9 @@ class CustomSignupForm(SignupForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["initial_business_id"].label = f"Your business {settings.BID_NAME}"
-        self.fields["password1"].label = "Choose a password"
-        self.fields["email"].label = "Your business email address"
+        self.fields["initial_business_id"].label = _("Your business") + settings.BID_NAME
+        self.fields["password1"].label = _("Choose a password")
+        self.fields["email"].label = _("Your business email address")
 
     def clean_mobile_number(self):
         phone = (self.cleaned_data.get("mobile_number") or "").strip().replace(" ", "")
@@ -48,7 +49,7 @@ class CustomSignupForm(SignupForm):
         ).count()
         if already_confirmed_numbers >= 3:
             raise forms.ValidationError(
-                "Entered phone number is already used in maximal number of accounts"
+                _("Entered phone number is already used in maximal number of accounts")
             )
         return phone
 
@@ -65,9 +66,9 @@ class CustomSignupForm(SignupForm):
 
 
 class UserChangeForm(forms.ModelForm):
-    first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'First name'}))
-    last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Last name'}))
-    mobile_number = forms.CharField(max_length=50, label="Mobile phone number")
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': _('First name')}))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': _('Last name')}))
+    mobile_number = forms.CharField(max_length=50, label=_("Mobile phone number"))
 
     class Meta:
         model = User
@@ -99,7 +100,7 @@ class RoleRequestForm(forms.ModelForm):
             (x.pk, str(x))
             for x in self.user.direct_orgs
         )
-        self.fields["evidence"].help_text = (
+        self.fields["evidence"].help_text = _(
             "This field is optional but uploading it will help the review. "
             "Please make sure the image uploaded is clearly readable."
         )

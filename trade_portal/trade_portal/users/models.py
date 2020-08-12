@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 class User(AbstractUser):
     initial_business_id = models.CharField(
         max_length=500,
-        help_text="The value provided by user on registration step",
+        help_text=_("The value provided by user on registration step"),
         blank=True, default=""
     )
     mobile_number = models.CharField(
@@ -20,7 +21,7 @@ class User(AbstractUser):
     )
     verified_mobile_number = models.CharField(
         max_length=32, blank=True, default="",
-        help_text="Value appears here only after validation"
+        help_text=_("Value appears here only after validation")
     )
 
     class Meta(AbstractUser.Meta):
@@ -85,8 +86,8 @@ class OrgMembership(models.Model):
     ROLE_USER = 'u'
 
     ROLES = (
-        (ROLE_ADMIN, 'Admin (can add users)'),
-        (ROLE_USER, 'User (can use org but not add users)')
+        (ROLE_ADMIN, _('Admin (can add users)')),
+        (ROLE_USER, _('User (can use org but not add users)'))
     )
 
     org = models.ForeignKey("Organisation", models.CASCADE)
@@ -108,7 +109,7 @@ class Organisation(models.Model):
     )
     business_id = models.CharField(
         max_length=64,
-        help_text='ABN for Australia',
+        help_text=_('ABN for Australia'),
         blank=True
     )
     dot_separated_id = models.CharField(
@@ -128,12 +129,14 @@ class Organisation(models.Model):
     def get_type_display(self):
         roles = []
         if self.is_trader:
-            roles.append("Trader")
+            roles.append(_("Trader"))
         if self.is_chambers:
-            roles.append("Chambers")
+            roles.append(_("Chamber"))
         if self.is_regulator:
-            roles.append("Regulator")
-        return ', '.join(roles)
+            roles.append(_("Regulator"))
+        return ', '.join([
+            str(r) for r in roles
+        ])
 
 
 class OrgRoleRequest(models.Model):
@@ -141,8 +144,8 @@ class OrgRoleRequest(models.Model):
     ROLE_CHAMBERS = "chambers"
 
     ROLE_CHOICES = (
-        (ROLE_TRADER, "Trader"),
-        (ROLE_CHAMBERS, "Chamber"),
+        (ROLE_TRADER, _("Trader")),
+        (ROLE_CHAMBERS, _("Chamber")),
     )
 
     STATUS_REQUESTED = 'requested'
@@ -151,10 +154,10 @@ class OrgRoleRequest(models.Model):
     STATUS_REJECTED = 'rejected'
 
     STATUS_CHOICES = (
-        (STATUS_REQUESTED, "Requested"),
-        (STATUS_EVIDENCE, "Evidence"),
-        (STATUS_APPROVED, "Approved"),
-        (STATUS_REJECTED, "Rejected"),
+        (STATUS_REQUESTED, _("Requested")),
+        (STATUS_EVIDENCE, _("Evidence")),
+        (STATUS_APPROVED, _("Approved")),
+        (STATUS_REJECTED, _("Rejected")),
     )
 
     org = models.ForeignKey(Organisation, models.CASCADE)

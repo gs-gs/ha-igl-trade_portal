@@ -28,9 +28,7 @@ LANGUAGE_COOKIE_NAME = f"tr{ICL_TRADE_PORTAL_COUNTRY}lang"
 
 LANGUAGES = [
     ('en', _('English')),
-    ('ml', _('Malayalam')),
-    ('de', _('German')),
-    ('fr', _('French')),
+    ('ja', _('Japaneese')),
 ]
 
 SITE_ID = 1

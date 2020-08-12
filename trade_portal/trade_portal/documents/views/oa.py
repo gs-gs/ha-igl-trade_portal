@@ -2,6 +2,7 @@ import json
 
 from django.http import HttpResponse, Http404
 from django.views.generic import View
+from django.utils.translation import gettext as _
 
 from trade_portal.documents.models import OaDetails
 

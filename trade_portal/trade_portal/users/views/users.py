@@ -9,6 +9,7 @@ from django.views.generic import (
 )
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from trade_portal.users.models import Organisation, OrgRoleRequest
 from trade_portal.users.forms import UserChangeForm
@@ -50,7 +51,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
             req.save()
             messages.success(
                 request,
-                "The file has been uploaded as an evidence and the request has been sent to review"
+                _("The file has been uploaded as an evidence and the request has been sent to review")
             )
         return redirect(request.path_info)
 
@@ -69,7 +70,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         messages.info(
-            self.request, "Your profile has been updated successfully"
+            self.request, _("Your profile has been updated successfully")
         )
         return super().form_valid(form)
 
@@ -104,10 +105,13 @@ class ChangeOrgView(LoginRequiredMixin, View):
             ).first()
 
             if not org_ms:
-                messages.error(request, "You don't have access to that org anymore")
+                messages.error(request, _("You don't have access to that org anymore"))
                 return redirect(next_url)
             org = org_ms.org
 
         request.session["current_org_id"] = int(org.pk)
-        messages.success(request, f"The {org} has been selected as the current organisation")
+        messages.success(
+            request,
+            _('The %s has been selected as the current organisation') % org
+        )
         return redirect(next_url)
