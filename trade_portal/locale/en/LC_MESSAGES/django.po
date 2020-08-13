@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-12 21:28+1000\n"
+"POT-Creation-Date: 2020-08-13 20:35+1000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,100 +23,155 @@ msgid "English"
 msgstr "English"
 
 #: config/settings/base.py:31
-msgid "Malayalam"
-msgstr "Malayalam"
+msgid "Japaneese"
+msgstr "Japaneese"
 
-#: config/settings/base.py:32
-msgid "German"
-msgstr "German"
+#: trade_portal/documents/models.py:27
+#, fuzzy
+#| msgid "Last name"
+msgid "name"
+msgstr "Last name"
 
-#: config/settings/base.py:33
-msgid "French"
-msgstr "French"
+#: trade_portal/documents/models.py:31
+msgid "country"
+msgstr "country"
 
-#: trade_portal/documents/models.py:46 trade_portal/users/models.py:132
+#: trade_portal/documents/models.py:52 trade_portal/users/models.py:132
 #: trade_portal/users/models.py:147
 msgid "Trader"
 msgstr "Trader"
 
-#: trade_portal/documents/models.py:47
+#: trade_portal/documents/models.py:53
 msgid "Chambers"
 msgstr "Chambers"
 
-#: trade_portal/documents/models.py:48 trade_portal/documents/models.py:274
+#: trade_portal/documents/models.py:54 trade_portal/documents/models.py:297
 msgid "Other"
 msgstr "Other"
 
-#: trade_portal/documents/models.py:67
+#: trade_portal/documents/models.py:73
 msgid "ABN or UEN for example"
 msgstr "ABN or UEN for example"
 
-#: trade_portal/documents/models.py:78
+#: trade_portal/documents/models.py:84
 msgid "party"
 msgstr "party"
 
-#: trade_portal/documents/models.py:79
+#: trade_portal/documents/models.py:85
 msgid "parties"
 msgstr "parties"
 
-#: trade_portal/documents/models.py:121
+#: trade_portal/documents/models.py:127
 msgid "Government Identifier"
 msgstr "Government Identifier"
 
-#: trade_portal/documents/models.py:153 trade_portal/documents/models.py:154
+#: trade_portal/documents/models.py:159 trade_portal/documents/models.py:160
 msgid "OA details"
 msgstr "OA details"
 
-#: trade_portal/documents/models.py:192
+#: trade_portal/documents/models.py:198
 #: trade_portal/documents/templates/documents/detail.html:21
 msgid "Pending"
 msgstr "Pending"
 
-#: trade_portal/documents/models.py:193
+#: trade_portal/documents/models.py:199
 #: trade_portal/documents/templates/documents/detail.html:23
 msgid "Failed"
 msgstr "Failed"
 
-#: trade_portal/documents/models.py:194
+#: trade_portal/documents/models.py:200
 #: trade_portal/documents/templates/documents/detail.html:26
 msgid "Validated"
 msgstr "Validated"
 
-#: trade_portal/documents/models.py:195
+#: trade_portal/documents/models.py:201
 #: trade_portal/documents/templates/documents/detail.html:13
 #: trade_portal/documents/templates/documents/detail.html:19
 msgid "Incoming"
 msgstr "Incoming"
 
-#: trade_portal/documents/models.py:202
+#: trade_portal/documents/models.py:208
 msgid "Preferential Certificate of Origin"
 msgstr "Preferential Certificate of Origin"
 
-#: trade_portal/documents/models.py:203
+#: trade_portal/documents/models.py:209
 msgid "Non-preferential Certificate of Origin"
 msgstr "Non-preferential Certificate of Origin"
 
-#: trade_portal/documents/models.py:218
+#: trade_portal/documents/models.py:217
+#, fuzzy
+#| msgid "Created at"
+msgid "created at"
+msgstr "Created at"
+
+#: trade_portal/documents/models.py:222
+#, fuzzy
+#| msgid "Created by"
+msgid "created by user"
+msgstr "Created by"
+
+#: trade_portal/documents/models.py:227
+#, fuzzy
+#| msgid "Created by"
+msgid "created by org"
+msgstr "Created by"
+
+#: trade_portal/documents/models.py:230
 msgid "Document type"
 msgstr "Document type"
 
-#: trade_portal/documents/models.py:222
+#: trade_portal/documents/models.py:232
+#, fuzzy
+#| msgid "Document Number"
+msgid "Document number"
+msgstr "Document Number"
+
+#: trade_portal/documents/models.py:237
 #: trade_portal/documents/templates/documents/detail.html:107
 msgid "FTA"
 msgstr "FTA"
 
-#: trade_portal/documents/models.py:238
+#: trade_portal/documents/models.py:242
+#, fuzzy
+#| msgid "Re-send Verification"
+msgid "Sending jurisdiction"
+msgstr "Re-send Verification"
+
+#: trade_portal/documents/models.py:245
+#, fuzzy
+#| msgid "Importing country"
+msgid "Importing jurisdiction"
+msgstr "Importing country"
+
+#: trade_portal/documents/models.py:251
+#, fuzzy
+#| msgid "Issuer"
+msgid "issuer"
+msgstr "Issuer"
+
+#: trade_portal/documents/models.py:257
+#, fuzzy
+#| msgid "Exporter"
+msgid "exporter"
+msgstr "Exporter"
+
+#: trade_portal/documents/models.py:260
+#: trade_portal/documents/templates/documents/detail.html:120
+msgid "Importer name"
+msgstr "Importer name"
+
+#: trade_portal/documents/models.py:261
 msgid "Organisation name or business ID (ABN, UEN)"
 msgstr "Organisation name or business ID (ABN, UEN)"
 
-#: trade_portal/documents/models.py:243
+#: trade_portal/documents/models.py:266
 #: trade_portal/documents/templates/documents/consignment-update.html:64
 #: trade_portal/documents/templates/documents/create.html:174
 msgid "Document Number"
 msgstr "Document Number"
 
-#: trade_portal/documents/models.py:244 trade_portal/documents/models.py:249
-#: trade_portal/documents/models.py:259
+#: trade_portal/documents/models.py:267 trade_portal/documents/models.py:272
+#: trade_portal/documents/models.py:282
 #: trade_portal/documents/templates/documents/consignment-update.html:28
 #: trade_portal/documents/templates/documents/consignment-update.html:65
 #: trade_portal/documents/templates/documents/create.html:130
@@ -124,86 +179,123 @@ msgstr "Document Number"
 msgid "Consignment details"
 msgstr "Consignment details"
 
-#: trade_portal/documents/models.py:248
+#: trade_portal/documents/models.py:271
 #: trade_portal/documents/templates/documents/consignment-update.html:27
 #: trade_portal/documents/templates/documents/create.html:129
 #: trade_portal/documents/templates/documents/detail.html:69
 msgid "Document Type"
 msgstr "Document Type"
 
-#: trade_portal/documents/models.py:258
+#: trade_portal/documents/models.py:281
 #: trade_portal/documents/templates/documents/consignment-update.html:36
 #: trade_portal/documents/templates/documents/create.html:138
 msgid "Document Issuer"
 msgstr "Document Issuer"
 
-#: trade_portal/documents/models.py:264
+#: trade_portal/documents/models.py:287
 msgid "Invoice Number"
 msgstr "Invoice Number"
 
-#: trade_portal/documents/models.py:268
+#: trade_portal/documents/models.py:291
 msgid "Origin Criteria"
 msgstr "Origin Criteria"
 
-#: trade_portal/documents/models.py:280
+#: trade_portal/documents/models.py:303
 msgid "Details about communication with the Intergov"
 msgstr "Details about communication with the Intergov"
 
-#: trade_portal/documents/models.py:371
+#: trade_portal/documents/models.py:307
+#: trade_portal/users/templates/users/roles-requests.html:34
+#, fuzzy
+#| msgid "Current status"
+msgid "Status"
+msgstr "Current status"
+
+#: trade_portal/documents/models.py:395
 msgid "(wrong ref)"
 msgstr "(wrong ref)"
 
-#: trade_portal/documents/models.py:415
+#: trade_portal/documents/models.py:439
 msgid "Original name of the uploaded file"
 msgstr "Original name of the uploaded file"
 
-#: trade_portal/documents/models.py:421
+#: trade_portal/documents/models.py:445
 msgid ""
 "None if doesn't need to be watermarked, False if pending and True if done"
 msgstr ""
 "None if doesn't need to be watermarked, False if pending and True if done"
 
-#: trade_portal/documents/models.py:474
+#: trade_portal/documents/models.py:498
 msgid "Sent"
 msgstr "Sent"
 
-#: trade_portal/documents/models.py:475
+#: trade_portal/documents/models.py:499
 msgid "Accepted"
 msgstr "Accepted"
 
-#: trade_portal/documents/models.py:476 trade_portal/users/models.py:160
+#: trade_portal/documents/models.py:500 trade_portal/users/models.py:160
 msgid "Rejected"
 msgstr "Rejected"
 
-#: trade_portal/documents/models.py:477
+#: trade_portal/documents/models.py:501
 msgid "Inbound"
 msgstr "Inbound"
 
-#: trade_portal/documents/models.py:490
+#: trade_portal/documents/models.py:514
 msgid "Created in the system"
 msgstr "Created in the system"
 
-#: trade_portal/documents/models.py:492
+#: trade_portal/documents/models.py:516
 msgid "For received messages - when received by us"
 msgstr "For received messages - when received by us"
 
-#: trade_portal/documents/models.py:500
+#: trade_portal/documents/models.py:524
 msgid "Conversation identificator"
 msgstr "Conversation identificator"
 
-#: trade_portal/documents/models.py:504
+#: trade_portal/documents/models.py:528
 msgid "generic discrete format, exactly like API returns"
 msgstr "generic discrete format, exactly like API returns"
 
-#: trade_portal/documents/models.py:508
+#: trade_portal/documents/models.py:532
 msgid "Status changes and other historical events in a simple format"
 msgstr "Status changes and other historical events in a simple format"
 
-#: trade_portal/documents/models.py:539
+#: trade_portal/documents/models.py:563
 msgid ""
 "The document marked as Failed because the outbound message has been rejected"
 msgstr ""
 "The document marked as Failed because the outbound message has been rejected"
+
+#: trade_portal/documents/tables.py:10
+#, fuzzy
+#| msgid "Documents"
+msgid "Document No."
+msgstr "Documents"
+
+#: trade_portal/documents/tables.py:17
+#, fuzzy
+#| msgid "Importing country"
+msgid "Importing Country"
+msgstr "Importing country"
+
+#: trade_portal/documents/tables.py:19
+#, fuzzy
+#| msgid "Current status"
+msgid "IGL Status"
+msgstr "Current status"
+
+#: trade_portal/documents/tables.py:36
+#, fuzzy
+#| msgid "Consignment details"
+msgid "Consignment Ref."
+msgstr "Consignment details"
+
+#: trade_portal/documents/tables.py:45
+#, fuzzy
+#| msgid "Logs for"
+msgid "Logs"
+msgstr "Logs for"
 
 #: trade_portal/documents/templates/documents/consignment-update.html:7
 #, fuzzy
@@ -386,10 +478,6 @@ msgstr "Importing country"
 msgid "Entity"
 msgstr "Entity"
 
-#: trade_portal/documents/templates/documents/detail.html:120
-msgid "Importer name"
-msgstr "Importer name"
-
 #: trade_portal/documents/templates/documents/detail.html:129
 msgid "Update"
 msgstr "Update"
@@ -499,6 +587,7 @@ msgid "Related Document"
 msgstr "Documents"
 
 #: trade_portal/documents/templates/documents/logs.html:37
+#: trade_portal/users/templates/users/roles-requests.html:52
 msgid "Download"
 msgstr "Download"
 
@@ -845,6 +934,7 @@ msgid "Admin Panel"
 msgstr "Admin Panel"
 
 #: trade_portal/templates/base.html:95 trade_portal/templates/base.html:155
+#: trade_portal/users/templates/users/pending.html:7
 msgid "Pending Users"
 msgstr "Pending Users"
 
@@ -1079,12 +1169,130 @@ msgid "Requested"
 msgstr "Roles Requests"
 
 #: trade_portal/users/models.py:158
+#: trade_portal/users/templates/users/roles-requests.html:35
 msgid "Evidence"
 msgstr "Evidence"
 
 #: trade_portal/users/models.py:159
 msgid "Approved"
 msgstr "Approved"
+
+#: trade_portal/users/templates/users/pending.html:19
+#, fuzzy
+#| msgid "Pending Users"
+msgid "Pending users"
+msgstr "Pending Users"
+
+#: trade_portal/users/templates/users/pending.html:20
+#, python-format
+msgid ""
+"These users are freshly registered and have no organisation assighed - thus "
+"may need manual action to be able to use the portal. If the %(BID_NAME)s "
+"entered on registration correlates to existing organisation (already created"
+" in the Portal) you will be able to grant this user access to this "
+"organisation. If there is no such organisation it may be created. Users have"
+" no access to the Portal functionality while in this list."
+msgstr ""
+"These users are freshly registered and have no organisation assighed - thus "
+"may need manual action to be able to use the portal. If the %(BID_NAME)s "
+"entered on registration correlates to existing organisation (already created"
+" in the Portal) you will be able to grant this user access to this "
+"organisation. If there is no such organisation it may be created. Users have"
+" no access to the Portal functionality while in this list."
+
+#: trade_portal/users/templates/users/pending.html:32
+#, fuzzy
+#| msgid "Add E-mail"
+msgid "Email"
+msgstr "Add E-mail"
+
+#: trade_portal/users/templates/users/pending.html:33
+msgid "Name"
+msgstr "Name"
+
+#: trade_portal/users/templates/users/pending.html:34
+msgid "Joined at"
+msgstr "Joined at"
+
+#: trade_portal/users/templates/users/pending.html:35
+msgid "claimed"
+msgstr "claimed"
+
+#: trade_portal/users/templates/users/pending.html:51
+#, fuzzy, python-format
+#| msgid "Create %(form.instance.get_type_display)s"
+msgid "Add to %(org)s (%(org.get_type_display)s)"
+msgstr "Create %(form.instance.get_type_display)s"
+
+#: trade_portal/users/templates/users/pending.html:54
+#, python-format
+msgid "Create new organisation %(p_user.initial_business_id)s"
+msgstr "Create new organisation %(p_user.initial_business_id)s"
+
+#: trade_portal/users/templates/users/roles-requests.html:7
+#: trade_portal/users/templates/users/roles-requests.html:19
+#, fuzzy
+#| msgid "Roles Requests"
+msgid "Pending Role Requests"
+msgstr "Roles Requests"
+
+#: trade_portal/users/templates/users/roles-requests.html:20
+msgid ""
+"These roles were requested by users for their organisations, here you can "
+"approve or deny them."
+msgstr ""
+"These roles were requested by users for their organisations, here you can "
+"approve or deny them."
+
+#: trade_portal/users/templates/users/roles-requests.html:31
+msgid "Organisation"
+msgstr "Organisation"
+
+#: trade_portal/users/templates/users/roles-requests.html:32
+#, fuzzy
+#| msgid "Created by"
+msgid "Created by/at"
+msgstr "Created by"
+
+#: trade_portal/users/templates/users/roles-requests.html:33
+msgid "Role"
+msgstr "Role"
+
+#: trade_portal/users/templates/users/roles-requests.html:57
+#, fuzzy
+#| msgid "Approved"
+msgid "Approve"
+msgstr "Approved"
+
+#: trade_portal/users/templates/users/roles-requests.html:60
+#, fuzzy
+#| msgid "Rejected"
+msgid "Reject reason"
+msgstr "Rejected"
+
+#: trade_portal/users/templates/users/roles-requests.html:62
+#, fuzzy
+#| msgid "Rejected"
+msgid "Reject"
+msgstr "Rejected"
+
+#: trade_portal/users/templates/users/roles-requests.html:66
+#, fuzzy
+#| msgid "Evidence"
+msgid "Evidence name"
+msgstr "Evidence"
+
+#: trade_portal/users/templates/users/roles-requests.html:70
+#, fuzzy
+#| msgid "Roles Requests"
+msgid "Re-request evidence"
+msgstr "Roles Requests"
+
+#: trade_portal/users/templates/users/roles-requests.html:72
+#, fuzzy
+#| msgid "Roles Requests"
+msgid "Request evidence"
+msgstr "Roles Requests"
 
 #: trade_portal/users/templates/users/user_form.html:15
 msgid "Profile update"
@@ -1147,3 +1355,12 @@ msgstr "You don't have access to that org anymore"
 #, python-format
 msgid "The %s has been selected as the current organisation"
 msgstr "The %s has been selected as the current organisation"
+
+#~ msgid "Malayalam"
+#~ msgstr "Malayalam"
+
+#~ msgid "German"
+#~ msgstr "German"
+
+#~ msgid "French"
+#~ msgstr "French"

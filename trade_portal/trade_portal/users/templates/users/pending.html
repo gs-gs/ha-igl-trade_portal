@@ -4,7 +4,7 @@
 {% load pagination_tags %}
 {% load crispy_forms_tags %}
 
-{% block head_title %}Pending Users{% endblock %}
+{% block head_title %}{% trans 'Pending Users' %}{% endblock %}
 
 {% block extra_head %}
   <style>
@@ -16,8 +16,8 @@
 
 {% block content %}
 <div class="container">
-  <h2>Pending users</h2>
-  <p>These users are freshly registered and have no organisation assighed - thus may need manual action to be able to use the portal. If the {{ BID_NAME }} entered on registration correlates to existing organisation (already created in the Portal) you will be able to grant this user access to this organisation. If there is no such organisation it may be created. Users have no access to the Portal functionality while in this list.</p>
+  <h2>{% trans 'Pending users' %}</h2>
+  <p>{% blocktrans %}These users are freshly registered and have no organisation assighed - thus may need manual action to be able to use the portal. If the {{ BID_NAME }} entered on registration correlates to existing organisation (already created in the Portal) you will be able to grant this user access to this organisation. If there is no such organisation it may be created. Users have no access to the Portal functionality while in this list.{% endblocktrans %}</p>
 
   {% autopaginate pending_users 50 %}
 
@@ -29,10 +29,10 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Email</th>
-              <th>Name</th>
-              <th>Joined at</th>
-              <th>{{ BID_NAME }} claimed</th>
+              <th>{% trans 'Email' %}</th>
+              <th>{% trans 'Name' %}</th>
+              <th>{% trans 'Joined at' %}</th>
+              <th>{{ BID_NAME }} {% trans 'claimed' %}</th>
               <th></th>
             </tr>
           </thead>
@@ -48,10 +48,10 @@
                   {% if p_user.get_orgs_with_provided_bid %}
                     {# there is some org(s) with the same ABN as user entered #}
                     {% for org in p_user.get_orgs_with_provided_bid %}
-                      <button class="btn btn-primary btn-sm" name="add_user_to" value="{{ p_user.pk }}_{{ org.pk }}" type="submit">Add to {{ org }} ({{ org.get_type_display }})</button><br/>
+                      <button class="btn btn-primary btn-sm" name="add_user_to" value="{{ p_user.pk }}_{{ org.pk }}" type="submit">{% blocktrans %}Add to {{ org }} ({{ org.get_type_display }}){% endblocktrans %}</button><br/>
                     {% endfor %}
                   {% else %}
-                    <button type="submit" class="btn btn-primary btn-sm" name="create_org_for_user" value="{{ p_user.pk }}">Create new organisation {{ p_user.initial_business_id }}</button>
+                    <button type="submit" class="btn btn-primary btn-sm" name="create_org_for_user" value="{{ p_user.pk }}">{% blocktrans %}Create new organisation {{ p_user.initial_business_id }}{% endblocktrans %}</button>
                   {% endif %}
                 </td>
               </tr>

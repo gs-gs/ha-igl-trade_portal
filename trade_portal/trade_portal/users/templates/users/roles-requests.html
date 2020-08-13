@@ -4,7 +4,7 @@
 {% load pagination_tags %}
 {% load crispy_forms_tags %}
 
-{% block head_title %}Pending Role Requests{% endblock %}
+{% block head_title %}{% trans 'Pending Role Requests' %}{% endblock %}
 
 {% block extra_head %}
   <style>
@@ -16,8 +16,8 @@
 
 {% block content %}
 <div class="container">
-  <h2>Pending Role Requests</h2>
-  <p>These roles were requested by users for their organisations, here you can approve or deny them.</p>
+  <h2>{% trans 'Pending Role Requests' %}</h2>
+  <p>{% trans 'These roles were requested by users for their organisations, here you can approve or deny them.' %}</p>
 
   {% autopaginate pending_requests 50 %}
 
@@ -28,11 +28,11 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Organisation</th>
-              <th>Created by/at</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Evidence</th>
+              <th>{% trans 'Organisation' %}</th>
+              <th>{% trans 'Created by/at' %}</th>
+              <th>{% trans 'Role' %}</th>
+              <th>{% trans 'Status' %}</th>
+              <th>{% trans 'Evidence' %}</th>
               <th></th>
             </tr>
           </thead>
@@ -49,27 +49,27 @@
                 <td title="{{ preq.evidence }}">
                   {% if preq.evidence %}
                     <a href="{% url 'users:evidence-download' preq.pk %}">
-                      Download
+                      {% trans 'Download' %}
                     </a>
                   {% endif %}
                 </td>
                 <td style="width: 300px">
-                  <button type="submit" class="btn btn-success btn-sm" name="approve_request" value="{{ preq.pk }}">Approve</button>
+                  <button type="submit" class="btn btn-success btn-sm" name="approve_request" value="{{ preq.pk }}">{% trans 'Approve' %}</button>
 
                   <div class="input-group input-group-sm">
-                    <input type="text" class="form-control" placeholder="Reject reason" aria-label="Reject reason" name="reject_reason_{{ preq.pk }}">
+                    <input type="text" class="form-control" placeholder="{% trans 'Reject reason' %}" aria-label="Reject reason" name="reject_reason_{{ preq.pk }}">
                     <div class="input-group-append">
-                      <button class="btn btn-danger btn-sm" name="reject_request" value="{{ preq.pk }}" type="submit">Reject</button>
+                      <button class="btn btn-danger btn-sm" name="reject_request" value="{{ preq.pk }}" type="submit">{% trans 'Reject' %}</button>
                     </div>
                   </div>
                   <div class="input-group input-group-sm">
-                    <input type="text" class="form-control" placeholder="Evidence name" aria-label="Evidence name" name="evidence_name_{{ preq.pk }}">
+                    <input type="text" class="form-control" placeholder="{% trans 'Evidence name' %}" aria-label="Evidence name" name="evidence_name_{{ preq.pk }}">
                     <div class="input-group-append">
                       <button class="btn btn-primary btn-sm" name="evidence_required" value="{{ preq.pk }}" type="submit">
                         {% if preq.evidence %}
-                          Re-request evidence
+                          {% trans 'Re-request evidence' %}
                         {% else %}
-                          Request evidence
+                          {% trans 'Request evidence' %}
                         {% endif %}
                       </button>
                     </div>

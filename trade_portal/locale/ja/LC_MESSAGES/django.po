@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-12 21:50+1000\n"
+"POT-Creation-Date: 2020-08-13 20:35+1000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -204,6 +204,7 @@ msgid "Details about communication with the Intergov"
 msgstr "インターゴフとのコミュニケーションの詳細"
 
 #: trade_portal/documents/models.py:307
+#: trade_portal/users/templates/users/roles-requests.html:34
 #, fuzzy
 #| msgid "Any status"
 msgid "Status"
@@ -537,6 +538,7 @@ msgid "Related Document"
 msgstr "関連ドキュメント"
 
 #: trade_portal/documents/templates/documents/logs.html:37
+#: trade_portal/users/templates/users/roles-requests.html:52
 msgid "Download"
 msgstr "ダウンロード"
 
@@ -862,6 +864,7 @@ msgid "Admin Panel"
 msgstr "管理パネル"
 
 #: trade_portal/templates/base.html:95 trade_portal/templates/base.html:155
+#: trade_portal/users/templates/users/pending.html:7
 msgid "Pending Users"
 msgstr "保留中のユーザー"
 
@@ -1061,12 +1064,125 @@ msgid "Requested"
 msgstr "要求されました"
 
 #: trade_portal/users/models.py:158
+#: trade_portal/users/templates/users/roles-requests.html:35
 msgid "Evidence"
 msgstr "証拠だ"
 
 #: trade_portal/users/models.py:159
 msgid "Approved"
 msgstr "承認済み"
+
+#: trade_portal/users/templates/users/pending.html:19
+#, fuzzy
+#| msgid "Pending Users"
+msgid "Pending users"
+msgstr "保留中のユーザー"
+
+#: trade_portal/users/templates/users/pending.html:20
+#, python-format
+msgid ""
+"These users are freshly registered and have no organisation assighed - thus "
+"may need manual action to be able to use the portal. If the %(BID_NAME)s "
+"entered on registration correlates to existing organisation (already created"
+" in the Portal) you will be able to grant this user access to this "
+"organisation. If there is no such organisation it may be created. Users have"
+" no access to the Portal functionality while in this list."
+msgstr ""
+"これらのユーザーは新しく登録され、支援された組織はありません。したがって、ポータルを使用できるようにするには、手動での操作が必要になる場合があります。登録時に入力された"
+" %(BID_NAME)s が既存の組織 (ポータルで既に作成されている) "
+"と相関している場合、このユーザーにこの組織へのアクセス権を付与することができます。そのような組織が存在しない場合、それは作成される可能性があります。このリストでは、ユーザーはポータル機能にアクセスできません。"
+
+#: trade_portal/users/templates/users/pending.html:32
+#, fuzzy
+#| msgid "Add E-mail"
+msgid "Email"
+msgstr "電子メールを追加"
+
+#: trade_portal/users/templates/users/pending.html:33
+msgid "Name"
+msgstr "名前"
+
+#: trade_portal/users/templates/users/pending.html:34
+msgid "Joined at"
+msgstr "で参加"
+
+#: trade_portal/users/templates/users/pending.html:35
+msgid "claimed"
+msgstr "主張"
+
+#: trade_portal/users/templates/users/pending.html:51
+#, fuzzy, python-format
+#| msgid "Create %(form.instance.get_type_display)s"
+msgid "Add to %(org)s (%(org.get_type_display)s)"
+msgstr "%(form.instance.get_type_display)s の作成"
+
+#: trade_portal/users/templates/users/pending.html:54
+#, python-format
+msgid "Create new organisation %(p_user.initial_business_id)s"
+msgstr "新しい組織を作成 %(p_user.initial_business_id)s"
+
+#: trade_portal/users/templates/users/roles-requests.html:7
+#: trade_portal/users/templates/users/roles-requests.html:19
+#, fuzzy
+#| msgid "Roles Requests"
+msgid "Pending Role Requests"
+msgstr "ロールのリクエスト"
+
+#: trade_portal/users/templates/users/roles-requests.html:20
+msgid ""
+"These roles were requested by users for their organisations, here you can "
+"approve or deny them."
+msgstr "これらの役割は、組織のためにユーザーによって要求されました。ここでは、それらを承認または拒否できます。"
+
+#: trade_portal/users/templates/users/roles-requests.html:31
+msgid "Organisation"
+msgstr "組織"
+
+#: trade_portal/users/templates/users/roles-requests.html:32
+#, fuzzy
+#| msgid "Created by"
+msgid "Created by/at"
+msgstr "によって作成されました"
+
+#: trade_portal/users/templates/users/roles-requests.html:33
+msgid "Role"
+msgstr "ロール"
+
+#: trade_portal/users/templates/users/roles-requests.html:57
+#, fuzzy
+#| msgid "Approved"
+msgid "Approve"
+msgstr "承認済み"
+
+#: trade_portal/users/templates/users/roles-requests.html:60
+#, fuzzy
+#| msgid "Rejected"
+msgid "Reject reason"
+msgstr "却下されました"
+
+#: trade_portal/users/templates/users/roles-requests.html:62
+#, fuzzy
+#| msgid "Rejected"
+msgid "Reject"
+msgstr "却下されました"
+
+#: trade_portal/users/templates/users/roles-requests.html:66
+#, fuzzy
+#| msgid "Evidence"
+msgid "Evidence name"
+msgstr "証拠だ"
+
+#: trade_portal/users/templates/users/roles-requests.html:70
+#, fuzzy
+#| msgid "Requested"
+msgid "Re-request evidence"
+msgstr "要求されました"
+
+#: trade_portal/users/templates/users/roles-requests.html:72
+#, fuzzy
+#| msgid "Requested"
+msgid "Request evidence"
+msgstr "要求されました"
 
 #: trade_portal/users/templates/users/user_form.html:15
 msgid "Profile update"
