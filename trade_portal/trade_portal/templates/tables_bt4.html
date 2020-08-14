@@ -11,9 +11,9 @@
                 {% for column in table.columns %}
                     <th {{ column.attrs.th.as_html }}>
                         {% if column.orderable %}
-                            <a href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}">{{ column.header }}</a>
+                            <a href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}">{{ column.header|linebreaksbr }}</a>
                         {% else %}
-                            {{ column.header }}
+                            {{ column.header|linebreaksbr }}
                         {% endif %}
                     </th>
                 {% endfor %}

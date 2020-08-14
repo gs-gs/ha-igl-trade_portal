@@ -7,16 +7,27 @@ from .models import Document
 
 class DocumentsTable(tables.Table):
     document_number = tables.TemplateColumn(
-        verbose_name=_("Document No."),
+        verbose_name=_("Document\nNo."),
         template_code="""
             <a href="{% url 'documents:detail' record.pk %}">
                 {{ record.document_number|default:record.short_id }}
             </a>
         """
     )
-    importing_country = tables.Column(verbose_name=_("Importing Country"))
+    sending_jurisdiction = tables.Column(verbose_name=_("Sending\nJurisdiction"))
+    importing_country = tables.Column(verbose_name=_("Importing\nCountry"))
+    type = tables.Column(verbose_name=_("Document\nType"))
+    issuer = tables.TemplateColumn(
+        template_code="""{{ record.issuer.name }}"""
+    )
+    exporter = tables.TemplateColumn(
+        template_code="""{{ record.exporter.name }}"""
+    )
+    importer_name = tables.Column(
+        verbose_name=_("Importer\nName")
+    )
     status = tables.TemplateColumn(
-        verbose_name=_("IGL Status"),
+        verbose_name=_("IGL\nStatus"),
         template_code="""
         {% if record.status == 'pending' %}
             <span class='badge badge-warning'>{{ record.get_status_display }}</span>
@@ -33,7 +44,7 @@ class DocumentsTable(tables.Table):
         """
     )
     consignment_details = tables.TemplateColumn(
-        verbose_name=_('Consignment Ref.'),
+        verbose_name=_('Consignment\nRef.'),
         template_code="""
             {{ record.consignment_ref_doc_number }}
             {{ record.consignment_ref_doc_type }}
