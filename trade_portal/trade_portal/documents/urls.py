@@ -24,6 +24,11 @@ urlpatterns = [
         name="file-download"
     ),
     path(
+        "<uuid:pk>/documents/oa/",
+        view=DocumentFileDownloadView.as_view(),
+        name="oa-download"
+    ),
+    path(
         "<uuid:pk>/historyfile/<int:history_item_id>/",
         view=DocumentHistoryFileDownloadView.as_view(),
         name="history-file-download"

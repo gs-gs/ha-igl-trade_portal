@@ -22,7 +22,14 @@ class PartyAdmin(admin.ModelAdmin):
 
 @admin.register(OaDetails)
 class OaDetailsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'created_for', 'uri', 'key', 'url_repr')
+    list_display = ('id', 'created_at', 'created_for', 'uri', 'key', 'url_repr', 'get_OA_file')
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.select_related(
+            'created_for',
+        )
+        return qs
 
 
 class DocumentHistoryItemInlineAdmin(admin.TabularInline):

@@ -152,10 +152,16 @@ class OaDetails(models.Model):
     # which may be quite space-consuming and generally should'nt be storted in
     # database
     # TODO: fix it and store it as file somewhere
+    # Looks like it's not used anymore so much
     ciphertext = models.TextField(blank=True)
 
+    oa_file = models.FileField(
+        blank=True,
+        help_text="Wrapped OA document, JSON"
+    )
+
     class Meta:
-        ordering = ('created_at',)
+        ordering = ('-created_at',)
         verbose_name = _("OA details")
         verbose_name_plural = _("OA details")
 
@@ -186,6 +192,37 @@ class OaDetails(models.Model):
     def _generate_aes_key(cls, key_len=256):
         # key1 = Random.new().read(key_bytes) ?
         return os.urandom(key_len // 8).hex().upper()
+
+    def get_OA_file(self):
+        """
+        Tries to retrieve a wrapped saved OA document from the history tokens
+        May be worth saving it as a file field of the current model itself
+        """
+        if self.oa_file:
+            return self.oa_file
+
+        doc = self.document_set.all().first()
+        if not doc:
+            return None
+
+        if not doc.is_incoming:
+            history_item = doc.history.exclude(
+                related_file=""
+            ).filter(
+                message__startswith="OA document has been wrapped"
+            ).first()
+            if history_item:
+                # outgoing document
+                self.oa_file = history_item.related_file
+                self.save()
+                return history_item.related_file
+            return None
+        else:
+            incoming_obj = doc.files.filter(
+                filename=doc.intergov_details["obj"]
+            ).first()
+            if incoming_obj:
+                return incoming_obj.file
 
 
 class Document(models.Model):
@@ -364,6 +401,9 @@ class Document(models.Model):
     @property
     def is_incoming(self):
         return self.sending_jurisdiction != settings.ICL_APP_COUNTRY
+
+    def get_vc(self):
+        return self.oa.get_OA_file()
 
 
 class DocumentHistoryItem(models.Model):

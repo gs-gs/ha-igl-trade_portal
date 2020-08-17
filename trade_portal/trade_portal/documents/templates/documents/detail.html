@@ -8,27 +8,38 @@
 
 {% block content %}
 <div class="content-box">
-  <a href="logs/" style="float: right"  class="btn btn-primary btn-sm">Logs</a>
-
   <h1 class="page-title">{% if object.is_incoming %}{% trans 'Incoming' %}{% endif %} {{ object.get_type_display }} {{ object.document_number }}</h1>
 
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      {% with object.status as s %}
-        {% if s == "incoming" %}
-          <li class="breadcrumb-item active">{% trans 'Incoming' %}</li>
-        {% else %}
-          <li class="breadcrumb-item active">{% trans 'Pending' %}</li>
-          {% if s == 'failed' %}
-            <li class="breadcrumb-item active">{% trans 'Failed' %}</li>
-          {% endif %}
-          {% if s == 'validated' %}
-            <li class="breadcrumb-item active">{% trans 'Validated' %}</li>
-          {% endif %}
+  <div class="row" style="background-color: whitesmoke; padding: 10px">
+    <div class="col">
+      <strong>Digital Verifiable Document</strong><br/>
+      Status: <span class="badge badge-success">Valid</span> {# TODO #}<br/>
+      {% blocktrans %}
+      The ABF has verified your document and added a digital proof. The PDF with QR can be sent to any party that normally requires the document. Authenticity can be verified simply by scanning the QR. The VC (Verifiable Credential) is the native digital version of the document and may be sent to any party that wishes to automate processing and verification.
+      {% endblocktrans %}
+      <br/>
+
+      {% for doc in object.files.all %}
+        {% if doc.extension and doc.extension != "?" %}
+          <a href="{% url 'documents:file-download' object.id doc.id %}" class="btn btn-primary btn-sm">Download {{ doc.extension }}</a>
         {% endif %}
-      {% endwith %}
-    </ol>
-  </nav>
+      {% endfor %}
+      {% if document.get_vc %}
+        <a href="{% url 'documents:oa-download' object.id %}" class="btn btn-primary btn-sm">Download VC</a>
+      {% endif %}
+    </div>
+    <div class="col">
+      <strong>Inter-Government Message</strong><br/>
+      Status: {{ object.get_status_display }}
+      <a href="logs/" class="btn btn-primary btn-sm">Logs</a><br/>
+      {% blocktrans %}
+      The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes
+      {% endblocktrans %}
+    </div>
+  </div>
+
+  <br/><br/>
+
   {% if not object.is_incoming %}
     <div class="form-group">
       <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>

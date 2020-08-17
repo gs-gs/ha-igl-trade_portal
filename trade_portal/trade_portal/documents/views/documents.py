@@ -15,7 +15,7 @@ from django.utils.translation import gettext as _
 from trade_portal.documents.forms import (
     DocumentCreateForm, ConsignmentSectionUpdateForm,
 )
-from trade_portal.documents.models import Document, OaDetails
+from trade_portal.documents.models import Document, OaDetails, DocumentFile
 from trade_portal.documents.tables import DocumentsTable
 # from trade_portal.documents.tasks import lodge_document
 from trade_portal.utils.monitoring import statsd_timer
@@ -191,7 +191,10 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
     def get_object(self):
         try:
             c = self.get_queryset().get(pk=self.kwargs['pk'])
-            doc = c.files.get(id=self.kwargs['file_pk'])
+            if "file_pk" in self.kwargs:
+                doc = c.files.get(id=self.kwargs['file_pk'])
+            else:
+                doc = c.get_vc()
         except ObjectDoesNotExist:
             raise Http404()
         return doc
@@ -199,8 +202,15 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
     def get(self, *args, **kwargs):
         # standard file approach
         document = self.get_object()
-        response = HttpResponse(document.file, content_type='application/octet-stream')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
+        if isinstance(document, DocumentFile):
+            response = HttpResponse(document.file, content_type='application/octet-stream')
+            response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
+        elif document is None:
+            raise Http404()
+        else:
+            # OA document from the OA details object
+            response = HttpResponse(document, content_type='application/json')
+            response['Content-Disposition'] = 'attachment; filename=OA.json'
         return response
 
 
