@@ -80,7 +80,7 @@ class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
     model = Document
     table_class = DocumentsTable
     table_pagination = {
-        "per_page": 50,
+        "per_page": 25,
     }
 
     @statsd_timer("view.DocumentListView.dispatch")
