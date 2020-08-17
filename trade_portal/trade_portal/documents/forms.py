@@ -10,7 +10,7 @@ from .models import Party, Document, DocumentHistoryItem, DocumentFile, FTA
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
     exporter = forms.CharField(
-        label=f"Exporter {settings.BID_NAME}",
+        label=f"Exporter or manufacturer {settings.BID_NAME}",
         max_length=32, help_text=(
             "Please enter 11-digit ABN"
         ) if settings.BID_NAME == "ABN" else "Please enter 8 digits + letter"

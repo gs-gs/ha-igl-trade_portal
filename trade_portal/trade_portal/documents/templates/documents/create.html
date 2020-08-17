@@ -24,26 +24,18 @@
         <div class="alert alert-danger">{% trans 'Please fix the errors highlighted below' %}</div>
       {% endif %}
 
-      {% comment %}
-      <fieldset class="form-section form-section--first">
-        <div class="form-section__container">
-          {{ form.type|as_crispy_field }}
-        </div>
-      </fieldset>
-      {% endcomment %}
-
       <div class="form-group">
         <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
+            <a class="nav-link" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">{% trans 'QR Code' %}</a>
+            <a class="nav-link active" data-toggle="tab" href="#igl-doc-qrcode">{% trans 'QR Code' %}</a>
           </li>
         </ul>
         <div class="tab-content">
-          <div class="tab-pane fade show active" id="igl-doc-key">
+          <div class="tab-pane fade" id="igl-doc-key">
             <div class="input-group">
               <input type="text" class="form-control" readonly value="{{ form.oa.url_repr }}" id="igl-doc-key-input">
               <div class="input-group-append">
@@ -51,19 +43,24 @@
               </div>
             </div>
           </div>
-          <div class="tab-pane fade" id="igl-doc-qrcode">
+          <div class="tab-pane fade show active" id="igl-doc-qrcode">
             <div class="qrcode-box">
               <div class="qrcode-box__picture">
                 <img class="igl-doc-qrcode__image" src="data:image/png;base64,{{ form.oa.get_qr_image_base64 }}" alt="{{ form.oa.url_repr }}" style="width: 100px">
               </div>
               <div class="qrcode-box__content">
-                <p class="qrcode-box__description">{% blocktrans %}Put this QR code on your document so that any third party can verify it using the trustbridge app. If you refresh the page the QR code will persist, but if you choose new certificate from the dashboard the new one will be issued - the URL of the current page has the QR code binding. You can either print the code or copy it to the text editor. Please note that if you scan this QR code on the trustbridge app it won't be valid until you issue the document.{% endblocktrans %}</p>
+                <p class="qrcode-box__description">{% blocktrans %}This QR code will be added to your document to represent the "digital proof" issued by the ABF. It will allow any party in the supply chain to verify the document simply by scanning the code with a smartphone.{% endblocktrans %}</p>
                 <!-- <a class="btn btn-outline-white btn-sm qrcode-box__print" href="#"><i class="icon icon-print"></i>Print</a> -->
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <fieldset class="form-section">
+        <div class="subtitle form-section__title">{% trans 'Upload PDF' %} - {{ form.instance.get_type_display }}</div>
+        {{ form.file|as_crispy_field }}
+      </fieldset>
 
       <fieldset class="form-section">
         <div class="subtitle form-section__title">{% trans 'Document Metadata' %}</div>
@@ -80,7 +77,7 @@
 
           <div class="form-group">
             <label for="consignmentDocIssuer">
-              {% trans 'Exporter' %} {{ BID_NAME }}*
+              {% trans 'Exporter or Manufacturer' %} {{ BID_NAME }}*
               <span class="help-icon" data-toggle="tooltip" title="Please enter the business identificator"><i class="icon icon-info"></i></span>
             </label>
             {% if form.exporter.errors %}
@@ -91,6 +88,7 @@
               {{ form.exporter }}
               <div class="input-group-append">
                 <a class="btn btn-md btn-link btn-advance-filter" type="button"
+                  style="font-weight: bold; font-size: 120%"
                   {% if BID_NAME == "ABN" %}
                     href="https://abr.business.gov.au/"
                   {% else %}
@@ -181,11 +179,6 @@
       </fieldset>
 
       <fieldset class="form-section">
-        <div class="subtitle form-section__title">{% trans 'Attachment' %}</div>
-        {{ form.file|as_crispy_field }}
-      </fieldset>
-
-      <fieldset class="form-section">
         <div class="subtitle form-section__title">{% trans 'Document Declaration' %}</div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="declaration" required>
@@ -196,7 +189,7 @@
 
       <div class="form-actions">
         <a href="{% url 'documents:list' %}" class="btn btn-dark">{% trans 'Cancel' %}</a>
-        <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+        <button type="submit" class="btn btn-primary">{% trans 'Next' %}</button>
       </div>
     </form>
   </div>
@@ -218,7 +211,18 @@
             url: '/documents/api/abn-lookup/?abn=' + val,
             data: null,
             success: function(resp) {
-              hint.html(resp.snippet);
+              if (resp.EntityName) {
+                hint.html(
+                  '<br/><div class="form-group">' +
+                  '<label>Entity Name</label>' +
+                  '<div>' +
+                  '<input type="text" class="textinput textInput form-control" readonly value="' + resp.EntityName + '" />' +
+                  '</div>' +
+                  '</div>'
+                );
+              } else {
+                hint.html(resp.snippet);
+              }
             }
           });
         }
@@ -236,7 +240,18 @@
             url: '/documents/api/abn-lookup/?abn=' + val,
             data: null,
             success: function(resp) {
-              hint.html(resp.snippet);
+              if (resp.EntityName) {
+                hint.html(
+                  '<br/><div class="form-group">' +
+                  '<label>Document Issuer Entity Name</label>' +
+                  '<div>' +
+                  '<input type="text" class="textinput textInput form-control" readonly value="' + resp.EntityName + '" />' +
+                  '</div>' +
+                  '</div>'
+                );
+              } else {
+                hint.html(resp.snippet);
+              }
             }
           });
         }

@@ -61,3 +61,7 @@ reportlab==3.5.46
 
 # simple templated emails library
 django-templated-email==2.3.0
+
+
+# static pieces of text
+django-siteblocks==1.2.0
