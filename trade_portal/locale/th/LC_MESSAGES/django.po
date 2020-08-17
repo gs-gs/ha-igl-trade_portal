@@ -1,0 +1,1301 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-17 21:40+1000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: config/settings/base.py:30
+msgid "English"
+msgstr "อังกฤษ"
+
+#: config/settings/base.py:31
+msgid "Japaneese"
+msgstr "ชาวญี่ปุ่น"
+
+#: config/settings/base.py:32
+msgid "Indonesian"
+msgstr "อินโดนีเซีย"
+
+#: config/settings/base.py:33
+msgid "Simplified Chinese"
+msgstr "ภาษาจีนตัวย่อ"
+
+#: config/settings/base.py:34
+msgid "Thai"
+msgstr "ไทย จ"
+
+#: trade_portal/documents/models.py:27
+msgid "name"
+msgstr "ชื่อ"
+
+#: trade_portal/documents/models.py:31
+msgid "country"
+msgstr "ประเทศ"
+
+#: trade_portal/documents/models.py:52 trade_portal/users/models.py:132
+#: trade_portal/users/models.py:147
+msgid "Trader"
+msgstr "เทรดเดอร์"
+
+#: trade_portal/documents/models.py:53
+msgid "Chambers"
+msgstr "ห้องเบอส์"
+
+#: trade_portal/documents/models.py:54 trade_portal/documents/models.py:334
+msgid "Other"
+msgstr "อื่น ๆ"
+
+#: trade_portal/documents/models.py:73
+msgid "ABN or UEN for example"
+msgstr "ABN หรือ UEN เช่น"
+
+#: trade_portal/documents/models.py:84
+msgid "party"
+msgstr "พรรค"
+
+#: trade_portal/documents/models.py:85
+msgid "parties"
+msgstr "บุคคลที่"
+
+#: trade_portal/documents/models.py:127
+msgid "Government Identifier"
+msgstr "ตัวระบุรัฐบาล"
+
+#: trade_portal/documents/models.py:165 trade_portal/documents/models.py:166
+msgid "OA details"
+msgstr "รายละเอียด OA"
+
+#: trade_portal/documents/models.py:235
+msgid "Pending"
+msgstr "รอดำเนินการ"
+
+#: trade_portal/documents/models.py:236
+msgid "Failed"
+msgstr "ล้มเหลว"
+
+#: trade_portal/documents/models.py:237
+msgid "Validated"
+msgstr "ตรวจสอบแล้ว"
+
+#: trade_portal/documents/models.py:238
+#: trade_portal/documents/templates/documents/detail.html:11
+msgid "Incoming"
+msgstr "กำลังเข้ามา"
+
+#: trade_portal/documents/models.py:245
+msgid "Preferential Certificate of Origin"
+msgstr "ใบรับรองแหล่งกำเนิดพิเศษ"
+
+#: trade_portal/documents/models.py:246
+msgid "Non-preferential Certificate of Origin"
+msgstr "ใบรับรองแหล่งกำเนิดสินค้าที่ไม่ได้รับสิทธิพิเศษ"
+
+#: trade_portal/documents/models.py:254
+msgid "created at"
+msgstr "สร้างขึ้นที่"
+
+#: trade_portal/documents/models.py:259
+msgid "created by user"
+msgstr "สร้างโดยผู้ใช้"
+
+#: trade_portal/documents/models.py:264
+msgid "created by org"
+msgstr "สร้างโดย org"
+
+#: trade_portal/documents/models.py:267
+msgid "Document type"
+msgstr "ประเภทเอกสาร"
+
+#: trade_portal/documents/models.py:269
+msgid "Document number"
+msgstr "หมายเลขเอกสาร"
+
+#: trade_portal/documents/models.py:274
+#: trade_portal/documents/templates/documents/create.html:90
+#: trade_portal/documents/templates/documents/detail.html:118
+msgid "FTA"
+msgstr "เขตการค้าเสรี"
+
+#: trade_portal/documents/models.py:279
+msgid "Sending jurisdiction"
+msgstr "การส่งเขตอำนาจศาล"
+
+#: trade_portal/documents/models.py:282
+msgid "Importing jurisdiction"
+msgstr "การนำเข้าเขตอำนาจศาล"
+
+#: trade_portal/documents/models.py:288
+msgid "issuer"
+msgstr "ผู้ออก"
+
+#: trade_portal/documents/models.py:294
+msgid "exporter"
+msgstr "ผู้ส่งออก"
+
+#: trade_portal/documents/models.py:297
+#: trade_portal/documents/templates/documents/detail.html:131
+msgid "Importer name"
+msgstr "ชื่อผู้นำเข้า"
+
+#: trade_portal/documents/models.py:298
+msgid "Organisation name or business ID (ABN, UEN)"
+msgstr "ชื่อองค์กรหรือรหัสธุรกิจ (ABN, UEN)"
+
+#: trade_portal/documents/models.py:303
+#: trade_portal/documents/templates/documents/consignment-update.html:64
+#: trade_portal/documents/templates/documents/create.html:81
+#: trade_portal/documents/templates/documents/create.html:206
+msgid "Document Number"
+msgstr "หมายเลขเอกสาร"
+
+#: trade_portal/documents/models.py:304 trade_portal/documents/models.py:309
+#: trade_portal/documents/models.py:319
+#: trade_portal/documents/templates/documents/consignment-update.html:28
+#: trade_portal/documents/templates/documents/consignment-update.html:65
+#: trade_portal/documents/templates/documents/detail.html:144
+msgid "Consignment details"
+msgstr "รายละเอียดสินค้า"
+
+#: trade_portal/documents/models.py:308
+#: trade_portal/documents/templates/documents/consignment-update.html:27
+#: trade_portal/documents/templates/documents/create.html:170
+#: trade_portal/documents/templates/documents/detail.html:80
+msgid "Document Type"
+msgstr "ประเภทเอกสาร"
+
+#: trade_portal/documents/models.py:318
+#: trade_portal/documents/templates/documents/consignment-update.html:36
+#: trade_portal/documents/templates/documents/create.html:179
+msgid "Document Issuer"
+msgstr "ผู้ออกเอกสาร"
+
+#: trade_portal/documents/models.py:324
+#: trade_portal/documents/templates/documents/create.html:146
+msgid "Invoice Number"
+msgstr "หมายเลขใบแจ้งหนี้"
+
+#: trade_portal/documents/models.py:328
+#: trade_portal/documents/templates/documents/create.html:154
+msgid "Origin Criteria"
+msgstr "เกณฑ์แหล่งกำเนิด"
+
+#: trade_portal/documents/models.py:340
+msgid "Details about communication with the Intergov"
+msgstr "รายละเอียดเกี่ยวกับการสื่อสารกับ Intergov"
+
+#: trade_portal/documents/models.py:344
+#: trade_portal/users/templates/users/roles-requests.html:34
+msgid "Status"
+msgstr "สถานะ"
+
+#: trade_portal/documents/models.py:435
+msgid "(wrong ref)"
+msgstr "(โทษผิด)"
+
+#: trade_portal/documents/models.py:479
+msgid "Original name of the uploaded file"
+msgstr "ชื่อเดิมของไฟล์ที่อัปโหลด"
+
+#: trade_portal/documents/models.py:485
+msgid ""
+"None if doesn't need to be watermarked, False if pending and True if done"
+msgstr "ไม่มีถ้าไม่จำเป็นต้องมีลายน้ำเท็จถ้ารอดำเนินการและจริงถ้าทำ"
+
+#: trade_portal/documents/models.py:538
+msgid "Sent"
+msgstr "ส่งแล้ว"
+
+#: trade_portal/documents/models.py:539
+msgid "Accepted"
+msgstr "ยอมรับแล้ว"
+
+#: trade_portal/documents/models.py:540 trade_portal/users/models.py:160
+msgid "Rejected"
+msgstr "ถูกปฏิเสธ"
+
+#: trade_portal/documents/models.py:541
+msgid "Inbound"
+msgstr "ขาเข้า"
+
+#: trade_portal/documents/models.py:554
+msgid "Created in the system"
+msgstr "สร้างในระบบ"
+
+#: trade_portal/documents/models.py:556
+msgid "For received messages - when received by us"
+msgstr "สำหรับข้อความที่ได้รับ - เมื่อได้รับจากเรา"
+
+#: trade_portal/documents/models.py:564
+msgid "Conversation identificator"
+msgstr "ตัวระบุการสนทนา"
+
+#: trade_portal/documents/models.py:568
+msgid "generic discrete format, exactly like API returns"
+msgstr "รูปแบบที่ไม่ต่อเนื่องทั่วไปเหมือนผลตอบแทน API"
+
+#: trade_portal/documents/models.py:572
+msgid "Status changes and other historical events in a simple format"
+msgstr "การเปลี่ยนแปลงสถานะและเหตุการณ์ทางประวัติศาสตร์อื่น ๆ ในรูปแบบง่ายๆ"
+
+#: trade_portal/documents/models.py:603
+msgid ""
+"The document marked as Failed because the outbound message has been rejected"
+msgstr "เอกสารที่ทำเครื่องหมายว่าล้มเหลวเนื่องจากข้อความขาออกถูกปฏิเสธ"
+
+#: trade_portal/documents/tables.py:10
+msgid ""
+"Document\n"
+"No."
+msgstr ""
+"เอกสาร\n"
+"ไม่."
+
+#: trade_portal/documents/tables.py:17
+msgid ""
+"Sending\n"
+"Jurisdiction"
+msgstr ""
+"กำลังส่ง\n"
+"เขตอำนาจศาล"
+
+#: trade_portal/documents/tables.py:18
+msgid ""
+"Importing\n"
+"Country"
+msgstr ""
+"การนำเข้า\n"
+"ประเทศ"
+
+#: trade_portal/documents/tables.py:19
+msgid ""
+"Document\n"
+"Type"
+msgstr ""
+"เอกสาร\n"
+"พิมพ์"
+
+#: trade_portal/documents/tables.py:27
+msgid ""
+"Importer\n"
+"Name"
+msgstr ""
+"ผู้นำเข้า\n"
+"ชื่อ"
+
+#: trade_portal/documents/tables.py:30
+msgid ""
+"IGL\n"
+"Status"
+msgstr ""
+"อิกแอล\n"
+"สถานะ"
+
+#: trade_portal/documents/tables.py:47
+msgid ""
+"Consignment\n"
+"Ref."
+msgstr ""
+"ฝากขายของฝากขาย\n"
+"อ้าง."
+
+#: trade_portal/documents/tables.py:56
+msgid "Logs"
+msgstr "ท่อนซุง"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:7
+msgid "Consignment Update"
+msgstr "อัพเดทสินค้าของมือสอง"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:17
+#: trade_portal/documents/templates/documents/create.html:25
+msgid "Please fix the errors highlighted below"
+msgstr "โปรดแก้ไขข้อผิดพลาดที่ไฮไลต์ด้านล่าง"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:21
+#: trade_portal/documents/templates/documents/create.html:164
+msgid "Consignment Reference"
+msgstr "ข้อมูลอ้างอิงสินค้าขายของมือสอง"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:48
+#: trade_portal/documents/templates/documents/create.html:124
+#: trade_portal/documents/templates/documents/create.html:192
+msgid "Search"
+msgstr "ค้นหา"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:76
+#: trade_portal/documents/templates/documents/create.html:227
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:77
+#: trade_portal/documents/templates/documents/list.html:102
+msgid "Save"
+msgstr "ประหยัด"
+
+#: trade_portal/documents/templates/documents/create.html:7
+#, python-format
+msgid "Create %(form.instance.get_type_display)s"
+msgstr "สร้าง %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:20
+#, python-format
+msgid "New %(form.instance.get_type_display)s"
+msgstr "ใหม่ %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:29
+#: trade_portal/documents/templates/documents/detail.html:45
+#: trade_portal/documents/templates/documents/detail.html:108
+msgid "IGL Document ID"
+msgstr "รหัสเอกสาร IGL"
+
+#: trade_portal/documents/templates/documents/create.html:32
+#: trade_portal/documents/templates/documents/detail.html:48
+msgid "Key"
+msgstr "กุญแจ"
+
+#: trade_portal/documents/templates/documents/create.html:35
+#: trade_portal/documents/templates/documents/detail.html:51
+msgid "QR Code"
+msgstr "QR Code"
+
+#: trade_portal/documents/templates/documents/create.html:53
+msgid ""
+"This QR code will be added to your document to represent the \"digital "
+"proof\" issued by the ABF. It will allow any party in the supply chain to "
+"verify the document simply by scanning the code with a smartphone."
+msgstr ""
+"QR Code นี้จะถูกเพิ่มลงในเอกสารของคุณเพื่อแสดง “หลักฐานดิจิตอล” ที่ออกโดย "
+"ABFจะช่วยให้ฝ่ายใดฝ่ายหนึ่งในห่วงโซ่อุปทานสามารถตรวจสอบเอกสารได้ง่ายๆโดยการสแกนโค้ดด้วยสมาร์ทโฟน"
+
+#: trade_portal/documents/templates/documents/create.html:64
+msgid "Upload PDF"
+msgstr "อัพโหลด PDF"
+
+#: trade_portal/documents/templates/documents/create.html:75
+msgid "Document Metadata"
+msgstr "ข้อมูลเมตาของเอกสาร"
+
+#: trade_portal/documents/templates/documents/create.html:99
+msgid "Importing Jurisdiction"
+msgstr "การนำเข้าเขตอำนาจศาล"
+
+#: trade_portal/documents/templates/documents/create.html:107
+msgid "Exporter or Manufacturer"
+msgstr "ผู้ส่งออกหรือผู้ผลิต"
+
+#: trade_portal/documents/templates/documents/create.html:138
+msgid "Importer Name (if known)"
+msgstr "ชื่อผู้นำเข้า (หากทราบ)"
+
+#: trade_portal/documents/templates/documents/create.html:218
+msgid "Document Declaration"
+msgstr "ประกาศเอกสาร"
+
+#: trade_portal/documents/templates/documents/create.html:221
+msgid ""
+"I certify that the information herein is correct and that the described "
+"goods comply with the origin requirements of the specified Free Trade "
+"Agreement."
+msgstr ""
+"ข้าพเจ้าขอรับรองว่าข้อมูลในที่นี้ถูกต้องและสินค้าที่อธิบายไว้เป็นไปตามข้อกำหนดต้นทางของข้อตกลงการค้าเสรีที่ระบุไว้"
+
+#: trade_portal/documents/templates/documents/create.html:228
+msgid "Next"
+msgstr "ต่อไป"
+
+#: trade_portal/documents/templates/documents/detail.html:7
+#: trade_portal/documents/templates/documents/logs.html:49
+msgid "Document"
+msgstr "เอกสาร"
+
+#: trade_portal/documents/templates/documents/detail.html:17
+msgid ""
+"\n"
+"      The ABF has verified your document and added a digital proof. The PDF with QR can be sent to any party that normally requires the document. Authenticity can be verified simply by scanning the QR. The VC (Verifiable Credential) is the native digital version of the document and may be sent to any party that wishes to automate processing and verification.\n"
+"      "
+msgstr ""
+"\n"
+" ABF ได้ตรวจสอบเอกสารของคุณและเพิ่มหลักฐานดิจิตอล.PDF ที่มี QR สามารถส่งไปยังบุคคลใดก็ได้ซึ่งโดยปกติจะต้องใช้เอกสารความถูกต้องสามารถตรวจสอบได้ง่ายๆ โดยการสแกน QRVC (Verifiable Credential) เป็นเอกสารดิจิทัลดั้งเดิมและอาจถูกส่งไปยังบุคคลใดก็ตามที่ต้องการประมวลผลและตรวจสอบความถูกต้องโดยอัตโนมัติ\n"
+" "
+
+#: trade_portal/documents/templates/documents/detail.html:35
+msgid ""
+"\n"
+"      The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes\n"
+"      "
+msgstr ""
+"\n"
+" ABF ได้จัดตั้งช่องทางโดยตรงของรัฐบาลต่อรัฐบาลกับรัฐบาลอื่น ๆ สำหรับเอกสารบางประเภทในกรณีที่ช่องทางดังกล่าวมีอยู่เอกสารของคุณจะถูกส่งไปยังรัฐบาลนำเข้าโดยตรงนี้สามารถช่วยอำนวยความสะดวก/ปรับปรุงกระบวนการกวาดล้างการนำเข้า\n"
+" "
+
+#: trade_portal/documents/templates/documents/detail.html:69
+msgid ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app"
+msgstr ""
+"ใส่ QR Code นี้ลงในเอกสารของคุณเพื่อให้บุคคลที่สามสามารถตรวจสอบได้โดยใช้แอพ "
+"trustbridge"
+
+#: trade_portal/documents/templates/documents/detail.html:82
+msgid "Current status"
+msgstr "สถานะปัจจุบัน"
+
+#: trade_portal/documents/templates/documents/detail.html:84
+msgid "Issuer"
+msgstr "ผู้ออกบัตร"
+
+#: trade_portal/documents/templates/documents/detail.html:91
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#: trade_portal/documents/templates/documents/detail.html:93
+msgid "Remote party"
+msgstr "บุคคลที่ห่างไกล"
+
+#: trade_portal/documents/templates/documents/detail.html:94
+msgid "user"
+msgstr "ผู้ใช้"
+
+#: trade_portal/documents/templates/documents/detail.html:98
+msgid "Created at"
+msgstr "สร้างที่"
+
+#: trade_portal/documents/templates/documents/detail.html:103
+msgid "Document metadata"
+msgstr "ข้อมูลเมตาของเอกสาร"
+
+#: trade_portal/documents/templates/documents/detail.html:105
+#: trade_portal/documents/templates/documents/detail.html:146
+msgid "Doc number"
+msgstr "หมายเลขเอกสาร"
+
+#: trade_portal/documents/templates/documents/detail.html:120
+msgid "Exporting country"
+msgstr "ประเทศที่ส่งออก"
+
+#: trade_portal/documents/templates/documents/detail.html:122
+msgid "Importing country"
+msgstr "ประเทศที่นำเข้า"
+
+#: trade_portal/documents/templates/documents/detail.html:124
+msgid "Exporter"
+msgstr "ผู้ส่งออก"
+
+#: trade_portal/documents/templates/documents/detail.html:126
+msgid "Entity"
+msgstr "เอนทิตี"
+
+#: trade_portal/documents/templates/documents/detail.html:140
+msgid "Update"
+msgstr "ปรับปรุง"
+
+#: trade_portal/documents/templates/documents/detail.html:148
+msgid "Doc type"
+msgstr "ประเภทเอกสาร"
+
+#: trade_portal/documents/templates/documents/detail.html:150
+msgid "Doc issuer"
+msgstr "ผู้ออกเอกสาร"
+
+#: trade_portal/documents/templates/documents/detail.html:153
+msgid "Data provided by"
+msgstr "ข้อมูลจาก"
+
+#: trade_portal/documents/templates/documents/detail.html:161
+msgid ""
+"This document has been received with an error; see the Logs page for "
+"details. It usually means the technical error, not the certificate one."
+msgstr ""
+"เอกสารนี้ได้รับพร้อมกับข้อผิดพลาด "
+"ดูหน้าบันทึกสำหรับรายละเอียดมักจะหมายถึงข้อผิดพลาดทางเทคนิคไม่ใช่ใบรับรองหนึ่ง"
+
+#: trade_portal/documents/templates/documents/detail.html:166
+msgid "Raw incoming data"
+msgstr "ข้อมูลขาเข้าดิบ"
+
+#: trade_portal/documents/templates/documents/list.html:24
+#: trade_portal/documents/templates/documents/list.html:43
+msgid "Advance filter"
+msgstr "ตัวกรองล่วงหน้า"
+
+#: trade_portal/documents/templates/documents/list.html:31
+msgid "New Document"
+msgstr "เอกสารใหม่"
+
+#: trade_portal/documents/templates/documents/list.html:46
+msgid "Advanced filter"
+msgstr "ตัวกรองขั้นสูง"
+
+#: trade_portal/documents/templates/documents/list.html:71
+msgid "Any status"
+msgstr "ทุกสถานะ"
+
+#: trade_portal/documents/templates/documents/list.html:81
+msgid "Any doc type"
+msgstr "เอกสารทุกประเภท"
+
+#: trade_portal/documents/templates/documents/logs.html:7
+#: trade_portal/documents/templates/documents/logs.html:13
+msgid "Logs for"
+msgstr "บันทึกสำหรับ"
+
+#: trade_portal/documents/templates/documents/logs.html:11
+msgid "Go back to the document"
+msgstr "กลับไปที่เอกสาร"
+
+#: trade_portal/documents/templates/documents/logs.html:16
+msgid "Document status history"
+msgstr "ประวัติสถานะเอกสาร"
+
+#: trade_portal/documents/templates/documents/logs.html:21
+msgid "Message"
+msgstr "ข้อความ"
+
+#: trade_portal/documents/templates/documents/logs.html:22
+msgid "Details"
+msgstr "รายละเอียด"
+
+#: trade_portal/documents/templates/documents/logs.html:23
+msgid "Related Document"
+msgstr "เอกสารที่เกี่ยวข้อง"
+
+#: trade_portal/documents/templates/documents/logs.html:37
+#: trade_portal/users/templates/users/roles-requests.html:52
+msgid "Download"
+msgstr "ดาวน์โหลด"
+
+#: trade_portal/documents/templates/documents/logs.html:58
+msgid "outbound"
+msgstr "ขาออก"
+
+#: trade_portal/documents/templates/documents/logs.html:58
+msgid "incoming"
+msgstr "ขาเข้า"
+
+#: trade_portal/documents/templates/documents/logs.html:59
+msgid "message"
+msgstr "ข้อความ"
+
+#: trade_portal/documents/templates/documents/logs.html:69
+msgid "Attachments"
+msgstr "สิ่งที่แนบมา"
+
+#: trade_portal/documents/templates/documents/logs.html:76
+msgid "Type"
+msgstr "พิมพ์"
+
+#: trade_portal/documents/templates/documents/logs.html:77
+msgid "File and author"
+msgstr "แฟ้มและผู้เขียน"
+
+#: trade_portal/documents/templates/documents/logs.html:88
+msgid "The document will be sent to remote party"
+msgstr "เอกสารจะถูกส่งไปยังบุคคลระยะไกล"
+
+#: trade_portal/documents/views/documents.py:70
+msgid ""
+"You are not a member of any organisation - which is mandatory to access the "
+"documents page"
+msgstr ""
+"คุณไม่ได้เป็นสมาชิกขององค์กรใด ๆ - ซึ่งเป็นข้อบังคับในการเข้าถึงหน้าเอกสาร"
+
+#: trade_portal/documents/views/documents.py:137
+msgid "Only chambers can create new documents"
+msgstr "เฉพาะห้องเท่านั้นที่สามารถสร้างเอกสารใหม่ได้"
+
+#: trade_portal/documents/views/documents.py:172
+msgid ""
+"The document you have just created will be notarised and will be sent to the"
+" importing country via the Secure Trade Lane."
+msgstr ""
+"เอกสารที่คุณเพิ่งสร้างจะได้รับการรับรองและจะถูกส่งไปยังประเทศนำเข้าผ่านช่องทางที่ปลอดภัย"
+
+#: trade_portal/documents/views/documents.py:247
+msgid "Only chambers and trade party can update these details"
+msgstr "เฉพาะห้องและพรรคการค้าเท่านั้นที่สามารถปรับปรุงรายละเอียดเหล่านี้"
+
+#: trade_portal/documents/views/documents.py:255
+msgid "The consignment details have been saved successfully"
+msgstr "รายละเอียดสินค้าได้ถูกบันทึกเรียบร้อยแล้ว"
+
+#: trade_portal/templates/account/account_inactive.html:5
+#: trade_portal/templates/account/account_inactive.html:8
+msgid "Account Inactive"
+msgstr "บัญชีไม่ได้ใช้งาน"
+
+#: trade_portal/templates/account/account_inactive.html:10
+msgid "This account is inactive."
+msgstr "บัญชีนี้ไม่ได้ใช้งาน"
+
+#: trade_portal/templates/account/email.html:7
+#: trade_portal/templates/account/email.html:15
+msgid "E-mail Addresses"
+msgstr "ที่อยู่อีเมล"
+
+#: trade_portal/templates/account/email.html:18
+msgid "The following e-mail addresses are associated with your account:"
+msgstr "ที่อยู่อีเมลต่อไปนี้เชื่อมโยงกับบัญชีของคุณ:"
+
+#: trade_portal/templates/account/email.html:32
+msgid "Verified"
+msgstr "ยืนยันแล้ว"
+
+#: trade_portal/templates/account/email.html:34
+msgid "Unverified"
+msgstr "ยังไม่ยืนยัน"
+
+#: trade_portal/templates/account/email.html:36
+msgid "Primary"
+msgstr "ประถม"
+
+#: trade_portal/templates/account/email.html:43
+msgid "Make Primary"
+msgstr "ทำให้ประถม"
+
+#: trade_portal/templates/account/email.html:44
+msgid "Re-send Verification"
+msgstr "ส่งการยืนยันอีกครั้ง"
+
+#: trade_portal/templates/account/email.html:45
+msgid "Remove"
+msgstr "เอาออก"
+
+#: trade_portal/templates/account/email.html:52
+msgid "Warning:"
+msgstr "คำเตือน:"
+
+#: trade_portal/templates/account/email.html:52
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, "
+"etc."
+msgstr ""
+"ขณะนี้คุณยังไม่ได้ตั้งค่าที่อยู่อีเมลใด "
+"ๆคุณควรเพิ่มที่อยู่อีเมลเพื่อให้คุณสามารถรับการแจ้งเตือนรีเซ็ตรหัสผ่านของคุณ"
+" ฯลฯ"
+
+#: trade_portal/templates/account/email.html:57
+msgid "Add E-mail Address"
+msgstr "เพิ่มที่อยู่อีเมล"
+
+#: trade_portal/templates/account/email.html:62
+msgid "Add E-mail"
+msgstr "เพิ่มอีเมล"
+
+#: trade_portal/templates/account/email.html:72
+msgid "Do you really want to remove the selected e-mail address?"
+msgstr "คุณต้องการลบที่อยู่อีเมลที่เลือกหรือไม่?"
+
+#: trade_portal/templates/account/email_confirm.html:6
+#: trade_portal/templates/account/email_confirm.html:10
+msgid "Confirm E-mail Address"
+msgstr "ยืนยันที่อยู่อีเมล"
+
+#: trade_portal/templates/account/email_confirm.html:16
+#, python-format
+msgid ""
+"Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
+"address for user %(user_display)s."
+msgstr ""
+"โปรดยืนยันว่า <a href=\"mailto:%(email)s\">%(email)s</a> "
+"เป็นที่อยู่อีเมลสำหรับผู้ใช้ %(user_display)s."
+
+#: trade_portal/templates/account/email_confirm.html:20
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#: trade_portal/templates/account/email_confirm.html:27
+#, python-format
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+"ลิงค์ยืนยันอีเมลนี้หมดอายุหรือไม่ถูกต้องโปรด <a "
+"href=\"%(email_url)s\">ออกคำขอยืนยันอีเมลใหม่</a>."
+
+#: trade_portal/templates/account/login.html:19
+msgid "Sign in to your account"
+msgstr "ลงชื่อเข้าใช้บัญชีของคุณ"
+
+#: trade_portal/templates/account/login.html:27
+msgid "Forgot Password?"
+msgstr "ลืมรหัสผ่าน?"
+
+#: trade_portal/templates/account/login.html:30
+msgid "Sign In"
+msgstr "ลงชื่อเข้าใช้"
+
+#: trade_portal/templates/account/login.html:39
+msgid "Don’t have an account yet?"
+msgstr "ยังไม่มีบัญชีใช่หรือไม่?"
+
+#: trade_portal/templates/account/logout.html:5
+#: trade_portal/templates/account/logout.html:8
+#: trade_portal/templates/account/logout.html:17
+msgid "Sign Out"
+msgstr "ลงชื่อออก"
+
+#: trade_portal/templates/account/logout.html:10
+msgid "Are you sure you want to sign out?"
+msgstr "คุณแน่ใจหรือว่าต้องการออกจากระบบ?"
+
+#: trade_portal/templates/account/password_change.html:6
+#: trade_portal/templates/account/password_change.html:14
+#: trade_portal/templates/account/password_change.html:20
+#: trade_portal/templates/account/password_reset_from_key.html:5
+#: trade_portal/templates/account/password_reset_from_key.html:8
+#: trade_portal/templates/account/password_reset_from_key_done.html:4
+#: trade_portal/templates/account/password_reset_from_key_done.html:7
+msgid "Change Password"
+msgstr "เปลี่ยนรหัสผ่าน"
+
+#: trade_portal/templates/account/password_reset.html:7
+#: trade_portal/templates/account/password_reset.html:10
+#: trade_portal/templates/account/password_reset_done.html:6
+#: trade_portal/templates/account/password_reset_done.html:9
+msgid "Password Reset"
+msgstr "รีเซ็ตรหัสผ่าน"
+
+#: trade_portal/templates/account/password_reset.html:15
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll send you"
+" an e-mail allowing you to reset it."
+msgstr ""
+"ลืมรหัสผ่านของคุณหรือไม่?ป้อนที่อยู่อีเมลของคุณด้านล่าง, และเราจะส่ง e-mail "
+"ให้คุณช่วยให้คุณสามารถตั้งค่าได้."
+
+#: trade_portal/templates/account/password_reset.html:20
+msgid "Please contact us if you have any trouble resetting your password."
+msgstr "กรุณาติดต่อเราหากคุณมีปัญหาในการรีเซ็ตรหัสผ่านของคุณ"
+
+#: trade_portal/templates/account/password_reset.html:22
+msgid "Reset My Password"
+msgstr "รีเซ็ตรหัสผ่านของฉัน"
+
+#: trade_portal/templates/account/password_reset_done.html:15
+msgid ""
+"We have sent you an e-mail. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr "เราได้ส่ง e-mail มา.กรุณาติดต่อเราหากคุณไม่ได้รับมันภายในไม่กี่นาที."
+
+#: trade_portal/templates/account/password_reset_from_key.html:8
+msgid "Bad Token"
+msgstr "โทเค็นแบด"
+
+#: trade_portal/templates/account/password_reset_from_key.html:12
+#, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
+"reset</a>."
+msgstr ""
+"ลิงก์รีเซ็ตรหัสผ่านไม่ถูกต้อง อาจเป็นเพราะมีการใช้งานแล้วโปรดรี <a "
+"href=\"%(passwd_reset_url)s\">เซ็ตรหัสผ่านใหม่</a>"
+
+#: trade_portal/templates/account/password_reset_from_key.html:19
+msgid "Change password"
+msgstr "เปลี่ยนรหัสผ่าน"
+
+#: trade_portal/templates/account/password_reset_from_key.html:23
+#: trade_portal/templates/account/password_reset_from_key_done.html:8
+msgid "Your password is now changed."
+msgstr "รหัสผ่านของคุณถูกเปลี่ยนแล้ว"
+
+#: trade_portal/templates/account/password_set.html:6
+#: trade_portal/templates/account/password_set.html:9
+#: trade_portal/templates/account/password_set.html:15
+msgid "Set Password"
+msgstr "ตั้งรหัสผ่าน"
+
+#: trade_portal/templates/account/signup.html:6
+msgid "Signup"
+msgstr "สมัครสมาชิก"
+
+#: trade_portal/templates/account/signup.html:22
+#: trade_portal/templates/base.html:60
+msgid "Sign up"
+msgstr "สมัครสมาชิก"
+
+#: trade_portal/templates/account/signup.html:41
+msgid "Sign Up"
+msgstr "สมัครสมาชิก"
+
+#: trade_portal/templates/account/signup.html:50
+msgid "Already have an account?"
+msgstr "มีบัญชีอยู่แล้ว?"
+
+#: trade_portal/templates/account/signup.html:51
+msgid "Sign in"
+msgstr "ลงชื่อเข้าใช้"
+
+#: trade_portal/templates/account/signup_closed.html:5
+#: trade_portal/templates/account/signup_closed.html:8
+msgid "Sign Up Closed"
+msgstr "ลงทะเบียนปิด"
+
+#: trade_portal/templates/account/signup_closed.html:10
+msgid "We are sorry, but the sign up is currently closed."
+msgstr "ขออภัย, แต่การลงทะเบียนปิดให้บริการในขณะนี้."
+
+#: trade_portal/templates/account/verification_sent.html:5
+#: trade_portal/templates/account/verification_sent.html:8
+#: trade_portal/templates/account/verified_email_required.html:5
+#: trade_portal/templates/account/verified_email_required.html:8
+msgid "Verify Your E-mail Address"
+msgstr "ยืนยันอีเมลแอดเดรสของคุณ"
+
+#: trade_portal/templates/account/verification_sent.html:10
+msgid ""
+"We have sent an e-mail to you for verification. Follow the link provided to "
+"finalize the signup process. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr ""
+"เราได้ส่ง e-mail "
+"ถึงคุณสำหรับการตรวจสอบ.ทำตามลิงค์ที่ให้ไว้เพื่อจบขั้นตอนการลงทะเบียนกรุณาติดต่อเราหากคุณไม่ได้รับมันภายในไม่กี่นาที."
+
+#: trade_portal/templates/account/verified_email_required.html:12
+msgid ""
+"This part of the site requires us to verify that\n"
+"you are who you claim to be. For this purpose, we require that you\n"
+"verify ownership of your e-mail address. "
+msgstr ""
+"ส่วนนี้ของเว็บไซต์กำหนดให้เราตรวจสอบว่า\n"
+"คุณเป็นคนที่คุณอ้างว่าเป็นเพื่อจุดประสงค์นี้ เราต้องการให้คุณ\n"
+"ยืนยันความเป็นเจ้าของที่อยู่อีเมลของคุณ"
+
+#: trade_portal/templates/account/verified_email_required.html:16
+msgid ""
+"We have sent an e-mail to you for\n"
+"verification. Please click on the link inside this e-mail. Please\n"
+"contact us if you do not receive it within a few minutes."
+msgstr ""
+"เราได้ส่ง e-mail ถึงคุณสำหรับ\n"
+"การตรวจสอบ.กรุณาคลิกที่ลิงค์ภายในอีเมลนี้.ได้โปรด\n"
+"ติดต่อเราหากคุณไม่ได้รับมันภายในไม่กี่นาที."
+
+#: trade_portal/templates/account/verified_email_required.html:20
+#, python-format
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
+"e-mail address</a>."
+msgstr ""
+"<strong>หมายเหตุ:</strong> คุณยังสามารถ <a "
+"href=\"%(email_url)s\">เปลี่ยนที่อยู่อีเมลของคุณได้</a>"
+
+#: trade_portal/templates/base.html:38 trade_portal/templates/base.html:39
+#: trade_portal/templates/base.html:41 trade_portal/templates/base.html:42
+msgid "Trade Portal"
+msgstr "พอร์ทัลการค้า"
+
+#: trade_portal/templates/base.html:45
+#: trade_portal/templates/pages/home.html:12
+msgid "IGL Trade Portal"
+msgstr "พอร์ทัลการค้า IGL"
+
+#: trade_portal/templates/base.html:53
+msgid "Superuser"
+msgstr "ซูเปอร์ยูสเซอร์ส"
+
+#: trade_portal/templates/base.html:76
+msgid "Home"
+msgstr "กลับบ้าน"
+
+#: trade_portal/templates/base.html:80
+msgid "Login"
+msgstr "เข้าสู่ระบบ"
+
+#: trade_portal/templates/base.html:84 trade_portal/templates/base.html:148
+msgid "Documents"
+msgstr "เอกสาร"
+
+#: trade_portal/templates/base.html:87
+msgid "Admin Panel"
+msgstr "แผงผู้ดูแลระบบ"
+
+#: trade_portal/templates/base.html:95 trade_portal/templates/base.html:155
+#: trade_portal/users/templates/users/pending.html:7
+msgid "Pending Users"
+msgstr "ผู้ใช้ที่รอดำเนินการ"
+
+#: trade_portal/templates/base.html:98 trade_portal/templates/base.html:158
+msgid "Roles Requests"
+msgstr "คำขอบทบาท"
+
+#: trade_portal/templates/base.html:102 trade_portal/templates/base.html:164
+msgid "Logout"
+msgstr "ออกจากระบบ"
+
+#: trade_portal/templates/base.html:119
+msgid "Staff member"
+msgstr "บุคลากร"
+
+#: trade_portal/templates/base.html:151
+msgid "Profile"
+msgstr "โปรไฟล์"
+
+#: trade_portal/templates/base.html:198
+msgid "Who we are"
+msgstr "เราเป็นใคร"
+
+#: trade_portal/templates/base.html:199
+msgid "Our Ministers"
+msgstr "รัฐมนตรีของเรา"
+
+#: trade_portal/templates/base.html:200
+msgid "Careers"
+msgstr "อาชีพ"
+
+#: trade_portal/templates/base.html:201
+msgid "About us"
+msgstr "เกี่ยวกับเรา"
+
+#: trade_portal/templates/base.html:202
+msgid "Contact us"
+msgstr "ติดต่อเรา"
+
+#: trade_portal/templates/base.html:205
+msgid "Copyright Department of Home Affairs"
+msgstr "กรมลิขสิทธิ์กิจการภายในบ้าน"
+
+#: trade_portal/templates/pages/home.html:13
+msgid ""
+"The Inter Government Ledger (IGL) is a global platform that supoorts the "
+"digitisation of cross-border trade.  Documents such as certificates of "
+"origin, phyto-certificates, and others that are currently paper documents "
+"can be digitised and linked to the relevant consignment."
+msgstr ""
+"บัญชีแยกประเภทรัฐบาลอินเตอร์ (IGL) เป็นแพลตฟอร์มระดับโลกที่ supoorts "
+"ดิจิทัลของการค้าข้ามพรมแดน.เอกสารต่างๆ เช่น ใบรับรองต้นทาง ใบรับรอง Phyto-"
+"Certificates และอื่น ๆ "
+"ที่เป็นเอกสารที่เป็นกระดาษในปัจจุบันสามารถนำไปแปลงเป็นดิจิทัลและเชื่อมโยงกับสินค้าฝากขายที่เกี่ยวข้อง"
+
+#: trade_portal/templates/pages/home.html:15
+msgid "Register"
+msgstr "ลงทะเบียน"
+
+#: trade_portal/templates/pages/home.html:17
+msgid "My Documents"
+msgstr "เอกสารของฉัน"
+
+#: trade_portal/templates/pages/home.html:19
+msgid "Verify a Document"
+msgstr "ตรวจสอบเอกสาร"
+
+#: trade_portal/templates/pages/home.html:23
+msgid "Start using the portal"
+msgstr "เริ่มใช้พอร์ทัล"
+
+#: trade_portal/templates/pages/home.html:24
+msgid ""
+"A simple and intuitive user interface, tailored to your role helps to get "
+"you started."
+msgstr ""
+"อินเตอร์เฟซผู้ใช้ที่ง่ายและใช้งานง่าย, "
+"ปรับแต่งให้เข้ากับบทบาทของคุณช่วยให้คุณเริ่มต้น."
+
+#: trade_portal/templates/pages/home.html:27
+msgid "Easily scale to high volumes using the API"
+msgstr "ปรับขนาดเป็นไดรฟ์ข้อมูลสูงได้อย่างง่ายดายโดยใช้ API"
+
+#: trade_portal/templates/pages/home.html:28
+msgid ""
+"Well documented international standards compliant APIs allow your IT team to"
+" plug your systems into the IGL to operate at scale."
+msgstr ""
+"API "
+"ที่เป็นไปตามมาตรฐานสากลที่ได้รับการรับรองเป็นอย่างดีช่วยให้ทีมไอทีของคุณสามารถเสียบระบบของคุณเข้ากับ"
+" IGL เพื่อทำงานในระดับที่เหมาะสม"
+
+#: trade_portal/templates/pages/home.html:36
+msgid "Authorised Bodies"
+msgstr "หน่วยงานที่ได้รับอนุญาต"
+
+#: trade_portal/templates/pages/home.html:37
+msgid ""
+"Enhance your documents with digital verification and receive confirmation of"
+" validity from the importing regulator."
+msgstr ""
+"ปรับปรุงเอกสารของคุณด้วยการตรวจสอบแบบดิจิทัลและรับการยืนยันความถูกต้องจากหน่วยงานกำกับดูแลการนำเข้า"
+
+#: trade_portal/templates/pages/home.html:43
+msgid "Exporters/Importers"
+msgstr "ผู้ส่งออก/ผู้นำเข้า"
+
+#: trade_portal/templates/pages/home.html:44
+msgid ""
+"Improve efficiency and reduce non-compliance risks through increased "
+"visibility and end-to-end digitisation and trust."
+msgstr ""
+"ปรับปรุงประสิทธิภาพและลดความเสี่ยงในการไม่ปฏิบัติตามกฎระเบียบผ่านการมองเห็นที่เพิ่มขึ้นและการแปลงข้อมูลดิจิทัลและความไว้วางใจจากต้นทางถึงปลายทาง"
+
+#: trade_portal/templates/pages/home.html:50
+msgid "Logistics Providers"
+msgstr "ผู้ให้บริการโลจิสติกส์"
+
+#: trade_portal/templates/pages/home.html:51
+msgid ""
+"Attach your consignment references to certificates and other documents for "
+"automated matching and processing by importing regulators."
+msgstr ""
+"แนบเอกสารอ้างอิงสินค้าของคุณกับใบรับรองและเอกสารอื่น ๆ "
+"สำหรับการจับคู่และการประมวลผลอัตโนมัติโดยการนำเข้าหน่วยงานกำกับดูแล"
+
+#: trade_portal/templates/pages/home.html:57
+msgid "Regulators"
+msgstr "หน่วยงานกำกับดูแล"
+
+#: trade_portal/templates/pages/home.html:58
+msgid ""
+"Improve trade facilitation and compliance outcomes through trusted digital "
+"data exchange with your international counterparties."
+msgstr ""
+"ปรับปรุงการอำนวยความสะดวกทางการค้าและผลลัพธ์การปฏิบัติตามกฎระเบียบผ่านการแลกเปลี่ยนข้อมูลดิจิทัลที่เชื่อถือได้กับคู่ค้าระหว่างประเทศของคุณ"
+
+#: trade_portal/users/apps.py:7
+msgid "Users"
+msgstr "ผู้ใช้"
+
+#: trade_portal/users/forms.py:16 trade_portal/users/forms.py:69
+msgid "First name"
+msgstr "ชื่อ"
+
+#: trade_portal/users/forms.py:17 trade_portal/users/forms.py:70
+msgid "Last name"
+msgstr "นามสกุล"
+
+#: trade_portal/users/forms.py:20
+msgid "This value will be verified"
+msgstr "ค่านี้จะได้รับการตรวจสอบ"
+
+#: trade_portal/users/forms.py:22 trade_portal/users/forms.py:71
+msgid "Mobile phone number"
+msgstr "หมายเลขโทรศัพท์มือถือ"
+
+#: trade_portal/users/forms.py:35
+msgid "Your business"
+msgstr "ธุรกิจของคุณ"
+
+#: trade_portal/users/forms.py:36
+msgid "Choose a password"
+msgstr "เลือกรหัสผ่าน"
+
+#: trade_portal/users/forms.py:37
+msgid "Your business email address"
+msgstr "ที่อยู่อีเมลธุรกิจของคุณ"
+
+#: trade_portal/users/forms.py:52
+msgid "Entered phone number is already used in maximal number of accounts"
+msgstr "หมายเลขโทรศัพท์ที่ป้อนจะถูกใช้ในจำนวนบัญชีสูงสุดแล้ว"
+
+#: trade_portal/users/forms.py:104
+msgid ""
+"This field is optional but uploading it will help the review. Please make "
+"sure the image uploaded is clearly readable."
+msgstr ""
+"ฟิลด์นี้เป็นตัวเลือก "
+"แต่การอัปโหลดมันจะช่วยให้การตรวจสอบกรุณาตรวจสอบให้แน่ใจว่ารูปภาพที่อัปโหลดนั้นสามารถอ่านได้อย่างชัดเจน"
+
+#: trade_portal/users/models.py:16
+msgid "The value provided by user on registration step"
+msgstr "ค่าที่ผู้ใช้ให้ไว้ในขั้นตอนการลงทะเบียน"
+
+#: trade_portal/users/models.py:24
+msgid "Value appears here only after validation"
+msgstr "มูลค่าปรากฏขึ้นที่นี่เฉพาะหลังจากการตรวจสอบ"
+
+#: trade_portal/users/models.py:89
+msgid "Admin (can add users)"
+msgstr "ผู้ดูแลระบบ (สามารถเพิ่มผู้ใช้)"
+
+#: trade_portal/users/models.py:90
+msgid "User (can use org but not add users)"
+msgstr "ผู้ใช้ (สามารถใช้ org แต่ไม่เพิ่มผู้ใช้)"
+
+#: trade_portal/users/models.py:112
+msgid "ABN for Australia"
+msgstr "ABN สำหรับออสเตรเลีย"
+
+#: trade_portal/users/models.py:134 trade_portal/users/models.py:148
+msgid "Chamber"
+msgstr "ห้องโถง"
+
+#: trade_portal/users/models.py:136
+msgid "Regulator"
+msgstr "เครื่องควบคุม"
+
+#: trade_portal/users/models.py:157
+msgid "Requested"
+msgstr "ร้องขอ"
+
+#: trade_portal/users/models.py:158
+#: trade_portal/users/templates/users/roles-requests.html:35
+msgid "Evidence"
+msgstr "หลักฐาน"
+
+#: trade_portal/users/models.py:159
+msgid "Approved"
+msgstr "ได้รับการอนุมัติ"
+
+#: trade_portal/users/templates/users/pending.html:19
+msgid "Pending users"
+msgstr "ผู้ใช้ที่รอดำเนินการ"
+
+#: trade_portal/users/templates/users/pending.html:20
+#, python-format
+msgid ""
+"These users are freshly registered and have no organisation assighed - thus "
+"may need manual action to be able to use the portal. If the %(BID_NAME)s "
+"entered on registration correlates to existing organisation (already created"
+" in the Portal) you will be able to grant this user access to this "
+"organisation. If there is no such organisation it may be created. Users have"
+" no access to the Portal functionality while in this list."
+msgstr ""
+"ผู้ใช้เหล่านี้ได้รับการลงทะเบียนใหม่และไม่มีองค์กรที่ขยันขันแข็ง - "
+"ดังนั้นอาจต้องดำเนินการด้วยตนเองเพื่อให้สามารถใช้พอร์ทัลได้หาก %(BID_NAME)s "
+"ป้อนในการลงทะเบียนมีความสัมพันธ์กับองค์กรที่มีอยู่ (สร้างขึ้นแล้วในพอร์ทัล) "
+"คุณจะสามารถให้สิทธิ์การเข้าถึงผู้ใช้รายนี้แก่องค์กรนี้หากไม่มีองค์กรดังกล่าวอาจถูกสร้างขึ้นผู้ใช้ไม่สามารถเข้าถึงฟังก์ชันการทำงานของพอร์ทัลขณะที่อยู่ในรายการนี้"
+
+#: trade_portal/users/templates/users/pending.html:32
+msgid "Email"
+msgstr "อีเมล์"
+
+#: trade_portal/users/templates/users/pending.html:33
+msgid "Name"
+msgstr "ชื่อ"
+
+#: trade_portal/users/templates/users/pending.html:34
+msgid "Joined at"
+msgstr "เข้าร่วมที่"
+
+#: trade_portal/users/templates/users/pending.html:35
+msgid "claimed"
+msgstr "อ้างว่า"
+
+#: trade_portal/users/templates/users/pending.html:51
+#, python-format
+msgid "Add to %(org)s (%(org.get_type_display)s)"
+msgstr "เพิ่มใน %(org)s (%(org.get_type_display)s)"
+
+#: trade_portal/users/templates/users/pending.html:54
+#, python-format
+msgid "Create new organisation %(p_user.initial_business_id)s"
+msgstr "สร้างองค์กรใหม่ %(p_user.initial_business_id)s"
+
+#: trade_portal/users/templates/users/roles-requests.html:7
+#: trade_portal/users/templates/users/roles-requests.html:19
+msgid "Pending Role Requests"
+msgstr "คำขอบทบาทที่รอดำเนินการ"
+
+#: trade_portal/users/templates/users/roles-requests.html:20
+msgid ""
+"These roles were requested by users for their organisations, here you can "
+"approve or deny them."
+msgstr ""
+"บทบาทเหล่านี้ได้รับการร้องขอโดยผู้ใช้สำหรับองค์กรของตน "
+"คุณสามารถอนุมัติหรือปฏิเสธบทบาทเหล่านี้ได้ที่นี่"
+
+#: trade_portal/users/templates/users/roles-requests.html:31
+msgid "Organisation"
+msgstr "องค์กร"
+
+#: trade_portal/users/templates/users/roles-requests.html:32
+msgid "Created by/at"
+msgstr "สร้างโดย/ใน"
+
+#: trade_portal/users/templates/users/roles-requests.html:33
+msgid "Role"
+msgstr "บทบาท"
+
+#: trade_portal/users/templates/users/roles-requests.html:57
+msgid "Approve"
+msgstr "อนุมัติ"
+
+#: trade_portal/users/templates/users/roles-requests.html:60
+msgid "Reject reason"
+msgstr "ปฏิเสธเหตุผล"
+
+#: trade_portal/users/templates/users/roles-requests.html:62
+msgid "Reject"
+msgstr "ปฏิเสธ"
+
+#: trade_portal/users/templates/users/roles-requests.html:66
+msgid "Evidence name"
+msgstr "ชื่อหลักฐาน"
+
+#: trade_portal/users/templates/users/roles-requests.html:70
+msgid "Re-request evidence"
+msgstr "ขอหลักฐานใหม่"
+
+#: trade_portal/users/templates/users/roles-requests.html:72
+msgid "Request evidence"
+msgstr "ขอหลักฐาน"
+
+#: trade_portal/users/templates/users/user_form.html:15
+msgid "Profile update"
+msgstr "การปรับปรุงโปรไฟล์"
+
+#: trade_portal/users/views/management.py:64
+#, python-format
+msgid "The user has been added to the %s"
+msgstr "ผู้ใช้ถูกเพิ่มลงใน%s"
+
+#: trade_portal/users/views/management.py:95
+msgid "The organisation has been created and this user got access to it"
+msgstr "องค์กรได้ถูกสร้างขึ้นและผู้ใช้รายนี้สามารถเข้าถึงได้"
+
+#: trade_portal/users/views/management.py:136
+#, python-format
+msgid "Role %(role)s has been granted to %(org)s"
+msgstr "%(role)s บทบาทได้รับการ %(org)s"
+
+#: trade_portal/users/views/management.py:154
+#, python-format
+msgid ""
+"The request from %(org)s has been rejected and the user has been notified."
+msgstr "คำขอจาก %(org)s ถูกปฏิเสธและได้รับแจ้งผู้ใช้แล้ว"
+
+#: trade_portal/users/views/management.py:172
+msgid ""
+"The request has been marked as 'Evidence Requested' and will change it's "
+"status back once it's uploaded"
+msgstr ""
+"คำขอถูกทำเครื่องหมายเป็น 'คำขอหลักฐาน' และจะเปลี่ยนสถานะกลับเมื่ออัปโหลด"
+
+#: trade_portal/users/views/orgs.py:27
+msgid ""
+"The role request has been placed; It typically takes 2 workings days to "
+"review it"
+msgstr "คำขอบทบาทถูกวางไว้ โดยทั่วไปจะใช้เวลาประมาณ 2 วันทำการในการทบทวน"
+
+#: trade_portal/users/views/users.py:54
+msgid ""
+"The file has been uploaded as an evidence and the request has been sent to "
+"review"
+msgstr "ไฟล์ได้รับการอัปโหลดเป็นหลักฐานและคำขอถูกส่งไปตรวจสอบ"
+
+#: trade_portal/users/views/users.py:73
+msgid "Your profile has been updated successfully"
+msgstr "โปรไฟล์ของคุณได้รับการอัปเดตเรียบร้อยแล้ว"
+
+#: trade_portal/users/views/users.py:108
+msgid "You don't have access to that org anymore"
+msgstr "คุณไม่สามารถเข้าถึงองค์กรนั้นได้อีกต่อไป"
+
+#: trade_portal/users/views/users.py:115
+#, python-format
+msgid "The %s has been selected as the current organisation"
+msgstr "%s ถูกเลือกให้เป็นองค์กรปัจจุบัน"

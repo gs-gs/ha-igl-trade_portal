@@ -1,0 +1,1257 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-17 21:40+1000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: config/settings/base.py:30
+msgid "English"
+msgstr "英语"
+
+#: config/settings/base.py:31
+msgid "Japaneese"
+msgstr "日本人"
+
+#: config/settings/base.py:32
+msgid "Indonesian"
+msgstr "印度尼西亚语"
+
+#: config/settings/base.py:33
+msgid "Simplified Chinese"
+msgstr "简体中文"
+
+#: config/settings/base.py:34
+msgid "Thai"
+msgstr "泰国人"
+
+#: trade_portal/documents/models.py:27
+msgid "name"
+msgstr "名称"
+
+#: trade_portal/documents/models.py:31
+msgid "country"
+msgstr "国家"
+
+#: trade_portal/documents/models.py:52 trade_portal/users/models.py:132
+#: trade_portal/users/models.py:147
+msgid "Trader"
+msgstr "交易商"
+
+#: trade_portal/documents/models.py:53
+msgid "Chambers"
+msgstr "钱伯斯"
+
+#: trade_portal/documents/models.py:54 trade_portal/documents/models.py:334
+msgid "Other"
+msgstr "其他"
+
+#: trade_portal/documents/models.py:73
+msgid "ABN or UEN for example"
+msgstr "例如，ABN 或 UEN"
+
+#: trade_portal/documents/models.py:84
+msgid "party"
+msgstr "派对"
+
+#: trade_portal/documents/models.py:85
+msgid "parties"
+msgstr "当事方"
+
+#: trade_portal/documents/models.py:127
+msgid "Government Identifier"
+msgstr "政府标识符"
+
+#: trade_portal/documents/models.py:165 trade_portal/documents/models.py:166
+msgid "OA details"
+msgstr "OA 详细信息"
+
+#: trade_portal/documents/models.py:235
+msgid "Pending"
+msgstr "待定"
+
+#: trade_portal/documents/models.py:236
+msgid "Failed"
+msgstr "失败"
+
+#: trade_portal/documents/models.py:237
+msgid "Validated"
+msgstr "已验证"
+
+#: trade_portal/documents/models.py:238
+#: trade_portal/documents/templates/documents/detail.html:11
+msgid "Incoming"
+msgstr "传入"
+
+#: trade_portal/documents/models.py:245
+msgid "Preferential Certificate of Origin"
+msgstr "优先原产地证书"
+
+#: trade_portal/documents/models.py:246
+msgid "Non-preferential Certificate of Origin"
+msgstr "非优惠原产地证书"
+
+#: trade_portal/documents/models.py:254
+msgid "created at"
+msgstr "创建于"
+
+#: trade_portal/documents/models.py:259
+msgid "created by user"
+msgstr "由用户创建"
+
+#: trade_portal/documents/models.py:264
+msgid "created by org"
+msgstr "由组织创建"
+
+#: trade_portal/documents/models.py:267
+msgid "Document type"
+msgstr "文档类型"
+
+#: trade_portal/documents/models.py:269
+msgid "Document number"
+msgstr "文档编号"
+
+#: trade_portal/documents/models.py:274
+#: trade_portal/documents/templates/documents/create.html:90
+#: trade_portal/documents/templates/documents/detail.html:118
+msgid "FTA"
+msgstr "自由贸易协定"
+
+#: trade_portal/documents/models.py:279
+msgid "Sending jurisdiction"
+msgstr "派遣司法管辖权"
+
+#: trade_portal/documents/models.py:282
+msgid "Importing jurisdiction"
+msgstr "进口管辖权"
+
+#: trade_portal/documents/models.py:288
+msgid "issuer"
+msgstr "发行人"
+
+#: trade_portal/documents/models.py:294
+msgid "exporter"
+msgstr "出口商"
+
+#: trade_portal/documents/models.py:297
+#: trade_portal/documents/templates/documents/detail.html:131
+msgid "Importer name"
+msgstr "进口商名称"
+
+#: trade_portal/documents/models.py:298
+msgid "Organisation name or business ID (ABN, UEN)"
+msgstr "组织名称或企业 ID（ABN、UEN）"
+
+#: trade_portal/documents/models.py:303
+#: trade_portal/documents/templates/documents/consignment-update.html:64
+#: trade_portal/documents/templates/documents/create.html:81
+#: trade_portal/documents/templates/documents/create.html:206
+msgid "Document Number"
+msgstr "文档编号"
+
+#: trade_portal/documents/models.py:304 trade_portal/documents/models.py:309
+#: trade_portal/documents/models.py:319
+#: trade_portal/documents/templates/documents/consignment-update.html:28
+#: trade_portal/documents/templates/documents/consignment-update.html:65
+#: trade_portal/documents/templates/documents/detail.html:144
+msgid "Consignment details"
+msgstr "托运详情"
+
+#: trade_portal/documents/models.py:308
+#: trade_portal/documents/templates/documents/consignment-update.html:27
+#: trade_portal/documents/templates/documents/create.html:170
+#: trade_portal/documents/templates/documents/detail.html:80
+msgid "Document Type"
+msgstr "文档类型"
+
+#: trade_portal/documents/models.py:318
+#: trade_portal/documents/templates/documents/consignment-update.html:36
+#: trade_portal/documents/templates/documents/create.html:179
+msgid "Document Issuer"
+msgstr "文档签发者"
+
+#: trade_portal/documents/models.py:324
+#: trade_portal/documents/templates/documents/create.html:146
+msgid "Invoice Number"
+msgstr "发票编号"
+
+#: trade_portal/documents/models.py:328
+#: trade_portal/documents/templates/documents/create.html:154
+msgid "Origin Criteria"
+msgstr "原产地标准"
+
+#: trade_portal/documents/models.py:340
+msgid "Details about communication with the Intergov"
+msgstr "关于与因特戈夫沟通的详细信息"
+
+#: trade_portal/documents/models.py:344
+#: trade_portal/users/templates/users/roles-requests.html:34
+msgid "Status"
+msgstr "状态"
+
+#: trade_portal/documents/models.py:435
+msgid "(wrong ref)"
+msgstr "（错误的参考）"
+
+#: trade_portal/documents/models.py:479
+msgid "Original name of the uploaded file"
+msgstr "上传文件的原始名称"
+
+#: trade_portal/documents/models.py:485
+msgid ""
+"None if doesn't need to be watermarked, False if pending and True if done"
+msgstr "如果不需要水印，则无，如果挂起，则为 False，如果完成，则为 True"
+
+#: trade_portal/documents/models.py:538
+msgid "Sent"
+msgstr "已发送"
+
+#: trade_portal/documents/models.py:539
+msgid "Accepted"
+msgstr "已接受"
+
+#: trade_portal/documents/models.py:540 trade_portal/users/models.py:160
+msgid "Rejected"
+msgstr "被拒绝"
+
+#: trade_portal/documents/models.py:541
+msgid "Inbound"
+msgstr "入库"
+
+#: trade_portal/documents/models.py:554
+msgid "Created in the system"
+msgstr "在系统中创建"
+
+#: trade_portal/documents/models.py:556
+msgid "For received messages - when received by us"
+msgstr "对于收到的消息-当我们收到时"
+
+#: trade_portal/documents/models.py:564
+msgid "Conversation identificator"
+msgstr "会话标识符"
+
+#: trade_portal/documents/models.py:568
+msgid "generic discrete format, exactly like API returns"
+msgstr "通用离散格式，与 API 返回完全一样"
+
+#: trade_portal/documents/models.py:572
+msgid "Status changes and other historical events in a simple format"
+msgstr "简单格式的状态更改和其他历史事件"
+
+#: trade_portal/documents/models.py:603
+msgid ""
+"The document marked as Failed because the outbound message has been rejected"
+msgstr "由于出站邮件被拒绝而标记为 “失败” 的文档"
+
+#: trade_portal/documents/tables.py:10
+msgid ""
+"Document\n"
+"No."
+msgstr ""
+"文档\n"
+"否。"
+
+#: trade_portal/documents/tables.py:17
+msgid ""
+"Sending\n"
+"Jurisdiction"
+msgstr ""
+"正在发送\n"
+"管辖权"
+
+#: trade_portal/documents/tables.py:18
+msgid ""
+"Importing\n"
+"Country"
+msgstr ""
+"导入\n"
+"国家"
+
+#: trade_portal/documents/tables.py:19
+msgid ""
+"Document\n"
+"Type"
+msgstr ""
+"文档\n"
+"类型"
+
+#: trade_portal/documents/tables.py:27
+msgid ""
+"Importer\n"
+"Name"
+msgstr ""
+"进口商\n"
+"名称"
+
+#: trade_portal/documents/tables.py:30
+msgid ""
+"IGL\n"
+"Status"
+msgstr ""
+"伊格尔\n"
+"状态"
+
+#: trade_portal/documents/tables.py:47
+msgid ""
+"Consignment\n"
+"Ref."
+msgstr ""
+"托运货物\n"
+"参考。"
+
+#: trade_portal/documents/tables.py:56
+msgid "Logs"
+msgstr "日志"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:7
+msgid "Consignment Update"
+msgstr "托运更新"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:17
+#: trade_portal/documents/templates/documents/create.html:25
+msgid "Please fix the errors highlighted below"
+msgstr "请修复以下突出显示的错误"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:21
+#: trade_portal/documents/templates/documents/create.html:164
+msgid "Consignment Reference"
+msgstr "托运货物参考"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:48
+#: trade_portal/documents/templates/documents/create.html:124
+#: trade_portal/documents/templates/documents/create.html:192
+msgid "Search"
+msgstr "搜索"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:76
+#: trade_portal/documents/templates/documents/create.html:227
+msgid "Cancel"
+msgstr "取消"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:77
+#: trade_portal/documents/templates/documents/list.html:102
+msgid "Save"
+msgstr "保存"
+
+#: trade_portal/documents/templates/documents/create.html:7
+#, python-format
+msgid "Create %(form.instance.get_type_display)s"
+msgstr "创建 %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:20
+#, python-format
+msgid "New %(form.instance.get_type_display)s"
+msgstr "新建 %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:29
+#: trade_portal/documents/templates/documents/detail.html:45
+#: trade_portal/documents/templates/documents/detail.html:108
+msgid "IGL Document ID"
+msgstr "IGL 文档编号"
+
+#: trade_portal/documents/templates/documents/create.html:32
+#: trade_portal/documents/templates/documents/detail.html:48
+msgid "Key"
+msgstr "钥匙"
+
+#: trade_portal/documents/templates/documents/create.html:35
+#: trade_portal/documents/templates/documents/detail.html:51
+msgid "QR Code"
+msgstr "二维码"
+
+#: trade_portal/documents/templates/documents/create.html:53
+msgid ""
+"This QR code will be added to your document to represent the \"digital "
+"proof\" issued by the ABF. It will allow any party in the supply chain to "
+"verify the document simply by scanning the code with a smartphone."
+msgstr "此二维码将被添加到您的文档中，以代表 ABF 发出的 “数字证明”。它将允许供应链中的任何一方通过使用智能手机扫描代码来验证文档。"
+
+#: trade_portal/documents/templates/documents/create.html:64
+msgid "Upload PDF"
+msgstr "上传 PDF"
+
+#: trade_portal/documents/templates/documents/create.html:75
+msgid "Document Metadata"
+msgstr "文档元数据"
+
+#: trade_portal/documents/templates/documents/create.html:99
+msgid "Importing Jurisdiction"
+msgstr "进口管辖权"
+
+#: trade_portal/documents/templates/documents/create.html:107
+msgid "Exporter or Manufacturer"
+msgstr "出口商或制造商"
+
+#: trade_portal/documents/templates/documents/create.html:138
+msgid "Importer Name (if known)"
+msgstr "进口商名称（如果已知）"
+
+#: trade_portal/documents/templates/documents/create.html:218
+msgid "Document Declaration"
+msgstr "文档声明"
+
+#: trade_portal/documents/templates/documents/create.html:221
+msgid ""
+"I certify that the information herein is correct and that the described "
+"goods comply with the origin requirements of the specified Free Trade "
+"Agreement."
+msgstr "我保证此处的信息是正确的，并且所描述的商品符合指定的自由贸易协定的原产地要求。"
+
+#: trade_portal/documents/templates/documents/create.html:228
+msgid "Next"
+msgstr "下一个"
+
+#: trade_portal/documents/templates/documents/detail.html:7
+#: trade_portal/documents/templates/documents/logs.html:49
+msgid "Document"
+msgstr "文档"
+
+#: trade_portal/documents/templates/documents/detail.html:17
+msgid ""
+"\n"
+"      The ABF has verified your document and added a digital proof. The PDF with QR can be sent to any party that normally requires the document. Authenticity can be verified simply by scanning the QR. The VC (Verifiable Credential) is the native digital version of the document and may be sent to any party that wishes to automate processing and verification.\n"
+"      "
+msgstr ""
+"\n"
+" ABF 已验证您的文档并添加了数字证据。带 QR 的 PDF 可以发送给通常需要文件的任何一方。只需扫描 QR 即可验证真实性。VC（可验证凭据）是文档的原生数字版本，可以发送给任何希望自动处理和验证的方。\n"
+" "
+
+#: trade_portal/documents/templates/documents/detail.html:35
+msgid ""
+"\n"
+"      The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes\n"
+"      "
+msgstr ""
+"\n"
+" ABF 就某些类型的文件与其他一些政府建立了政府与政府之间的直接渠道。如果存在此类渠道，您的文档也会直接发送给进口政府。这有助于促进/简化进口清关程序\n"
+" "
+
+#: trade_portal/documents/templates/documents/detail.html:69
+msgid ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app"
+msgstr "将此二维码放在您的文档上，以便任何第三方都可以使用信任桥应用程序进行验证"
+
+#: trade_portal/documents/templates/documents/detail.html:82
+msgid "Current status"
+msgstr "当前状态"
+
+#: trade_portal/documents/templates/documents/detail.html:84
+msgid "Issuer"
+msgstr "发行人"
+
+#: trade_portal/documents/templates/documents/detail.html:91
+msgid "Created by"
+msgstr "创建者"
+
+#: trade_portal/documents/templates/documents/detail.html:93
+msgid "Remote party"
+msgstr "远程派对"
+
+#: trade_portal/documents/templates/documents/detail.html:94
+msgid "user"
+msgstr "用户"
+
+#: trade_portal/documents/templates/documents/detail.html:98
+msgid "Created at"
+msgstr "创建时间"
+
+#: trade_portal/documents/templates/documents/detail.html:103
+msgid "Document metadata"
+msgstr "文档元数据"
+
+#: trade_portal/documents/templates/documents/detail.html:105
+#: trade_portal/documents/templates/documents/detail.html:146
+msgid "Doc number"
+msgstr "文档编号"
+
+#: trade_portal/documents/templates/documents/detail.html:120
+msgid "Exporting country"
+msgstr "出口国"
+
+#: trade_portal/documents/templates/documents/detail.html:122
+msgid "Importing country"
+msgstr "进口国"
+
+#: trade_portal/documents/templates/documents/detail.html:124
+msgid "Exporter"
+msgstr "出口商"
+
+#: trade_portal/documents/templates/documents/detail.html:126
+msgid "Entity"
+msgstr "实体"
+
+#: trade_portal/documents/templates/documents/detail.html:140
+msgid "Update"
+msgstr "更新"
+
+#: trade_portal/documents/templates/documents/detail.html:148
+msgid "Doc type"
+msgstr "文档类型"
+
+#: trade_portal/documents/templates/documents/detail.html:150
+msgid "Doc issuer"
+msgstr "文档颁发者"
+
+#: trade_portal/documents/templates/documents/detail.html:153
+msgid "Data provided by"
+msgstr "提供的数据"
+
+#: trade_portal/documents/templates/documents/detail.html:161
+msgid ""
+"This document has been received with an error; see the Logs page for "
+"details. It usually means the technical error, not the certificate one."
+msgstr "收到此文档时出现错误；有关详细信息，请参阅 “日志” 页面。这通常意味着技术错误，而不是证书错误。"
+
+#: trade_portal/documents/templates/documents/detail.html:166
+msgid "Raw incoming data"
+msgstr "原始传入数据"
+
+#: trade_portal/documents/templates/documents/list.html:24
+#: trade_portal/documents/templates/documents/list.html:43
+msgid "Advance filter"
+msgstr "高级筛选器"
+
+#: trade_portal/documents/templates/documents/list.html:31
+msgid "New Document"
+msgstr "新建文档"
+
+#: trade_portal/documents/templates/documents/list.html:46
+msgid "Advanced filter"
+msgstr "高级过滤器"
+
+#: trade_portal/documents/templates/documents/list.html:71
+msgid "Any status"
+msgstr "任何状态"
+
+#: trade_portal/documents/templates/documents/list.html:81
+msgid "Any doc type"
+msgstr "任何文档类型"
+
+#: trade_portal/documents/templates/documents/logs.html:7
+#: trade_portal/documents/templates/documents/logs.html:13
+msgid "Logs for"
+msgstr "的日志"
+
+#: trade_portal/documents/templates/documents/logs.html:11
+msgid "Go back to the document"
+msgstr "返回到文档"
+
+#: trade_portal/documents/templates/documents/logs.html:16
+msgid "Document status history"
+msgstr "文档状态历史记录"
+
+#: trade_portal/documents/templates/documents/logs.html:21
+msgid "Message"
+msgstr "消息"
+
+#: trade_portal/documents/templates/documents/logs.html:22
+msgid "Details"
+msgstr "详细信息"
+
+#: trade_portal/documents/templates/documents/logs.html:23
+msgid "Related Document"
+msgstr "相关文档"
+
+#: trade_portal/documents/templates/documents/logs.html:37
+#: trade_portal/users/templates/users/roles-requests.html:52
+msgid "Download"
+msgstr "下载"
+
+#: trade_portal/documents/templates/documents/logs.html:58
+msgid "outbound"
+msgstr "出站"
+
+#: trade_portal/documents/templates/documents/logs.html:58
+msgid "incoming"
+msgstr "传入"
+
+#: trade_portal/documents/templates/documents/logs.html:59
+msgid "message"
+msgstr "消息"
+
+#: trade_portal/documents/templates/documents/logs.html:69
+msgid "Attachments"
+msgstr "附件"
+
+#: trade_portal/documents/templates/documents/logs.html:76
+msgid "Type"
+msgstr "类型"
+
+#: trade_portal/documents/templates/documents/logs.html:77
+msgid "File and author"
+msgstr "文件和作者"
+
+#: trade_portal/documents/templates/documents/logs.html:88
+msgid "The document will be sent to remote party"
+msgstr "文档将被发送到远程方"
+
+#: trade_portal/documents/views/documents.py:70
+msgid ""
+"You are not a member of any organisation - which is mandatory to access the "
+"documents page"
+msgstr "您不是任何组织的成员-访问文档页面是强制性的"
+
+#: trade_portal/documents/views/documents.py:137
+msgid "Only chambers can create new documents"
+msgstr "只有会议室才能创建新文档"
+
+#: trade_portal/documents/views/documents.py:172
+msgid ""
+"The document you have just created will be notarised and will be sent to the"
+" importing country via the Secure Trade Lane."
+msgstr "您刚刚创建的文件将经过公证，并通过安全贸易通道发送到进口国家/地区。"
+
+#: trade_portal/documents/views/documents.py:247
+msgid "Only chambers and trade party can update these details"
+msgstr "只有商会和贸易方才能更新这些细节"
+
+#: trade_portal/documents/views/documents.py:255
+msgid "The consignment details have been saved successfully"
+msgstr "托运详情已成功保存"
+
+#: trade_portal/templates/account/account_inactive.html:5
+#: trade_portal/templates/account/account_inactive.html:8
+msgid "Account Inactive"
+msgstr "账户不活动"
+
+#: trade_portal/templates/account/account_inactive.html:10
+msgid "This account is inactive."
+msgstr "此帐户处于非活动状态。"
+
+#: trade_portal/templates/account/email.html:7
+#: trade_portal/templates/account/email.html:15
+msgid "E-mail Addresses"
+msgstr "电子邮件地址"
+
+#: trade_portal/templates/account/email.html:18
+msgid "The following e-mail addresses are associated with your account:"
+msgstr "以下电子邮件地址与您的帐户相关联："
+
+#: trade_portal/templates/account/email.html:32
+msgid "Verified"
+msgstr "已验证"
+
+#: trade_portal/templates/account/email.html:34
+msgid "Unverified"
+msgstr "未验证"
+
+#: trade_portal/templates/account/email.html:36
+msgid "Primary"
+msgstr "初级"
+
+#: trade_portal/templates/account/email.html:43
+msgid "Make Primary"
+msgstr "成为主要"
+
+#: trade_portal/templates/account/email.html:44
+msgid "Re-send Verification"
+msgstr "重新发送验证"
+
+#: trade_portal/templates/account/email.html:45
+msgid "Remove"
+msgstr "删除"
+
+#: trade_portal/templates/account/email.html:52
+msgid "Warning:"
+msgstr "警告："
+
+#: trade_portal/templates/account/email.html:52
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, "
+"etc."
+msgstr "您目前没有设置任何电子邮件地址。您应该真正添加一个电子邮件地址，以便您可以接收通知、重置密码等。"
+
+#: trade_portal/templates/account/email.html:57
+msgid "Add E-mail Address"
+msgstr "添加电子邮件地址"
+
+#: trade_portal/templates/account/email.html:62
+msgid "Add E-mail"
+msgstr "添加电子邮件"
+
+#: trade_portal/templates/account/email.html:72
+msgid "Do you really want to remove the selected e-mail address?"
+msgstr "是否确实要删除选定的电子邮件地址？"
+
+#: trade_portal/templates/account/email_confirm.html:6
+#: trade_portal/templates/account/email_confirm.html:10
+msgid "Confirm E-mail Address"
+msgstr "确认电子邮件地址"
+
+#: trade_portal/templates/account/email_confirm.html:16
+#, python-format
+msgid ""
+"Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
+"address for user %(user_display)s."
+msgstr "请确认 <a href=\"mailto:%(email)s\">%(user_display)s</a> 是用户格式用户显示结束的电子邮件地址。"
+
+#: trade_portal/templates/account/email_confirm.html:20
+msgid "Confirm"
+msgstr "确认"
+
+#: trade_portal/templates/account/email_confirm.html:27
+#, python-format
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr "此电子邮件确认链接已过期或无效。请 <a href=\"%(email_url)s\"> 发出新的电子邮件确认请求 </a>。"
+
+#: trade_portal/templates/account/login.html:19
+msgid "Sign in to your account"
+msgstr "登录您的帐户"
+
+#: trade_portal/templates/account/login.html:27
+msgid "Forgot Password?"
+msgstr "忘记密码？"
+
+#: trade_portal/templates/account/login.html:30
+msgid "Sign In"
+msgstr "登录"
+
+#: trade_portal/templates/account/login.html:39
+msgid "Don’t have an account yet?"
+msgstr "还没有账户？"
+
+#: trade_portal/templates/account/logout.html:5
+#: trade_portal/templates/account/logout.html:8
+#: trade_portal/templates/account/logout.html:17
+msgid "Sign Out"
+msgstr "注销"
+
+#: trade_portal/templates/account/logout.html:10
+msgid "Are you sure you want to sign out?"
+msgstr "您确定要退出吗？"
+
+#: trade_portal/templates/account/password_change.html:6
+#: trade_portal/templates/account/password_change.html:14
+#: trade_portal/templates/account/password_change.html:20
+#: trade_portal/templates/account/password_reset_from_key.html:5
+#: trade_portal/templates/account/password_reset_from_key.html:8
+#: trade_portal/templates/account/password_reset_from_key_done.html:4
+#: trade_portal/templates/account/password_reset_from_key_done.html:7
+msgid "Change Password"
+msgstr "更改密码"
+
+#: trade_portal/templates/account/password_reset.html:7
+#: trade_portal/templates/account/password_reset.html:10
+#: trade_portal/templates/account/password_reset_done.html:6
+#: trade_portal/templates/account/password_reset_done.html:9
+msgid "Password Reset"
+msgstr "密码重置"
+
+#: trade_portal/templates/account/password_reset.html:15
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll send you"
+" an e-mail allowing you to reset it."
+msgstr "忘记了你的密码？在下面输入您的电子邮件地址，我们将向您发送一封电子邮件，让您重置它。"
+
+#: trade_portal/templates/account/password_reset.html:20
+msgid "Please contact us if you have any trouble resetting your password."
+msgstr "如果您在重置密码时遇到任何问题，请与我们联系。"
+
+#: trade_portal/templates/account/password_reset.html:22
+msgid "Reset My Password"
+msgstr "重置我的密码"
+
+#: trade_portal/templates/account/password_reset_done.html:15
+msgid ""
+"We have sent you an e-mail. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr "我们已经向您发送了一封电子邮件。如果您在几分钟内没有收到，请与我们联系。"
+
+#: trade_portal/templates/account/password_reset_from_key.html:8
+msgid "Bad Token"
+msgstr "错误的令牌"
+
+#: trade_portal/templates/account/password_reset_from_key.html:12
+#, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
+"reset</a>."
+msgstr "密码重置链接无效，可能是因为它已被使用。请申请重置 <a href=\"%(passwd_reset_url)s\"> 新密码 </a>。"
+
+#: trade_portal/templates/account/password_reset_from_key.html:19
+msgid "Change password"
+msgstr "更改密码"
+
+#: trade_portal/templates/account/password_reset_from_key.html:23
+#: trade_portal/templates/account/password_reset_from_key_done.html:8
+msgid "Your password is now changed."
+msgstr "您的密码现在已更改。"
+
+#: trade_portal/templates/account/password_set.html:6
+#: trade_portal/templates/account/password_set.html:9
+#: trade_portal/templates/account/password_set.html:15
+msgid "Set Password"
+msgstr "设置密码"
+
+#: trade_portal/templates/account/signup.html:6
+msgid "Signup"
+msgstr "注册"
+
+#: trade_portal/templates/account/signup.html:22
+#: trade_portal/templates/base.html:60
+msgid "Sign up"
+msgstr "注册"
+
+#: trade_portal/templates/account/signup.html:41
+msgid "Sign Up"
+msgstr "注册"
+
+#: trade_portal/templates/account/signup.html:50
+msgid "Already have an account?"
+msgstr "已经有账户了？"
+
+#: trade_portal/templates/account/signup.html:51
+msgid "Sign in"
+msgstr "登录"
+
+#: trade_portal/templates/account/signup_closed.html:5
+#: trade_portal/templates/account/signup_closed.html:8
+msgid "Sign Up Closed"
+msgstr "注册已关闭"
+
+#: trade_portal/templates/account/signup_closed.html:10
+msgid "We are sorry, but the sign up is currently closed."
+msgstr "很抱歉，但注册目前已关闭。"
+
+#: trade_portal/templates/account/verification_sent.html:5
+#: trade_portal/templates/account/verification_sent.html:8
+#: trade_portal/templates/account/verified_email_required.html:5
+#: trade_portal/templates/account/verified_email_required.html:8
+msgid "Verify Your E-mail Address"
+msgstr "验证您的电子邮件地址"
+
+#: trade_portal/templates/account/verification_sent.html:10
+msgid ""
+"We have sent an e-mail to you for verification. Follow the link provided to "
+"finalize the signup process. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr "我们已经向您发送了一封电子邮件进行验证。请按照提供的链接完成注册过程。如果您在几分钟内没有收到，请与我们联系。"
+
+#: trade_portal/templates/account/verified_email_required.html:12
+msgid ""
+"This part of the site requires us to verify that\n"
+"you are who you claim to be. For this purpose, we require that you\n"
+"verify ownership of your e-mail address. "
+msgstr ""
+"该网站的这一部分要求我们验证\n"
+"你是你声称的人。为此，我们要求您\n"
+"验证您的电子邮件地址的所有权。"
+
+#: trade_portal/templates/account/verified_email_required.html:16
+msgid ""
+"We have sent an e-mail to you for\n"
+"verification. Please click on the link inside this e-mail. Please\n"
+"contact us if you do not receive it within a few minutes."
+msgstr ""
+"我们已经向您发送了一封电子邮件\n"
+"核查.请点击此电子邮件内的链接。请\n"
+"如果您没有在几分钟内收到它，请联系我们。"
+
+#: trade_portal/templates/account/verified_email_required.html:20
+#, python-format
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
+"e-mail address</a>."
+msgstr "<strong>注意：</strong> 您仍然可以 <a href=\"%(email_url)s\"> 更改您的电子邮件地址 </a>。"
+
+#: trade_portal/templates/base.html:38 trade_portal/templates/base.html:39
+#: trade_portal/templates/base.html:41 trade_portal/templates/base.html:42
+msgid "Trade Portal"
+msgstr "贸易门户"
+
+#: trade_portal/templates/base.html:45
+#: trade_portal/templates/pages/home.html:12
+msgid "IGL Trade Portal"
+msgstr "IGL 贸易门户网站"
+
+#: trade_portal/templates/base.html:53
+msgid "Superuser"
+msgstr "超级用户"
+
+#: trade_portal/templates/base.html:76
+msgid "Home"
+msgstr "家"
+
+#: trade_portal/templates/base.html:80
+msgid "Login"
+msgstr "登录"
+
+#: trade_portal/templates/base.html:84 trade_portal/templates/base.html:148
+msgid "Documents"
+msgstr "文件"
+
+#: trade_portal/templates/base.html:87
+msgid "Admin Panel"
+msgstr "管理面板"
+
+#: trade_portal/templates/base.html:95 trade_portal/templates/base.html:155
+#: trade_portal/users/templates/users/pending.html:7
+msgid "Pending Users"
+msgstr "待定用户"
+
+#: trade_portal/templates/base.html:98 trade_portal/templates/base.html:158
+msgid "Roles Requests"
+msgstr "角色请求"
+
+#: trade_portal/templates/base.html:102 trade_portal/templates/base.html:164
+msgid "Logout"
+msgstr "注销"
+
+#: trade_portal/templates/base.html:119
+msgid "Staff member"
+msgstr "工作人员"
+
+#: trade_portal/templates/base.html:151
+msgid "Profile"
+msgstr "配置文件"
+
+#: trade_portal/templates/base.html:198
+msgid "Who we are"
+msgstr "我们是谁"
+
+#: trade_portal/templates/base.html:199
+msgid "Our Ministers"
+msgstr "我们的部长"
+
+#: trade_portal/templates/base.html:200
+msgid "Careers"
+msgstr "职业生涯"
+
+#: trade_portal/templates/base.html:201
+msgid "About us"
+msgstr "关于我们"
+
+#: trade_portal/templates/base.html:202
+msgid "Contact us"
+msgstr "联系我们"
+
+#: trade_portal/templates/base.html:205
+msgid "Copyright Department of Home Affairs"
+msgstr "版权所有民政事务部"
+
+#: trade_portal/templates/pages/home.html:13
+msgid ""
+"The Inter Government Ledger (IGL) is a global platform that supoorts the "
+"digitisation of cross-border trade.  Documents such as certificates of "
+"origin, phyto-certificates, and others that are currently paper documents "
+"can be digitised and linked to the relevant consignment."
+msgstr ""
+"政府间分类账 (IGL) "
+"是一个全球平台，用于跨境贸易的数字化。原产地证书、植物证书和其他目前是纸质文件的文件可以进行数字化处理，并链接到相关的托运货物。"
+
+#: trade_portal/templates/pages/home.html:15
+msgid "Register"
+msgstr "注册"
+
+#: trade_portal/templates/pages/home.html:17
+msgid "My Documents"
+msgstr "我的文档"
+
+#: trade_portal/templates/pages/home.html:19
+msgid "Verify a Document"
+msgstr "验证文档"
+
+#: trade_portal/templates/pages/home.html:23
+msgid "Start using the portal"
+msgstr "开始使用门户"
+
+#: trade_portal/templates/pages/home.html:24
+msgid ""
+"A simple and intuitive user interface, tailored to your role helps to get "
+"you started."
+msgstr "根据您的角色量身定制的简单直观的用户界面有助于帮助您入门。"
+
+#: trade_portal/templates/pages/home.html:27
+msgid "Easily scale to high volumes using the API"
+msgstr "使用 API 轻松扩展到高容量"
+
+#: trade_portal/templates/pages/home.html:28
+msgid ""
+"Well documented international standards compliant APIs allow your IT team to"
+" plug your systems into the IGL to operate at scale."
+msgstr "有充分记录的符合国际标准的 API 允许您的 IT 团队将您的系统插入 IGL，以便大规模运行。"
+
+#: trade_portal/templates/pages/home.html:36
+msgid "Authorised Bodies"
+msgstr "授权机构"
+
+#: trade_portal/templates/pages/home.html:37
+msgid ""
+"Enhance your documents with digital verification and receive confirmation of"
+" validity from the importing regulator."
+msgstr "通过数字验证增强您的文件，并从进口监管机构获得有效性的确认。"
+
+#: trade_portal/templates/pages/home.html:43
+msgid "Exporters/Importers"
+msgstr "出口商/进口商"
+
+#: trade_portal/templates/pages/home.html:44
+msgid ""
+"Improve efficiency and reduce non-compliance risks through increased "
+"visibility and end-to-end digitisation and trust."
+msgstr "通过提高可见性和端到端数字化和信任度，提高效率并降低合规风险。"
+
+#: trade_portal/templates/pages/home.html:50
+msgid "Logistics Providers"
+msgstr "物流供应商"
+
+#: trade_portal/templates/pages/home.html:51
+msgid ""
+"Attach your consignment references to certificates and other documents for "
+"automated matching and processing by importing regulators."
+msgstr "将您的托运参考资料附在证书和其他文件上，以便进口监管机构进行自动匹配和处理。"
+
+#: trade_portal/templates/pages/home.html:57
+msgid "Regulators"
+msgstr "监管机构"
+
+#: trade_portal/templates/pages/home.html:58
+msgid ""
+"Improve trade facilitation and compliance outcomes through trusted digital "
+"data exchange with your international counterparties."
+msgstr "通过与您的国际交易方进行可靠的数字数据交换，改善贸易便利化和合规成果。"
+
+#: trade_portal/users/apps.py:7
+msgid "Users"
+msgstr "用户"
+
+#: trade_portal/users/forms.py:16 trade_portal/users/forms.py:69
+msgid "First name"
+msgstr "名字"
+
+#: trade_portal/users/forms.py:17 trade_portal/users/forms.py:70
+msgid "Last name"
+msgstr "姓氏"
+
+#: trade_portal/users/forms.py:20
+msgid "This value will be verified"
+msgstr "此值将被验证"
+
+#: trade_portal/users/forms.py:22 trade_portal/users/forms.py:71
+msgid "Mobile phone number"
+msgstr "手机号码"
+
+#: trade_portal/users/forms.py:35
+msgid "Your business"
+msgstr "您的业务"
+
+#: trade_portal/users/forms.py:36
+msgid "Choose a password"
+msgstr "选择密码"
+
+#: trade_portal/users/forms.py:37
+msgid "Your business email address"
+msgstr "您的企业电子邮件地址"
+
+#: trade_portal/users/forms.py:52
+msgid "Entered phone number is already used in maximal number of accounts"
+msgstr "输入的电话号码已在最大帐户数量中使用"
+
+#: trade_portal/users/forms.py:104
+msgid ""
+"This field is optional but uploading it will help the review. Please make "
+"sure the image uploaded is clearly readable."
+msgstr "此字段是可选字段，但上传它将有助于审核。请确保上传的图片清晰可读。"
+
+#: trade_portal/users/models.py:16
+msgid "The value provided by user on registration step"
+msgstr "用户在注册步骤中提供的值"
+
+#: trade_portal/users/models.py:24
+msgid "Value appears here only after validation"
+msgstr "值仅在验证后出现在此处"
+
+#: trade_portal/users/models.py:89
+msgid "Admin (can add users)"
+msgstr "管理员（可以添加用户）"
+
+#: trade_portal/users/models.py:90
+msgid "User (can use org but not add users)"
+msgstr "用户（可以使用组织但不能添加用户）"
+
+#: trade_portal/users/models.py:112
+msgid "ABN for Australia"
+msgstr "澳大利亚 ABN"
+
+#: trade_portal/users/models.py:134 trade_portal/users/models.py:148
+msgid "Chamber"
+msgstr "分庭"
+
+#: trade_portal/users/models.py:136
+msgid "Regulator"
+msgstr "调节器"
+
+#: trade_portal/users/models.py:157
+msgid "Requested"
+msgstr "请求"
+
+#: trade_portal/users/models.py:158
+#: trade_portal/users/templates/users/roles-requests.html:35
+msgid "Evidence"
+msgstr "证据"
+
+#: trade_portal/users/models.py:159
+msgid "Approved"
+msgstr "已批准"
+
+#: trade_portal/users/templates/users/pending.html:19
+msgid "Pending users"
+msgstr "待定用户"
+
+#: trade_portal/users/templates/users/pending.html:20
+#, python-format
+msgid ""
+"These users are freshly registered and have no organisation assighed - thus "
+"may need manual action to be able to use the portal. If the %(BID_NAME)s "
+"entered on registration correlates to existing organisation (already created"
+" in the Portal) you will be able to grant this user access to this "
+"organisation. If there is no such organisation it may be created. Users have"
+" no access to the Portal functionality while in this list."
+msgstr ""
+"这些用户是新注册的，没有任何组织分配-因此可能需要手动操作才能使用门户。如果在注册时输入的格式 %(BID_NAME)s "
+"与现有组织（已在门户中创建）相关，您将能够授予此用户访问该组织的权限。如果没有这样的组织，它可能会被创建。在此列表中，用户无法访问门户功能。"
+
+#: trade_portal/users/templates/users/pending.html:32
+msgid "Email"
+msgstr "电子邮件"
+
+#: trade_portal/users/templates/users/pending.html:33
+msgid "Name"
+msgstr "名称"
+
+#: trade_portal/users/templates/users/pending.html:34
+msgid "Joined at"
+msgstr "加入时间"
+
+#: trade_portal/users/templates/users/pending.html:35
+msgid "claimed"
+msgstr "声称"
+
+#: trade_portal/users/templates/users/pending.html:51
+#, python-format
+msgid "Add to %(org)s (%(org.get_type_display)s)"
+msgstr "添加到 %(org)s（%(org.get_type_display)s）"
+
+#: trade_portal/users/templates/users/pending.html:54
+#, python-format
+msgid "Create new organisation %(p_user.initial_business_id)s"
+msgstr "建立新组织 %(p_user.initial_business_id)s"
+
+#: trade_portal/users/templates/users/roles-requests.html:7
+#: trade_portal/users/templates/users/roles-requests.html:19
+msgid "Pending Role Requests"
+msgstr "待定角色请求"
+
+#: trade_portal/users/templates/users/roles-requests.html:20
+msgid ""
+"These roles were requested by users for their organisations, here you can "
+"approve or deny them."
+msgstr "这些角色是由用户为其组织请求的，您可以在此处批准或拒绝这些角色。"
+
+#: trade_portal/users/templates/users/roles-requests.html:31
+msgid "Organisation"
+msgstr "组织"
+
+#: trade_portal/users/templates/users/roles-requests.html:32
+msgid "Created by/at"
+msgstr "创建者 /在"
+
+#: trade_portal/users/templates/users/roles-requests.html:33
+msgid "Role"
+msgstr "角色"
+
+#: trade_portal/users/templates/users/roles-requests.html:57
+msgid "Approve"
+msgstr "批准"
+
+#: trade_portal/users/templates/users/roles-requests.html:60
+msgid "Reject reason"
+msgstr "拒绝原因"
+
+#: trade_portal/users/templates/users/roles-requests.html:62
+msgid "Reject"
+msgstr "拒绝"
+
+#: trade_portal/users/templates/users/roles-requests.html:66
+msgid "Evidence name"
+msgstr "证据名称"
+
+#: trade_portal/users/templates/users/roles-requests.html:70
+msgid "Re-request evidence"
+msgstr "重新要求证据"
+
+#: trade_portal/users/templates/users/roles-requests.html:72
+msgid "Request evidence"
+msgstr "请求提供证据"
+
+#: trade_portal/users/templates/users/user_form.html:15
+msgid "Profile update"
+msgstr "配置文件更新"
+
+#: trade_portal/users/views/management.py:64
+#, python-format
+msgid "The user has been added to the %s"
+msgstr "用户已添加到 %s"
+
+#: trade_portal/users/views/management.py:95
+msgid "The organisation has been created and this user got access to it"
+msgstr "组织已经创建，此用户可以访问它"
+
+#: trade_portal/users/views/management.py:136
+#, python-format
+msgid "Role %(role)s has been granted to %(org)s"
+msgstr "角色 %(role)s 已授予 %(org)s"
+
+#: trade_portal/users/views/management.py:154
+#, python-format
+msgid ""
+"The request from %(org)s has been rejected and the user has been notified."
+msgstr "来自 %(org)s 的请求已被拒绝，并已通知用户。"
+
+#: trade_portal/users/views/management.py:172
+msgid ""
+"The request has been marked as 'Evidence Requested' and will change it's "
+"status back once it's uploaded"
+msgstr "请求已被标记为 “请求证据”，并将在上传后更改其状态"
+
+#: trade_portal/users/views/orgs.py:27
+msgid ""
+"The role request has been placed; It typically takes 2 workings days to "
+"review it"
+msgstr "已发出角色请求；通常需要 2 个工作日才能审核该请求"
+
+#: trade_portal/users/views/users.py:54
+msgid ""
+"The file has been uploaded as an evidence and the request has been sent to "
+"review"
+msgstr "文件已作为证据上传，并已发送请求进行审核"
+
+#: trade_portal/users/views/users.py:73
+msgid "Your profile has been updated successfully"
+msgstr "您的个人资料已成功更新"
+
+#: trade_portal/users/views/users.py:108
+msgid "You don't have access to that org anymore"
+msgstr "您无法再访问该组织"
+
+#: trade_portal/users/views/users.py:115
+#, python-format
+msgid "The %s has been selected as the current organisation"
+msgstr "%s 已被选为当前组织"

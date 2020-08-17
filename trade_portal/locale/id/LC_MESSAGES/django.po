@@ -1,0 +1,1327 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-17 21:40+1000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: config/settings/base.py:30
+msgid "English"
+msgstr "Bahasa Inggris"
+
+#: config/settings/base.py:31
+msgid "Japaneese"
+msgstr "Orang Jepang"
+
+#: config/settings/base.py:32
+msgid "Indonesian"
+msgstr "Indonesia"
+
+#: config/settings/base.py:33
+msgid "Simplified Chinese"
+msgstr "Bahasa Cina Sederhana"
+
+#: config/settings/base.py:34
+msgid "Thai"
+msgstr "Thailand"
+
+#: trade_portal/documents/models.py:27
+msgid "name"
+msgstr "nama"
+
+#: trade_portal/documents/models.py:31
+msgid "country"
+msgstr "negara"
+
+#: trade_portal/documents/models.py:52 trade_portal/users/models.py:132
+#: trade_portal/users/models.py:147
+msgid "Trader"
+msgstr "Pedagang"
+
+#: trade_portal/documents/models.py:53
+msgid "Chambers"
+msgstr "Kamar"
+
+#: trade_portal/documents/models.py:54 trade_portal/documents/models.py:334
+msgid "Other"
+msgstr "Lainnya"
+
+#: trade_portal/documents/models.py:73
+msgid "ABN or UEN for example"
+msgstr "ABN atau UEN misalnya"
+
+#: trade_portal/documents/models.py:84
+msgid "party"
+msgstr "pesta"
+
+#: trade_portal/documents/models.py:85
+msgid "parties"
+msgstr "pihak"
+
+#: trade_portal/documents/models.py:127
+msgid "Government Identifier"
+msgstr "Pengenal Pemerintah"
+
+#: trade_portal/documents/models.py:165 trade_portal/documents/models.py:166
+msgid "OA details"
+msgstr "Rincian OA"
+
+#: trade_portal/documents/models.py:235
+msgid "Pending"
+msgstr "Tertunda"
+
+#: trade_portal/documents/models.py:236
+msgid "Failed"
+msgstr "Gagal"
+
+#: trade_portal/documents/models.py:237
+msgid "Validated"
+msgstr "Divalidasi"
+
+#: trade_portal/documents/models.py:238
+#: trade_portal/documents/templates/documents/detail.html:11
+msgid "Incoming"
+msgstr "Masuk"
+
+#: trade_portal/documents/models.py:245
+msgid "Preferential Certificate of Origin"
+msgstr "Sertifikat Preferensi Asal"
+
+#: trade_portal/documents/models.py:246
+msgid "Non-preferential Certificate of Origin"
+msgstr "Sertifikat Asal Non-preferensial"
+
+#: trade_portal/documents/models.py:254
+msgid "created at"
+msgstr "dibuat di"
+
+#: trade_portal/documents/models.py:259
+msgid "created by user"
+msgstr "dibuat oleh pengguna"
+
+#: trade_portal/documents/models.py:264
+msgid "created by org"
+msgstr "dibuat oleh org"
+
+#: trade_portal/documents/models.py:267
+msgid "Document type"
+msgstr "Jenis dokumen"
+
+#: trade_portal/documents/models.py:269
+msgid "Document number"
+msgstr "Nomor dokumen"
+
+#: trade_portal/documents/models.py:274
+#: trade_portal/documents/templates/documents/create.html:90
+#: trade_portal/documents/templates/documents/detail.html:118
+msgid "FTA"
+msgstr "FTA"
+
+#: trade_portal/documents/models.py:279
+msgid "Sending jurisdiction"
+msgstr "Mengirim yurisdiksi"
+
+#: trade_portal/documents/models.py:282
+msgid "Importing jurisdiction"
+msgstr "Mengimpor yurisdiksi"
+
+#: trade_portal/documents/models.py:288
+msgid "issuer"
+msgstr "emiten"
+
+#: trade_portal/documents/models.py:294
+msgid "exporter"
+msgstr "eksportir"
+
+#: trade_portal/documents/models.py:297
+#: trade_portal/documents/templates/documents/detail.html:131
+msgid "Importer name"
+msgstr "Nama importir"
+
+#: trade_portal/documents/models.py:298
+msgid "Organisation name or business ID (ABN, UEN)"
+msgstr "Nama organisasi atau ID bisnis (ABN, UEN)"
+
+#: trade_portal/documents/models.py:303
+#: trade_portal/documents/templates/documents/consignment-update.html:64
+#: trade_portal/documents/templates/documents/create.html:81
+#: trade_portal/documents/templates/documents/create.html:206
+msgid "Document Number"
+msgstr "Nomor Dokumen"
+
+#: trade_portal/documents/models.py:304 trade_portal/documents/models.py:309
+#: trade_portal/documents/models.py:319
+#: trade_portal/documents/templates/documents/consignment-update.html:28
+#: trade_portal/documents/templates/documents/consignment-update.html:65
+#: trade_portal/documents/templates/documents/detail.html:144
+msgid "Consignment details"
+msgstr "Rincian konsinyasi"
+
+#: trade_portal/documents/models.py:308
+#: trade_portal/documents/templates/documents/consignment-update.html:27
+#: trade_portal/documents/templates/documents/create.html:170
+#: trade_portal/documents/templates/documents/detail.html:80
+msgid "Document Type"
+msgstr "Jenis Dokumen"
+
+#: trade_portal/documents/models.py:318
+#: trade_portal/documents/templates/documents/consignment-update.html:36
+#: trade_portal/documents/templates/documents/create.html:179
+msgid "Document Issuer"
+msgstr "Penerbit Dokumen"
+
+#: trade_portal/documents/models.py:324
+#: trade_portal/documents/templates/documents/create.html:146
+msgid "Invoice Number"
+msgstr "Nomor Faktur"
+
+#: trade_portal/documents/models.py:328
+#: trade_portal/documents/templates/documents/create.html:154
+msgid "Origin Criteria"
+msgstr "Kriteria Asal"
+
+#: trade_portal/documents/models.py:340
+msgid "Details about communication with the Intergov"
+msgstr "Rincian tentang komunikasi dengan Intergov"
+
+#: trade_portal/documents/models.py:344
+#: trade_portal/users/templates/users/roles-requests.html:34
+msgid "Status"
+msgstr "Status"
+
+#: trade_portal/documents/models.py:435
+msgid "(wrong ref)"
+msgstr "(ref salah)"
+
+#: trade_portal/documents/models.py:479
+msgid "Original name of the uploaded file"
+msgstr "Nama asli dari file yang diunggah"
+
+#: trade_portal/documents/models.py:485
+msgid ""
+"None if doesn't need to be watermarked, False if pending and True if done"
+msgstr ""
+"Tidak ada jika tidak perlu ditandai air, False jika tertunda dan Benar jika "
+"dilakukan"
+
+#: trade_portal/documents/models.py:538
+msgid "Sent"
+msgstr "Dikirim"
+
+#: trade_portal/documents/models.py:539
+msgid "Accepted"
+msgstr "Diterima"
+
+#: trade_portal/documents/models.py:540 trade_portal/users/models.py:160
+msgid "Rejected"
+msgstr "Ditolak"
+
+#: trade_portal/documents/models.py:541
+msgid "Inbound"
+msgstr "Inbound"
+
+#: trade_portal/documents/models.py:554
+msgid "Created in the system"
+msgstr "Dibuat dalam sistem"
+
+#: trade_portal/documents/models.py:556
+msgid "For received messages - when received by us"
+msgstr "Untuk pesan yang diterima - saat diterima oleh kami"
+
+#: trade_portal/documents/models.py:564
+msgid "Conversation identificator"
+msgstr "Pengenal percakapan"
+
+#: trade_portal/documents/models.py:568
+msgid "generic discrete format, exactly like API returns"
+msgstr "format diskrit generik, persis seperti API kembali"
+
+#: trade_portal/documents/models.py:572
+msgid "Status changes and other historical events in a simple format"
+msgstr "Perubahan status dan peristiwa sejarah lainnya dalam format sederhana"
+
+#: trade_portal/documents/models.py:603
+msgid ""
+"The document marked as Failed because the outbound message has been rejected"
+msgstr "Dokumen ditandai sebagai Gagal karena pesan keluar telah ditolak"
+
+#: trade_portal/documents/tables.py:10
+msgid ""
+"Document\n"
+"No."
+msgstr ""
+"Dokumen\n"
+"Tidak."
+
+#: trade_portal/documents/tables.py:17
+msgid ""
+"Sending\n"
+"Jurisdiction"
+msgstr ""
+"Mengirim\n"
+"Yurisdiksi"
+
+#: trade_portal/documents/tables.py:18
+msgid ""
+"Importing\n"
+"Country"
+msgstr ""
+"Mengimpor\n"
+"Negara"
+
+#: trade_portal/documents/tables.py:19
+msgid ""
+"Document\n"
+"Type"
+msgstr ""
+"Dokumen\n"
+"Ketik"
+
+#: trade_portal/documents/tables.py:27
+msgid ""
+"Importer\n"
+"Name"
+msgstr ""
+"Importir\n"
+"Nama"
+
+#: trade_portal/documents/tables.py:30
+msgid ""
+"IGL\n"
+"Status"
+msgstr ""
+"IGL\n"
+"Status"
+
+#: trade_portal/documents/tables.py:47
+msgid ""
+"Consignment\n"
+"Ref."
+msgstr ""
+"Konsinyasi\n"
+"Wasit."
+
+#: trade_portal/documents/tables.py:56
+msgid "Logs"
+msgstr "Log"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:7
+msgid "Consignment Update"
+msgstr "Pembaruan Konsinyasi"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:17
+#: trade_portal/documents/templates/documents/create.html:25
+msgid "Please fix the errors highlighted below"
+msgstr "Silakan perbaiki kesalahan yang disorot di bawah"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:21
+#: trade_portal/documents/templates/documents/create.html:164
+msgid "Consignment Reference"
+msgstr "Referensi Konsinyasi"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:48
+#: trade_portal/documents/templates/documents/create.html:124
+#: trade_portal/documents/templates/documents/create.html:192
+msgid "Search"
+msgstr "Cari"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:76
+#: trade_portal/documents/templates/documents/create.html:227
+msgid "Cancel"
+msgstr "Batalkan"
+
+#: trade_portal/documents/templates/documents/consignment-update.html:77
+#: trade_portal/documents/templates/documents/list.html:102
+msgid "Save"
+msgstr "Simpan"
+
+#: trade_portal/documents/templates/documents/create.html:7
+#, python-format
+msgid "Create %(form.instance.get_type_display)s"
+msgstr "Membuat %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:20
+#, python-format
+msgid "New %(form.instance.get_type_display)s"
+msgstr "Baru %(form.instance.get_type_display)s"
+
+#: trade_portal/documents/templates/documents/create.html:29
+#: trade_portal/documents/templates/documents/detail.html:45
+#: trade_portal/documents/templates/documents/detail.html:108
+msgid "IGL Document ID"
+msgstr "ID Dokumen IGL"
+
+#: trade_portal/documents/templates/documents/create.html:32
+#: trade_portal/documents/templates/documents/detail.html:48
+msgid "Key"
+msgstr "Kuncinya"
+
+#: trade_portal/documents/templates/documents/create.html:35
+#: trade_portal/documents/templates/documents/detail.html:51
+msgid "QR Code"
+msgstr "Kode QR"
+
+#: trade_portal/documents/templates/documents/create.html:53
+msgid ""
+"This QR code will be added to your document to represent the \"digital "
+"proof\" issued by the ABF. It will allow any party in the supply chain to "
+"verify the document simply by scanning the code with a smartphone."
+msgstr ""
+"Kode QR ini akan ditambahkan ke dokumen Anda untuk mewakili “bukti digital” "
+"yang dikeluarkan oleh ABF. Ini akan memungkinkan pihak manapun dalam rantai "
+"pasokan untuk memverifikasi dokumen hanya dengan memindai kode dengan "
+"smartphone."
+
+#: trade_portal/documents/templates/documents/create.html:64
+msgid "Upload PDF"
+msgstr "Upload PDF"
+
+#: trade_portal/documents/templates/documents/create.html:75
+msgid "Document Metadata"
+msgstr "Metadata Dokumen"
+
+#: trade_portal/documents/templates/documents/create.html:99
+msgid "Importing Jurisdiction"
+msgstr "Mengimpor Yurisdiksi"
+
+#: trade_portal/documents/templates/documents/create.html:107
+msgid "Exporter or Manufacturer"
+msgstr "Eksportir atau Produsen"
+
+#: trade_portal/documents/templates/documents/create.html:138
+msgid "Importer Name (if known)"
+msgstr "Nama Importir (jika diketahui)"
+
+#: trade_portal/documents/templates/documents/create.html:218
+msgid "Document Declaration"
+msgstr "Pernyataan Dokumen"
+
+#: trade_portal/documents/templates/documents/create.html:221
+msgid ""
+"I certify that the information herein is correct and that the described "
+"goods comply with the origin requirements of the specified Free Trade "
+"Agreement."
+msgstr ""
+"Saya menyatakan bahwa informasi di sini benar dan bahwa barang yang "
+"dijelaskan sesuai dengan persyaratan asal dari Perjanjian Perdagangan Bebas "
+"yang ditentukan."
+
+#: trade_portal/documents/templates/documents/create.html:228
+msgid "Next"
+msgstr "Berikutnya"
+
+#: trade_portal/documents/templates/documents/detail.html:7
+#: trade_portal/documents/templates/documents/logs.html:49
+msgid "Document"
+msgstr "Dokumen"
+
+#: trade_portal/documents/templates/documents/detail.html:17
+msgid ""
+"\n"
+"      The ABF has verified your document and added a digital proof. The PDF with QR can be sent to any party that normally requires the document. Authenticity can be verified simply by scanning the QR. The VC (Verifiable Credential) is the native digital version of the document and may be sent to any party that wishes to automate processing and verification.\n"
+"      "
+msgstr ""
+"\n"
+" ABF telah memverifikasi dokumen Anda dan menambahkan bukti digital. PDF dengan QR dapat dikirim ke pihak manapun yang biasanya membutuhkan dokumen. Keaslian dapat diverifikasi hanya dengan memindai QR. VC (Verifiable Credential) adalah versi digital asli dari dokumen dan dapat dikirim ke pihak manapun yang ingin mengotomatisasi pemrosesan dan verifikasi.\n"
+" "
+
+#: trade_portal/documents/templates/documents/detail.html:35
+msgid ""
+"\n"
+"      The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes\n"
+"      "
+msgstr ""
+"\n"
+" ABF telah membentuk saluran pemerintah langsung ke pemerintah dengan beberapa pemerintah lain untuk beberapa jenis dokumen. Jika saluran tersebut ada, dokumen Anda juga akan dikirim langsung ke pemerintah pengimpor. Hal ini dapat membantu memfasilitasi/merampingkan proses izin impor\n"
+" "
+
+#: trade_portal/documents/templates/documents/detail.html:69
+msgid ""
+"Put this QR code on your document so that any third party can verify it "
+"using the trustbridge app"
+msgstr ""
+"Masukkan kode QR ini ke dokumen Anda sehingga pihak ketiga dapat "
+"memverifikasinya menggunakan aplikasi trustbridge"
+
+#: trade_portal/documents/templates/documents/detail.html:82
+msgid "Current status"
+msgstr "Status saat ini"
+
+#: trade_portal/documents/templates/documents/detail.html:84
+msgid "Issuer"
+msgstr "Penerbit"
+
+#: trade_portal/documents/templates/documents/detail.html:91
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#: trade_portal/documents/templates/documents/detail.html:93
+msgid "Remote party"
+msgstr "Partai jarak jauh"
+
+#: trade_portal/documents/templates/documents/detail.html:94
+msgid "user"
+msgstr "pengguna"
+
+#: trade_portal/documents/templates/documents/detail.html:98
+msgid "Created at"
+msgstr "Dibuat di"
+
+#: trade_portal/documents/templates/documents/detail.html:103
+msgid "Document metadata"
+msgstr "Metadata dokumen"
+
+#: trade_portal/documents/templates/documents/detail.html:105
+#: trade_portal/documents/templates/documents/detail.html:146
+msgid "Doc number"
+msgstr "Nomor doc"
+
+#: trade_portal/documents/templates/documents/detail.html:120
+msgid "Exporting country"
+msgstr "Mengekspor negara"
+
+#: trade_portal/documents/templates/documents/detail.html:122
+msgid "Importing country"
+msgstr "Mengimpor negara"
+
+#: trade_portal/documents/templates/documents/detail.html:124
+msgid "Exporter"
+msgstr "Eksportir"
+
+#: trade_portal/documents/templates/documents/detail.html:126
+msgid "Entity"
+msgstr "Entitas"
+
+#: trade_portal/documents/templates/documents/detail.html:140
+msgid "Update"
+msgstr "Perbarui"
+
+#: trade_portal/documents/templates/documents/detail.html:148
+msgid "Doc type"
+msgstr "Tipe Doc"
+
+#: trade_portal/documents/templates/documents/detail.html:150
+msgid "Doc issuer"
+msgstr "Penerbit Doc"
+
+#: trade_portal/documents/templates/documents/detail.html:153
+msgid "Data provided by"
+msgstr "Data yang disediakan oleh"
+
+#: trade_portal/documents/templates/documents/detail.html:161
+msgid ""
+"This document has been received with an error; see the Logs page for "
+"details. It usually means the technical error, not the certificate one."
+msgstr ""
+"Dokumen ini telah diterima dengan kesalahan; lihat halaman Log untuk "
+"rincian. Ini biasanya berarti kesalahan teknis, bukan sertifikat satu."
+
+#: trade_portal/documents/templates/documents/detail.html:166
+msgid "Raw incoming data"
+msgstr "Data masuk mentah"
+
+#: trade_portal/documents/templates/documents/list.html:24
+#: trade_portal/documents/templates/documents/list.html:43
+msgid "Advance filter"
+msgstr "Filter lanjutan"
+
+#: trade_portal/documents/templates/documents/list.html:31
+msgid "New Document"
+msgstr "Dokumen Baru"
+
+#: trade_portal/documents/templates/documents/list.html:46
+msgid "Advanced filter"
+msgstr "Filter lanjutan"
+
+#: trade_portal/documents/templates/documents/list.html:71
+msgid "Any status"
+msgstr "Status apa pun"
+
+#: trade_portal/documents/templates/documents/list.html:81
+msgid "Any doc type"
+msgstr "Setiap jenis doc"
+
+#: trade_portal/documents/templates/documents/logs.html:7
+#: trade_portal/documents/templates/documents/logs.html:13
+msgid "Logs for"
+msgstr "Log untuk"
+
+#: trade_portal/documents/templates/documents/logs.html:11
+msgid "Go back to the document"
+msgstr "Kembali ke dokumen"
+
+#: trade_portal/documents/templates/documents/logs.html:16
+msgid "Document status history"
+msgstr "Riwayat status dokumen"
+
+#: trade_portal/documents/templates/documents/logs.html:21
+msgid "Message"
+msgstr "Pesan"
+
+#: trade_portal/documents/templates/documents/logs.html:22
+msgid "Details"
+msgstr "Rincian"
+
+#: trade_portal/documents/templates/documents/logs.html:23
+msgid "Related Document"
+msgstr "Dokumen Terkait"
+
+#: trade_portal/documents/templates/documents/logs.html:37
+#: trade_portal/users/templates/users/roles-requests.html:52
+msgid "Download"
+msgstr "Unduh"
+
+#: trade_portal/documents/templates/documents/logs.html:58
+msgid "outbound"
+msgstr "keluar"
+
+#: trade_portal/documents/templates/documents/logs.html:58
+msgid "incoming"
+msgstr "masuk"
+
+#: trade_portal/documents/templates/documents/logs.html:59
+msgid "message"
+msgstr "pesan"
+
+#: trade_portal/documents/templates/documents/logs.html:69
+msgid "Attachments"
+msgstr "Lampiran"
+
+#: trade_portal/documents/templates/documents/logs.html:76
+msgid "Type"
+msgstr "Ketik"
+
+#: trade_portal/documents/templates/documents/logs.html:77
+msgid "File and author"
+msgstr "File dan penulis"
+
+#: trade_portal/documents/templates/documents/logs.html:88
+msgid "The document will be sent to remote party"
+msgstr "Dokumen akan dikirim ke pihak terpencil"
+
+#: trade_portal/documents/views/documents.py:70
+msgid ""
+"You are not a member of any organisation - which is mandatory to access the "
+"documents page"
+msgstr ""
+"Anda bukan anggota organisasi apa pun - yang wajib mengakses halaman dokumen"
+
+#: trade_portal/documents/views/documents.py:137
+msgid "Only chambers can create new documents"
+msgstr "Hanya ruang dapat membuat dokumen baru"
+
+#: trade_portal/documents/views/documents.py:172
+msgid ""
+"The document you have just created will be notarised and will be sent to the"
+" importing country via the Secure Trade Lane."
+msgstr ""
+"Dokumen yang baru saja Anda buat akan disahkan dan akan dikirim ke negara "
+"pengimpor melalui Secure Trade Lane."
+
+#: trade_portal/documents/views/documents.py:247
+msgid "Only chambers and trade party can update these details"
+msgstr "Hanya ruang dan partai dagang dapat memperbarui rincian ini"
+
+#: trade_portal/documents/views/documents.py:255
+msgid "The consignment details have been saved successfully"
+msgstr "Rincian konsinyasi telah berhasil disimpan"
+
+#: trade_portal/templates/account/account_inactive.html:5
+#: trade_portal/templates/account/account_inactive.html:8
+msgid "Account Inactive"
+msgstr "Akun Tidak Aktif"
+
+#: trade_portal/templates/account/account_inactive.html:10
+msgid "This account is inactive."
+msgstr "Akun ini tidak aktif."
+
+#: trade_portal/templates/account/email.html:7
+#: trade_portal/templates/account/email.html:15
+msgid "E-mail Addresses"
+msgstr "Alamat E-mail"
+
+#: trade_portal/templates/account/email.html:18
+msgid "The following e-mail addresses are associated with your account:"
+msgstr "Alamat e-mail berikut dikaitkan dengan akun Anda:"
+
+#: trade_portal/templates/account/email.html:32
+msgid "Verified"
+msgstr "Diverifikasi"
+
+#: trade_portal/templates/account/email.html:34
+msgid "Unverified"
+msgstr "Belum diverifikasi"
+
+#: trade_portal/templates/account/email.html:36
+msgid "Primary"
+msgstr "Primer"
+
+#: trade_portal/templates/account/email.html:43
+msgid "Make Primary"
+msgstr "Buat Primer"
+
+#: trade_portal/templates/account/email.html:44
+msgid "Re-send Verification"
+msgstr "Kirim Ulang Verifikasi"
+
+#: trade_portal/templates/account/email.html:45
+msgid "Remove"
+msgstr "Hapus"
+
+#: trade_portal/templates/account/email.html:52
+msgid "Warning:"
+msgstr "Peringatan:"
+
+#: trade_portal/templates/account/email.html:52
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, "
+"etc."
+msgstr ""
+"Anda saat ini tidak memiliki alamat e-mail yang diatur. Anda harus benar-"
+"benar menambahkan alamat e-mail sehingga Anda dapat menerima pemberitahuan, "
+"mengatur ulang kata sandi Anda, dll"
+
+#: trade_portal/templates/account/email.html:57
+msgid "Add E-mail Address"
+msgstr "Tambah Alamat E-mail"
+
+#: trade_portal/templates/account/email.html:62
+msgid "Add E-mail"
+msgstr "Tambah E-mail"
+
+#: trade_portal/templates/account/email.html:72
+msgid "Do you really want to remove the selected e-mail address?"
+msgstr "Apakah Anda yakin ingin menghapus alamat e-mail yang dipilih?"
+
+#: trade_portal/templates/account/email_confirm.html:6
+#: trade_portal/templates/account/email_confirm.html:10
+msgid "Confirm E-mail Address"
+msgstr "Konfirmasi Alamat E-mail"
+
+#: trade_portal/templates/account/email_confirm.html:16
+#, python-format
+msgid ""
+"Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
+"address for user %(user_display)s."
+msgstr ""
+"Harap konfirmasikan bahwa <a href=\"mailto:%(email)s\">%(email)s</a> "
+"adalah alamat e-mail untuk pengguna %(user_display)s."
+
+#: trade_portal/templates/account/email_confirm.html:20
+msgid "Confirm"
+msgstr "Konfirmasi"
+
+#: trade_portal/templates/account/email_confirm.html:27
+#, python-format
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+"Tautan konfirmasi e-mail ini kedaluwarsa atau tidak valid. Silakan <a "
+"href=\"%(email_url)s\">berikan permintaan konfirmasi e-mail baru</a>."
+
+#: trade_portal/templates/account/login.html:19
+msgid "Sign in to your account"
+msgstr "Masuk ke akun Anda"
+
+#: trade_portal/templates/account/login.html:27
+msgid "Forgot Password?"
+msgstr "Lupa Password?"
+
+#: trade_portal/templates/account/login.html:30
+msgid "Sign In"
+msgstr "Masuk"
+
+#: trade_portal/templates/account/login.html:39
+msgid "Don’t have an account yet?"
+msgstr "Belum punya akun?"
+
+#: trade_portal/templates/account/logout.html:5
+#: trade_portal/templates/account/logout.html:8
+#: trade_portal/templates/account/logout.html:17
+msgid "Sign Out"
+msgstr "Keluar"
+
+#: trade_portal/templates/account/logout.html:10
+msgid "Are you sure you want to sign out?"
+msgstr "Apakah Anda yakin ingin keluar?"
+
+#: trade_portal/templates/account/password_change.html:6
+#: trade_portal/templates/account/password_change.html:14
+#: trade_portal/templates/account/password_change.html:20
+#: trade_portal/templates/account/password_reset_from_key.html:5
+#: trade_portal/templates/account/password_reset_from_key.html:8
+#: trade_portal/templates/account/password_reset_from_key_done.html:4
+#: trade_portal/templates/account/password_reset_from_key_done.html:7
+msgid "Change Password"
+msgstr "Ubah Sandi"
+
+#: trade_portal/templates/account/password_reset.html:7
+#: trade_portal/templates/account/password_reset.html:10
+#: trade_portal/templates/account/password_reset_done.html:6
+#: trade_portal/templates/account/password_reset_done.html:9
+msgid "Password Reset"
+msgstr "Setel Ulang"
+
+#: trade_portal/templates/account/password_reset.html:15
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll send you"
+" an e-mail allowing you to reset it."
+msgstr ""
+"Lupa kata sandi Anda? Masukkan alamat e-mail Anda di bawah ini, dan kami "
+"akan mengirimkan e-mail yang memungkinkan Anda untuk meresetnya."
+
+#: trade_portal/templates/account/password_reset.html:20
+msgid "Please contact us if you have any trouble resetting your password."
+msgstr ""
+"Silakan hubungi kami jika Anda mengalami kesulitan mengatur ulang kata sandi"
+" Anda."
+
+#: trade_portal/templates/account/password_reset.html:22
+msgid "Reset My Password"
+msgstr "Reset Kata Sandi"
+
+#: trade_portal/templates/account/password_reset_done.html:15
+msgid ""
+"We have sent you an e-mail. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr ""
+"Kami telah mengirimkan e-mail. Silakan hubungi kami jika Anda tidak "
+"menerimanya dalam beberapa menit."
+
+#: trade_portal/templates/account/password_reset_from_key.html:8
+msgid "Bad Token"
+msgstr "Token buruk"
+
+#: trade_portal/templates/account/password_reset_from_key.html:12
+#, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
+"reset</a>."
+msgstr ""
+"Tautan pengaturan ulang kata sandi tidak valid, mungkin karena sudah "
+"digunakan. Silakan minta <a href=\"%(passwd_reset_url)s\">pengaturan ulang "
+"kata sandi baru</a>."
+
+#: trade_portal/templates/account/password_reset_from_key.html:19
+msgid "Change password"
+msgstr "Ubah kata sandi"
+
+#: trade_portal/templates/account/password_reset_from_key.html:23
+#: trade_portal/templates/account/password_reset_from_key_done.html:8
+msgid "Your password is now changed."
+msgstr "Kata sandi Anda sekarang diubah."
+
+#: trade_portal/templates/account/password_set.html:6
+#: trade_portal/templates/account/password_set.html:9
+#: trade_portal/templates/account/password_set.html:15
+msgid "Set Password"
+msgstr "Mengatur Kata San"
+
+#: trade_portal/templates/account/signup.html:6
+msgid "Signup"
+msgstr "Mendaftar"
+
+#: trade_portal/templates/account/signup.html:22
+#: trade_portal/templates/base.html:60
+msgid "Sign up"
+msgstr "Daftar"
+
+#: trade_portal/templates/account/signup.html:41
+msgid "Sign Up"
+msgstr "Daftar"
+
+#: trade_portal/templates/account/signup.html:50
+msgid "Already have an account?"
+msgstr "Sudah punya akun?"
+
+#: trade_portal/templates/account/signup.html:51
+msgid "Sign in"
+msgstr "Masuk"
+
+#: trade_portal/templates/account/signup_closed.html:5
+#: trade_portal/templates/account/signup_closed.html:8
+msgid "Sign Up Closed"
+msgstr "Daftar Ditutup"
+
+#: trade_portal/templates/account/signup_closed.html:10
+msgid "We are sorry, but the sign up is currently closed."
+msgstr "Maaf, tapi pendaftaran saat ini ditutup."
+
+#: trade_portal/templates/account/verification_sent.html:5
+#: trade_portal/templates/account/verification_sent.html:8
+#: trade_portal/templates/account/verified_email_required.html:5
+#: trade_portal/templates/account/verified_email_required.html:8
+msgid "Verify Your E-mail Address"
+msgstr "Verifikasi Alamat E-Mail"
+
+#: trade_portal/templates/account/verification_sent.html:10
+msgid ""
+"We have sent an e-mail to you for verification. Follow the link provided to "
+"finalize the signup process. Please contact us if you do not receive it "
+"within a few minutes."
+msgstr ""
+"Kami telah mengirim e-mail kepada Anda untuk verifikasi. Ikuti tautan yang "
+"disediakan untuk menyelesaikan proses pendaftaran. Silakan hubungi kami jika"
+" Anda tidak menerimanya dalam beberapa menit."
+
+#: trade_portal/templates/account/verified_email_required.html:12
+msgid ""
+"This part of the site requires us to verify that\n"
+"you are who you claim to be. For this purpose, we require that you\n"
+"verify ownership of your e-mail address. "
+msgstr ""
+"Bagian dari situs ini mengharuskan kami untuk memverifikasi bahwa\n"
+"Anda adalah siapa yang Anda klaim. Untuk tujuan ini, kami mengharuskan Anda\n"
+"memverifikasi kepemilikan alamat e-mail Anda."
+
+#: trade_portal/templates/account/verified_email_required.html:16
+msgid ""
+"We have sent an e-mail to you for\n"
+"verification. Please click on the link inside this e-mail. Please\n"
+"contact us if you do not receive it within a few minutes."
+msgstr ""
+"Kami telah mengirim e-mail kepada Anda untuk\n"
+"verifikasi. Silakan klik pada link di dalam e-mail ini. Silakan\n"
+"hubungi kami jika Anda tidak menerimanya dalam beberapa menit."
+
+#: trade_portal/templates/account/verified_email_required.html:20
+#, python-format
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
+"e-mail address</a>."
+msgstr ""
+"<strong>Catatan:</strong> Anda masih dapat <a "
+"href=\"%(email_url)s\">mengubah alamat e-mail Anda</a>."
+
+#: trade_portal/templates/base.html:38 trade_portal/templates/base.html:39
+#: trade_portal/templates/base.html:41 trade_portal/templates/base.html:42
+msgid "Trade Portal"
+msgstr "Portal Perdagangan"
+
+#: trade_portal/templates/base.html:45
+#: trade_portal/templates/pages/home.html:12
+msgid "IGL Trade Portal"
+msgstr "Portal Perdagangan IGL"
+
+#: trade_portal/templates/base.html:53
+msgid "Superuser"
+msgstr "Superuser"
+
+#: trade_portal/templates/base.html:76
+msgid "Home"
+msgstr "Rumah"
+
+#: trade_portal/templates/base.html:80
+msgid "Login"
+msgstr "Masuk"
+
+#: trade_portal/templates/base.html:84 trade_portal/templates/base.html:148
+msgid "Documents"
+msgstr "Dokumen"
+
+#: trade_portal/templates/base.html:87
+msgid "Admin Panel"
+msgstr "Panel Admin"
+
+#: trade_portal/templates/base.html:95 trade_portal/templates/base.html:155
+#: trade_portal/users/templates/users/pending.html:7
+msgid "Pending Users"
+msgstr "Pengguna Tertunda"
+
+#: trade_portal/templates/base.html:98 trade_portal/templates/base.html:158
+msgid "Roles Requests"
+msgstr "Permintaan Peran"
+
+#: trade_portal/templates/base.html:102 trade_portal/templates/base.html:164
+msgid "Logout"
+msgstr "Keluar"
+
+#: trade_portal/templates/base.html:119
+msgid "Staff member"
+msgstr "Anggota staf"
+
+#: trade_portal/templates/base.html:151
+msgid "Profile"
+msgstr "Profil"
+
+#: trade_portal/templates/base.html:198
+msgid "Who we are"
+msgstr "Siapa kita"
+
+#: trade_portal/templates/base.html:199
+msgid "Our Ministers"
+msgstr "Menteri Kami"
+
+#: trade_portal/templates/base.html:200
+msgid "Careers"
+msgstr "Karir"
+
+#: trade_portal/templates/base.html:201
+msgid "About us"
+msgstr "Tentang kami"
+
+#: trade_portal/templates/base.html:202
+msgid "Contact us"
+msgstr "Hubungi kami"
+
+#: trade_portal/templates/base.html:205
+msgid "Copyright Department of Home Affairs"
+msgstr "Departemen Hak Cipta Dalam Negeri"
+
+#: trade_portal/templates/pages/home.html:13
+msgid ""
+"The Inter Government Ledger (IGL) is a global platform that supoorts the "
+"digitisation of cross-border trade.  Documents such as certificates of "
+"origin, phyto-certificates, and others that are currently paper documents "
+"can be digitised and linked to the relevant consignment."
+msgstr ""
+"Inter Government Ledger (IGL) adalah platform global yang mendukung "
+"digitalisasi perdagangan lintas batas. Dokumen seperti sertifikat asal, "
+"sertifikat phyto, dan dokumen lainnya yang saat ini merupakan dokumen kertas"
+" dapat didigitalkan dan dihubungkan dengan kiriman yang relevan."
+
+#: trade_portal/templates/pages/home.html:15
+msgid "Register"
+msgstr "Daftar"
+
+#: trade_portal/templates/pages/home.html:17
+msgid "My Documents"
+msgstr "Dokumen Saya"
+
+#: trade_portal/templates/pages/home.html:19
+msgid "Verify a Document"
+msgstr "Verifikasi Dokumen"
+
+#: trade_portal/templates/pages/home.html:23
+msgid "Start using the portal"
+msgstr "Mulai menggunakan portal"
+
+#: trade_portal/templates/pages/home.html:24
+msgid ""
+"A simple and intuitive user interface, tailored to your role helps to get "
+"you started."
+msgstr ""
+"Antarmuka pengguna yang sederhana dan intuitif, disesuaikan dengan peran "
+"Anda membantu Anda memulai."
+
+#: trade_portal/templates/pages/home.html:27
+msgid "Easily scale to high volumes using the API"
+msgstr "Skala dengan mudah ke volume tinggi menggunakan API"
+
+#: trade_portal/templates/pages/home.html:28
+msgid ""
+"Well documented international standards compliant APIs allow your IT team to"
+" plug your systems into the IGL to operate at scale."
+msgstr ""
+"API sesuai standar internasional yang terdokumentasi dengan baik "
+"memungkinkan tim TI Anda untuk menyambungkan sistem Anda ke IGL untuk "
+"beroperasi pada skala besar."
+
+#: trade_portal/templates/pages/home.html:36
+msgid "Authorised Bodies"
+msgstr "Badan Resmi"
+
+#: trade_portal/templates/pages/home.html:37
+msgid ""
+"Enhance your documents with digital verification and receive confirmation of"
+" validity from the importing regulator."
+msgstr ""
+"Tingkatkan dokumen Anda dengan verifikasi digital dan dapatkan konfirmasi "
+"validitas dari regulator impor."
+
+#: trade_portal/templates/pages/home.html:43
+msgid "Exporters/Importers"
+msgstr "Eksporter/Importir"
+
+#: trade_portal/templates/pages/home.html:44
+msgid ""
+"Improve efficiency and reduce non-compliance risks through increased "
+"visibility and end-to-end digitisation and trust."
+msgstr ""
+"Meningkatkan efisiensi dan mengurangi risiko ketidakpatuhan melalui "
+"peningkatan visibilitas dan digitalisasi dan kepercayaan end-to-end."
+
+#: trade_portal/templates/pages/home.html:50
+msgid "Logistics Providers"
+msgstr "Penyedia Logistik"
+
+#: trade_portal/templates/pages/home.html:51
+msgid ""
+"Attach your consignment references to certificates and other documents for "
+"automated matching and processing by importing regulators."
+msgstr ""
+"Lampirkan referensi kiriman Anda ke sertifikat dan dokumen lain untuk "
+"pencocokan dan pemrosesan otomatis dengan mengimpor regulator."
+
+#: trade_portal/templates/pages/home.html:57
+msgid "Regulators"
+msgstr "Regulator"
+
+#: trade_portal/templates/pages/home.html:58
+msgid ""
+"Improve trade facilitation and compliance outcomes through trusted digital "
+"data exchange with your international counterparties."
+msgstr ""
+"Tingkatkan fasilitasi perdagangan dan hasil kepatuhan melalui pertukaran "
+"data digital tepercaya dengan counterparty internasional Anda."
+
+#: trade_portal/users/apps.py:7
+msgid "Users"
+msgstr "Pengguna"
+
+#: trade_portal/users/forms.py:16 trade_portal/users/forms.py:69
+msgid "First name"
+msgstr "Nama pertama"
+
+#: trade_portal/users/forms.py:17 trade_portal/users/forms.py:70
+msgid "Last name"
+msgstr "Nama terakhir"
+
+#: trade_portal/users/forms.py:20
+msgid "This value will be verified"
+msgstr "Nilai ini akan disahkan"
+
+#: trade_portal/users/forms.py:22 trade_portal/users/forms.py:71
+msgid "Mobile phone number"
+msgstr "Nomor telepon seluler"
+
+#: trade_portal/users/forms.py:35
+msgid "Your business"
+msgstr "Bisnis Anda"
+
+#: trade_portal/users/forms.py:36
+msgid "Choose a password"
+msgstr "Pilih kata sandi"
+
+#: trade_portal/users/forms.py:37
+msgid "Your business email address"
+msgstr "Alamat email bisnis Anda"
+
+#: trade_portal/users/forms.py:52
+msgid "Entered phone number is already used in maximal number of accounts"
+msgstr ""
+"Nomor telepon yang dimasukkan sudah digunakan dalam jumlah maksimal akun"
+
+#: trade_portal/users/forms.py:104
+msgid ""
+"This field is optional but uploading it will help the review. Please make "
+"sure the image uploaded is clearly readable."
+msgstr ""
+"Bidang ini bersifat opsional tetapi mengunggahnya akan membantu peninjauan. "
+"Pastikan gambar yang diunggah dapat dibaca dengan jelas."
+
+#: trade_portal/users/models.py:16
+msgid "The value provided by user on registration step"
+msgstr "Nilai yang diberikan oleh pengguna pada langkah pendaftaran"
+
+#: trade_portal/users/models.py:24
+msgid "Value appears here only after validation"
+msgstr "Nilai muncul di sini hanya setelah validasi"
+
+#: trade_portal/users/models.py:89
+msgid "Admin (can add users)"
+msgstr "Admin (dapat menambahkan pengguna)"
+
+#: trade_portal/users/models.py:90
+msgid "User (can use org but not add users)"
+msgstr "Pengguna (dapat menggunakan org tetapi tidak menambahkan pengguna)"
+
+#: trade_portal/users/models.py:112
+msgid "ABN for Australia"
+msgstr "ABN para Australia"
+
+#: trade_portal/users/models.py:134 trade_portal/users/models.py:148
+msgid "Chamber"
+msgstr "Kamar"
+
+#: trade_portal/users/models.py:136
+msgid "Regulator"
+msgstr "Regulator"
+
+#: trade_portal/users/models.py:157
+msgid "Requested"
+msgstr "Diminta"
+
+#: trade_portal/users/models.py:158
+#: trade_portal/users/templates/users/roles-requests.html:35
+msgid "Evidence"
+msgstr "Bukti"
+
+#: trade_portal/users/models.py:159
+msgid "Approved"
+msgstr "Disetujui"
+
+#: trade_portal/users/templates/users/pending.html:19
+msgid "Pending users"
+msgstr "Pengguna yang tertunda"
+
+#: trade_portal/users/templates/users/pending.html:20
+#, python-format
+msgid ""
+"These users are freshly registered and have no organisation assighed - thus "
+"may need manual action to be able to use the portal. If the %(BID_NAME)s "
+"entered on registration correlates to existing organisation (already created"
+" in the Portal) you will be able to grant this user access to this "
+"organisation. If there is no such organisation it may be created. Users have"
+" no access to the Portal functionality while in this list."
+msgstr ""
+"Pengguna ini baru saja terdaftar dan tidak memiliki organisasi assighed - "
+"sehingga mungkin perlu tindakan manual untuk dapat menggunakan portal. Jika "
+"%(BID_NAME)s yang dimasukkan pada pendaftaran berkorelasi dengan organisasi "
+"yang ada (sudah dibuat di Portal), Anda akan dapat memberikan akses pengguna"
+" ini ke organisasi ini. Jika tidak ada organisasi semacam itu, organisasi "
+"tersebut dapat dibuat. Pengguna tidak memiliki akses ke fungsi Portal "
+"sementara dalam daftar ini."
+
+#: trade_portal/users/templates/users/pending.html:32
+msgid "Email"
+msgstr "Email"
+
+#: trade_portal/users/templates/users/pending.html:33
+msgid "Name"
+msgstr "Nama"
+
+#: trade_portal/users/templates/users/pending.html:34
+msgid "Joined at"
+msgstr "Bergabung di"
+
+#: trade_portal/users/templates/users/pending.html:35
+msgid "claimed"
+msgstr "diklaim"
+
+#: trade_portal/users/templates/users/pending.html:51
+#, python-format
+msgid "Add to %(org)s (%(org.get_type_display)s)"
+msgstr "Tambahkan ke %(org)s (%(org.get_type_display)s)"
+
+#: trade_portal/users/templates/users/pending.html:54
+#, python-format
+msgid "Create new organisation %(p_user.initial_business_id)s"
+msgstr "Buat organisasi baru %(p_user.initial_business_id)s"
+
+#: trade_portal/users/templates/users/roles-requests.html:7
+#: trade_portal/users/templates/users/roles-requests.html:19
+msgid "Pending Role Requests"
+msgstr "Permintaan Peran Tertunda"
+
+#: trade_portal/users/templates/users/roles-requests.html:20
+msgid ""
+"These roles were requested by users for their organisations, here you can "
+"approve or deny them."
+msgstr ""
+"Peran ini diminta oleh pengguna untuk organisasi mereka, di sini Anda dapat "
+"menyetujui atau menolaknya."
+
+#: trade_portal/users/templates/users/roles-requests.html:31
+msgid "Organisation"
+msgstr "Organisasi"
+
+#: trade_portal/users/templates/users/roles-requests.html:32
+msgid "Created by/at"
+msgstr "Dibuat oleh/di"
+
+#: trade_portal/users/templates/users/roles-requests.html:33
+msgid "Role"
+msgstr "Peran"
+
+#: trade_portal/users/templates/users/roles-requests.html:57
+msgid "Approve"
+msgstr "Setujui"
+
+#: trade_portal/users/templates/users/roles-requests.html:60
+msgid "Reject reason"
+msgstr "Tolak alasan"
+
+#: trade_portal/users/templates/users/roles-requests.html:62
+msgid "Reject"
+msgstr "Tolak"
+
+#: trade_portal/users/templates/users/roles-requests.html:66
+msgid "Evidence name"
+msgstr "Nama bukti"
+
+#: trade_portal/users/templates/users/roles-requests.html:70
+msgid "Re-request evidence"
+msgstr "Permintaan ulang bukti"
+
+#: trade_portal/users/templates/users/roles-requests.html:72
+msgid "Request evidence"
+msgstr "Meminta bukti"
+
+#: trade_portal/users/templates/users/user_form.html:15
+msgid "Profile update"
+msgstr "Pembaruan profil"
+
+#: trade_portal/users/views/management.py:64
+#, python-format
+msgid "The user has been added to the %s"
+msgstr "Pengguna telah ditambahkan ke%s"
+
+#: trade_portal/users/views/management.py:95
+msgid "The organisation has been created and this user got access to it"
+msgstr "Organisasi telah dibuat dan pengguna ini dapat mengaksesnya"
+
+#: trade_portal/users/views/management.py:136
+#, python-format
+msgid "Role %(role)s has been granted to %(org)s"
+msgstr "Peran %(role)s telah diberikan ke %(org)s"
+
+#: trade_portal/users/views/management.py:154
+#, python-format
+msgid ""
+"The request from %(org)s has been rejected and the user has been notified."
+msgstr ""
+"Permintaan dari %(org)s telah ditolak dan pengguna telah diberitahu."
+
+#: trade_portal/users/views/management.py:172
+msgid ""
+"The request has been marked as 'Evidence Requested' and will change it's "
+"status back once it's uploaded"
+msgstr ""
+"Permintaan telah ditandai sebagai 'Bukti Permintaan' dan akan mengubah "
+"statusnya kembali setelah diunggah"
+
+#: trade_portal/users/views/orgs.py:27
+msgid ""
+"The role request has been placed; It typically takes 2 workings days to "
+"review it"
+msgstr ""
+"Permintaan peran telah ditempatkan; Biasanya dibutuhkan 2 hari kerja untuk "
+"meninjaunya"
+
+#: trade_portal/users/views/users.py:54
+msgid ""
+"The file has been uploaded as an evidence and the request has been sent to "
+"review"
+msgstr ""
+"File telah diunggah sebagai bukti dan permintaan telah dikirim untuk "
+"ditinjau"
+
+#: trade_portal/users/views/users.py:73
+msgid "Your profile has been updated successfully"
+msgstr "Profil Anda telah berhasil diperbarui"
+
+#: trade_portal/users/views/users.py:108
+msgid "You don't have access to that org anymore"
+msgstr "Anda tidak memiliki akses ke organisasi itu lagi"
+
+#: trade_portal/users/views/users.py:115
+#, python-format
+msgid "The %s has been selected as the current organisation"
+msgstr "%s telah dipilih sebagai organisasi saat ini"
