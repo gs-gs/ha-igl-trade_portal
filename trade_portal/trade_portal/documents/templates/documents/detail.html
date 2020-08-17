@@ -45,14 +45,14 @@
       <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
       <ul class="nav nav-tabs">
         <li class="nav-item">
-          <a class="nav-link active" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
+          <a class="nav-link" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href="#igl-doc-qrcode">{% trans 'QR Code' %}</a>
+          <a class="nav-link active" data-toggle="tab" href="#igl-doc-qrcode">{% trans 'QR Code' %}</a>
         </li>
       </ul>
       <div class="tab-content">
-        <div class="tab-pane fade show active" id="igl-doc-key">
+        <div class="tab-pane fade" id="igl-doc-key">
           <div class="input-group">
             <input type="text" class="form-control" readonly value="{{ object.oa.url_repr }}" id="igl-doc-key-input">
             <div class="input-group-append">
@@ -60,7 +60,7 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="igl-doc-qrcode">
+        <div class="tab-pane fade show active" id="igl-doc-qrcode">
           <div class="qrcode-box">
             <div class="qrcode-box__picture">
               <img class="igl-doc-qrcode__image" src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" style="width: 100px">
@@ -154,46 +154,6 @@
         <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
       {% endif %}
     </dl>
-  </div>
-
-  <div class="section-info">
-    {% if object.files.all %}
-    <h2 class="subtitle section-info__title">{% trans 'Attachments' %}</h2>
-    <form action="#" method="POST" onSubmit="return confirm('Are you sure?')">
-      {% csrf_token %}
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>{% trans 'Type' %}</th>
-              <th>{% trans 'File and author' %}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for doc in object.files.all %}
-            <tr>
-              <td>
-                <small>{{ doc.extension }}</small>
-              </td>
-              <td title="{{ doc.filename }}">
-                {% if doc.is_upstream %}
-                <span class="oi oi-eye" style="font-size: 1em" title="{% trans 'The document will be sent to remote party' %}"></span>
-                {% endif %}
-                <a href="{% url 'documents:file-download' object.id doc.id %}">
-                  {{ doc.short_filename }}
-                </a>
-                <div class="document-info">
-                  {{ doc.created_at }} by
-                  <span class="document-owner">{{ doc.created_by|default:"system" }}</span>
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </form>
-    {% endif %}
   </div>
 
   {% if object.is_incoming %}
