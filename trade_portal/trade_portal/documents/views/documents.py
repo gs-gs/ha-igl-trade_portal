@@ -130,6 +130,8 @@ class DocumentCreateView(Login, CreateView):
 
     @statsd_timer("view.DocumentCreateView.dispatch")
     def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect('/')
         current_org = self.request.user.get_current_org(self.request.session)
         if not current_org.is_chambers:
             messages.error(self.request, _("Only chambers can create new documents"))

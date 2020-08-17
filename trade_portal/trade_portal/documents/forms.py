@@ -63,20 +63,12 @@ class DocumentCreateForm(forms.ModelForm):
                     (country, f"{country.name} ({fta.name})")
                 )
         self.fields['importing_country'].help_text = (
-            "Countries list is limited to the trade agreements entered in the system"
+            "The list is limited to the trade agreements entered in the system"
         )
         self.fields["importer_name"].label = "Importer Name (if known)"
+        self.fields["importer_name"].help_text = ""
         self.fields["consignment_ref_doc_type"].widget.attrs["class"] = "form-control"
         self.fields["exporter"].widget.attrs["class"] = "form-control"
-
-        importers_added = Party.objects.filter(
-            created_by_org=self.current_org,
-            type=Party.TYPE_TRADER,
-        )
-        if importers_added:
-            self.fields["importer_name"].help_text = "For example: " + ', '.join(
-                importers_added.exclude(name="").values_list("name", flat=True)
-            )
 
         if self.dtype == Document.TYPE_NONPREF_COO:
             del self.fields['fta']
@@ -89,6 +81,14 @@ class DocumentCreateForm(forms.ModelForm):
             self.fields['importing_country'].choices = (
                 (c.code, c.name) for c in all_active_countries
             )
+        else:
+            self.fields['fta'].label = False
+
+        self.fields['document_number'].label = False
+        self.fields['importing_country'].label = False
+        self.fields['importer_name'].label = False
+        self.fields['invoice_number'].label = False
+        self.fields['origin_criteria'].label = False
 
     def clean_exporter(self):
         value = self.cleaned_data.get("exporter").strip().replace(" ", "")

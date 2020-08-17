@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load crispy_forms_tags %}
+{% load siteblocks %}
 
 {% block title %}{% blocktrans %}Create {{ form.instance.get_type_display }}{% endblocktrans %}{% endblock %}
 
@@ -25,7 +26,7 @@
       {% endif %}
 
       <div class="form-group">
-        <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="IGL Document ID"><i class="icon icon-info"></i></span></div>
+        <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_document_id_field' %}"><i class="icon icon-info"></i></span></div>
         <ul class="nav nav-tabs">
           <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
@@ -58,8 +59,16 @@
       </div>
 
       <fieldset class="form-section">
-        <div class="subtitle form-section__title">{% trans 'Upload PDF' %} - {{ form.instance.get_type_display }}</div>
-        {{ form.file|as_crispy_field }}
+        <div class="form-group">
+          <label for="id_file">
+            {% trans 'Upload PDF' %} - {{ form.instance.get_type_display }}
+            <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_file_field' %}"><i class="icon icon-info"></i></span>
+          </label>
+          <div class="input-group">
+            {{ form.file }}
+          </div>
+        </div>
+
       </fieldset>
 
       <fieldset class="form-section">
@@ -67,24 +76,41 @@
 
         <div class="form-section__container">
 
-          {{ form.document_number|as_crispy_field }}
+          <div class="form-group" id="div_id_document_number">
+            <label for="id_document_number">
+              {% trans 'Document Number' %}
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_document_number_field' %}"><i class="icon icon-info"></i></span>
+            </label>
+            {{ form.document_number|as_crispy_field }}
+          </div>
 
           {% if form.fta %}
-            {{ form.fta|as_crispy_field }}
+            <div class="form-group">
+              <label for="id_fta">
+                {% trans 'FTA' %}
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_fta_field' %}"><i class="icon icon-info"></i></span>
+              </label>
+              {{ form.fta|as_crispy_field }}
+            </div>
           {% endif %}
 
-          {{ form.importing_country|as_crispy_field }}
+          <div class="form-group" id="div_id_importing_country">
+            <label for="id_importing_country">
+              {% trans 'Importing Jurisdiction' %}
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_importing_country_field' %}"><i class="icon icon-info"></i></span>
+            </label>
+            {{ form.importing_country|as_crispy_field }}
+          </div>
 
           <div class="form-group">
             <label for="consignmentDocIssuer">
               {% trans 'Exporter or Manufacturer' %} {{ BID_NAME }}*
-              <span class="help-icon" data-toggle="tooltip" title="Please enter the business identificator"><i class="icon icon-info"></i></span>
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_exporter_field' %}"><i class="icon icon-info"></i></span>
             </label>
             {% if form.exporter.errors %}
-                <div style="color: red">{{ form.exporter.errors }}</div>
-              {% endif %}
+              <div style="color: red">{{ form.exporter.errors }}</div>
+            {% endif %}
             <div class="input-group">
-
               {{ form.exporter }}
               <div class="input-group-append">
                 <a class="btn btn-md btn-link btn-advance-filter" type="button"
@@ -107,11 +133,29 @@
             <span id="hint_id_exporter"></span>
           </div>
 
-          {{ form.importer_name|as_crispy_field }}
+          <div class="form-group" id="div_id_importer_name">
+            <label for="id_importer_name">
+              {% trans 'Importer Name (if known)' %}
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_importer_name_field' %}"><i class="icon icon-info"></i></span>
+            </label>
+            {{ form.importer_name|as_crispy_field }}
+          </div>
 
-          {{ form.invoice_number|as_crispy_field }}
+          <div class="form-group" id="div_id_invoice_number">
+            <label for="id_invoice_number">
+              {% trans 'Invoice Number' %}
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_invoice_number_field' %}"><i class="icon icon-info"></i></span>
+            </label>
+            {{ form.invoice_number|as_crispy_field }}
+          </div>
 
-          {{ form.origin_criteria|as_crispy_field }}
+          <div class="form-group" id="div_id_origin_criteria">
+            <label for="id_origin_criteria">
+              {% trans 'Origin Criteria' %}
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_origin_criteria_field' %}"><i class="icon icon-info"></i></span>
+            </label>
+            {{ form.origin_criteria|as_crispy_field }}
+          </div>
 
         </div>
       </fieldset>
@@ -122,9 +166,9 @@
         <div class="form-section__container">
 
           <div class="form-group">
-            <label for="consignmentDocIssuer">
+            <label for="id_consignment_ref_doc_type">
               {% trans 'Document Type' %}
-              <span class="help-icon" data-toggle="tooltip" title="{% trans 'Consignment details' %}"><i class="icon icon-info"></i></span>
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_cons_doc_type_field' %}"><i class="icon icon-info"></i></span>
             </label>
             <div class="input-group">
               {{ form.consignment_ref_doc_type }}
@@ -132,7 +176,7 @@
           </div>
 
           <div class="form-group" id='id_document_issuer_block'>
-            <label for="consignmentDocIssuer">{% trans 'Document Issuer' %} {{ BID_NAME }}</label>
+            <label for="id_consignment_ref_doc_issuer">{% trans 'Document Issuer' %} {{ BID_NAME }}</label>
             <div class="input-group">
               {# TODO: add consignmentDocIssuer ID #}
               {{ form.consignment_ref_doc_issuer }}
@@ -153,22 +197,14 @@
                   </svg>
                 </a>
               </div>
-
-              {% comment %}
-              <div class="input-group-append">
-                <button class="btn btn-primary btn-search" type="button"><i class="icon icon-search"></i></button>
-              </div>
-              {% endcomment %}
             </div>
-
             <span id="hint_id_consignment_ref_doc_issuer"></span>
-
           </div>
 
           <div class="form-group">
-            <label for="consignmentDocIssuer">
+            <label for="id_consignment_ref_doc_number">
               {% trans 'Document Number' %}
-              <span class="help-icon" data-toggle="tooltip" title="Consignment details"><i class="icon icon-info"></i></span>
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_cons_doc_number_field' %}"><i class="icon icon-info"></i></span>
             </label>
             <div class="input-group">
               {{ form.consignment_ref_doc_number }}
