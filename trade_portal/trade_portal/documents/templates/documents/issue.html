@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load our_utils %}
+
+{% block title %}{% trans 'Review and issue' %} #{{ object.document_number }}{% endblock %}
+
+{% block content %}
+<div class="content-box">
+  <h1 class="page-title">{% trans 'Review and issue' %} {{ object.document_number }}</h1>
+
+  <div class="row">
+    <div class="col">
+      <div class="section-info">
+        <div class="subtitle section-info__title">{% trans 'Document data' %}</div>
+        <dl class="info-list">
+          <dt>{% trans 'Doc number' %}</dt>
+          <dd>{{ object.document_number|default:"(not specified)" }}</dd>
+          {% if not document.is_incoming %}
+            <dt>{% trans 'IGL Document ID' %}</dt>
+            <dd>
+              {{ object.pk }}<br/>
+              {% with object.get_igid_image_base64 as qrcode_image %}
+                {% if qrcode_image %}
+                  <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
+                {% endif %}
+              {% endwith %}
+            </dd>
+          {% endif %}
+          <dt>{% trans 'FTA' %}</dt>
+          <dd>{{ object.fta }}</dd>
+          <dt>{% trans 'Exporting country' %}</dt>
+          <dd>{{ object.sending_jurisdiction.name }}</dd>
+          <dt>{% trans 'Importing country' %}</dt>
+          <dd>{{ object.importing_country.name }}</dd>
+          <dt>{% trans 'Exporter' %}</dt>
+          <dd>
+            {% trans 'Entity' %}: {{ object.exporter.name }}<br/>
+            {% if object.exporter.register_url %}
+              {{ object.exporter.readable_identifier_name }}: <a href="{{ object.exporter.register_url }}" target="_blank">{{ object.exporter.business_id }}</a>
+            {% endif %}
+          </dd>
+          <dt>{% trans 'Importer name' %}</dt>
+          <dd>{{ object.importer_name|default:"(not specified)" }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="section-info">
+        <h2 class="subtitle section-info__title">{% trans 'Consignment details' %}</h2>
+        <dl class="info-list">
+          <dt>{% trans 'Doc number' %}</dt>
+          <dd>{{ object.consignment_ref_doc_number|default:"(not specified)" }}</dd>
+          <dt>{% trans 'Doc type'  %}</dt>
+          <dd>{{ object.consignment_ref_doc_type|default:"(not specified)" }}</dd>
+          <dt>{% trans 'Doc issuer' %}</dt>
+          <dd>{{ object.consignment_ref_doc_issuer|default:"(not specified)" }}</dd>
+          {% if created_by_org %}
+            <dt>{% trans 'Data provided by' %}</dt>
+            <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <p>The date specified above must match the information in the PDF document below - click "Back" to edit if not. Drag the QR code to a clear position on the document - the position will be remembered for this document type.</p>
+
+  <form action="#" method="POST">
+    {% csrf_token %}
+    <a href="{% url 'documents:update' object.pk %}" class="btn btn-secondary">Back</a>
+    <button type="submit" name="issue" class="btn btn-primary">Issue</button>
+  </form>
+
+  <br/><br/>
+
+  <iframe style="width: 100%; height: 500px" src="{% url 'documents:pdf-download' object.pk %}?inline=true" />
+
+
+
+</div>
+{% endblock content %}

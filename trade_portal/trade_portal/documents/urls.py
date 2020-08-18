@@ -2,7 +2,8 @@ from django.urls import path
 
 from trade_portal.documents.views.documents import (
     DocumentListView, DocumentCreateView,
-    DocumentDetailView, DocumentLogsView,
+    DocumentDetailView, DocumentUpdateView, DocumentIssueView,
+    DocumentLogsView,
     DocumentFileDownloadView, DocumentHistoryFileDownloadView,
     ConsignmentUpdateView,
 )
@@ -16,6 +17,8 @@ urlpatterns = [
     path("create-<str:dtype>/<uuid:oa>/", view=DocumentCreateView.as_view(), name="create-specific"),
     path("create-<str:dtype>/", view=DocumentCreateView.as_view(), name="create"),
     path("<uuid:pk>/", view=DocumentDetailView.as_view(), name="detail"),
+    path("<uuid:pk>/issue/", view=DocumentIssueView.as_view(), name="issue"),
+    path("<uuid:pk>/update/", view=DocumentUpdateView.as_view(), name="update"),
     path("<uuid:pk>/logs/", view=DocumentLogsView.as_view(), name="logs"),
     path("<uuid:pk>/consignment-update/", view=ConsignmentUpdateView.as_view(), name="consignment-update"),
     path(
@@ -25,8 +28,13 @@ urlpatterns = [
     ),
     path(
         "<uuid:pk>/documents/oa/",
-        view=DocumentFileDownloadView.as_view(),
+        view=DocumentFileDownloadView.as_view(doc_type="oa"),
         name="oa-download"
+    ),
+    path(
+        "<uuid:pk>/documents/pdf/",
+        view=DocumentFileDownloadView.as_view(doc_type="pdf"),
+        name="pdf-download"
     ),
     path(
         "<uuid:pk>/historyfile/<int:history_item_id>/",

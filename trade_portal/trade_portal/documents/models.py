@@ -238,6 +238,28 @@ class Document(models.Model):
         (STATUS_INCOMING, _("Incoming")),
     )
 
+    # OA verification status section
+    V_STATUS_PENDING = 'pending'
+    V_STATUS_VALID = 'valid'
+    V_STATUS_FAILED = 'failed'
+    V_STATUS_ERROR = 'error'
+
+    V_STATUS_CHOICES = (
+        (V_STATUS_PENDING, "Pending"),
+        (V_STATUS_VALID, "valid"),
+        (V_STATUS_FAILED, "failed"),
+        (V_STATUS_ERROR, "error"),
+    )
+
+    # UI workflow section - it's responsibility is to show/hide buttons
+    # for users wanting to perform some actions
+    WORKFLOW_STATUS_DRAFT = "draft"
+    WORKFLOW_STATUS_ISSUED = "issued"
+    WORKFLOW_STATUS_CHOICES = (
+        (WORKFLOW_STATUS_DRAFT, "Draft"),
+        (WORKFLOW_STATUS_ISSUED, "Issued")
+    )
+
     TYPE_PREF_COO = "pref_coo"
     TYPE_NONPREF_COO = "non_pref_coo"
 
@@ -340,9 +362,20 @@ class Document(models.Model):
         help_text=_("Details about communication with the Intergov")
     )
     # https://edi3.org/specs/edi3-regulatory/develop/certificates/#state-lifecycle
+    # IGL message status
     status = models.CharField(
-        _("Status"),
+        _("Message Status"),
         max_length=12, choices=STATUS_CHOICES, default=STATUS_PENDING
+    )
+    verification_status = models.CharField(
+        _("Verification Status"),
+        max_length=32, default=V_STATUS_PENDING,
+        choices=V_STATUS_CHOICES
+    )
+    workflow_status = models.CharField(
+        _("Workflow status"), max_length=32,
+        default=WORKFLOW_STATUS_DRAFT,
+        choices=WORKFLOW_STATUS_CHOICES,
     )
 
     search_field = models.TextField(blank=True, default="")

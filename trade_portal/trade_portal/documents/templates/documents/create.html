@@ -25,51 +25,54 @@
         <div class="alert alert-danger">{% trans 'Please fix the errors highlighted below' %}</div>
       {% endif %}
 
-      <div class="form-group">
-        <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_document_id_field' %}"><i class="icon icon-info"></i></span></div>
-        <ul class="nav nav-tabs">
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#igl-doc-qrcode">{% trans 'QR Code' %}</a>
-          </li>
-        </ul>
-        <div class="tab-content">
-          <div class="tab-pane fade" id="igl-doc-key">
-            <div class="input-group">
-              <input type="text" class="form-control" readonly value="{{ form.oa.url_repr }}" id="igl-doc-key-input">
-              <div class="input-group-append">
-                <button type="button" class="btn btn-primary" id="copy-button" onclick="copyToClipboard('igl-doc-key-input')"><i class="icon icon-copy"></i></button>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade show active" id="igl-doc-qrcode">
-            <div class="qrcode-box">
-              <div class="qrcode-box__picture">
-                <img class="igl-doc-qrcode__image" src="data:image/png;base64,{{ form.oa.get_qr_image_base64 }}" alt="{{ form.oa.url_repr }}" style="width: 100px">
-              </div>
-              <div class="qrcode-box__content">
-                <p class="qrcode-box__description">{% blocktrans %}This QR code will be added to your document to represent the "digital proof" issued by the ABF. It will allow any party in the supply chain to verify the document simply by scanning the code with a smartphone.{% endblocktrans %}</p>
-                <!-- <a class="btn btn-outline-white btn-sm qrcode-box__print" href="#"><i class="icon icon-print"></i>Print</a> -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <fieldset class="form-section">
+      {% if form.oa %}
         <div class="form-group">
-          <label for="id_file">
-            {% trans 'Upload PDF' %} - {{ form.instance.get_type_display }}
-            <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_file_field' %}"><i class="icon icon-info"></i></span>
-          </label>
-          <div class="input-group">
-            {{ form.file }}
+          <div class="label">{% trans 'IGL Document ID' %} <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_document_id_field' %}"><i class="icon icon-info"></i></span></div>
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#igl-doc-key">{% trans 'Key' %}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" href="#igl-doc-qrcode">{% trans 'QR Code' %}</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade" id="igl-doc-key">
+              <div class="input-group">
+                <input type="text" class="form-control" readonly value="{{ form.oa.url_repr }}" id="igl-doc-key-input">
+                <div class="input-group-append">
+                  <button type="button" class="btn btn-primary" id="copy-button" onclick="copyToClipboard('igl-doc-key-input')"><i class="icon icon-copy"></i></button>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade show active" id="igl-doc-qrcode">
+              <div class="qrcode-box">
+                <div class="qrcode-box__picture">
+                  <img class="igl-doc-qrcode__image" src="data:image/png;base64,{{ form.oa.get_qr_image_base64 }}" alt="{{ form.oa.url_repr }}" style="width: 100px">
+                </div>
+                <div class="qrcode-box__content">
+                  <p class="qrcode-box__description">{% blocktrans %}This QR code will be added to your document to represent the "digital proof" issued by the ABF. It will allow any party in the supply chain to verify the document simply by scanning the code with a smartphone.{% endblocktrans %}</p>
+                  <!-- <a class="btn btn-outline-white btn-sm qrcode-box__print" href="#"><i class="icon icon-print"></i>Print</a> -->
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      {% endif %}
 
-      </fieldset>
+      {% if form.file %}
+        <fieldset class="form-section">
+          <div class="form-group">
+            <label for="id_file">
+              {% trans 'Upload PDF' %} - {{ form.instance.get_type_display }}
+              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_file_field' %}"><i class="icon icon-info"></i></span>
+            </label>
+            <div class="input-group">
+              {{ form.file }}
+            </div>
+          </div>
+        </fieldset>
+      {% endif %}
 
       <fieldset class="form-section">
         <div class="subtitle form-section__title">{% trans 'Document Metadata' %}</div>

@@ -3,7 +3,6 @@ from django.conf import settings
 
 from trade_portal.legi.abr import fetch_abn_info
 
-from .tasks import lodge_document
 from .models import Party, Document, DocumentHistoryItem, DocumentFile, FTA
 
 
@@ -46,6 +45,9 @@ class DocumentCreateForm(forms.ModelForm):
         self.current_org = kwargs.pop('current_org')
         super().__init__(*args, **kwargs)
         self.instance.type = self.dtype
+        self._prepare_fields()
+
+    def _prepare_fields(self):
         self.fields["origin_criteria"].choices = [
             ('', 'Please Select Origin Criteria...'),
         ] + self.fields["origin_criteria"].choices[1:]
@@ -162,11 +164,23 @@ class DocumentCreateForm(forms.ModelForm):
             message=f"The document has been created by {self.user}",
         )
 
-        lodge_document.apply_async(
-            [result.pk],
-            countdown=2
-        )
         return result
+
+
+class DraftDocumentUpdateForm(DocumentCreateForm):
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        self.current_org = kwargs.pop('current_org')
+        super(DocumentCreateForm, self).__init__(*args, **kwargs)
+        self.dtype = self.instance.type
+        self._prepare_fields()
+        del self.fields["file"]
+        self.initial['exporter'] = self.instance.exporter.business_id
+        self.fields["exporter"].initial = self.instance.exporter.business_id
+
+    def save(self, *args, **kwargs):
+        return super(DocumentCreateForm, self).save(*args, **kwargs)
 
 
 class ConsignmentSectionUpdateForm(forms.ModelForm):

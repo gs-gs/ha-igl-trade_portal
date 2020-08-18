@@ -104,7 +104,7 @@ class IntergovClient(object):
             'document': ('document.json', document_body)
         }
         resp = requests.post(
-            self.ENDPOINTS["document"] + f"/countries/{receiver}",
+            self.ENDPOINTS["document"] + f"/jurisdictions/{receiver}",
             files=files,
             headers={
                 auth_h_name: auth_h_value,
@@ -124,7 +124,7 @@ class IntergovClient(object):
             'document': ('document.json', document_stream)
         }
         resp = requests.post(
-            self.ENDPOINTS["document"] + f"/countries/{receiver}",
+            self.ENDPOINTS["document"] + f"/jurisdictions/{receiver}",
             files=files,
             headers={
                 auth_h_name: auth_h_value,

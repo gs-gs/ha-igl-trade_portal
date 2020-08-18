@@ -13,11 +13,11 @@ from django.utils.translation import gettext as _
 
 
 from trade_portal.documents.forms import (
-    DocumentCreateForm, ConsignmentSectionUpdateForm,
+    DocumentCreateForm, DraftDocumentUpdateForm, ConsignmentSectionUpdateForm,
 )
 from trade_portal.documents.models import Document, OaDetails, DocumentFile
 from trade_portal.documents.tables import DocumentsTable
-# from trade_portal.documents.tasks import lodge_document
+from trade_portal.documents.tasks import lodge_document
 from trade_portal.utils.monitoring import statsd_timer
 
 
@@ -131,7 +131,7 @@ class DocumentCreateView(Login, CreateView):
     @statsd_timer("view.DocumentCreateView.dispatch")
     def dispatch(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
-            return redirect('/')
+            return self.handle_no_permission()
         current_org = self.request.user.get_current_org(self.request.session)
         if not current_org.is_chambers:
             messages.error(self.request, _("Only chambers can create new documents"))
@@ -166,19 +166,89 @@ class DocumentCreateView(Login, CreateView):
         return k
 
     def get_success_url(self):
-        messages.success(
-            self.request,
-            _(
-                "The document you have just created will be notarised and will be sent "
-                "to the importing country via the Secure Trade Lane."
-            )
-        )
-        return reverse('documents:detail', args=[self.object.pk])
+        return reverse('documents:issue', args=[self.object.pk])
 
 
 class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
     template_name = 'documents/detail.html'
     model = Document
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.workflow_status == Document.WORKFLOW_STATUS_DRAFT:
+            # this is draft statement, show user the step2 submission
+            # page in all cases
+            return redirect(
+                'documents:issue', obj.pk
+            )
+        return super().get(request, *args, **kwargs)
+
+
+class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
+    template_name = 'documents/issue.html'
+    model = Document
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
+            return redirect(
+                'documents:detail', obj.pk
+            )
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
+            return redirect(
+                'documents:detail', obj.pk
+            )
+        if "issue" in request.POST:
+            messages.success(
+                self.request,
+                _(
+                    "The document you have just created will be notarised and will be sent "
+                    "to the importing country via the Secure Trade Lane."
+                )
+            )
+            lodge_document.apply_async(
+                [obj.pk],
+                countdown=2
+            )
+
+        return redirect("documents:detail", obj.pk)
+
+
+class DocumentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
+    # Only for 'draft' status
+    template_name = 'documents/update.html'
+    form_class = DraftDocumentUpdateForm
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return self.handle_no_permission()
+        # we don't check for document visibility because it's done by mixin
+        current_org = self.request.user.get_current_org(self.request.session)
+        if not current_org.is_chambers and not current_org.is_trader:
+            messages.error(
+                self.request,
+                _("Only chambers and trade party can update these details")
+            )
+            return redirect('/documents/')
+        return super().dispatch(*args, **kwargs)
+
+    def get_form_kwargs(self):
+        k = super().get_form_kwargs()
+        current_org = self.request.user.get_current_org(self.request.session)
+        k['user'] = self.request.user
+        k['current_org'] = current_org
+        return k
+
+    def get_success_url(self):
+        messages.success(
+            self.request,
+            _("The document details have been updated")
+        )
+        return reverse('documents:issue', args=[self.object.pk])
 
 
 class DocumentLogsView(Login, DocumentQuerysetMixin, DetailView):
@@ -187,14 +257,20 @@ class DocumentLogsView(Login, DocumentQuerysetMixin, DetailView):
 
 
 class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
+    doc_type = "file"
 
     def get_object(self):
         try:
             c = self.get_queryset().get(pk=self.kwargs['pk'])
             if "file_pk" in self.kwargs:
                 doc = c.files.get(id=self.kwargs['file_pk'])
-            else:
+            elif self.doc_type == "oa":
                 doc = c.get_vc()
+            elif self.doc_type == "pdf":
+                first_pdf = c.files.filter(filename__endswith=".pdf").first()
+                if not first_pdf:
+                    first_pdf = c.files.all().first()
+                return first_pdf
         except ObjectDoesNotExist:
             raise Http404()
         return doc
@@ -203,14 +279,22 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
         # standard file approach
         document = self.get_object()
         if isinstance(document, DocumentFile):
-            response = HttpResponse(document.file, content_type='application/octet-stream')
-            response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
+            content_type = (
+                "application/pdf"
+                if document.filename.lower().endswith(".pdf")
+                else 'application/octet-stream'
+            )
+            response = HttpResponse(document.file, content_type=content_type)
+            if not self.request.GET.get('inline'):
+                response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
         elif document is None:
             raise Http404()
-        else:
+        elif self.doc_type == "oa":
             # OA document from the OA details object
             response = HttpResponse(document, content_type='application/json')
             response['Content-Disposition'] = 'attachment; filename=OA.json'
+        else:
+            raise Exception("Unkown document type")
         return response
 
 

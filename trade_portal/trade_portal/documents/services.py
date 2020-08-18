@@ -237,6 +237,7 @@ class DocumentService(BaseIgService):
             document.status = Document.STATUS_FAILED
             document.save()
             return False
+        document.workflow_status = Document.WORKFLOW_STATUS_ISSUED
         document.save()
 
         msg = NodeMessage.objects.create(
