@@ -200,11 +200,11 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
-            obj.workflow_status = Document.WORKFLOW_STATUS_ISSUED
             return redirect(
                 'documents:detail', obj.pk
             )
         if "issue" in request.POST:
+            obj.workflow_status = Document.WORKFLOW_STATUS_ISSUED
             obj.extra_data["qr_x_position"] = request.POST.get("qr_x")
             obj.extra_data["qr_y_position"] = request.POST.get("qr_y")
             obj.save()
