@@ -505,7 +505,9 @@ class DocumentFile(models.Model):
         blank=True, null=True,
     )
 
-    file = models.FileField(upload_to=generate_docfile_filename)
+    file = models.FileField(
+        upload_to=generate_docfile_filename,
+    )
     original_file = models.FileField(upload_to=generate_docfile_filename)
     filename = models.CharField(
         max_length=1000, blank=True, default="unknown.pdf",

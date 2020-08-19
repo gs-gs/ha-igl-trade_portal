@@ -207,7 +207,7 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
                 self.request,
                 _(
                     "The document you have just created will be notarised and will be sent "
-                    "to the importing country via the Secure Trade Lane."
+                    "to the importing country via the IGL."
                 )
             )
             lodge_document.apply_async(
@@ -287,7 +287,7 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
             if self.request.GET.get("original"):
                 the_file = document.original_file
             else:
-                the_file = document.original_file
+                the_file = document.file
             response = HttpResponse(the_file, content_type=content_type)
             if not self.request.GET.get('inline'):
                 response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename

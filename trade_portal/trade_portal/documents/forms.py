@@ -116,6 +116,12 @@ class DocumentCreateForm(forms.ModelForm):
         )
         return exporter_party
 
+    def clean_file(self):
+        file = self.cleaned_data.get("file")
+        if not file.name.lower().endswith(".pdf"):
+            raise forms.ValidationError("Please provide a PDF file")
+        return file
+
     def save(self, *args, **kwargs):
         self.instance.oa = self.oa
         self.instance.type = self.dtype

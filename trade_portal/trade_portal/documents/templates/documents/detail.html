@@ -21,20 +21,22 @@
 
       {% for doc in object.files.all %}
         {% if doc.extension and doc.extension != "?" %}
-          <a href="{% url 'documents:file-download' object.id doc.id %}" class="btn btn-primary btn-sm">Download {{ doc.extension }}</a>
+          <a href="{% url 'documents:file-download' object.id doc.id %}" class="btn btn-primary btn-sm" style="width: 150px">Download {{ doc.extension }}</a>
         {% endif %}
       {% endfor %}
       {% if document.get_vc %}
-        <a href="{% url 'documents:oa-download' object.id %}" class="btn btn-primary btn-sm">Download VC</a>
+        <a href="{% url 'documents:oa-download' object.id %}" class="btn btn-primary btn-sm" style="width: 150px">Download VC</a>
+      {% else %}
+        <a href="#" class="btn btn-secondary btn-sm" disabled style="width: 150px" title="{% trans 'Just a moment, we are preparing your document...' %}">Download VC</a>
       {% endif %}
     </div>
     <div class="col">
       <strong>Inter-Government Message</strong><br/>
-      Status: {{ object.get_status_display }}
-      <a href="logs/" class="btn btn-primary btn-sm">Logs</a><br/>
+      Status: {{ object.get_status_display }}<br/>
       {% blocktrans %}
-      The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes
+      <p>The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes</p>
       {% endblocktrans %}
+      <a href="logs/" class="btn btn-primary btn-sm" style="width: 150px">Logs</a><br/>
     </div>
   </div>
 

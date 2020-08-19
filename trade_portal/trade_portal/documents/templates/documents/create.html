@@ -67,6 +67,9 @@
               {% trans 'Upload PDF' %} - {{ form.instance.get_type_display }}
               <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_file_field' %}"><i class="icon icon-info"></i></span>
             </label>
+            {% if form.file.errors %}
+              <div style="color: red">{{ form.file.errors.as_text }}</div>
+            {% endif %}
             <div class="input-group">
               {{ form.file }}
             </div>
