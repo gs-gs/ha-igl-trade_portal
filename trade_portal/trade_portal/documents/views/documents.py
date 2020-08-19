@@ -16,6 +16,7 @@ from trade_portal.documents.forms import (
     DocumentCreateForm, DraftDocumentUpdateForm, ConsignmentSectionUpdateForm,
 )
 from trade_portal.documents.models import Document, OaDetails, DocumentFile
+from trade_portal.documents.services import WatermarkService
 from trade_portal.documents.tables import DocumentsTable
 from trade_portal.documents.tasks import lodge_document
 from trade_portal.utils.monitoring import statsd_timer
@@ -199,10 +200,14 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
+            obj.workflow_status = Document.WORKFLOW_STATUS_ISSUED
             return redirect(
                 'documents:detail', obj.pk
             )
         if "issue" in request.POST:
+            obj.extra_data["qr_x_position"] = request.POST.get("qr_x")
+            obj.extra_data["qr_y_position"] = request.POST.get("qr_y")
+            obj.save()
             messages.success(
                 self.request,
                 _(
@@ -288,9 +293,16 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
                 the_file = document.original_file
             else:
                 the_file = document.file
-            response = HttpResponse(the_file, content_type=content_type)
-            if not self.request.GET.get('inline'):
-                response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
+
+            if self.request.GET.get("as_png"):
+                response = HttpResponse(
+                    WatermarkService().get_first_page_as_png(the_file),
+                    content_type="image/png"
+                )
+            else:
+                response = HttpResponse(the_file, content_type=content_type)
+                if not self.request.GET.get('inline'):
+                    response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
         elif document is None:
             raise Http404()
         elif self.doc_type == "oa":

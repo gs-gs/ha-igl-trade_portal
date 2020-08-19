@@ -9,6 +9,8 @@ RUN apt-get update \
   && apt-get install -y libpq-dev \
   # Translations dependencies
   && apt-get install -y gettext \
+  # Pdf/Image deps
+  && apt-get install -y libmagickwand-dev ghostscript \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
@@ -49,6 +51,10 @@ COPY --chown=django:django . /app
 
 RUN DJANGO_SETTINGS_MODULE="config.settings.production" DJANGO_SECRET_KEY="123" DATABASE_URL="postgres://" python /app/manage.py collectstatic --noinput > /dev/null
 RUN DJANGO_SETTINGS_MODULE="config.settings.production" DJANGO_SECRET_KEY="123" DATABASE_URL="postgres://" python /app/manage.py compilemessages > /dev/null
+
+
+# enable PDF conversion in wand/imagemagick
+RUN python -c "result = open('/etc/ImageMagick-6/policy.xml').read().replace('rights="\""none"\"" pattern="\""PDF"\""', 'rights="\""read | write"\"" pattern="\""PDF"\""'); open('/etc/ImageMagick-6/policy.xml', 'w').write(result)"
 
 RUN chmod -R 777 /tmp
 

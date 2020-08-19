@@ -72,13 +72,103 @@
     {% csrf_token %}
     <a href="{% url 'documents:update' object.pk %}" class="btn btn-secondary">Back</a>
     <button type="submit" name="issue" class="btn btn-primary">Issue</button>
+    <input type="text" name="qr_x" id="id_qr_x" value="0" style="display: hidden"/>
+    <input type="text" name="qr_y" id="id_qr_y" value="0" style="display: hidden" />
   </form>
 
   <br/><br/>
 
-  <iframe style="width: 100%; height: 500px" src="{% url 'documents:pdf-download' object.pk %}?inline=true" />
+  <div id="id_qr_code_area">
+    <img class="igl-doc-qrcode__image"
+      src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" id="id_qr_code" />
+
+    <img src="{% url 'documents:pdf-download' object.pk %}?inline=true&as_png=true"
+         id="id_base_image"
+          />
+  </div>
+
+  {% comment %}
+    <iframe style="width: 500px; height: 700px" src="{% url 'documents:pdf-download' object.pk %}?inline=true" />
+  {% endcomment %}
 
 
 
 </div>
 {% endblock content %}
+
+
+{% block extra_head %}
+  {{ block.super }}
+  <style>
+    /* 210 x 297 */
+    div#id_qr_code_area {
+      width: 210mm;
+      border: 1px solid black;
+    }
+
+    div#id_qr_code_area #id_qr_code {
+      width: 30mm;
+      position: absolute;
+      z-index: 9;
+      cursor: move;
+    }
+
+    div#id_qr_code_area #id_base_image {
+      width: 210mm;
+      border: 1px solid gray;
+    }
+  </style>
+{% endblock %}
+
+{% block extra_script %}
+  <script>
+    // Make the DIV element draggable:
+    dragElement(document.getElementById("id_qr_code"));
+
+    function dragElement(elmnt) {
+      var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      elmnt.onmousedown = dragMouseDown;
+
+      function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // get the mouse cursor position at startup:
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        // call a function whenever the cursor moves:
+        document.onmousemove = elementDrag;
+      }
+
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // calculate the new cursor position:
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        // set the element's new position:
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      }
+
+      function closeDragElement() {
+
+        var parentPos = document.getElementById('id_qr_code_area').getBoundingClientRect();
+        var childPos = document.getElementById('id_qr_code').getBoundingClientRect();
+        var imagePos = document.getElementById('id_base_image').getBoundingClientRect();
+
+        var top = ((childPos.top - parentPos.top) / (parentPos.height / 100 )).toFixed(2);
+        var left = ((childPos.left - parentPos.left) / (parentPos.width / 100)).toFixed(2);
+
+        document.getElementById("id_qr_y").value = top;
+        document.getElementById("id_qr_x").value = left;
+
+        // stop moving when mouse button is released:
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    }
+  </script>
+{% endblock %}

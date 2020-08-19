@@ -860,10 +860,32 @@ class WatermarkService:
         # Prepare the PDF document containing only QR code
         qrcode_stream = io.BytesIO()
         c = canvas.Canvas(qrcode_stream, pagesize=A4)
+
+        x_loc = float(
+            docfile.doc.extra_data.get("qr_x_position") or 83
+        ) / 100
+        y_loc = 1 - float(
+            docfile.doc.extra_data.get("qr_y_position") or 4
+        ) / 100
+
+        if x_loc < 0:
+            x_loc = 0
+        if x_loc > 100:
+            x_loc = 100
+        if y_loc < 0:
+            y_loc = 0
+        if y_loc > 100:
+            y_loc = 100
+
+        image_width = 3 * cm
+
+        image_x_loc = A4[0] * x_loc
+        image_y_loc = A4[1] * y_loc - image_width
+
         c.drawImage(
             ImageReader(qrcode_image),
-            A4[0] - 3 * cm - 1 * cm, A4[1] - 3 * cm - 1 * cm,
-            width=3*cm, height=3*cm, preserveAspectRatio=1,
+            image_x_loc, image_y_loc,
+            width=image_width, height=image_width, preserveAspectRatio=1,
         )
         c.save()
 
@@ -898,3 +920,23 @@ class WatermarkService:
         docfile.is_watermarked = True
         docfile.save()
         return
+
+    def get_first_page_as_png(self, source, page_number=0):
+        import PyPDF2
+        from wand.image import Image
+
+        resolution = 60
+        source = PyPDF2.PdfFileReader(source)
+        dst_pdf = PyPDF2.PdfFileWriter()
+        dst_pdf.addPage(source.getPage(page_number))
+
+        pdf_bytes = io.BytesIO()
+        dst_pdf.write(pdf_bytes)
+        pdf_bytes.seek(0)
+        img = Image(file=pdf_bytes, resolution=resolution)
+        img.convert("png")
+        img.format = 'png'
+        stream = io.BytesIO()
+        img.save(file=stream)
+        stream.seek(0)
+        return stream

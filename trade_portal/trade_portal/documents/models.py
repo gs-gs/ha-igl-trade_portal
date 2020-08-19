@@ -378,6 +378,11 @@ class Document(models.Model):
         choices=WORKFLOW_STATUS_CHOICES,
     )
 
+    extra_data = JSONField(
+        default=dict, blank=True,
+        help_text=_("Extra data like the QR code position")
+    )
+
     search_field = models.TextField(blank=True, default="")
 
     class Meta:

@@ -21,7 +21,10 @@
 
       {% for doc in object.files.all %}
         {% if doc.extension and doc.extension != "?" %}
-          <a href="{% url 'documents:file-download' object.id doc.id %}" class="btn btn-primary btn-sm" style="width: 150px">Download {{ doc.extension }}</a>
+          <a href="{% url 'documents:file-download' object.id doc.id %}" class="btn btn-primary btn-sm" style="width: 150px">
+            Download {{ doc.extension }}
+            {% if not doc.is_watermarked %}<small>(processing...)</small>{% endif %}
+          </a>
         {% endif %}
       {% endfor %}
       {% if document.get_vc %}
@@ -109,12 +112,7 @@
       {% if not document.is_incoming %}
         <dt>{% trans 'IGL Document ID' %}</dt>
         <dd>
-          {{ object.pk }}<br/>
-          {% with object.get_igid_image_base64 as qrcode_image %}
-            {% if qrcode_image %}
-              <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
-            {% endif %}
-          {% endwith %}
+          {{ object.pk }}
         </dd>
       {% endif %}
       <dt>{% trans 'FTA' %}</dt>
