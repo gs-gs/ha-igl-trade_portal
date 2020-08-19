@@ -231,6 +231,12 @@ class DocumentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
     def dispatch(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             return self.handle_no_permission()
+
+        obj = self.get_object()
+        if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
+            return redirect(
+                'documents:detail', obj.pk
+            )
         # we don't check for document visibility because it's done by mixin
         current_org = self.request.user.get_current_org(self.request.session)
         if not current_org.is_chambers and not current_org.is_trader:

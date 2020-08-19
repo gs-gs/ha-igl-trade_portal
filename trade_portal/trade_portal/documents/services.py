@@ -925,7 +925,7 @@ class WatermarkService:
         import PyPDF2
         from wand.image import Image
 
-        resolution = 60
+        resolution = 140
         source = PyPDF2.PdfFileReader(source)
         dst_pdf = PyPDF2.PdfFileWriter()
         dst_pdf.addPage(source.getPage(page_number))
