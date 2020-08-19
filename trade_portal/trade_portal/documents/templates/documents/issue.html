@@ -72,8 +72,8 @@
     {% csrf_token %}
     <a href="{% url 'documents:update' object.pk %}" class="btn btn-secondary">Back</a>
     <button type="submit" name="issue" class="btn btn-primary">Issue</button>
-    <input type="text" name="qr_x" id="id_qr_x" value="0" style="display: hidden"/>
-    <input type="text" name="qr_y" id="id_qr_y" value="0" style="display: hidden" />
+    <input type="text" name="qr_x" id="id_qr_x" value="0" style="visibility: hidden"/>
+    <input type="text" name="qr_y" id="id_qr_y" value="0" style="visibility: hidden" />
   </form>
 
   <br/><br/>
@@ -82,7 +82,7 @@
     <img class="igl-doc-qrcode__image"
       src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" id="id_qr_code" />
 
-    <img src="{% url 'documents:pdf-download' object.pk %}?inline=true&as_png=true"
+    <img src="{% url 'documents:pdf-download' object.pk %}?inline=true&as_png=true&original=true"
          id="id_base_image"
           />
   </div>

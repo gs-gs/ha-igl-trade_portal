@@ -19,7 +19,7 @@
   <div class="document-form">
     <h1 class="page-title">{% blocktrans %}New {{ form.instance.get_type_display }}{% endblocktrans %}</h1>
 
-    <form method="POST" enctype="multipart/form-data" onSubmit="return confirm('Are you sure?')">
+    <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       {% if form.errors %}
         <div class="alert alert-danger">{% trans 'Please fix the errors highlighted below' %}</div>
