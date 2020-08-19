@@ -284,7 +284,11 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
                 if document.filename.lower().endswith(".pdf")
                 else 'application/octet-stream'
             )
-            response = HttpResponse(document.file, content_type=content_type)
+            if self.request.GET.get("original"):
+                the_file = document.original_file
+            else:
+                the_file = document.original_file
+            response = HttpResponse(the_file, content_type=content_type)
             if not self.request.GET.get('inline'):
                 response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
         elif document is None:
