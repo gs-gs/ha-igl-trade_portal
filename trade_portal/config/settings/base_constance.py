@@ -40,6 +40,15 @@ CONSTANCE_CONFIG = {
     'USERS_NOTIFICATIONS_MAILBOX': (
         '',
         'The email where new notifications about registered users/etc will be sent'
-    )
+    ),
 
+    # Universal actions QR code parameters
+    'UA_BASE_HOST': (
+        'https://action.openattestation.com/',
+        'Must end with /'
+    ),
+    'UA_VERIFY_HOST': (
+        'https://dev.tradetrust.io',
+        'Must not end with /'
+    ),
 }

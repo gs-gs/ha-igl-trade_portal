@@ -1,11 +1,14 @@
+import json
+import logging
+import mimetypes
 import os
 import random
-import mimetypes
 import string
-import logging
 import uuid
 from base64 import b64encode
+from urllib.parse import quote
 
+from constance import config
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -169,7 +172,21 @@ class OaDetails(models.Model):
         return self.uri
 
     def url_repr(self):
-        return 'tradetrust://{' + f'"uri":"{self.uri}#{self.key}"' + '}'
+        # Old approach, manual scan
+        # return 'tradetrust://{' + f'"uri":""' + '}'
+        # New approach, self-made url
+        params = {
+            "type": "DOCUMENT",
+            "payload": {
+                "uri": self.uri,
+                "key": self.key,
+                "permittedActions": ["VIEW"],
+                "redirect": config.UA_VERIFY_HOST
+            }
+        }
+        return (
+            f"{config.UA_BASE_HOST}?q={quote(json.dumps(params))}"
+        )
 
     @classmethod
     def retrieve_new(cls, for_org):
