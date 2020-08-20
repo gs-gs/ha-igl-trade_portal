@@ -197,6 +197,21 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
             )
         return super().get(request, *args, **kwargs)
 
+    def get_context_data(self, *args, **kwargs):
+        c = super().get_context_data(*args, **kwargs)
+        last_issued_document = self.get_queryset().filter(
+            created_by_org=self.request.user.get_current_org(self.request.session),
+            workflow_status=Document.WORKFLOW_STATUS_ISSUED,
+        ).order_by('-created_at').first()
+        if last_issued_document:
+            c["initial_qr_x_value"] = last_issued_document.extra_data.get(
+                "qr_x_position"
+            )
+            c["initial_qr_y_value"] = last_issued_document.extra_data.get(
+                "qr_y_position"
+            )
+        return c
+
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:

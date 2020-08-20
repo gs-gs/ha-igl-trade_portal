@@ -72,8 +72,8 @@
     {% csrf_token %}
     <a href="{% url 'documents:update' object.pk %}" class="btn btn-secondary">Back</a>
     <button type="submit" name="issue" class="btn btn-primary">Issue</button>
-    <input type="text" name="qr_x" id="id_qr_x" value="0" style="visibility: hidden"/>
-    <input type="text" name="qr_y" id="id_qr_y" value="0" style="visibility: hidden" />
+    <input type="hidden" name="qr_x" id="id_qr_x" value="{{ initial_qr_x_value|default:'2' }}" />
+    <input type="hidden" name="qr_y" id="id_qr_y" value="{{ initial_qr_y_value|default:'3' }}" />
   </form>
 
   <br/><br/>
@@ -81,17 +81,11 @@
   <div id="id_qr_code_area">
     <img class="igl-doc-qrcode__image"
       src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" id="id_qr_code" />
-
     <img src="{% url 'documents:pdf-download' object.pk %}?inline=true&as_png=true&original=true"
+         alt="Please wait the first page to appear..."
          id="id_base_image"
           />
   </div>
-
-  {% comment %}
-    <iframe style="width: 500px; height: 700px" src="{% url 'documents:pdf-download' object.pk %}?inline=true" />
-  {% endcomment %}
-
-
 
 </div>
 {% endblock content %}
@@ -103,6 +97,7 @@
     /* 210 x 297 */
     div#id_qr_code_area {
       width: 210mm;
+      height: 297mm;
       border: 1px solid black;
     }
 
@@ -115,6 +110,7 @@
 
     div#id_qr_code_area #id_base_image {
       width: 210mm;
+      height: 297mm;
       border: 1px solid gray;
     }
   </style>
@@ -123,11 +119,27 @@
 {% block extra_script %}
   <script>
     // Make the DIV element draggable:
+    var draggableParent = document.getElementById("id_base_image");
     dragElement(document.getElementById("id_qr_code"));
 
     function dragElement(elmnt) {
       var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
       elmnt.onmousedown = dragMouseDown;
+
+      var initialX = (
+        draggableParent.getBoundingClientRect().width * (
+          parseInt(document.getElementById("id_qr_x").value) / 100
+        )
+      );
+      var initialY = (
+        draggableParent.getBoundingClientRect().height * (
+          parseInt(document.getElementById("id_qr_y").value) / 100
+        )
+      );
+
+      elmnt.style.top = elmnt.offsetTop + initialY + "px";
+      elmnt.style.left = elmnt.offsetLeft + initialX + "px";
 
       function dragMouseDown(e) {
         e = e || window.event;
