@@ -16,7 +16,7 @@ from trade_portal.documents.forms import (
     DocumentCreateForm, DraftDocumentUpdateForm, ConsignmentSectionUpdateForm,
 )
 from trade_portal.documents.models import Document, OaDetails, DocumentFile
-from trade_portal.documents.services import WatermarkService
+from trade_portal.documents.services.watermark import WatermarkService
 from trade_portal.documents.tables import DocumentsTable
 from trade_portal.documents.tasks import lodge_document
 from trade_portal.utils.monitoring import statsd_timer

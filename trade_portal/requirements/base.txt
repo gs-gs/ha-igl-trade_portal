@@ -55,13 +55,14 @@ pycryptodome==3.9.8
 
 
 # for ammending QrCode to the incoming PDFs
+# and parsing pdfs
 pypdf2==1.26.0
 reportlab==3.5.46
 wand==0.6.2
+camelot-py[cv]==0.8.2
 
 # simple templated emails library
 django-templated-email==2.3.0
-
 
 # static pieces of text
 django-siteblocks==1.2.0

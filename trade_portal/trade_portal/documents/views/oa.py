@@ -40,7 +40,7 @@ class OaCyphertextRetrieve(AllowCORSMixin, View):
         }
         # by default the ciphertext is base64-encoded
         if self.request.GET.get("key"):
-            from trade_portal.documents.services import AESCipher
+            from trade_portal.documents.services.lodge import AESCipher
             try:
                 cp = AESCipher(self.request.GET.get("key"))
                 result["document"]["cleartext"] = cp.decrypt(

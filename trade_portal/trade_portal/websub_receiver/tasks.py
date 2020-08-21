@@ -1,6 +1,6 @@
 import logging
 
-from trade_portal.documents.services import NodeService
+from trade_portal.documents.services.lodge import NodeService
 from config import celery_app as app
 
 logger = logging.getLogger(__name__)

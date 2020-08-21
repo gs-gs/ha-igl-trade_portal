@@ -64,6 +64,24 @@
         </dl>
       </div>
     </div>
+
+    <div class="col">
+      <div class="section-info">
+        <div class="subtitle section-info__title">{% trans 'Extracted document metadata' %}</div>
+        <table class="table">
+          {% for k, v in object.extra_data.metadata.items %}
+            <tr>
+              <th>{{ k }}</th>
+              <td>{{ v }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <th colspan="2">The metadata has not been extracted yet; try refresh the page</th>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
   </div>
 
   <p>The date specified above must match the information in the PDF document below - click "Back" to edit if not. Drag the QR code to a clear position on the document - the position will be remembered for this document type.</p>

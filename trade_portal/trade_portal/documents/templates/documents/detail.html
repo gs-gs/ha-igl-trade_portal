@@ -104,33 +104,50 @@
       <dd>{{ object.created_at }} {{ object.created_at.tzinfo }}</dd>
     </dl>
   </div>
-  <div class="section-info">
-    <div class="subtitle section-info__title">{% trans 'Document metadata' %}</div>
-    <dl class="info-list">
-      <dt>{% trans 'Doc number' %}</dt>
-      <dd>{{ object.document_number|default:"(not specified)" }}</dd>
-      {% if not document.is_incoming %}
-        <dt>{% trans 'IGL Document ID' %}</dt>
-        <dd>
-          {{ object.pk }}
-        </dd>
-      {% endif %}
-      <dt>{% trans 'FTA' %}</dt>
-      <dd>{{ object.fta }}</dd>
-      <dt>{% trans 'Exporting country' %}</dt>
-      <dd>{{ object.sending_jurisdiction.name }}</dd>
-      <dt>{% trans 'Importing country' %}</dt>
-      <dd>{{ object.importing_country.name }}</dd>
-      <dt>{% trans 'Exporter' %}</dt>
-      <dd>
-        {% trans 'Entity' %}: {{ object.exporter.name }}<br/>
-        {% if object.exporter.register_url %}
-          {{ object.exporter.readable_identifier_name }}: <a href="{{ object.exporter.register_url }}" target="_blank">{{ object.exporter.business_id }}</a>
-        {% endif %}
-      </dd>
-      <dt>{% trans 'Importer name' %}</dt>
-      <dd>{{ object.importer_name|default:"(not specified)" }}</dd>
-    </dl>
+  <div class="row">
+    <div class="col">
+      <div class="section-info">
+        <div class="subtitle section-info__title">{% trans 'Document metadata' %}</div>
+        <dl class="info-list">
+          <dt>{% trans 'Doc number' %}</dt>
+          <dd>{{ object.document_number|default:"(not specified)" }}</dd>
+          {% if not document.is_incoming %}
+            <dt>{% trans 'IGL Document ID' %}</dt>
+            <dd>
+              {{ object.pk }}
+            </dd>
+          {% endif %}
+          <dt>{% trans 'FTA' %}</dt>
+          <dd>{{ object.fta }}</dd>
+          <dt>{% trans 'Exporting country' %}</dt>
+          <dd>{{ object.sending_jurisdiction.name }}</dd>
+          <dt>{% trans 'Importing country' %}</dt>
+          <dd>{{ object.importing_country.name }}</dd>
+          <dt>{% trans 'Exporter' %}</dt>
+          <dd>
+            {% trans 'Entity' %}: {{ object.exporter.name }}<br/>
+            {% if object.exporter.register_url %}
+              {{ object.exporter.readable_identifier_name }}: <a href="{{ object.exporter.register_url }}" target="_blank">{{ object.exporter.business_id }}</a>
+            {% endif %}
+          </dd>
+          <dt>{% trans 'Importer name' %}</dt>
+          <dd>{{ object.importer_name|default:"(not specified)" }}</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="col">
+      <div class="section-info">
+        <div class="subtitle section-info__title">{% trans 'Extracted document metadata' %}</div>
+        <table class="table">
+          {% for k, v in object.extra_data.metadata.items %}
+            <tr>
+              <th>{{ k }}</th>
+              <td>{{ v }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
   </div>
 
   <div class="section-info">

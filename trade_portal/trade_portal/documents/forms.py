@@ -4,6 +4,7 @@ from django.conf import settings
 from trade_portal.legi.abr import fetch_abn_info
 
 from .models import Party, Document, DocumentHistoryItem, DocumentFile, FTA
+from .tasks import textract_document
 
 
 class DocumentCreateForm(forms.ModelForm):
@@ -168,6 +169,11 @@ class DocumentCreateForm(forms.ModelForm):
             type="message",
             document=result,
             message=f"The document has been created by {self.user}",
+        )
+
+        textract_document.apply_async(
+            [result.pk],
+            countdown=2
         )
 
         return result
