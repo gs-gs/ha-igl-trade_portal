@@ -75,159 +75,159 @@
             </div>
           </div>
         </fieldset>
-      {% endif %}
+      {% else %}
+        <fieldset class="form-section">
+          <div class="subtitle form-section__title">{% trans 'Document Metadata' %}</div>
 
-      <fieldset class="form-section">
-        <div class="subtitle form-section__title">{% trans 'Document Metadata' %}</div>
+          <div class="form-section__container">
 
-        <div class="form-section__container">
-
-          <div class="form-group" id="div_id_document_number">
-            <label for="id_document_number">
-              {% trans 'Document Number' %}
-              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_document_number_field' %}"><i class="icon icon-info"></i></span>
-            </label>
-            {{ form.document_number|as_crispy_field }}
-          </div>
-
-          {% if form.fta %}
-            <div class="form-group">
-              <label for="id_fta">
-                {% trans 'FTA' %}
-                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_fta_field' %}"><i class="icon icon-info"></i></span>
+            <div class="form-group" id="div_id_document_number">
+              <label for="id_document_number">
+                {% trans 'Document Number' %}
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_document_number_field' %}"><i class="icon icon-info"></i></span>
               </label>
-              {{ form.fta|as_crispy_field }}
+              {{ form.document_number|as_crispy_field }}
             </div>
-          {% endif %}
 
-          <div class="form-group" id="div_id_importing_country">
-            <label for="id_importing_country">
-              {% trans 'Importing Jurisdiction' %}
-              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_importing_country_field' %}"><i class="icon icon-info"></i></span>
-            </label>
-            {{ form.importing_country|as_crispy_field }}
-          </div>
-
-          <div class="form-group">
-            <label for="consignmentDocIssuer">
-              {% trans 'Exporter or Manufacturer' %} {{ BID_NAME }}*
-              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_exporter_field' %}"><i class="icon icon-info"></i></span>
-            </label>
-            {% if form.exporter.errors %}
-              <div style="color: red">{{ form.exporter.errors }}</div>
+            {% if form.fta %}
+              <div class="form-group">
+                <label for="id_fta">
+                  {% trans 'FTA' %}
+                  <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_fta_field' %}"><i class="icon icon-info"></i></span>
+                </label>
+                {{ form.fta|as_crispy_field }}
+              </div>
             {% endif %}
-            <div class="input-group">
-              {{ form.exporter }}
-              <div class="input-group-append">
-                <a class="btn btn-md btn-link btn-advance-filter" type="button"
-                  style="font-weight: bold; font-size: 120%"
-                  {% if BID_NAME == "ABN" %}
-                    href="https://abr.business.gov.au/"
-                  {% else %}
-                    href="https://www.uen.gov.sg/"
-                  {% endif %}
-                  target="_new" role="button">
-                  {{ BID_NAME }} {% trans 'Search' %}
-                  <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M14.5 3A1.5 1.5 0 0 0 13 1.5H3A1.5 1.5 0 0 0 1.5 3v5a.5.5 0 0 0 1 0V3a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H9a.5.5 0 0 0 0 1h4a1.5 1.5 0 0 0 1.5-1.5V3z"/>
-                    <path fill-rule="evenodd" d="M4.5 6a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6.5H5a.5.5 0 0 1-.5-.5z"/>
-                    <path fill-rule="evenodd" d="M10.354 5.646a.5.5 0 0 1 0 .708l-8 8a.5.5 0 0 1-.708-.708l8-8a.5.5 0 0 1 .708 0z"/>
-                  </svg>
-                </a>
+
+            <div class="form-group" id="div_id_importing_country">
+              <label for="id_importing_country">
+                {% trans 'Importing Jurisdiction' %}
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_importing_country_field' %}"><i class="icon icon-info"></i></span>
+              </label>
+              {{ form.importing_country|as_crispy_field }}
+            </div>
+
+            <div class="form-group">
+              <label for="consignmentDocIssuer">
+                {% trans 'Exporter or Manufacturer' %} {{ BID_NAME }}*
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_exporter_field' %}"><i class="icon icon-info"></i></span>
+              </label>
+              {% if form.exporter.errors %}
+                <div style="color: red">{{ form.exporter.errors }}</div>
+              {% endif %}
+              <div class="input-group">
+                {{ form.exporter }}
+                <div class="input-group-append">
+                  <a class="btn btn-md btn-link btn-advance-filter" type="button"
+                    style="font-weight: bold; font-size: 120%"
+                    {% if BID_NAME == "ABN" %}
+                      href="https://abr.business.gov.au/"
+                    {% else %}
+                      href="https://www.uen.gov.sg/"
+                    {% endif %}
+                    target="_new" role="button">
+                    {{ BID_NAME }} {% trans 'Search' %}
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M14.5 3A1.5 1.5 0 0 0 13 1.5H3A1.5 1.5 0 0 0 1.5 3v5a.5.5 0 0 0 1 0V3a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H9a.5.5 0 0 0 0 1h4a1.5 1.5 0 0 0 1.5-1.5V3z"/>
+                      <path fill-rule="evenodd" d="M4.5 6a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6.5H5a.5.5 0 0 1-.5-.5z"/>
+                      <path fill-rule="evenodd" d="M10.354 5.646a.5.5 0 0 1 0 .708l-8 8a.5.5 0 0 1-.708-.708l8-8a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <span id="hint_id_exporter"></span>
+            </div>
+
+            <div class="form-group" id="div_id_importer_name">
+              <label for="id_importer_name">
+                {% trans 'Importer Name (if known)' %}
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_importer_name_field' %}"><i class="icon icon-info"></i></span>
+              </label>
+              {{ form.importer_name|as_crispy_field }}
+            </div>
+
+            <div class="form-group" id="div_id_invoice_number">
+              <label for="id_invoice_number">
+                {% trans 'Invoice Number' %}
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_invoice_number_field' %}"><i class="icon icon-info"></i></span>
+              </label>
+              {{ form.invoice_number|as_crispy_field }}
+            </div>
+
+            <div class="form-group" id="div_id_origin_criteria">
+              <label for="id_origin_criteria">
+                {% trans 'Origin Criteria' %}
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_origin_criteria_field' %}"><i class="icon icon-info"></i></span>
+              </label>
+              {{ form.origin_criteria|as_crispy_field }}
+            </div>
+
+          </div>
+        </fieldset>
+
+        <fieldset class="form-section">
+          <div class="subtitle form-section__title">{% trans 'Consignment Reference' %}</div>
+
+          <div class="form-section__container">
+
+            <div class="form-group">
+              <label for="id_consignment_ref_doc_type">
+                {% trans 'Document Type' %}
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_cons_doc_type_field' %}"><i class="icon icon-info"></i></span>
+              </label>
+              <div class="input-group">
+                {{ form.consignment_ref_doc_type }}
               </div>
             </div>
-            <span id="hint_id_exporter"></span>
-          </div>
 
-          <div class="form-group" id="div_id_importer_name">
-            <label for="id_importer_name">
-              {% trans 'Importer Name (if known)' %}
-              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_importer_name_field' %}"><i class="icon icon-info"></i></span>
-            </label>
-            {{ form.importer_name|as_crispy_field }}
-          </div>
+            <div class="form-group" id='id_document_issuer_block'>
+              <label for="id_consignment_ref_doc_issuer">{% trans 'Document Issuer' %} {{ BID_NAME }}</label>
+              <div class="input-group">
+                {# TODO: add consignmentDocIssuer ID #}
+                {{ form.consignment_ref_doc_issuer }}
 
-          <div class="form-group" id="div_id_invoice_number">
-            <label for="id_invoice_number">
-              {% trans 'Invoice Number' %}
-              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_invoice_number_field' %}"><i class="icon icon-info"></i></span>
-            </label>
-            {{ form.invoice_number|as_crispy_field }}
-          </div>
-
-          <div class="form-group" id="div_id_origin_criteria">
-            <label for="id_origin_criteria">
-              {% trans 'Origin Criteria' %}
-              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_origin_criteria_field' %}"><i class="icon icon-info"></i></span>
-            </label>
-            {{ form.origin_criteria|as_crispy_field }}
-          </div>
-
-        </div>
-      </fieldset>
-
-      <fieldset class="form-section">
-        <div class="subtitle form-section__title">{% trans 'Consignment Reference' %}</div>
-
-        <div class="form-section__container">
-
-          <div class="form-group">
-            <label for="id_consignment_ref_doc_type">
-              {% trans 'Document Type' %}
-              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_cons_doc_type_field' %}"><i class="icon icon-info"></i></span>
-            </label>
-            <div class="input-group">
-              {{ form.consignment_ref_doc_type }}
+                <div class="input-group-append">
+                  <a class="btn btn-md btn-link btn-advance-filter" type="button"
+                    {% if BID_NAME == "ABN" %}
+                      href="https://abr.business.gov.au/"
+                    {% else %}
+                      href="https://www.uen.gov.sg/"
+                    {% endif %}
+                    target="_new" role="button">
+                    {{ BID_NAME }} {% trans 'Search' %}
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M14.5 3A1.5 1.5 0 0 0 13 1.5H3A1.5 1.5 0 0 0 1.5 3v5a.5.5 0 0 0 1 0V3a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H9a.5.5 0 0 0 0 1h4a1.5 1.5 0 0 0 1.5-1.5V3z"/>
+                      <path fill-rule="evenodd" d="M4.5 6a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6.5H5a.5.5 0 0 1-.5-.5z"/>
+                      <path fill-rule="evenodd" d="M10.354 5.646a.5.5 0 0 1 0 .708l-8 8a.5.5 0 0 1-.708-.708l8-8a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <span id="hint_id_consignment_ref_doc_issuer"></span>
             </div>
-          </div>
 
-          <div class="form-group" id='id_document_issuer_block'>
-            <label for="id_consignment_ref_doc_issuer">{% trans 'Document Issuer' %} {{ BID_NAME }}</label>
-            <div class="input-group">
-              {# TODO: add consignmentDocIssuer ID #}
-              {{ form.consignment_ref_doc_issuer }}
-
-              <div class="input-group-append">
-                <a class="btn btn-md btn-link btn-advance-filter" type="button"
-                  {% if BID_NAME == "ABN" %}
-                    href="https://abr.business.gov.au/"
-                  {% else %}
-                    href="https://www.uen.gov.sg/"
-                  {% endif %}
-                  target="_new" role="button">
-                  {{ BID_NAME }} {% trans 'Search' %}
-                  <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-in-up-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M14.5 3A1.5 1.5 0 0 0 13 1.5H3A1.5 1.5 0 0 0 1.5 3v5a.5.5 0 0 0 1 0V3a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H9a.5.5 0 0 0 0 1h4a1.5 1.5 0 0 0 1.5-1.5V3z"/>
-                    <path fill-rule="evenodd" d="M4.5 6a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6.5H5a.5.5 0 0 1-.5-.5z"/>
-                    <path fill-rule="evenodd" d="M10.354 5.646a.5.5 0 0 1 0 .708l-8 8a.5.5 0 0 1-.708-.708l8-8a.5.5 0 0 1 .708 0z"/>
-                  </svg>
-                </a>
+            <div class="form-group">
+              <label for="id_consignment_ref_doc_number">
+                {% trans 'Document Number' %}
+                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_cons_doc_number_field' %}"><i class="icon icon-info"></i></span>
+              </label>
+              <div class="input-group">
+                {{ form.consignment_ref_doc_number }}
               </div>
             </div>
-            <span id="hint_id_consignment_ref_doc_issuer"></span>
           </div>
 
-          <div class="form-group">
-            <label for="id_consignment_ref_doc_number">
-              {% trans 'Document Number' %}
-              <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_cons_doc_number_field' %}"><i class="icon icon-info"></i></span>
-            </label>
-            <div class="input-group">
-              {{ form.consignment_ref_doc_number }}
-            </div>
+        </fieldset>
+
+        <fieldset class="form-section">
+          <div class="subtitle form-section__title">{% trans 'Document Declaration' %}</div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="declaration" required>
+            <label class="form-check-label" for="declaration">{% trans 'I certify that the information herein is correct and that the described goods comply with the origin requirements of the specified Free Trade Agreement.' %}</label>
           </div>
-        </div>
 
-      </fieldset>
-
-      <fieldset class="form-section">
-        <div class="subtitle form-section__title">{% trans 'Document Declaration' %}</div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="declaration" required>
-          <label class="form-check-label" for="declaration">{% trans 'I certify that the information herein is correct and that the described goods comply with the origin requirements of the specified Free Trade Agreement.' %}</label>
-        </div>
-
-      </fieldset>
+        </fieldset>
+      {% endif %}
 
       <div class="form-actions">
         <a href="{% url 'documents:list' %}" class="btn btn-dark">{% trans 'Cancel' %}</a>

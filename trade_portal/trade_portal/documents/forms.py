@@ -9,6 +9,63 @@ from .tasks import textract_document
 
 class DocumentCreateForm(forms.ModelForm):
     file = forms.FileField()
+
+    class Meta:
+        model = Document
+        fields = (
+            'file',
+        )
+
+    def __init__(self, *args, **kwargs):
+        self.oa = kwargs.pop('oa')
+        self.dtype = kwargs.pop('dtype')
+        self.user = kwargs.pop('user')
+        self.current_org = kwargs.pop('current_org')
+        super().__init__(*args, **kwargs)
+        self.instance.type = self.dtype
+
+    def clean_file(self):
+        file = self.cleaned_data.get("file")
+        if not file.name.lower().endswith(".pdf"):
+            raise forms.ValidationError("Please provide a PDF file")
+        return file
+
+    def save(self, *args, **kwargs):
+        self.instance.oa = self.oa
+        self.instance.type = self.dtype
+        self.instance.created_by_user = self.user
+        self.instance.created_by_org = self.current_org
+        result = super().save(*args, **kwargs)
+        uploaded_file = self.cleaned_data.get("file")
+        if uploaded_file:
+            DocumentFile.objects.filter(
+                doc=self.instance
+            ).delete()
+            df = DocumentFile(
+                doc=self.instance,
+                size=uploaded_file.size,
+                file=uploaded_file,
+                filename=uploaded_file.name,
+                created_by=self.user,
+            )
+            df.save()
+
+        DocumentHistoryItem.objects.create(
+            type="message",
+            document=result,
+            message=f"The document has been created by {self.user}",
+        )
+
+        textract_document.apply_async(
+            [result.pk],
+            countdown=2
+        )
+
+        return result
+
+
+class DraftDocumentUpdateForm(forms.ModelForm):
+
     exporter = forms.CharField(
         label=f"Exporter or manufacturer {settings.BID_NAME}",
         max_length=32, help_text=(
@@ -34,18 +91,15 @@ class DocumentCreateForm(forms.ModelForm):
         fields = (
             'document_number', 'fta', 'importing_country', 'exporter',
             'importer_name',
-            'file',
             'consignment_ref_doc_number', 'consignment_ref_doc_type', 'consignment_ref_doc_issuer',
             'invoice_number', 'origin_criteria',
         )
 
     def __init__(self, *args, **kwargs):
-        self.oa = kwargs.pop('oa')
-        self.dtype = kwargs.pop('dtype')
         self.user = kwargs.pop('user')
         self.current_org = kwargs.pop('current_org')
         super().__init__(*args, **kwargs)
-        self.instance.type = self.dtype
+        self.dtype = self.instance.type
         self._prepare_fields()
 
     def _prepare_fields(self):
@@ -93,6 +147,10 @@ class DocumentCreateForm(forms.ModelForm):
         self.fields['invoice_number'].label = False
         self.fields['origin_criteria'].label = False
 
+        if self.instance.exporter:
+            self.initial['exporter'] = self.instance.exporter.business_id
+            self.fields["exporter"].initial = self.instance.exporter.business_id
+
     def clean_exporter(self):
         value = self.cleaned_data.get("exporter").strip().replace(" ", "")
         if not value:
@@ -117,18 +175,7 @@ class DocumentCreateForm(forms.ModelForm):
         )
         return exporter_party
 
-    def clean_file(self):
-        file = self.cleaned_data.get("file")
-        if not file.name.lower().endswith(".pdf"):
-            raise forms.ValidationError("Please provide a PDF file")
-        return file
-
     def save(self, *args, **kwargs):
-        self.instance.oa = self.oa
-        self.instance.type = self.dtype
-        self.instance.created_by_user = self.user
-        self.instance.created_by_org = self.current_org
-
         # filling the issuer field: current org converted to party
         issuer_party, created = Party.objects.get_or_create(
             created_by_org=self.current_org,
@@ -149,50 +196,7 @@ class DocumentCreateForm(forms.ModelForm):
 
         if self.instance.consignment_ref_doc_type not in ("ConNote", "HouseBill"):
             self.instance.consignment_ref_doc_issuer = ""
-
-        result = super().save(*args, **kwargs)
-        uploaded_file = self.cleaned_data.get("file")
-        if uploaded_file:
-            DocumentFile.objects.filter(
-                doc=self.instance
-            ).delete()
-            df = DocumentFile(
-                doc=self.instance,
-                size=uploaded_file.size,
-                file=uploaded_file,
-                filename=uploaded_file.name,
-                created_by=self.user,
-            )
-            df.save()
-
-        DocumentHistoryItem.objects.create(
-            type="message",
-            document=result,
-            message=f"The document has been created by {self.user}",
-        )
-
-        textract_document.apply_async(
-            [result.pk],
-            countdown=2
-        )
-
-        return result
-
-
-class DraftDocumentUpdateForm(DocumentCreateForm):
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        self.current_org = kwargs.pop('current_org')
-        super(DocumentCreateForm, self).__init__(*args, **kwargs)
-        self.dtype = self.instance.type
-        self._prepare_fields()
-        del self.fields["file"]
-        self.initial['exporter'] = self.instance.exporter.business_id
-        self.fields["exporter"].initial = self.instance.exporter.business_id
-
-    def save(self, *args, **kwargs):
-        return super(DocumentCreateForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class ConsignmentSectionUpdateForm(forms.ModelForm):

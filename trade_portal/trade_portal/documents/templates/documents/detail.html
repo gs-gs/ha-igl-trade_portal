@@ -140,10 +140,12 @@
         <div class="subtitle section-info__title">{% trans 'Extracted document metadata' %}</div>
         <table class="table">
           {% for k, v in object.extra_data.metadata.items %}
-            <tr>
-              <th>{{ k }}</th>
-              <td>{{ v }}</td>
-            </tr>
+            {% if k != "raw_text" %}
+              <tr>
+                <th>{{ k }}</th>
+                <td>{{ v }}</td>
+              </tr>
+            {% endif %}
           {% endfor %}
         </table>
       </div>

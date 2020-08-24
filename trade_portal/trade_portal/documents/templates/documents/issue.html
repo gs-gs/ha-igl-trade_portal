@@ -45,9 +45,6 @@
           <dd>{{ object.importer_name|default:"(not specified)" }}</dd>
         </dl>
       </div>
-    </div>
-
-    <div class="col">
       <div class="section-info">
         <h2 class="subtitle section-info__title">{% trans 'Consignment details' %}</h2>
         <dl class="info-list">
@@ -70,10 +67,12 @@
         <div class="subtitle section-info__title">{% trans 'Extracted document metadata' %}</div>
         <table class="table">
           {% for k, v in object.extra_data.metadata.items %}
-            <tr>
-              <th>{{ k }}</th>
-              <td>{{ v }}</td>
-            </tr>
+            {% if k != "raw_text" %}
+              <tr>
+                <th>{{ k }}</th>
+                <td>{{ v }}</td>
+              </tr>
+            {% endif %}
           {% empty %}
             <tr>
               <th colspan="2">The metadata has not been extracted yet; try refresh the page</th>
@@ -88,7 +87,7 @@
 
   <form action="#" method="POST">
     {% csrf_token %}
-    <a href="{% url 'documents:update' object.pk %}" class="btn btn-secondary">Back</a>
+    <a href="{% url 'documents:fill' object.pk %}" class="btn btn-secondary">Back</a>
     <button type="submit" name="issue" class="btn btn-primary">Issue</button>
     <input type="hidden" name="qr_x" id="id_qr_x" value="{{ initial_qr_x_value|default:'2' }}" />
     <input type="hidden" name="qr_y" id="id_qr_y" value="{{ initial_qr_y_value|default:'3' }}" />

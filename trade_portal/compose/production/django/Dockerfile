@@ -10,7 +10,7 @@ RUN apt-get update \
   # Translations dependencies
   && apt-get install -y gettext \
   # Pdf/Image deps
-  && apt-get install -y libmagickwand-dev ghostscript libgl-dev \
+  && apt-get install -y libmagickwand-dev ghostscript libgl-dev libpoppler-cil poppler-utils tesseract-ocr \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*

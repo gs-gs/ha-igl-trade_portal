@@ -60,6 +60,8 @@ pypdf2==1.26.0
 reportlab==3.5.46
 wand==0.6.2
 camelot-py[cv]==0.8.2
+pytesseract==0.3.5
+pdf2image==1.14.0
 
 # simple templated emails library
 django-templated-email==2.3.0

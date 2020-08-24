@@ -1,9 +1,11 @@
 from django.urls import path
 
+from trade_portal.documents.views.documents_create import (
+    DocumentCreateView, DocumentFillView, DocumentIssueView,
+)
 from trade_portal.documents.views.documents import (
-    DocumentListView, DocumentCreateView,
-    DocumentDetailView, DocumentUpdateView, DocumentIssueView,
-    DocumentLogsView,
+    DocumentListView,
+    DocumentDetailView, DocumentLogsView,
     DocumentFileDownloadView, DocumentHistoryFileDownloadView,
     ConsignmentUpdateView,
 )
@@ -14,11 +16,13 @@ app_name = "documents"
 urlpatterns = [
     # Documents
     path("", view=DocumentListView.as_view(), name="list"),
-    path("create-<str:dtype>/<uuid:oa>/", view=DocumentCreateView.as_view(), name="create-specific"),
     path("create-<str:dtype>/", view=DocumentCreateView.as_view(), name="create"),
-    path("<uuid:pk>/", view=DocumentDetailView.as_view(), name="detail"),
+    path("create-<str:dtype>/<uuid:oa>/", view=DocumentCreateView.as_view(), name="create-specific"),
+    path("<uuid:pk>/fill/", view=DocumentFillView.as_view(), name="fill"),
     path("<uuid:pk>/issue/", view=DocumentIssueView.as_view(), name="issue"),
-    path("<uuid:pk>/update/", view=DocumentUpdateView.as_view(), name="update"),
+
+    path("<uuid:pk>/", view=DocumentDetailView.as_view(), name="detail"),
+
     path("<uuid:pk>/logs/", view=DocumentLogsView.as_view(), name="logs"),
     path("<uuid:pk>/consignment-update/", view=ConsignmentUpdateView.as_view(), name="consignment-update"),
     path(

@@ -87,6 +87,12 @@ LOGGING = {
             'level': 'CRITICAL',
             'propagate': False,
         },
+        'pdfminer': {
+            # boring to have warnings in sentry as well
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
 
         # should be configured to pass messages to some secure storage
         'audit': {
