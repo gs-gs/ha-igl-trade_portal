@@ -76,6 +76,7 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         c = super().get_context_data(*args, **kwargs)
+        c["data_warnings"] = self._get_data_warnings()
         last_issued_document = self.get_queryset().filter(
             created_by_org=self.request.user.get_current_org(self.request.session),
             workflow_status=Document.WORKFLOW_STATUS_ISSUED,
@@ -88,6 +89,23 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
                 "qr_y_position"
             )
         return c
+
+    def _get_data_warnings(self):
+        """
+        Validates the data entered by the user vs parsed PDF content and returns warnings
+        if any
+        """
+        obj = self.get_object()
+        raw_text = obj.extra_data.get("metadata", {}).get("raw_text")
+        if not raw_text:
+            # no metadata extracted
+            return {}
+        warnings = {}
+        if obj.document_number not in raw_text:
+            warnings["Document Number"] = "The value hasn't been found in the statement file"
+        if obj.exporter.name not in raw_text and obj.exporter.business_id not in raw_text:
+            warnings["Exporter"] = "The value hasn't been found in the statement file"
+        return warnings
 
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
