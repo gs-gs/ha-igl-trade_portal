@@ -103,8 +103,9 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
         warnings = {}
         if obj.document_number not in raw_text:
             warnings["Document Number"] = "The value hasn't been found in the statement file"
-        if obj.exporter.name not in raw_text and obj.exporter.business_id not in raw_text:
-            warnings["Exporter"] = "The value hasn't been found in the statement file"
+        if obj.exporter:
+            if obj.exporter.name not in raw_text and obj.exporter.business_id not in raw_text:
+                warnings["Exporter"] = "The value hasn't been found in the statement file"
         return warnings
 
     def post(self, request, *args, **kwargs):

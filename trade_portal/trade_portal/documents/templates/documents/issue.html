@@ -23,22 +23,11 @@
         <dl class="info-list">
           <dt>{% trans 'Doc number' %}</dt>
           <dd>{{ object.document_number|default:"(not specified)" }}</dd>
-          {% if not document.is_incoming %}
-            <dt>{% trans 'IGL Document ID' %}</dt>
-            <dd>
-              {{ object.pk }}<br/>
-              {% with object.get_igid_image_base64 as qrcode_image %}
-                {% if qrcode_image %}
-                  <img src="data:image/png;base64, {{ qrcode_image }}" alt="{{ object.get_igid_text }}" style="max-width: 100px;"/>
-                {% endif %}
-              {% endwith %}
-            </dd>
-          {% endif %}
           <dt>{% trans 'FTA' %}</dt>
           <dd>{{ object.fta }}</dd>
-          <dt>{% trans 'Exporting country' %}</dt>
+          <dt>{% trans 'Exporter' %}</dt>
           <dd>{{ object.sending_jurisdiction.name }}</dd>
-          <dt>{% trans 'Importing country' %}</dt>
+          <dt>{% trans 'Importer' %}</dt>
           <dd>{{ object.importing_country.name }}</dd>
           <dt>{% trans 'Exporter' %}</dt>
           <dd>
@@ -81,7 +70,7 @@
             {% endif %}
           {% empty %}
             <tr>
-              <th colspan="2">The metadata has not been extracted yet; try refresh the page</th>
+              <th colspan="2">The metadata has not been extracted yet; try refreshing the page</th>
             </tr>
           {% endfor %}
         </table>
@@ -117,6 +106,9 @@
 {% block extra_head %}
   {{ block.super }}
   <style>
+    dl dd, dl dt {
+      text-align: top;
+    }
     /* 210 x 297 */
     div#id_qr_code_area {
       width: 210mm;
