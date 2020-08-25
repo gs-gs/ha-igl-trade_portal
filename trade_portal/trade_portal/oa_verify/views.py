@@ -31,13 +31,13 @@ class OaVerificationView(TemplateView):
         the_file = request.FILES["oa_file"]
         value = the_file.read()
         self.verify_result = self._verify_file(value)
-        if self.verify_result and self.verify_result != "error":
+        if isinstance(self.verify_result, list):
             self.verdict = "valid"
             for row in self.verify_result:
                 if row["status"].lower() == "invalid":
                     self.verdict = "invalid"
         else:
-            self.verdict = "error"
+            self.verdict = self.verify_result
 
         if self.verdict == "valid":
             try:
@@ -96,7 +96,13 @@ class OaVerificationView(TemplateView):
                 "file": file_content,
             }
         )
-        if resp.status_code != 200:
-            return "error"
-        else:
+        if resp.status_code == 200:
             return resp.json()
+        elif resp.status_code == 400:
+            return "wrong-file"
+        else:
+            logger.warning(
+                "%s resp from the OA Verify endpoint - %s",
+                resp.status_code, resp.content
+            )
+            return "error"

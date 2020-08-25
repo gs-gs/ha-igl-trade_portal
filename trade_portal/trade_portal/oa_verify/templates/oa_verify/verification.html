@@ -20,10 +20,14 @@
           {% if verdict == "invalid" %}
             <h2>Verdict: <span class="badge badge-danger">Invalid</span></h2>
           {% else %}
-            <h2>Verdict: <span class="badge badge-warning">{{ verdict }}</span></h2>
+            {% if verdict == "wrong-file" %}
+              <h2>Verdict: <span class="badge badge-warning">{{ verdict }}</span></h2>
+            {% else %}
+              <h2>Verdict: <span class="badge badge-warning">{{ verdict }}</span></h2>
+            {% endif %}
           {% endif %}
         {% endif %}
-        {% if verify_result != "error" %}
+        {% if verify_result != "error" and verify_result != "wrong-file" %}
           <ul class="nav nav-tabs" id="oa-tabs" role="tablist">
             <li class="nav-item">
               <a class="nav-link active" id="id-status-tab" data-toggle="tab" href="#id-status-tab-content" role="tab" aria-controls="id-status-tab-content" aria-selected="true">Status</a>
@@ -78,14 +82,17 @@
             </div>
             <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
               {% for attach in attachments %}
-                <h3>{{ attach.filename }} ({{ attach.type }})</h3>
-                <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary">The document</a><br/><br/>
+                <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary">{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
               {% endfor %}
             </div>
           </div>
         {% else %}
-          There was some error validationg the document - it doesn't mean that the document
-          is invalid, it means that our website has some technical issues.
+          {% if verdict == "error" %}
+            There was some error validationg the document - it doesn't mean that the document
+            is invalid, it means that our website has some technical issues.
+          {% else %}
+            The file you have provided seems to be of invalid format or is not supported.
+          {% endif %}
         {% endif %}
       </div>
       {% else %}
