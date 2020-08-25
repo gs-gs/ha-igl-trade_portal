@@ -85,6 +85,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "trade_portal.users.apps.UsersConfig",
     "trade_portal.documents",
+    "trade_portal.oa_verify",
     "trade_portal.websub_receiver.apps.WebSubReceiverAppConfig",
     "trade_portal",
 ]

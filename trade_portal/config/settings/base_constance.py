@@ -35,6 +35,10 @@ CONSTANCE_CONFIG = {
         ':',
         'Values in format accesskey:secretkey, None if empty (policy defined)'
     ),
+    'OA_VERIFY_API_URL': (
+        'https://openattverify.c1.devnet.trustbridge.io/verify/fragments',
+        'The anon endpoint which verifies the OA JSON document passed to it'
+    ),
 
     # misc
     'USERS_NOTIFICATIONS_MAILBOX': (

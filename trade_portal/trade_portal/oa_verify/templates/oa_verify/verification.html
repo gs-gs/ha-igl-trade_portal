@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load our_utils %}
+
+{% block body_class %}about{% endblock %}
+{% block head_title %}Verify{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+  <div class="content-box profile">
+    <div class="row">
+      {% if verify_result %}
+        {% if verdict == "valid" %}
+          <h2 style='color: green'>Verdict: Valid</h2>
+        {% else %}
+          {% if verdict == "invalid" %}
+            <h2 style='color: red'>Verdict: Invalid</h2>
+          {% else %}
+            <h2 style='color: #aa0'>Verdict: {{ verdict }}</h2>
+          {% endif %}
+        {% endif %}
+        {% if verify_result != "error" %}
+          <table class="table">
+            {% for criteria in verify_result %}
+              <tr>
+                <td>
+                  {{ criteria.name }}<br/>
+                  <small>{{ criteria.type }}</small>
+                </td>
+                <td>
+                  {% if criteria.status|lower == "valid" %}
+                    <span class="badge badge-success">Valid</span>
+                  {% else %}
+                    {% if criteria.status|lower == "invalid" %}
+                      <span class="badge badge-danger">Invalid</span>
+                    {% else %}
+                      <span class="badge badge-default">{{ criteria.status }}</span>
+                    {% endif %}
+                  {% endif %}
+                  <br/>
+                  <small>{{ criteria.reason.message }}</small>
+                </td>
+                <td><pre>{{ criteria.data|json_render }}</pre></td>
+              </tr>
+            {% endfor %}
+          </table>
+        {% else %}
+          There was some error validationg the document - it doesn't mean that the document
+          is invalid, it means that our website has some technical issues.
+        {% endif %}
+      {% else %}
+        <div class="col">
+            Select a file....
+            <form action="#" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="file" name="oa_file" accept="application/json" required class="form-control" />
+              <input type="submit" class="btn btn-primary" value="Verify" />
+            </form>
+        </div>
+        <div class="col">
+            Or scan a QR code...
+            {# https://github.com/cozmo/jsQR #}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
