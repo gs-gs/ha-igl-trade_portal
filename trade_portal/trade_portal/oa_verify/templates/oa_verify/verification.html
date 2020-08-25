@@ -67,7 +67,7 @@
                 <table class="table table-bordered">
                   {% for key, value in metadata.items %}
                     <tr>
-                      <th>{{ key|capitalize }}</th>
+                      <th>{{ key|capfirst }}</th>
                       <td>{{ value }}</td>
                     </tr>
                   {% endfor %}
@@ -77,7 +77,10 @@
               {% endif %}
             </div>
             <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
-              The attachment(s) go here
+              {% for attach in attachments %}
+                <h3>{{ attach.filename }} ({{ attach.type }})</h3>
+                <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary">The document</a><br/><br/>
+              {% endfor %}
             </div>
           </div>
         {% else %}

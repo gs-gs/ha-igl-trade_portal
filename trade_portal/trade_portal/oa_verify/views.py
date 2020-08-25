@@ -11,15 +11,20 @@ logger = logging.getLogger(__name__)
 
 class OaVerificationView(TemplateView):
     template_name = "oa_verify/verification.html"
-    verify_result = None
-    verdict = None
-    metadata = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.verify_result = None
+        self.verdict = None
+        self.metadata = None
+        self.attachments = []
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         c = super().get_context_data(*args, **kwargs)
         c['verify_result'] = self.verify_result
         c['verdict'] = self.verdict
         c['metadata'] = self.metadata
+        c['attachments'] = self.attachments
         return c
 
     def post(self, request, *args, **kwargs):
@@ -41,6 +46,7 @@ class OaVerificationView(TemplateView):
                 logger.exception(e)
             else:
                 self.metadata = self._retrtieve_metadata(unwrapped_file)
+                self.attachments = unwrapped_file.get("data", {}).get("attachments") or []
 
         return super().get(request, *args, **kwargs)
 
@@ -67,6 +73,10 @@ class OaVerificationView(TemplateView):
                             return int(val)
                     else:
                         return what
+            elif isinstance(what, list):
+                return [
+                    unwrap_it(x) for x in what
+                ]
             elif isinstance(what, dict):
                 return {
                     k: unwrap_it(v)
