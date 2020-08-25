@@ -12,56 +12,91 @@
 {% block content %}
   <div class="content-box profile">
     <div class="row">
+      <div class="col">
       {% if verify_result %}
         {% if verdict == "valid" %}
-          <h2 style='color: green'>Verdict: Valid</h2>
+          <h2>Verdict: <span class="badge badge-success">Valid</span></h2>
         {% else %}
           {% if verdict == "invalid" %}
-            <h2 style='color: red'>Verdict: Invalid</h2>
+            <h2>Verdict: <span class="badge badge-danger">Invalid</span></h2>
           {% else %}
-            <h2 style='color: #aa0'>Verdict: {{ verdict }}</h2>
+            <h2>Verdict: <span class="badge badge-warning">{{ verdict }}</span></h2>
           {% endif %}
         {% endif %}
         {% if verify_result != "error" %}
-          <table class="table">
-            {% for criteria in verify_result %}
-              <tr>
-                <td>
-                  {{ criteria.name }}<br/>
-                  <small>{{ criteria.type }}</small>
-                </td>
-                <td>
-                  {% if criteria.status|lower == "valid" %}
-                    <span class="badge badge-success">Valid</span>
-                  {% else %}
-                    {% if criteria.status|lower == "invalid" %}
-                      <span class="badge badge-danger">Invalid</span>
-                    {% else %}
-                      <span class="badge badge-default">{{ criteria.status }}</span>
-                    {% endif %}
-                  {% endif %}
-                  <br/>
-                  <small>{{ criteria.reason.message }}</small>
-                </td>
-                <td><pre>{{ criteria.data|json_render }}</pre></td>
-              </tr>
-            {% endfor %}
-          </table>
+          <ul class="nav nav-tabs" id="oa-tabs" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="id-status-tab" data-toggle="tab" href="#id-status-tab-content" role="tab" aria-controls="id-status-tab-content" aria-selected="true">Status</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="id-metadata-tab" data-toggle="tab" href="#id-metadata-tab-content" role="tab" aria-controls="id-metadata-tab-content" aria-selected="false">Metadata</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="id-pdf-tab" data-toggle="tab" href="#id-pdf-tab-content" role="tab" aria-controls="id-pdf-tab-content" aria-selected="false">Attachment</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="oa-tabs-content">
+            <div class="tab-pane fade show active" id="id-status-tab-content" role="tabpanel" aria-labelledby="id-status-tab">
+              <table class="table">
+                {% for criteria in verify_result %}
+                  <tr>
+                    <td>
+                      {{ criteria.name }}<br/>
+                      <small>{{ criteria.type }}</small>
+                    </td>
+                    <td>
+                      {% if criteria.status|lower == "valid" %}
+                        <span class="badge badge-success">Valid</span>
+                      {% else %}
+                        {% if criteria.status|lower == "invalid" %}
+                          <span class="badge badge-danger">Invalid</span>
+                        {% else %}
+                          <span class="badge badge-default">{{ criteria.status }}</span>
+                        {% endif %}
+                      {% endif %}
+                      <br/>
+                      <small>{{ criteria.reason.message }}</small>
+                    </td>
+                    <td><pre>{{ criteria.data|json_render }}</pre></td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+            <div class="tab-pane fade" id="id-metadata-tab-content" role="tabpanel" aria-labelledby="id-metadata-tab">
+              {% if metadata %}
+                <table class="table table-bordered">
+                  {% for key, value in metadata.items %}
+                    <tr>
+                      <th>{{ key|capitalize }}</th>
+                      <td>{{ value }}</td>
+                    </tr>
+                  {% endfor %}
+                </table>
+              {% else %}
+                The metadata is shown only for valid documents.
+              {% endif %}
+            </div>
+            <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
+              The attachment(s) go here
+            </div>
+          </div>
         {% else %}
           There was some error validationg the document - it doesn't mean that the document
           is invalid, it means that our website has some technical issues.
         {% endif %}
+      </div>
       {% else %}
         <div class="col">
             Select a file....
-            <form action="#" method="POST" enctype="multipart/form-data">
+            <form action="#" method="POST" enctype="multipart/form-data" onSubmit="$('#id_verify_btn').text('Please wait...')">
               {% csrf_token %}
               <input type="file" name="oa_file" accept="application/json" required class="form-control" />
-              <input type="submit" class="btn btn-primary" value="Verify" />
+              <button type="submit" class="btn btn-primary" id="id_verify_btn">Verify</button>
             </form>
         </div>
         <div class="col">
             Or scan a QR code...
+            (todo)
             {# https://github.com/cozmo/jsQR #}
         </div>
       {% endif %}
