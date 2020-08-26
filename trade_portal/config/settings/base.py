@@ -227,6 +227,19 @@ DATE_INPUT_FORMATS = [
     '%d %B %Y', '%d %B, %Y',            # '25 October 2006', '25 October, 2006'
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
+
 from .base_auth import *  # NOQA
 from .base_app import *  # NOQA
 from .base_apis import *  # NOQA

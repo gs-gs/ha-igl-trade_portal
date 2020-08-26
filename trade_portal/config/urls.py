@@ -20,6 +20,10 @@ urlpatterns = [
     path("verification/", VerificationView.as_view()),
 
     path("documents/", include("trade_portal.documents.urls", namespace="documents")),
+    path(
+        "api/documents/v0/",
+        include("trade_portal.document_api.urls", namespace="document-api-v0")
+    ),
     path("v/", include("trade_portal.oa_verify.urls", namespace="oa-verify")),
     path("oa/<str:key>/", OaCyphertextRetrieve.as_view(), name="oa-cyphertext-retrieve"),
     path("profile/", include("trade_portal.users.urls", namespace="users")),

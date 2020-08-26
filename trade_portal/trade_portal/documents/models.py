@@ -400,6 +400,14 @@ class Document(models.Model):
         help_text=_("Extra data like the QR code position")
     )
 
+    raw_certificate_data = JSONField(
+        default=dict, blank=True,
+        help_text=_(
+            "The data according the UNCoOSpec, most of it we don't parse; "
+            "usually created through the API"
+        )
+    )
+
     search_field = models.TextField(blank=True, default="")
 
     class Meta:
