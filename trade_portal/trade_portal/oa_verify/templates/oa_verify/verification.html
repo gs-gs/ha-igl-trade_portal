@@ -104,24 +104,22 @@
           {% endif %}
         </div>
       {% else %}
-        <div class="col">
-            Select a file....
-            <form action="#" method="POST" enctype="multipart/form-data" onSubmit="$('#id_verify_btn').text('Please wait...')">
+        <div class="col" style="text-align: center;" id="id-left-verify-column">
+            <form action="#" method="POST" enctype="multipart/form-data" onSubmit="$('#id_verify_btn').text('Please wait...')" id="id-file-submit-form">
               {% csrf_token %}
               <input type="hidden" name="type" value="file" />
-              <input type="file" name="oa_file" accept="application/json" required class="form-control" />
-              <button type="submit" class="btn btn-primary" id="id_verify_btn">Verify</button>
+              <input type="file" name="oa_file" id="id-oa-file" accept="application/json" required class="form-control" onChange="$('#id-file-submit-form').submit()"  style="display: none"/>
+              <button type="button" class="btn btn-primary" id="id_verify_btn" onClick="$('#id-oa-file').click();">Verify file</button>
             </form>
         </div>
         <div class="col">
-            Or scan a QR code...
-            <form action="#" method="POST" enctype="multipart/form-data" id='id-qrcode-submit-form'>
+            <form action="#" method="POST" enctype="multipart/form-data" id='id-qrcode-submit-form' style="display: none;">
               {% csrf_token %}
               <input type="hidden" name="type" value="qrcode"/>
-              <input type="text" name="qrcode" value="" id='id-qrcode-submit-form-qr-field' placeholder="Paste the code here if you have it" />
+              <input type="hidden" name="qrcode" value="" id='id-qrcode-submit-form-qr-field' placeholder="Paste the code here if you have it" />
               <input type="submit" value="Submit" />
             </form>
-            <br/>
+
             {# https://github.com/cozmo/jsQR #}
 
             <button type="button" class="btn btn-primary" id="id-qr-code-init-btn"
@@ -130,11 +128,11 @@
 
             <div id="qr-reader-container" style="display: none">
               <div id="qr-code-loadingMessage">
-                🎥 Unable to access video stream (please make sure you have a webcam enabled)
+                (no camera access has been given yet)
               </div>
               <canvas id="qr-code-canvas" hidden></canvas>
               <div id="qr-code-output" hidden>
-                <div id="qr-code-outputMessage">No QR code detected.</div>
+                <div id="qr-code-outputMessage">Please move your QR code into the viewport.</div>
                 <div hidden><b>Data:</b> <span id="qr-code-outputData"></span></div>
               </div>
             </div>
@@ -156,6 +154,8 @@
       var outputContainer = document.getElementById("qr-code-output");
       var outputMessage = document.getElementById("qr-code-outputMessage");
       var outputData = document.getElementById("qr-code-outputData");
+
+      $("#id-left-verify-column").hide();
 
       function drawLine(begin, end, color) {
         canvas.beginPath();
