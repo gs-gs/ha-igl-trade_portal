@@ -64,7 +64,7 @@ class AESCipher:
         iv = base64.b64decode(iv)
         tag = base64.b64decode(tag)
         ciphertext = base64.b64decode(ciphertext)
-        cipher = AES.new(self.key, AES.MODE_EAX, iv)
+        cipher = AES.new(self.key, AES.MODE_GCM, iv)
         return cipher.decrypt_and_verify(ciphertext, tag)
 
 

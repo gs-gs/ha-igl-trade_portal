@@ -207,7 +207,6 @@ class OaDetails(models.Model):
 
     @classmethod
     def _generate_aes_key(cls, key_len=256):
-        # key1 = Random.new().read(key_bytes) ?
         return os.urandom(key_len // 8).hex().upper()
 
     def get_OA_file(self):

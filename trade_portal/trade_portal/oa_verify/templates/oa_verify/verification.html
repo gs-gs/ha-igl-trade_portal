@@ -7,109 +7,216 @@
 {% block head_title %}Verify{% endblock %}
 
 {% block extra_head %}
+  <style>
+    #qr-code-canvas {
+      width: 400px; height: 300px;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
   <div class="content-box profile">
     <div class="row">
-      <div class="col">
       {% if verify_result %}
-        {% if verdict == "valid" %}
-          <h2>Verdict: <span class="badge badge-success">Valid</span></h2>
-        {% else %}
-          {% if verdict == "invalid" %}
-            <h2>Verdict: <span class="badge badge-danger">Invalid</span></h2>
+        <div class="col">
+          <a href="./" class="btn btn-primary btn-sm" style="float: right;">Validate another</a>
+
+          {% if verdict == "valid" %}
+            <h2>Verdict: <span class="badge badge-success">Valid</span></h2>
           {% else %}
-            {% if verdict == "wrong-file" %}
-              <h2>Verdict: <span class="badge badge-warning">{{ verdict }}</span></h2>
+            {% if verdict == "invalid" %}
+              <h2>Verdict: <span class="badge badge-danger">Invalid</span></h2>
             {% else %}
-              <h2>Verdict: <span class="badge badge-warning">{{ verdict }}</span></h2>
+              {% if verdict == "wrong-file" %}
+                <h2>Verdict: <span class="badge badge-warning">{{ verdict }}</span></h2>
+              {% else %}
+                <h2>Verdict: <span class="badge badge-warning">{{ verdict }}</span></h2>
+              {% endif %}
             {% endif %}
           {% endif %}
-        {% endif %}
-        {% if verify_result != "error" and verify_result != "wrong-file" %}
-          <ul class="nav nav-tabs" id="oa-tabs" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" id="id-status-tab" data-toggle="tab" href="#id-status-tab-content" role="tab" aria-controls="id-status-tab-content" aria-selected="true">Status</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="id-metadata-tab" data-toggle="tab" href="#id-metadata-tab-content" role="tab" aria-controls="id-metadata-tab-content" aria-selected="false">Metadata</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="id-pdf-tab" data-toggle="tab" href="#id-pdf-tab-content" role="tab" aria-controls="id-pdf-tab-content" aria-selected="false">Attachment</a>
-            </li>
-          </ul>
-          <div class="tab-content" id="oa-tabs-content">
-            <div class="tab-pane fade show active" id="id-status-tab-content" role="tabpanel" aria-labelledby="id-status-tab">
-              <table class="table">
-                {% for criteria in verify_result %}
-                  <tr>
-                    <td>
-                      {{ criteria.name }}<br/>
-                      <small>{{ criteria.type }}</small>
-                    </td>
-                    <td>
-                      {% if criteria.status|lower == "valid" %}
-                        <span class="badge badge-success">Valid</span>
-                      {% else %}
-                        {% if criteria.status|lower == "invalid" %}
-                          <span class="badge badge-danger">Invalid</span>
-                        {% else %}
-                          <span class="badge badge-default">{{ criteria.status }}</span>
-                        {% endif %}
-                      {% endif %}
-                      <br/>
-                      <small>{{ criteria.reason.message }}</small>
-                    </td>
-                    <td><pre>{{ criteria.data|json_render }}</pre></td>
-                  </tr>
-                {% endfor %}
-              </table>
-            </div>
-            <div class="tab-pane fade" id="id-metadata-tab-content" role="tabpanel" aria-labelledby="id-metadata-tab">
-              {% if metadata %}
-                <table class="table table-bordered">
-                  {% for key, value in metadata.items %}
+
+          {% if verify_result != "error" and verify_result != "wrong-file" %}
+            <ul class="nav nav-tabs" id="oa-tabs" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="id-status-tab" data-toggle="tab" href="#id-status-tab-content" role="tab" aria-controls="id-status-tab-content" aria-selected="true">Status</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="id-metadata-tab" data-toggle="tab" href="#id-metadata-tab-content" role="tab" aria-controls="id-metadata-tab-content" aria-selected="false">Metadata</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="id-pdf-tab" data-toggle="tab" href="#id-pdf-tab-content" role="tab" aria-controls="id-pdf-tab-content" aria-selected="false">Attachment</a>
+              </li>
+            </ul>
+            <div class="tab-content" id="oa-tabs-content">
+              <div class="tab-pane fade show active" id="id-status-tab-content" role="tabpanel" aria-labelledby="id-status-tab">
+                <table class="table">
+                  {% for criteria in verify_result %}
                     <tr>
-                      <th>{{ key|capfirst }}</th>
-                      <td>{{ value }}</td>
+                      <td>
+                        {{ criteria.name }}<br/>
+                        <small>{{ criteria.type }}</small>
+                      </td>
+                      <td>
+                        {% if criteria.status|lower == "valid" %}
+                          <span class="badge badge-success">Valid</span>
+                        {% else %}
+                          {% if criteria.status|lower == "invalid" %}
+                            <span class="badge badge-danger">Invalid</span>
+                          {% else %}
+                            <span class="badge badge-default">{{ criteria.status }}</span>
+                          {% endif %}
+                        {% endif %}
+                        <br/>
+                        <small>{{ criteria.reason.message }}</small>
+                      </td>
+                      <td><pre>{{ criteria.data|json_render }}</pre></td>
                     </tr>
                   {% endfor %}
                 </table>
-              {% else %}
-                The metadata is shown only for valid documents.
-              {% endif %}
+              </div>
+              <div class="tab-pane fade" id="id-metadata-tab-content" role="tabpanel" aria-labelledby="id-metadata-tab">
+                {% if metadata %}
+                  <table class="table table-bordered">
+                    {% for key, value in metadata.items %}
+                      <tr>
+                        <th>{{ key|capfirst }}</th>
+                        <td>{{ value }}</td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+                {% else %}
+                  The metadata is shown only for valid documents.
+                {% endif %}
+              </div>
+              <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
+                {% for attach in attachments %}
+                  <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary">{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
+                {% endfor %}
+              </div>
             </div>
-            <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
-              {% for attach in attachments %}
-                <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary">{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
-              {% endfor %}
-            </div>
-          </div>
-        {% else %}
-          {% if verdict == "error" %}
-            There was some error validationg the document - it doesn't mean that the document
-            is invalid, it means that our website has some technical issues.
           {% else %}
-            The file you have provided seems to be of invalid format or is not supported.
+            {% if verdict == "error" %}
+              There was some error validationg the document - it doesn't mean that the document
+              is invalid, it means that our website has some technical issues.
+            {% else %}
+              The file you have provided seems to be of invalid format or is not supported.
+            {% endif %}
           {% endif %}
-        {% endif %}
-      </div>
+        </div>
       {% else %}
         <div class="col">
             Select a file....
             <form action="#" method="POST" enctype="multipart/form-data" onSubmit="$('#id_verify_btn').text('Please wait...')">
               {% csrf_token %}
+              <input type="hidden" name="type" value="file" />
               <input type="file" name="oa_file" accept="application/json" required class="form-control" />
               <button type="submit" class="btn btn-primary" id="id_verify_btn">Verify</button>
             </form>
         </div>
         <div class="col">
             Or scan a QR code...
-            (todo)
+            <form action="#" method="POST" enctype="multipart/form-data" id='id-qrcode-submit-form'>
+              {% csrf_token %}
+              <input type="hidden" name="type" value="qrcode"/>
+              <input type="text" name="qrcode" value="" id='id-qrcode-submit-form-qr-field' placeholder="Paste the code here if you have it" />
+              <input type="submit" value="Submit" />
+            </form>
+            <br/>
             {# https://github.com/cozmo/jsQR #}
+
+            <button type="button" class="btn btn-primary" id="id-qr-code-init-btn"
+              onClick="$('#qr-reader-container').show(); initQrReader(); $('#id-qr-code-init-btn').hide();"
+            >Read QR code using camera</button>
+
+            <div id="qr-reader-container" style="display: none">
+              <div id="qr-code-loadingMessage">
+                🎥 Unable to access video stream (please make sure you have a webcam enabled)
+              </div>
+              <canvas id="qr-code-canvas" hidden></canvas>
+              <div id="qr-code-output" hidden>
+                <div id="qr-code-outputMessage">No QR code detected.</div>
+                <div hidden><b>Data:</b> <span id="qr-code-outputData"></span></div>
+              </div>
+            </div>
         </div>
       {% endif %}
     </div>
   </div>
+{% endblock %}
+
+{% block extra_script %}
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.3.1/dist/jsQR.min.js"></script>
+  <script>
+
+    function initQrReader() {
+      var video = document.createElement("video");
+      var canvasElement = document.getElementById("qr-code-canvas");
+      var canvas = canvasElement.getContext("2d");
+      var loadingMessage = document.getElementById("qr-code-loadingMessage");
+      var outputContainer = document.getElementById("qr-code-output");
+      var outputMessage = document.getElementById("qr-code-outputMessage");
+      var outputData = document.getElementById("qr-code-outputData");
+
+      function drawLine(begin, end, color) {
+        canvas.beginPath();
+        canvas.moveTo(begin.x, begin.y);
+        canvas.lineTo(end.x, end.y);
+        canvas.lineWidth = 4;
+        canvas.strokeStyle = color;
+        canvas.stroke();
+      }
+
+      // Use facingMode: environment to attemt to get the front camera on phones
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+        video.srcObject = stream;
+        video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+        video.play();
+        requestAnimationFrame(tick);
+      });
+
+      function tick() {
+        loadingMessage.innerText = "⌛ Loading video..."
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          loadingMessage.hidden = true;
+          canvasElement.hidden = false;
+          outputContainer.hidden = false;
+
+          canvasElement.height = video.videoHeight;
+          canvasElement.width = video.videoWidth;
+          canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+          var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+          var code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
+          if (code) {
+            drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
+            drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
+            drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
+            drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+            outputMessage.hidden = true;
+            outputData.parentElement.hidden = false;
+            outputData.innerText = code.data;
+            processQrCodeRead(code.data);
+          } else {
+            outputMessage.hidden = false;
+            outputData.parentElement.hidden = true;
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function processQrCodeRead(value) {
+        console.log(value);
+        if (value.startsWith("https://action.openattestation.com/?q=")) {
+          // seems to be our QR code
+          $("#id-qrcode-submit-form-qr-field").val(value);
+          $("#id-qrcode-submit-form").submit();
+          $("#qr-reader-container").text("Please wait, submitting the code " + value);
+        }
+        video.srcObject.getTracks().forEach(function(track) {
+          track.stop();
+        });
+      }
+    } // end initQrReader
+  </script>
 {% endblock %}
