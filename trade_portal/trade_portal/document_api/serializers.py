@@ -1,8 +1,11 @@
 import base64
 import collections
+import logging
 from rest_framework import serializers
 
-from trade_portal.documents.models import Document, FTA
+from trade_portal.documents.models import Document, FTA, Party
+
+logger = logging.getLogger(__name__)
 
 
 def dict_merge(dct, merge_dct):
@@ -70,7 +73,10 @@ class CertificateSerializer(serializers.Serializer):
             raise serializers.ValidationError({"freeTradeAgreement": "Required field"})
         if "freeTradeAgreement" in cert_data:
             if not FTA.objects.filter(name=cert_data["freeTradeAgreement"]).exists():
-                raise serializers.ValidationError({"freeTradeAgreement": "Doesn't exist in the system"})
+                ftas = ', '.join(FTA.objects.all().values_list('name', flat=True))
+                raise serializers.ValidationError(
+                    {"freeTradeAgreement": f"Doesn't exist in the system, possible choices are {ftas}"}
+                )
         return data
 
     def to_internal_value(self, data):
@@ -92,10 +98,16 @@ class CertificateSerializer(serializers.Serializer):
                     if cert_data.get("isPreferential")
                     else Document.TYPE_NONPREF_COO
                 ),
-                "document_number": cert_data.get("name"),
-                "sending_jurisdiction": supplyChainConsignment.get("exportCountry"),
-                "importing_country": supplyChainConsignment.get("importCountry"),
+                "document_number": cert_data.get("id"),
+                "sending_jurisdiction": supplyChainConsignment.get("exportCountry", {}).get("code"),
+                "importing_country": supplyChainConsignment.get("importCountry", {}).get("code"),
             })
+
+            if not isinstance(ret["sending_jurisdiction"], str) or len(ret["sending_jurisdiction"]) != 2:
+                raise serializers.ValidationError({"exportCountry": "must be a dict with code key"})
+            if not isinstance(ret["importing_country"], str) or len(ret["importing_country"]) != 2:
+                raise serializers.ValidationError({"importCountry": "must be a dict with code key"})
+
         return ret
 
     def create(self, validated_data):
@@ -114,6 +126,33 @@ class CertificateSerializer(serializers.Serializer):
         obj = Document.objects.create(
             **create_kwargs
         )
+
+        try:
+            issuer_id = cert_data.get("issuer", {}).get("id") or ""
+            if ":" in issuer_id:
+                issuer_id = issuer_id.rsplit(":", maxsplit=1)[1]
+            obj.issuer, _ = Party.objects.get_or_create(
+                name=cert_data.get("issuer", {}).get("name"),
+                business_id=issuer_id,
+            )
+        except Exception as e:
+            logger.exception(e)
+            raise serializers.ValidationError({"issuer": "Can't parse"})
+
+        try:
+            supplyChainConsignment = cert_data.get("supplyChainConsignment", {})
+            exporter_bid = supplyChainConsignment.get("exporter", {}).get("name") or ""
+            if ":" in exporter_bid:
+                exporter_bid = exporter_bid.rsplit(":", maxsplit=1)[1]
+            obj.exporter, _ = Party.objects.get_or_create(
+                name=supplyChainConsignment.get("exporter", {}).get("name"),
+                business_id=exporter_bid,
+            )
+            obj.importer_name = supplyChainConsignment.get("importer", {}).get("name") or ""
+        except Exception as e:
+            logger.exception(e)
+            raise serializers.ValidationError({"supplyChainConsignment": "Can't parse exporter or improter"})
+        obj.save()
         return obj
 
     def update(self, instance, validated_data):
