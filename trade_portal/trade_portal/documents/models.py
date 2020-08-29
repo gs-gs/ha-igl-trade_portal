@@ -549,6 +549,10 @@ class DocumentFile(models.Model):
         help_text=_("None if doesn't need to be watermarked, False if pending and True if done")
     )
 
+    metadata = JSONField(
+        default=dict, blank=True
+    )
+
     class Meta:
         ordering = ('-created_at',)
 

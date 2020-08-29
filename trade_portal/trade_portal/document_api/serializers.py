@@ -1,3 +1,4 @@
+import base64
 import collections
 from rest_framework import serializers
 
@@ -51,6 +52,16 @@ class CertificateSerializer(serializers.Serializer):
             "exportCountry": str(instance.sending_jurisdiction),
             "importCountry": str(instance.importing_country),
         })
+        attachments = []
+        for file in instance.files.all():
+            rendered = file.metadata.copy()
+            rendered.update({
+                "filename": file.filename,
+                "type": file.mimetype(),
+                "data": base64.b64encode(file.file.read()).decode("utf-8")
+            })
+            attachments.append(rendered)
+        data['certificateOfOrigin']['attachments'] = attachments
         return data
 
     def validate(self, data):

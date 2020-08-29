@@ -1,9 +1,11 @@
+import json
+
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
-from rest_framework import viewsets, mixins, generics
+from rest_framework import viewsets, mixins, generics, views, serializers, status
 from rest_framework.response import Response
 
-from trade_portal.documents.models import Document
+from trade_portal.documents.models import Document, DocumentFile
 from trade_portal.document_api.serializers import CertificateSerializer
 
 
@@ -102,3 +104,56 @@ class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, 
 #         kwargs['user'] = self.request.user
 #         kwargs['org'] = self.request.user.get_current_org(self.request.session)
 #         return CertificateSerializer(*args, **kwargs)
+
+
+class CertificateFileView(QsMixin, views.APIView):
+    # a little too raw view, but given the complicated nature of the request
+
+    def _validate_request(self):
+        # do sanity check
+        if not self.request.META['CONTENT_TYPE'].startswith('multipart/form-data'):
+            raise serializers.ValidationError("multipart/form-data is expected")
+        if 'file' not in self.request.FILES:
+            raise serializers.ValidationError("The file 'file' is expected as multipart/form-data")
+        try:
+            json.loads(
+                self.request.POST.get('metadata')
+            )
+        except Exception as e:
+            raise serializers.ValidationError(
+                f"Please provide valid 'metadata' parameter as JSON dict ({str(e)})",
+            )
+        return
+
+    def post(self, request, *args, **kwargs):
+        """
+        Save the stored file.
+        curl -X POST -F "file=@somefile.jpg" -H "Authorization: Token XXX" http://127.0.0.1:5255/.../
+        """
+        self._validate_request()
+        # TODO: check if fileobj is a file and it's readable and so on
+        file_obj = request.FILES['file']
+        metadata = json.loads(request.POST.get('metadata'))
+
+        doc = self.get_object()
+
+        if doc.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
+            raise serializers.ValidationError(
+                "Can't upload file - wrong status of the certificate"
+            )
+
+        docfile = DocumentFile.objects.create(
+            doc=doc,
+            created_by=request.user,
+            metadata=metadata,
+            filename=metadata.get("filename") or file_obj.name,
+            is_watermarked=None,
+            size=file_obj.size,
+        )
+        docfile.file.save(file_obj.name, file_obj, save=True)
+        docfile.save()
+
+        return Response(
+            metadata,
+            status=status.HTTP_201_CREATED
+        )
