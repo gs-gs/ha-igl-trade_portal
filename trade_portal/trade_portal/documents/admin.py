@@ -40,7 +40,10 @@ class DocumentHistoryItemInlineAdmin(admin.TabularInline):
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'status', 'type', 'importing_country')
+    list_display = (
+        'created_at', 'workflow_status', 'verification_status', 'status',
+        'type', 'importing_country'
+    )
     list_filter = ('status', 'type')
     inlines = [DocumentHistoryItemInlineAdmin]
 

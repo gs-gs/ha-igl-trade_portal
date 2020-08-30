@@ -78,26 +78,36 @@
     </div>
   </div>
 
-  <p>The date specified above must match the information in the PDF document below - click "Back" to edit if not. Drag the QR code to a clear position on the document - the position will be remembered for this document type.</p>
+  {% if object.get_pdf_attachment %}
+    <p>The date specified above must match the information in the PDF document below - click "Back" to edit if not. Drag the QR code to a clear position on the document - the position will be remembered for this document type.</p>
 
-  <form action="#" method="POST">
-    {% csrf_token %}
-    <a href="{% url 'documents:fill' object.pk %}" class="btn btn-secondary">Back</a>
-    <button type="submit" name="issue" class="btn btn-primary">Issue</button>
-    <input type="hidden" name="qr_x" id="id_qr_x" value="{{ initial_qr_x_value|default:'2' }}" />
-    <input type="hidden" name="qr_y" id="id_qr_y" value="{{ initial_qr_y_value|default:'3' }}" />
-  </form>
+    <form action="#" method="POST">
+      {% csrf_token %}
+      <a href="{% url 'documents:fill' object.pk %}" class="btn btn-secondary">Back</a>
+      <button type="submit" name="issue" class="btn btn-primary">Issue</button>
 
-  <br/><br/>
+      {% if object.get_pdf_attachment.is_watermarked is False %}
+        <input type="hidden" name="qr_x" id="id_qr_x" value="{{ initial_qr_x_value|default:'2' }}" />
+        <input type="hidden" name="qr_y" id="id_qr_y" value="{{ initial_qr_y_value|default:'3' }}" />
+      {% endif %}
+    </form>
 
-  <div id="id_qr_code_area">
-    <img class="igl-doc-qrcode__image"
-      src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" id="id_qr_code" />
-    <img src="{% url 'documents:pdf-download' object.pk %}?inline=true&as_png=true&original=true"
-         alt="Please wait the first page to appear..."
-         id="id_base_image"
-          />
-  </div>
+    <br/><br/>
+
+    <div id="id_qr_code_area">
+      {% if object.get_pdf_attachment.is_watermarked is False %}
+        <img class="igl-doc-qrcode__image"
+          src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" id="id_qr_code" />
+      {% endif %}
+      <img src="{% url 'documents:pdf-download' object.pk %}?inline=true&as_png=true&original=true"
+           alt="Please wait the first page to appear..."
+           id="id_base_image"
+            />
+    </div>
+  {% else %}
+    <p>There is no PDF file uploaded for that document; this usually means that the document
+    has been created using the API and the process wasn't finished.</p>
+  {% endif %}
 
 </div>
 {% endblock content %}
@@ -132,6 +142,7 @@
 {% endblock %}
 
 {% block extra_script %}
+  {% if object.get_pdf_attachment.is_watermarked is False %}
   <script>
     // Make the DIV element draggable:
     var draggableParent = document.getElementById("id_base_image");
@@ -198,4 +209,5 @@
       }
     }
   </script>
+  {% endif %}
 {% endblock %}

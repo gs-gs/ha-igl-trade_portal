@@ -3,7 +3,7 @@ import collections
 import logging
 from rest_framework import serializers
 
-from trade_portal.documents.models import Document, FTA, Party
+from trade_portal.documents.models import Document, FTA, Party, OaDetails
 
 logger = logging.getLogger(__name__)
 
@@ -49,22 +49,35 @@ class CertificateSerializer(serializers.Serializer):
         data.update({
             "id": instance.pk,
         })
-        data["certificateOfOrigin"].update({
-            "issueDateTime": instance.created_at,
-            "isPreferential": instance.type == Document.TYPE_PREF_COO,
-            "exportCountry": str(instance.sending_jurisdiction),
-            "importCountry": str(instance.importing_country),
-        })
-        attachments = []
-        for file in instance.files.all():
-            rendered = file.metadata.copy()
-            rendered.update({
-                "filename": file.filename,
-                "type": file.mimetype(),
-                "data": base64.b64encode(file.file.read()).decode("utf-8")
-            })
-            attachments.append(rendered)
-        data['certificateOfOrigin']['attachments'] = attachments
+        # data["certificateOfOrigin"].update({
+        #     "issueDateTime": instance.created_at,
+        #     "isPreferential": instance.type == Document.TYPE_PREF_COO,
+        #     "exportCountry": str(instance.sending_jurisdiction),
+        #     "importCountry": str(instance.importing_country),
+        # })
+        # attachments = []
+        # for file in instance.files.all():
+        #     rendered = file.metadata.copy()
+        #     rendered.update({
+        #         "filename": file.filename,
+        #         "type": file.mimetype(),
+        #         "data": base64.b64encode(file.file.read()).decode("utf-8")
+        #     })
+        #     attachments.append(rendered)
+
+        pdf_attach = instance.get_pdf_attachment()
+        if pdf_attach:
+            data['certificateOfOrigin']['attachedFile'] = {
+                "file": base64.b64encode(pdf_attach.file.read()).decode("utf-8"),
+                "encodingCode": "base64",
+                "mimeCode": pdf_attach.mimetype(),
+            }
+
+        # OA details
+        data["OA"] = {
+            "url": instance.oa.url_repr(),
+            "qrcode": instance.oa.get_qr_image_base64(),
+        }
         return data
 
     def validate(self, data):
@@ -115,6 +128,9 @@ class CertificateSerializer(serializers.Serializer):
         create_kwargs.pop("id", None)
         create_kwargs["created_by_user"] = self.user
         create_kwargs["created_by_org"] = self.org
+        create_kwargs["oa"] = OaDetails.retrieve_new(
+            for_org=self.org
+        )
 
         # some business logic - propagating some fields to the model instance
         cert_data = validated_data["raw_certificate_data"]["certificateOfOrigin"]
@@ -141,17 +157,19 @@ class CertificateSerializer(serializers.Serializer):
 
         try:
             supplyChainConsignment = cert_data.get("supplyChainConsignment", {})
-            exporter_bid = supplyChainConsignment.get("exporter", {}).get("name") or ""
-            if ":" in exporter_bid:
-                exporter_bid = exporter_bid.rsplit(":", maxsplit=1)[1]
-            obj.exporter, _ = Party.objects.get_or_create(
-                name=supplyChainConsignment.get("exporter", {}).get("name"),
-                business_id=exporter_bid,
-            )
-            obj.importer_name = supplyChainConsignment.get("importer", {}).get("name") or ""
+            consignor = supplyChainConsignment.get("consignor", {})
+            if consignor:
+                exporter_bid = consignor.get("id") or ""
+                if ":" in exporter_bid:
+                    exporter_bid = exporter_bid.rsplit(":", maxsplit=1)[1]
+                obj.exporter, _ = Party.objects.get_or_create(
+                    name=consignor.get("name"),
+                    business_id=exporter_bid,
+                )
+            obj.importer_name = supplyChainConsignment.get("consignee", {}).get("name") or ""
         except Exception as e:
             logger.exception(e)
-            raise serializers.ValidationError({"supplyChainConsignment": "Can't parse exporter or improter"})
+            raise serializers.ValidationError({"supplyChainConsignment": "Can't parse consignor or consignee"})
         obj.save()
         return obj
 

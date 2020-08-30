@@ -23,7 +23,7 @@
         {% if doc.extension and doc.extension != "?" %}
           <a href="{% url 'documents:file-download' object.id doc.id %}" class="btn btn-primary btn-sm" style="width: 150px">
             Download {{ doc.extension }}
-            {% if not doc.is_watermarked %}<small>(processing...)</small>{% endif %}
+            {% if doc.is_watermarked == False %}<small>(processing...)</small>{% endif %}
           </a>
         {% endif %}
       {% endfor %}

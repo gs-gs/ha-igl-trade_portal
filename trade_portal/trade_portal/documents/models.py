@@ -467,6 +467,9 @@ class Document(models.Model):
     def get_vc(self):
         return self.oa.get_OA_file()
 
+    def get_pdf_attachment(self):
+        return self.files.filter(filename__endswith=".pdf").first()
+
 
 class DocumentHistoryItem(models.Model):
     document = models.ForeignKey(Document, models.CASCADE, related_name="history")
