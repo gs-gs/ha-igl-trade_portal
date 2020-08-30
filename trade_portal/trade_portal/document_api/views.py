@@ -5,8 +5,9 @@ from django.utils.functional import cached_property
 from rest_framework import viewsets, mixins, generics, views, serializers, status
 from rest_framework.response import Response
 
-from trade_portal.documents.models import Document, DocumentFile
 from trade_portal.document_api.serializers import CertificateSerializer
+from trade_portal.documents.models import Document, DocumentFile
+from trade_portal.documents.tasks import textract_document, lodge_document
 
 
 class QsMixin(object):
@@ -153,7 +154,32 @@ class CertificateFileView(QsMixin, views.APIView):
         docfile.file.save(file_obj.name, file_obj, save=True)
         docfile.save()
 
+        textract_document.apply_async(
+            [doc.pk],
+            countdown=2
+        )
+
         return Response(
             metadata,
             status=status.HTTP_201_CREATED
+        )
+
+
+class CertificateIssueView(QsMixin, views.APIView):
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
+            raise serializers.ValidationError("Document must have 'draft' workflow status")
+        if not obj.get_pdf_attachment():
+            raise serializers.ValidationError("PDF file must be attached")
+        obj.workflow_status = Document.WORKFLOW_STATUS_ISSUED
+        obj.save()
+        lodge_document.apply_async(
+            [obj.pk],
+            countdown=2
+        )
+
+        return Response(
+            {},
+            status=status.HTTP_200_OK
         )

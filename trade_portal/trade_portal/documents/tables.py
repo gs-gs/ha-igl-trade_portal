@@ -26,6 +26,12 @@ class DocumentsTable(tables.Table):
     importer_name = tables.Column(
         verbose_name=_("Importer\nName")
     )
+    workflow_status = tables.Column(
+        verbose_name=_("Workflow\nStatus")
+    )
+    verification_status = tables.Column(
+        verbose_name=_("Verfication\nStatus")
+    )
     status = tables.TemplateColumn(
         verbose_name=_("IGL\nStatus"),
         template_code="""
@@ -64,7 +70,8 @@ class DocumentsTable(tables.Table):
         model = Document
         template_name = "tables_bt4.html"
         fields = (
-            "document_number", "type", "status", "sending_jurisdiction", "importing_country",
+            "document_number", "type", "workflow_status", "verification_status", "status",
+            "sending_jurisdiction", "importing_country",
             "created_at", "issuer", "exporter", "importer_name",
             "consignment_details", "logs_link",
         )
