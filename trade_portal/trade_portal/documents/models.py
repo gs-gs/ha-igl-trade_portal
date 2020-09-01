@@ -242,12 +242,14 @@ class OaDetails(models.Model):
 
 
 class Document(models.Model):
+    STATUS_NOT_SENT = "not-sent"
     STATUS_PENDING = "pending"
     STATUS_FAILED = "failed"
     STATUS_VALIDATED = "validated"
     STATUS_INCOMING = "incoming"
 
-    STATUS_CHOICES = (
+    MESSAGE_STATUS_CHOICES = (
+        (STATUS_NOT_SENT, _("Not Sent")),  # just notarisation
         (STATUS_PENDING, _("Pending")),
         (STATUS_FAILED, _("Failed")),
         (STATUS_VALIDATED, _("Validated")),
@@ -269,11 +271,15 @@ class Document(models.Model):
 
     # UI workflow section - it's responsibility is to show/hide buttons
     # for users wanting to perform some actions
+    # https://edi3.org/specs/edi3-regulatory/develop/certificates/#state-lifecycle
     WORKFLOW_STATUS_DRAFT = "draft"
     WORKFLOW_STATUS_ISSUED = "issued"
+    WORKFLOW_STATUS_NOT_ISSUED = "not-issued"
+
     WORKFLOW_STATUS_CHOICES = (
         (WORKFLOW_STATUS_DRAFT, "Draft"),
-        (WORKFLOW_STATUS_ISSUED, "Issued")
+        (WORKFLOW_STATUS_ISSUED, "Issued"),
+        (WORKFLOW_STATUS_NOT_ISSUED, "Not issued"),
     )
 
     TYPE_PREF_COO = "pref_coo"
@@ -381,7 +387,7 @@ class Document(models.Model):
     # IGL message status
     status = models.CharField(
         _("Message Status"),
-        max_length=12, choices=STATUS_CHOICES, default=STATUS_PENDING
+        max_length=12, choices=MESSAGE_STATUS_CHOICES, default=STATUS_PENDING
     )
     verification_status = models.CharField(
         _("Verification Status"),

@@ -45,7 +45,16 @@ class CertificateSerializer(serializers.Serializer):
         critical fields by the our-generated values (so users don't invent
         their own IDs for example)
         """
-        data = instance.raw_certificate_data.copy()
+        if not instance.raw_certificate_data:
+            # this certificate has been created using UI
+            # so has no rendered data, TODO: render it
+            data = {
+                "certificateOfOrigin": {
+                    "id": instance.document_number
+                }
+            }
+        else:
+            data = instance.raw_certificate_data.copy()
         data.update({
             "id": instance.pk,
         })
@@ -67,17 +76,22 @@ class CertificateSerializer(serializers.Serializer):
 
         pdf_attach = instance.get_pdf_attachment()
         if pdf_attach:
-            data['certificateOfOrigin']['attachedFile'] = {
-                "file": base64.b64encode(pdf_attach.file.read()).decode("utf-8"),
-                "encodingCode": "base64",
-                "mimeCode": pdf_attach.mimetype(),
-            }
+            try:
+                data['certificateOfOrigin']['attachedFile'] = {
+                    "file": base64.b64encode(pdf_attach.file.read()).decode("utf-8"),
+                    "encodingCode": "base64",
+                    "mimeCode": pdf_attach.mimetype(),
+                }
+            except Exception as e:
+                logger.exception(e)
+                pass
 
         # OA details
-        data["OA"] = {
-            "url": instance.oa.url_repr(),
-            "qrcode": instance.oa.get_qr_image_base64(),
-        }
+        if instance.oa:
+            data["OA"] = {
+                "url": instance.oa.url_repr(),
+                "qrcode": instance.oa.get_qr_image_base64(),
+            }
         return data
 
     def validate(self, data):
