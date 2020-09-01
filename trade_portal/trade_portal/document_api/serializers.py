@@ -26,6 +26,17 @@ def dict_merge(dct, merge_dct):
             dct[k] = merge_dct[k]
 
 
+class ShortCertificateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Document
+        fields = ('id', 'document_number', 'created_at')
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        self.org = kwargs.pop("org", None)
+        super().__init__(*args, **kwargs)
+
+
 class CertificateSerializer(serializers.Serializer):
 
     class Meta:

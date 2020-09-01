@@ -4,10 +4,19 @@ from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
 from rest_framework import viewsets, mixins, generics, views, serializers, status
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
-from trade_portal.document_api.serializers import CertificateSerializer
+from trade_portal.document_api.serializers import (
+    CertificateSerializer, ShortCertificateSerializer,
+)
 from trade_portal.documents.models import Document, DocumentFile
 from trade_portal.documents.tasks import textract_document, lodge_document
+
+
+class PaginationBy10(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
 
 
 class QsMixin(object):
@@ -65,6 +74,7 @@ class QsMixin(object):
 
 class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, mixins.UpdateModelMixin):
     queryset = Document.objects.all()
+    pagination_class = PaginationBy10
 
     def get_serializer(self, *args, **kwargs):
         """
@@ -73,7 +83,11 @@ class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, 
         """
         kwargs['user'] = self.request.user
         kwargs['org'] = self.current_org
-        return CertificateSerializer(*args, **kwargs)
+        if self.request.method == "GET" and "pk" not in self.kwargs:
+            ser_cls = ShortCertificateSerializer(*args, **kwargs)
+        else:
+            ser_cls = CertificateSerializer(*args, **kwargs)
+        return ser_cls
 
     # def list(self, request):
     #     # The only difference from the base list() procedure is providing a short serializer
