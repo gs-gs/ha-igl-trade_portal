@@ -7,6 +7,8 @@ register = template.Library()
 
 @register.filter
 def json_render(obj):
+    if not obj:
+        return ""
     try:
         def escape_script_tags(unsafe_str):
             # seriously: http://stackoverflow.com/a/1068548/8207
@@ -17,5 +19,5 @@ def json_render(obj):
 
         return escape_script_tags(json.dumps(obj, indent=2))
     except Exception as e:
-        print(e)
+        print(f"json_render template tag error {e} for object {obj}")
         return escape_script_tags(obj)

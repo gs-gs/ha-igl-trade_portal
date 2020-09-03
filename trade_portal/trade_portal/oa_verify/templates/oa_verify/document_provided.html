@@ -1,0 +1,86 @@
+{% load our_utils %}
+
+{# First part - coloured badge #}
+<div class="col">
+  <a href="./" class="btn btn-primary btn-sm" style="float: right;">Validate another</a>
+
+  {% if verification_result.status == "valid" %}
+    <h2><span class="badge badge-success">Valid</span></h2><br/>
+    <h4>Issued by: {{ verification_result.verify_result_rotated.ISSUER_IDENTITY.data.0.location }}</h4>
+  {% else %}
+    {% if verification_result.status == "invalid" %}
+      <h2><span class="badge badge-danger">Invalid</span></h2>
+      <h4>Some of verification aspects are invalid or tampered with</h4>
+      {% for key, value in verification_result.verify_result_rotated.items %}
+        {% if value.status == "INVALID" %}{{ key }} {% endif %}
+      {% endfor %}
+    {% else %}
+      {# error #}
+      <h2><span class="badge badge-warning">Error</span></h2>
+      <h4>{{ verification_result.error_message }}.</h4>
+    {% endif %}
+  {% endif %}
+
+  {% if verification_result.status != "error" %}
+    {# display details only for files which are either valid or invalid so at least parseable #}
+
+    <ul class="nav nav-tabs" id="oa-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="id-verify-tab" data-toggle="tab" href="#id-verify-tab-content" role="tab" aria-controls="id-verify-tab-content" aria-selected="true">Verify</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="id-pdf-tab" data-toggle="tab" href="#id-pdf-tab-content" role="tab" aria-controls="id-pdf-tab-content" aria-selected="false">Downloads</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="id-status-tab" data-toggle="tab" href="#id-status-tab-content" role="tab" aria-controls="id-status-tab-content" aria-selected="true">Logs</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="oa-tabs-content">
+      <div class="tab-pane fade show active" id="id-verify-tab-content" role="tabpanel" aria-labelledby="id-verify-tab">
+        {% if verification_result.status == "valid" %}
+          <p>This is the document rendered by the renderer mentioned in it; this data is document's creator responsibility</p>
+          {{ verification_result.rendered|safe }}
+        {% else %}
+          We display such details only for valid documents.
+        {% endif %}
+      </div>
+      <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
+        {% if verification_result.status == "valid" %}
+          {% for attach in verification_result.attachments %}
+            <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary">{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
+          {% endfor %}
+        {% else %}
+          We display attachments only for valid documents.
+        {% endif %}
+      </div>
+
+      <div class="tab-pane fade" id="id-status-tab-content" role="tabpanel" aria-labelledby="id-status-tab">
+        <table class="table">
+          {% for criteria in verification_result.verify_result %}
+            <tr>
+              <td>
+                {{ criteria.name }}<br/>
+                <small>{{ criteria.type }}</small>
+              </td>
+              <td>
+                {% if criteria.status|lower == "valid" %}
+                  <span class="badge badge-success">Valid</span>
+                {% else %}
+                  {% if criteria.status|lower == "invalid" %}
+                    <span class="badge badge-danger">Invalid</span>
+                  {% else %}
+                    <span class="badge badge-default">{{ criteria.status }}</span>
+                  {% endif %}
+                {% endif %}
+                <br/>
+                <small>{{ criteria.reason.message }}</small>
+              </td>
+              <td><pre>{{ criteria.data|json_render }}</pre></td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+    </div>
+  {% endif %}
+</div>

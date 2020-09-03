@@ -1,0 +1,33 @@
+<div class="col" style="text-align: center;" id="id-left-verify-column">
+  <form action="#" method="POST" enctype="multipart/form-data" onSubmit="$('#id_verify_btn').text('Please wait...')" id="id-file-submit-form">
+    {% csrf_token %}
+    <input type="hidden" name="type" value="file" />
+    <input type="file" name="oa_file" id="id-oa-file" accept="application/json" required class="form-control" onChange="$('#id-file-submit-form').submit()"  style="display: none"/>
+    <button type="button" class="btn btn-primary" id="id_verify_btn" onClick="$('#id-oa-file').click();">Verify file</button>
+  </form>
+</div>
+<div class="col">
+  <form action="#" method="POST" enctype="multipart/form-data" id='id-qrcode-submit-form' style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="type" value="qrcode"/>
+    <input type="hidden" name="qrcode" value="" id='id-qrcode-submit-form-qr-field' placeholder="Paste the code here if you have it" />
+    <input type="submit" value="Submit" />
+  </form>
+
+  {# https://github.com/cozmo/jsQR #}
+
+  <button type="button" class="btn btn-primary" id="id-qr-code-init-btn"
+    onClick="$('#qr-reader-container').show(); initQrReader(); $('#id-qr-code-init-btn').hide();"
+  >Read QR code using camera</button>
+
+  <div id="qr-reader-container" style="display: none">
+    <div id="qr-code-loadingMessage">
+      (no camera access has been given yet)
+    </div>
+    <canvas id="qr-code-canvas" hidden></canvas>
+    <div id="qr-code-output" hidden>
+      <div id="qr-code-outputMessage">Please move your QR code into the viewport.</div>
+      <div style="display: none"><b>Data:</b> <span id="qr-code-outputData"></span></div>
+    </div>
+  </div>
+</div>
