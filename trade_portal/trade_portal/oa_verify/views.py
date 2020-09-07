@@ -97,11 +97,13 @@ class OaVerificationView(TemplateView):
             # worth further parsing only if the file is valid
             try:
                 result["unwrapped_file"] = self._unwrap_file(cleartext)
+                result["oa_raw_data"] = json.loads(cleartext)
             except Exception as e:
                 logger.exception(e)
                 # or likely our code has some bug or unsupported format in it
                 raise OaVerificationError("Unable to unwrap the OA file - it's structure may be invalid")
             else:
+                result["template_url"] = result["unwrapped_file"].get("data", {}).get("$template", {}).get("url")
                 result["rendered"] = self.render_oa_document(
                     result["unwrapped_file"]
                 )
@@ -164,6 +166,10 @@ class OaVerificationView(TemplateView):
                             return True if val.lower() == "true" else False
                         elif vtype == "number":
                             return int(val)
+                        elif vtype == "null":
+                            return None
+                        elif vtype == "undefined":
+                            return None
                     else:
                         return what
             elif isinstance(what, list):

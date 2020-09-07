@@ -38,7 +38,7 @@
     <div class="tab-content" id="oa-tabs-content">
       <div class="tab-pane fade show active" id="id-verify-tab-content" role="tabpanel" aria-labelledby="id-verify-tab">
         {% if verification_result.status == "valid" %}
-          <p>This is the document rendered by the renderer mentioned in it; this data is document's creator responsibility</p>
+          <p>This is the document rendered by the renderer mentioned in it; this data is document's creator responsibility. This should be rendered with {{ verification_result.template_url }}</p>
           {{ verification_result.rendered|safe }}
         {% else %}
           We display such details only for valid documents.
