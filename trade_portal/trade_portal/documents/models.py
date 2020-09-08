@@ -450,10 +450,16 @@ class Document(models.Model):
         return str(self.id)[-6:]
 
     def get_rendered_edi3_document(self):
+        if self.raw_certificate_data.get("certificateOfOrigin"):
+            # has been already rendered or sent through the API
+            return self.raw_certificate_data["certificateOfOrigin"]
+
         if self.importing_country != settings.ICL_APP_COUNTRY:
             # outbound
-            from trade_portal.edi3.certificates import CertificateRenderer
-            return CertificateRenderer().render(self)
+            # from trade_portal.edi3.certificates import CertificateRenderer
+            # return CertificateRenderer().render(self)
+            from trade_portal.edi3.certificates import Un20200831CoORenderer
+            return Un20200831CoORenderer().render(self)
         else:
             if "oa_doc" in self.intergov_details:
                 return self.intergov_details["oa_doc"]
