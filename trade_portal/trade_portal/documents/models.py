@@ -452,7 +452,9 @@ class Document(models.Model):
     def get_rendered_edi3_document(self):
         if self.raw_certificate_data.get("certificateOfOrigin"):
             # has been already rendered or sent through the API
-            return self.raw_certificate_data["certificateOfOrigin"]
+            return {
+                "certificateOfOrigin": self.raw_certificate_data["certificateOfOrigin"]
+            }
 
         if self.importing_country != settings.ICL_APP_COUNTRY:
             # outbound
