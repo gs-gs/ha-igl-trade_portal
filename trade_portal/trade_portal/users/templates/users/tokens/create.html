@@ -1,0 +1,32 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Issue token" %}{% endblock %}
+
+{% block extra_head %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>{% trans "Issue token" %}</h2>
+
+  <p>{% trans "The token will be issued for the current user and org. Please keep it in secret. You'll be able to see it only single time." %}</p>
+
+  {% if not just_issued_token %}
+    <form action="#" method="POST">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <div class="form-actions">
+        <a href="{% url 'users:detail' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Issue</button>
+      </div>
+    </form>
+  {% else %}
+    <p>Your token is: <em>{{ just_issued_token.access_token }}</em></p>
+    <p>{% trans "Please note that after closing this page you never see this token again through the website (but you may use it until you remove it)" %}</p>
+    <a href="{% url 'users:detail' %}">Back to profile</a>
+  {% endif %}
+</div>
+{% endblock %}

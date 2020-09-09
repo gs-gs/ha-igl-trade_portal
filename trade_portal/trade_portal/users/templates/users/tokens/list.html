@@ -1,0 +1,46 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}Tokens{% endblock %}
+
+{% block extra_head %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <a href="{% url 'users:tokens-issue' %}" class="btn btn-primary" style="float: right">Issue token</a>
+
+  <h2>{% trans "Access tokens for" %} {{ current_org }}</h2>
+
+  <p>{% trans "Here you can manage access tokens for the current organisation. Please note that tokens from all users are displayed for transparency. Please keep your tokens secret." %}</p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Created at</th>
+        <th>Created by</th>
+        <th>Readable Name</th>
+        <th>Value</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj in object_list %}
+        <tr>
+          <th>{{ obj.created_at }}</th>
+          <th>{{ obj.user }}</th>
+          <td>{{ obj.readable_name }}</td>
+          <td>{{ obj.short_access_token }}...</td>
+          <td></td>
+        </tr>
+      {% empty %}
+        <tr>
+          <th>(no active tokens to display)</th>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

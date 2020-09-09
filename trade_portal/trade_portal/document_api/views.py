@@ -23,6 +23,12 @@ class QsMixin(object):
 
     @cached_property
     def current_org(self):
+        # DRF token auth
+        auth_token = getattr(self.request, "auth", None)
+        if auth_token and hasattr(auth_token, "org"):
+            return auth_token.org
+
+        # Session or basic auth
         if getattr(self.request, "session", None):
             return self.request.user.get_current_org(self.request.session)
         else:

@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 
 from trade_portal.users.models import (
     Organisation, OrgMembership, OrgRoleRequest,
+    OrganisationAuthToken,
 )
 from trade_portal.users.forms import UserChangeForm
 
@@ -41,3 +42,8 @@ class OrgMembershipAdmin(admin.ModelAdmin):
 @admin.register(OrgRoleRequest)
 class OrgRoleRequestAdmin(admin.ModelAdmin):
     list_display = ("id", "org", "role", "status")
+
+
+@admin.register(OrganisationAuthToken)
+class OrganisationAuthTokenAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 'org', 'short_access_token', 'readable_name')

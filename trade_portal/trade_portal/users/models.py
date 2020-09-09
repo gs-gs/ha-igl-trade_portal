@@ -1,7 +1,11 @@
+import binascii
+import os
 import logging
+import uuid
 
-from django.core.validators import FileExtensionValidator
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -196,3 +200,51 @@ class OrgRoleRequest(models.Model):
 
     def __str__(self):
         return "{} for {}".format(self.get_role_display(), self.org)
+
+
+class OrganisationAuthToken(models.Model):
+    """
+    Just an auth token from the DRF which is linked to the organisation
+    as well as user
+    """
+    uuid = models.UUIDField(default=uuid.uuid4, primary_key=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='api_tokens',
+        on_delete=models.CASCADE, verbose_name=_("User")
+    )
+    org = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE,
+        related_name='oauth2_tokens',
+    )
+    access_token = models.CharField(
+        _("Key"), max_length=40, unique=True,
+    )
+
+    readable_name = models.CharField(
+        max_length=1024, blank=True, default='',
+        help_text=_("For example, 'PC37/office3' - or any other text useful for you")
+    )
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return '{} for {}'.format(
+            self.short_access_token(),
+            self.org.name
+        )
+
+    def save(self, *args, **kwargs):
+        if not self.access_token:
+            self.access_token = self.generate_key()
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def generate_key(cls):
+        return binascii.hexlify(os.urandom(20)).decode()
+
+    def short_access_token(self):
+        return self.access_token[-6:]

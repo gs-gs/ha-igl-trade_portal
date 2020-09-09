@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model, forms as auth_forms
 from django.utils.translation import gettext_lazy as _
 
-from trade_portal.users.models import OrgRoleRequest
+from trade_portal.users.models import OrgRoleRequest, OrganisationAuthToken
 from trade_portal.users.tasks import (
     notify_about_new_user_created, notify_role_requested,
 )
@@ -113,3 +113,20 @@ class RoleRequestForm(forms.ModelForm):
             countdown=5
         )
         return req
+
+
+class TokenCreateForm(forms.ModelForm):
+    class Meta:
+        model = OrganisationAuthToken
+        fields = ('readable_name', )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        self.current_org = kwargs.pop("current_org")
+        super().__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # https://github.com/encode/django-rest-framework/blob/master/rest_framework/authtoken/models.py
+        self.instance.user = self.user
+        self.instance.org = self.current_org
+        return super().save(*args, **kwargs)
