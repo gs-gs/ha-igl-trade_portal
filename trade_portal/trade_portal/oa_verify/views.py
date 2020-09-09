@@ -27,15 +27,50 @@ class OaVerificationView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         c = super().get_context_data(*args, **kwargs)
+
         if self.request.POST:
             c["verification_result"] = self.perform_verification()
+        else:
+            query_query = self._get_qr_code_query()
+            if query_query:
+                c["verification_result"] = self.perform_verification(query=query_query)
         return c
 
+    def _get_qr_code_query(self):
+        """
+        If there was a QR code link with our portal as the first parameter
+        and there is 'q' GET parameter - parse it and ensure it's a JSON
+        with somere required fields; if so - parse it and verify.
+        """
+        q = self.request.GET.get("q")
+        if q:
+            try:
+                q = json.loads(q)
+                if q["type"] != "DOCUMENT":
+                    raise Exception(
+                        "Somebody is trying to verify something which is not a document"
+                    )
+                uri = q["payload"]["uri"]
+                key = q["payload"]["key"]
+            except Exception as e:
+                logger.exception(e)
+                messages.warning(
+                    self.request,
+                    "There is a verification request which can't be parsed"
+                )
+            else:
+                # the JSON is valid and some parameters are present
+                return {
+                    "uri": uri,
+                    "key": key
+                }
+        return None
+
     def post(self, request, *args, **kwargs):
-        # get_context_data calls the verification step
+        # get_context_data calls the verification step if the data is present
         return super().get(request, *args, **kwargs)
 
-    def perform_verification(self):
+    def perform_verification(self, query: dict = None):
         """
         Return dict of the next format:
         {
@@ -61,10 +96,20 @@ class OaVerificationView(TemplateView):
             the_file = self.request.FILES["oa_file"]
             value = the_file.read()
             verify_result = self._unpack_and_verify_cleartext(value)
+        elif query:
+            # ?q={...}
+            try:
+                verify_result = self._parse_and_verify_qrcode(query=query)
+            except Exception as e:
+                logger.exception(e)
+                verify_result = {
+                    "status": "error",
+                    "error_message": "The query seems to be invalid or unsupported",
+                }
         elif self.request.POST.get("type") == "qrcode":
             the_code = self.request.POST.get("qrcode")
             try:
-                verify_result = self._parse_and_verify_qrcode(the_code)
+                verify_result = self._parse_and_verify_qrcode(code=the_code)
             except Exception as e:
                 logger.exception(e)
                 verify_result = {
@@ -132,6 +177,8 @@ class OaVerificationView(TemplateView):
                     for index, line in enumerate(value):
                         rendered_value = render_flat_dict(str(index), line)
             else:
+                if isinstance(value, str) and value.startswith("data:"):
+                    value = "(binary data)"
                 rendered_value = escape(value)
             rendered_key = f"<b>{key.capitalize()}</b>:" if key else ""
             return f"""
@@ -217,7 +264,7 @@ class OaVerificationView(TemplateView):
                 f"Verifier temporary unavailable (error {resp.status_code}); please try again later"
             )
 
-    def _parse_and_verify_qrcode(self, the_code):
+    def _parse_and_verify_qrcode(self, code: str = None, query: dict = None):
         """
         2 kinds of QR codes:
 
@@ -240,21 +287,26 @@ class OaVerificationView(TemplateView):
         Note we catch all exceptions one layer above, so no need to do it here
 
         """
-        if the_code.startswith("https://") or the_code.startswith("http://"):
-            # new approach
-            components = urllib.parse.urlparse(the_code)
-            params = urllib.parse.parse_qs(components.query)
-            req = json.loads(params["q"][0])
-            if req["type"].upper() == "DOCUMENT":
-                uri = req["payload"]["uri"]
-                key = req["payload"]["key"]  # it's always AES
-        elif the_code.startswith("tradetrust://"):
-            # old approach
-            json_body = the_code.split("://", maxsplit=1)[1]
-            params = json.loads(json_body)["uri"]
-            uri, key = params.rsplit("#", maxsplit=1)
-        else:
-            raise OaVerificationError("Unsupported QR code format")
+        if code:
+            # has been read by QR reader
+            if code.startswith("https://") or code.startswith("http://"):
+                # new approach
+                components = urllib.parse.urlparse(code)
+                params = urllib.parse.parse_qs(components.query)
+                req = json.loads(params["q"][0])
+                if req["type"].upper() == "DOCUMENT":
+                    uri = req["payload"]["uri"]
+                    key = req["payload"]["key"]  # it's always AES
+            elif code.startswith("tradetrust://"):
+                # old approach
+                json_body = code.split("://", maxsplit=1)[1]
+                params = json.loads(json_body)["uri"]
+                uri, key = params.rsplit("#", maxsplit=1)
+            else:
+                raise OaVerificationError("Unsupported QR code format")
+        elif query:
+            # the url has been navigated, so we already have both uri and key
+            uri, key = query["uri"], query["key"]
 
         # this will contain fields cipherText, iv, tag, type
         logger.info("Retrieving document %s having key %s", uri, key)
