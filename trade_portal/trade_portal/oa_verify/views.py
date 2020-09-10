@@ -8,7 +8,7 @@ import requests
 from constance import config
 from django.contrib import messages
 from django.views.generic import TemplateView
-from django.utils.html import escape
+# from django.utils.html import escape
 
 from trade_portal.documents.services.lodge import AESCipher
 
@@ -149,52 +149,49 @@ class OaVerificationView(TemplateView):
                 raise OaVerificationError("Unable to unwrap the OA file - it's structure may be invalid")
             else:
                 result["template_url"] = result["unwrapped_file"].get("data", {}).get("$template", {}).get("url")
-                result["rendered"] = self.render_oa_document(
-                    result["unwrapped_file"]
-                )
                 result["attachments"] = result["unwrapped_file"].get("data", {}).get("attachments") or []
         return result
 
-    def render_oa_document(self, data):
-        """
-        This implementation is VERY dumb
-        But we should call linked renderer (from the $template parameter)
-        and return HTML code (or something to init that client-side)
-        twice thinking about security of the solution
-        """
-        result = ""
+    # def render_oa_document(self, data):
+    #     """
+    #     This implementation is VERY dumb
+    #     But we should call linked renderer (from the $template parameter)
+    #     and return HTML code (or something to init that client-side)
+    #     twice thinking about security of the solution
+    #     """
+    #     result = ""
 
-        def render_flat_dict(key, value):
+    #     def render_flat_dict(key, value):
 
-            if isinstance(value, dict):
-                for subkey, subvalue in value.items():
-                    rendered_value = render_flat_dict(subkey, subvalue)
-            elif isinstance(value, list):
-                if len(value) == 1:
-                    value = value[0]
-                    rendered_value = render_flat_dict("0", value)
-                else:
-                    for index, line in enumerate(value):
-                        rendered_value = render_flat_dict(str(index), line)
-            else:
-                if isinstance(value, str) and value.startswith("data:"):
-                    value = "(binary data)"
-                rendered_value = escape(value)
-            rendered_key = f"<b>{key.capitalize()}</b>:" if key else ""
-            return f"""
-                <div style='border: 1px solid gray; padding-left: 20px; margin: 3px;'>
-                    {rendered_key} {rendered_value}
-                </div>
-            """
+    #         if isinstance(value, dict):
+    #             for subkey, subvalue in value.items():
+    #                 rendered_value = render_flat_dict(subkey, subvalue)
+    #         elif isinstance(value, list):
+    #             if len(value) == 1:
+    #                 value = value[0]
+    #                 rendered_value = render_flat_dict("0", value)
+    #             else:
+    #                 for index, line in enumerate(value):
+    #                     rendered_value = render_flat_dict(str(index), line)
+    #         else:
+    #             if isinstance(value, str) and value.startswith("data:"):
+    #                 value = "(binary data)"
+    #             rendered_value = escape(value)
+    #         rendered_key = f"<b>{key.capitalize()}</b>:" if key else ""
+    #         return f"""
+    #             <div style='border: 1px solid gray; padding-left: 20px; margin: 3px;'>
+    #                 {rendered_key} {rendered_value}
+    #             </div>
+    #         """
 
-        md = data["data"].copy()
-        md.pop("attachments", None)
+    #     md = data["data"].copy()
+    #     md.pop("attachments", None)
 
-        for k, v in md.items():
-            result += render_flat_dict(k, v) + "\n"
+    #     for k, v in md.items():
+    #         result += render_flat_dict(k, v) + "\n"
 
-        result += ""
-        return result
+    #     result += ""
+    #     return result
 
     def _unwrap_file(self, content):
         """
