@@ -57,25 +57,27 @@
       </div>
     </div>
 
-    <div class="col">
-      <div class="section-info">
-        <div class="subtitle section-info__title">{% trans 'Extracted document metadata' %}</div>
-        <table class="table">
-          {% for k, v in object.extra_data.metadata.items %}
-            {% if k != "raw_text" %}
+    {% comment %}
+      <div class="col">
+        <div class="section-info">
+          <div class="subtitle section-info__title">{% trans 'Extracted document metadata' %}</div>
+          <table class="table">
+            {% for k, v in object.extra_data.metadata.items %}
+              {% if k != "raw_text" %}
+                <tr>
+                  <th>{{ k }}</th>
+                  <td>{{ v }}</td>
+                </tr>
+              {% endif %}
+            {% empty %}
               <tr>
-                <th>{{ k }}</th>
-                <td>{{ v }}</td>
+                <th colspan="2">The metadata has not been extracted yet; try refreshing the page</th>
               </tr>
-            {% endif %}
-          {% empty %}
-            <tr>
-              <th colspan="2">The metadata has not been extracted yet; try refreshing the page</th>
-            </tr>
-          {% endfor %}
-        </table>
+            {% endfor %}
+          </table>
+        </div>
       </div>
-    </div>
+    {% endcomment %}
   </div>
 
   {% if object.get_pdf_attachment %}
