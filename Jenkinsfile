@@ -44,12 +44,14 @@ pipeline {
                     steps {
                         dir("${env.DOCKER_BUILD_DIR}/test/trade_portal/trade_portal/") {
                             sh '''#!/bin/bash
-                            touch local.env
-                            docker-compose -f docker-compose.yml up --build -d
 
                             # Install Node dependecices
                             npm ci
                             npm run build
+
+                            # build the docker service
+                            touch local.env
+                            docker-compose -f docker-compose.yml up --build -d
                             '''
                         }
                     }
