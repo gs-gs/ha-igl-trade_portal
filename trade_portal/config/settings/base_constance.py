@@ -55,4 +55,10 @@ CONSTANCE_CONFIG = {
         'https://dev.tradetrust.io',
         'Must not end with /'
     ),
+
+    # Renderer we use by default
+    'OA_RENDERER_HOST': (
+        'https://renderer-openatt.c2.devnet.trustbridge.io',
+        'The host with protocol without trailing slash'
+    )
 }

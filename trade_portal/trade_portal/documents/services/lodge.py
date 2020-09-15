@@ -288,7 +288,8 @@ class DocumentService(BaseIgService):
             "$template": {
               "name": "custom",
               "type": "EMBEDDED_RENDERER",
-              "url": "https://chafta.tradetrust.io"
+              "url": config.OA_RENDERER_HOST,
+              # "url": "https://chafta.tradetrust.io"
             },
             # OAv2 field
             "issuers": [
