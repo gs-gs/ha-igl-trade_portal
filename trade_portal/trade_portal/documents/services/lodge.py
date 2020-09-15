@@ -286,7 +286,7 @@ class DocumentService(BaseIgService):
             "name": f"OA document for {document.get_type_display()}",
             "validFrom": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "$template": {
-              "name": "custom",
+              "name": "COO",
               "type": "EMBEDDED_RENDERER",
               "url": config.OA_RENDERER_HOST,
               # "url": "https://chafta.tradetrust.io"
