@@ -2,9 +2,11 @@ import json
 
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
-from rest_framework import viewsets, mixins, generics, views, serializers, status
-from rest_framework.response import Response
+from rest_framework import (
+    viewsets, mixins, generics, views, serializers, status, exceptions,
+)
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 
 from trade_portal.document_api.serializers import (
     CertificateSerializer, ShortCertificateSerializer,
@@ -95,36 +97,16 @@ class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, 
             ser_cls = CertificateSerializer(*args, **kwargs)
         return ser_cls
 
-    # def list(self, request):
-    #     # The only difference from the base list() procedure is providing a short serializer
-    #     qs = self.get_queryset()
-    #     page = self.paginate_queryset(qs)
-    #     if page is not None:
-    #         serializer = CertificateShortSerializer(page, many=True)
-    #         return self.get_paginated_response(serializer.data)
-    #     serializer = CertificateShortSerializer(qs, many=True)
-    #     return Response(serializer.data)
+    def create(self, *args, **kwargs):
+        if not self.current_org.can_issue_certificates:
+            raise exceptions.MethodNotAllowed(
+                "POST",
+                detail="This organisation can't create certificates"
+            )
+        return super().create(*args, **kwargs)
 
     def retrieve(self, request, pk=None):
         return Response(self.get_serializer(self.get_object()).data)
-
-    # def create(self, request):
-    #     serializer = self.get_serializer(data=request.data, user=request.user)
-    #     serializer.is_valid(raise_exception=True)
-    #     obj = serializer.create()
-    #     return Response(
-    #         CertShortSerializer(obj).data,
-    #         status=status.HTTP_201_CREATED,
-    #     )
-
-
-# class CertificateDetail(QsMixin, viewsets.ViewSet, generics.RetrieveUpdateAPIView):
-#     queryset = Document.objects.all()
-
-#     def get_serializer(self, *args, **kwargs):
-#         kwargs['user'] = self.request.user
-#         kwargs['org'] = self.request.user.get_current_org(self.request.session)
-#         return CertificateSerializer(*args, **kwargs)
 
 
 class CertificateFileView(QsMixin, views.APIView):

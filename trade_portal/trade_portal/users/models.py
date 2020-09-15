@@ -142,6 +142,10 @@ class Organisation(models.Model):
             str(r) for r in roles
         ])
 
+    @cached_property
+    def can_issue_certificates(self):
+        return self.is_chambers
+
 
 class OrgRoleRequest(models.Model):
     ROLE_TRADER = "trader"

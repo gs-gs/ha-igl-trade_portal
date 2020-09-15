@@ -1,9 +1,14 @@
 import pytest
 from requests.auth import HTTPBasicAuth
-from rest_framework.test import APIRequestFactory, force_authenticate, RequestsClient
+from rest_framework.test import (
+  APIRequestFactory, force_authenticate, RequestsClient, APIClient,
+)
 
 from trade_portal.documents.models import Document, FTA
 from trade_portal.document_api.views import CertificateViewSet
+from trade_portal.users.models import (
+  Organisation, OrgMembership, OrganisationAuthToken,
+)
 from trade_portal.users.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db(transaction=True)
@@ -167,15 +172,43 @@ CERT_EXAMPLE = {
   }
 
 
-def test_integration_workflow():
-    # prepare the initial data
+@pytest.fixture
+def docapi_env():
+    ret = {}
     FTA.objects.get_or_create(
         name="China-Australia Free Trade Agreement"
     )
     FTA.objects.get_or_create(
         name="AANZFTA First Protocol"
     )
+    ret["u1"] = UserFactory()
+    ret["u2"] = UserFactory()
 
+    # hacky move u2 to org2
+    org2 = Organisation.objects.create(
+      name="Regulator",
+      is_regulator=True
+    )
+    ms = OrgMembership.objects.get(
+      user=ret["u2"],
+    )
+    ms.org = org2
+    ms.save()
+
+    # create 2 tokens
+    ret["t1"] = OrganisationAuthToken.objects.create(
+      user=ret["u1"],
+      org=ret["u1"].direct_orgs[0]
+    )
+    ret["t2"] = OrganisationAuthToken.objects.create(
+      user=ret["u2"],
+      org=ret["u2"].direct_orgs[0]
+    )
+
+    return ret
+
+
+def test_integration_workflow(docapi_env):
     u1 = UserFactory()
 
     # request-related things
@@ -244,3 +277,42 @@ def test_integration_workflow():
     # TODO: file upload
     # TODO: change status
     return
+
+
+def test_org_permission_to_create(docapi_env):
+    t1 = docapi_env["t1"]
+    t2 = docapi_env["t2"]
+
+    # now - the test
+    c = APIClient()
+
+    # create some certificate - fail - because u2/org2 is regulator
+    c.credentials(HTTP_AUTHORIZATION=f'Token {t2.access_token}')
+    resp = c.post(
+        '/api/documents/v0/CertificatesOfOrigin/',
+        CERT_EXAMPLE,
+        format='json'
+    )
+    assert resp.status_code == 405, resp.content
+
+    # u1/o1 is fine
+    c.credentials(HTTP_AUTHORIZATION=f'Token {t1.access_token}')
+    resp = c.post(
+        '/api/documents/v0/CertificatesOfOrigin/',
+        CERT_EXAMPLE,
+        format='json'
+    )
+    assert resp.status_code == 201, resp.content
+
+
+def test_very_wrong_payloads(docapi_env):
+    c = APIClient()
+    # create some certificate - fail - because u2/org2 is regulator
+    c.credentials(HTTP_AUTHORIZATION=f'Token {docapi_env["t1"].access_token}')
+
+    # empty payload
+    resp = c.post(
+        '/api/documents/v0/CertificatesOfOrigin/',
+    )
+    assert resp.status_code == 400, resp.content
+    assert resp.json() == {'payload': 'certificateOfOrigin must be provided'}

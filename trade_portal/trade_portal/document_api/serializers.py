@@ -129,6 +129,12 @@ class CertificateSerializer(serializers.Serializer):
         }
         if not self.instance or not self.instance.pk:
             cert_data = data.get("certificateOfOrigin") or {}
+            if not cert_data:
+                raise serializers.ValidationError({"payload": "certificateOfOrigin must be provided"})
+            # schema validation goes there
+            # TODO
+
+            # other custom validations
             supplyChainConsignment = cert_data.get("supplyChainConsignment", {})
             ret.update({
                 "type": (
@@ -140,7 +146,6 @@ class CertificateSerializer(serializers.Serializer):
                 "sending_jurisdiction": supplyChainConsignment.get("exportCountry", {}).get("code"),
                 "importing_country": supplyChainConsignment.get("importCountry", {}).get("code"),
             })
-
             if not isinstance(ret["sending_jurisdiction"], str) or len(ret["sending_jurisdiction"]) != 2:
                 raise serializers.ValidationError({"exportCountry": "must be a dict with code key"})
             if not isinstance(ret["importing_country"], str) or len(ret["importing_country"]) != 2:
