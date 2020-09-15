@@ -189,7 +189,7 @@ def test_integration_workflow():
     # create some certificate
 
     resp = c.post(
-        'http://testserver/api/documents/v0/certificate/',
+        'http://testserver/api/documents/v0/CertificatesOfOrigin/',
         json=certificate_body
     )
     assert resp.status_code == 201, resp.content
@@ -201,11 +201,8 @@ def test_integration_workflow():
     assert cert.document_number == certificate_body["certificateOfOrigin"]["id"]
 
     # retrieve it
-    # resp = c.get(
-    #     f'http://testserver/api/documents/v0/certificate/{cert.pk}/',
-    # )
     request = factory.get(
-        f'api/documents/v0/certificate/{cert.pk}/',
+        f'api/documents/v0/CertificatesOfOrigin/{cert.pk}/',
         {
             "certificateOfOrigin": {
                 "freeTradeAgreement": "CHAFTA",
@@ -225,7 +222,7 @@ def test_integration_workflow():
 
     # update it
     request = factory.patch(
-        f'api/documents/v0/certificate/{cert.pk}/',
+        f'api/documents/v0/CertificatesOfOrigin/{cert.pk}/',
         {
             "certificateOfOrigin": {
                 "freeTradeAgreement": "AANZFTA First Protocol",

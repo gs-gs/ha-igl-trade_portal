@@ -20,7 +20,7 @@ All endpoints require correct auth.
 
 ### Certificates list
 
-`GET /certificate/`
+`GET /CertificatesOfOrigin/`
 
 Paginated. The each certificate is rendered using the short serializer.
 
@@ -28,7 +28,7 @@ Response example:
 
     {
       "count": 64,
-      "next": "http://domain.name/api/documents/v0/certificate/?page=2",
+      "next": "http://domain.name/api/documents/v0/CertificatesOfOrigin/?page=2",
       "previous": null,
       "results": [
         {
@@ -43,7 +43,7 @@ Response example:
 
 ### Certificate creation
 
-`POST /certificate/`
+`POST /CertificatesOfOrigin/`
 
 Request example:
 
@@ -72,7 +72,7 @@ Response: the same as the certificate detail, with 201 HTTP status code. Respons
 
 ### Certificate detail
 
-`GET /certificate/{id}/`
+`GET /CertificatesOfOrigin/{id}/`
 
 Contains next fields:
 
@@ -97,7 +97,7 @@ Response example:
 
 ### Certificate update
 
-`PATCH /certificate/{id}/`
+`PATCH /CertificatesOfOrigin/{id}/`
 
 Pass subset of fields you want to update (still included in the `certificateOfOrigin` dict).
 
@@ -116,7 +116,7 @@ Request example:
 
 ### File upload
 
-`POST /certificate/{id}/attachment/`
+`POST /CertificatesOfOrigin/{id}/attachment/`
 
 This is a multipart/form-data request instead of JSON one.
 
@@ -127,7 +127,7 @@ There are 2 parameters:
 
 Request example:
 
-    curl http://host/api/documents/v0/certificate/14a20633-34d6-4b71-9a32-cdcb8b095e1c/attachment/ \
+    curl http://host/api/documents/v0/CertificatesOfOrigin/14a20633-34d6-4b71-9a32-cdcb8b095e1c/attachment/ \
     -F "file=@CHAFTA.pdf" \
     -F 'metadata={"a": "b"}'
 
@@ -137,7 +137,7 @@ As a result the file is saved to the certificate body.
 
 ### Certificate issue
 
-`POST /certificate/{id}/issue/`
+`POST /CertificatesOfOrigin/{id}/issue/`
 
 Send a POST request here to start the issue process. It will notarize the document
 and send IGL message (if needed).

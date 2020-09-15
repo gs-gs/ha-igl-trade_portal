@@ -104,8 +104,8 @@ class Un20200831CoORenderer:
                 "actualDateTime": doc.created_at.isoformat(),
                 # "statement": "string",
                 "providingTradeParty": {
-                  "id": doc.issuer.full_business_id,
-                  "name": doc.issuer.name,
+                  "id": doc.issuer.full_business_id if doc.issuer else None,
+                  "name": doc.issuer.name if doc.issuer else None,
                   "postalAddress": {
                     # "line1": "string",
                     # "line2": "string",
