@@ -52,7 +52,7 @@ class Un20200831CoORenderer:
               "isPreferential": doc.type == doc.TYPE_PREF_COO,
               "freeTradeAgreement": doc.fta.name if doc.fta else None,
               "supplyChainConsignment": {
-                # "id": "string",
+                "id": doc.consignment_ref_doc_number,
                 # "information": "string",
                 "exportCountry": {
                   "code": doc.sending_jurisdiction.code,

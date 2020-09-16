@@ -270,5 +270,8 @@ class CertificateSerializer(serializers.Serializer):
             obj.importer_name = ' '.join(
                 (x for x in importer_parts if x)
             )
+
+        obj.consignment_ref_doc_number = supplyChainConsignment.get("id")
+
         obj.save()
         return

@@ -367,40 +367,9 @@ class Document(models.Model):
     )
 
     consignment_ref_doc_number = models.CharField(
-        _("Document Number"),
-        help_text=_("Consignment details"),
+        _("Consignment Number"),
         max_length=256, blank=True, default=""
     )
-    consignment_ref_doc_type = models.CharField(
-        _("Document Type"),
-        help_text=_("Consignment details"),
-        max_length=100, blank=True,
-        choices=(
-            ("ConNote", "ConNote"),
-            ("HouseBill", "HouseBill"),
-            ("MasterBill", "MasterBill"),
-        ),
-    )
-    consignment_ref_doc_issuer = models.CharField(
-        _("Document Issuer"),
-        help_text=_("Consignment details"),
-        max_length=200, blank=True, default=""
-    )
-
-    # invoice_number = models.CharField(
-    #     _("Invoice Number"),
-    #     max_length=256, blank=True, default=""
-    # )
-    # origin_criteria = models.CharField(
-    #     _("Origin Criteria"),
-    #     max_length=32, blank=True, default="",
-    #     choices=(
-    #         ("WO", "WO"),
-    #         ("WP", "WP"),
-    #         ("PSR", "PSR"),
-    #         ("other", _("Other")),
-    #     )
-    # )
 
     intergov_details = JSONField(
         default=dict, blank=True,
@@ -458,7 +427,6 @@ class Document(models.Model):
             self.get_status_display(),
             str(self.pk),
             str(self.document_number),
-            self.consignment_ref_doc_issuer,
             self.consignment_ref_doc_number,
             self.importing_country.name,
             str(self.fta),

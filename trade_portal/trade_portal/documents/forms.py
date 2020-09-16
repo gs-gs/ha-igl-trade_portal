@@ -72,13 +72,6 @@ class DraftDocumentUpdateForm(forms.ModelForm):
             "Please enter 11-digit ABN"
         ) if settings.BID_NAME == "ABN" else "Please enter 8 digits + letter"
     )
-    consignment_ref_doc_issuer = forms.CharField(
-        label=f"Document Issuer {settings.BID_NAME}",
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Consignment doc issuer'}
-        ),
-        required=False
-    )
     consignment_ref_doc_number = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control'}
@@ -91,7 +84,7 @@ class DraftDocumentUpdateForm(forms.ModelForm):
         fields = (
             'document_number', 'fta', 'importing_country', 'exporter',
             'importer_name',
-            'consignment_ref_doc_number', 'consignment_ref_doc_type', 'consignment_ref_doc_issuer',
+            'consignment_ref_doc_number',
         )
 
     def __init__(self, *args, **kwargs):
@@ -102,10 +95,6 @@ class DraftDocumentUpdateForm(forms.ModelForm):
         self._prepare_fields()
 
     def _prepare_fields(self):
-        self.fields["consignment_ref_doc_type"].choices = [
-            ('', 'Please Select Document Type...'),
-        ] + self.fields["consignment_ref_doc_type"].choices[1:]
-
         self.fields["fta"].empty_label = 'Please Select FTA...'
 
         self.fields['importing_country'].choices = []
@@ -119,7 +108,6 @@ class DraftDocumentUpdateForm(forms.ModelForm):
         )
         self.fields["importer_name"].label = "Importer Name (if known)"
         self.fields["importer_name"].help_text = ""
-        self.fields["consignment_ref_doc_type"].widget.attrs["class"] = "form-control"
         self.fields["exporter"].widget.attrs["class"] = "form-control"
 
         if self.dtype == Document.TYPE_NONPREF_COO:
@@ -194,20 +182,10 @@ class DraftDocumentUpdateForm(forms.ModelForm):
             }
         )
         self.instance.issuer = issuer_party
-
-        if self.instance.consignment_ref_doc_type not in ("ConNote", "HouseBill"):
-            self.instance.consignment_ref_doc_issuer = ""
         return super().save(*args, **kwargs)
 
 
 class ConsignmentSectionUpdateForm(forms.ModelForm):
-    consignment_ref_doc_issuer = forms.CharField(
-        label=f"Document Issuer {settings.BID_NAME}",
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Consignment doc issuer'}
-        ),
-        required=False
-    )
     consignment_ref_doc_number = forms.CharField(
         widget=forms.TextInput(
             attrs={'class': 'form-control'}
@@ -219,10 +197,4 @@ class ConsignmentSectionUpdateForm(forms.ModelForm):
         model = Document
         fields = (
             'consignment_ref_doc_number',
-            'consignment_ref_doc_type',
-            'consignment_ref_doc_issuer',
         )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["consignment_ref_doc_type"].widget.attrs["class"] = "form-control"

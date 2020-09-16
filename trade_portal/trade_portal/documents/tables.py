@@ -56,8 +56,6 @@ class DocumentsTable(tables.Table):
         verbose_name=_('Consignment\nRef.'),
         template_code="""
             {{ record.consignment_ref_doc_number }}
-            {{ record.consignment_ref_doc_type }}
-            {{ record.consignment_ref_doc_issuer }}
         """,
         orderable=False,
     )

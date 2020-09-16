@@ -43,12 +43,8 @@
       <div class="section-info">
         <h2 class="subtitle section-info__title">{% trans 'Consignment details' %}</h2>
         <dl class="info-list">
-          <dt>{% trans 'Doc number' %}</dt>
+          <dt>{% trans 'Number' %}</dt>
           <dd>{{ object.consignment_ref_doc_number|default:"(not specified)" }}</dd>
-          <dt>{% trans 'Doc type'  %}</dt>
-          <dd>{{ object.consignment_ref_doc_type|default:"(not specified)" }}</dd>
-          <dt>{% trans 'Doc issuer' %}</dt>
-          <dd>{{ object.consignment_ref_doc_issuer|default:"(not specified)" }}</dd>
           {% if created_by_org %}
             <dt>{% trans 'Data provided by' %}</dt>
             <dd>{{ object.created_by_org }} ({{ object.created_by_org.get_type_display }})</dd>
