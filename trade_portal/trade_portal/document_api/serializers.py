@@ -162,60 +162,18 @@ class CertificateSerializer(serializers.Serializer):
             for_org=self.org
         )
 
-        # some business logic - propagating some fields to the model instance
+        # business: fill the FTA if provided and applicable
         cert_data = validated_data["raw_certificate_data"]["certificateOfOrigin"]
         if "freeTradeAgreement" in cert_data:
             create_kwargs["fta"] = FTA.objects.filter(
                 name=cert_data["freeTradeAgreement"]
             ).first()
 
-        obj = Document.objects.create(
-            **create_kwargs
-        )
+        obj = Document.objects.create(**create_kwargs)
 
-        try:
-            issuer_data = cert_data.get("issuer", {})
-            issuer_id = issuer_data.get("id") or ""
-            if ":" in issuer_id:
-                issuer_id = issuer_id.rsplit(":", maxsplit=1)[1]
-            obj.issuer, _ = Party.objects.get_or_create(
-                name=issuer_data.get("name"),
-                business_id=issuer_id,
-                defaults={
-                    "postcode": issuer_data.get("postalAddress", {}).get("postcode") or "",
-                    "countrySubDivisionName": issuer_data.get("postalAddress", {}).get("postalAddress") or "",
-                    "line1": issuer_data.get("postalAddress", {}).get("line1") or "",
-                    "line2": issuer_data.get("postalAddress", {}).get("line2") or "",
-                    "city_name": issuer_data.get("postalAddress", {}).get("cityName") or "",
-                }
-            )
-        except Exception as e:
-            logger.exception(e)
-            raise serializers.ValidationError({"issuer": "Can't parse"})
+        # some business logic - propagating some fields to the model instance
+        self._fill_model_from_json(obj, cert_data)
 
-        try:
-            supplyChainConsignment = cert_data.get("supplyChainConsignment", {})
-            consignor = supplyChainConsignment.get("consignor", {})
-            if consignor:
-                exporter_bid = consignor.get("id") or ""
-                if ":" in exporter_bid:
-                    exporter_bid = exporter_bid.rsplit(":", maxsplit=1)[1]
-                obj.exporter, _ = Party.objects.get_or_create(
-                    name=consignor.get("name"),
-                    business_id=exporter_bid,
-                    defaults={
-                        "postcode": consignor.get("postalAddress", {}).get("postcode") or "",
-                        "countrySubDivisionName": consignor.get("postalAddress", {}).get("postalAddress") or "",
-                        "line1": consignor.get("postalAddress", {}).get("line1") or "",
-                        "line2": consignor.get("postalAddress", {}).get("line2") or "",
-                        "city_name": consignor.get("postalAddress", {}).get("cityName") or "",
-                    }
-                )
-            obj.importer_name = supplyChainConsignment.get("consignee", {}).get("name") or ""
-        except Exception as e:
-            logger.exception(e)
-            raise serializers.ValidationError({"supplyChainConsignment": "Can't parse consignor or consignee"})
-        obj.save()
         return obj
 
     def update(self, instance, validated_data):
@@ -233,3 +191,84 @@ class CertificateSerializer(serializers.Serializer):
                 raise Exception("Unknown FTA")
         instance.save()
         return instance
+
+    def _fill_model_from_json(self, obj, cert_data):
+        """
+        On the certificate creation
+        We read some data from the JSON sent
+        Denormalizing it to the Django model fields we have
+        So it's displayed nice in the UI.
+        """
+        try:
+            issuer_data = cert_data.get("issuer", {})
+            issuer_id = issuer_data.get("id") or ""
+            if ":" in issuer_id:
+                issuer_bid_prefix, issuer_clear_business_id = issuer_id.rsplit(":", maxsplit=1)
+            else:
+                issuer_clear_business_id = issuer_id
+                issuer_bid_prefix = ""
+            obj.issuer, _ = Party.objects.get_or_create(
+                bid_prefix=issuer_bid_prefix,
+                clear_business_id=issuer_clear_business_id,
+                business_id=issuer_id,
+                dot_separated_id=issuer_clear_business_id if "." in issuer_clear_business_id else "",
+                name=issuer_data.get("name"),
+                defaults={
+                    "country": issuer_data.get("postalAddress", {}).get("country") or "",
+                    "postcode": issuer_data.get("postalAddress", {}).get("postcode") or "",
+                    "countrySubDivisionName": issuer_data.get("postalAddress", {}).get("postalAddress") or "",
+                    "line1": issuer_data.get("postalAddress", {}).get("line1") or "",
+                    "line2": issuer_data.get("postalAddress", {}).get("line2") or "",
+                    "city_name": issuer_data.get("postalAddress", {}).get("cityName") or "",
+                }
+            )
+        except Exception as e:
+            logger.exception(e)
+            raise serializers.ValidationError(
+                {"issuer": "Can't parse, please check the data validity"}
+            )
+
+        supplyChainConsignment = cert_data.get("supplyChainConsignment", {})
+        consignor = supplyChainConsignment.get("consignor", {})
+
+        if consignor:
+            try:
+                exporter_id = consignor.get("id") or ""
+                if ":" in exporter_id:
+                    exporter_bid_prefix, exporter_clear_business_id = exporter_id.rsplit(":", maxsplit=1)
+                else:
+                    exporter_clear_business_id = exporter_id
+                    exporter_bid_prefix = ""
+
+                obj.exporter, _ = Party.objects.get_or_create(
+                    bid_prefix=exporter_bid_prefix,
+                    clear_business_id=exporter_clear_business_id,
+                    business_id=exporter_id,
+                    dot_separated_id=exporter_clear_business_id if "." in exporter_clear_business_id else "",
+
+                    name=consignor.get("name"),
+
+                    defaults={
+                        "country": consignor.get("postalAddress", {}).get("country") or "",
+                        "postcode": consignor.get("postalAddress", {}).get("postcode") or "",
+                        "countrySubDivisionName": consignor.get("postalAddress", {}).get("postalAddress") or "",
+                        "line1": consignor.get("postalAddress", {}).get("line1") or "",
+                        "line2": consignor.get("postalAddress", {}).get("line2") or "",
+                        "city_name": consignor.get("postalAddress", {}).get("cityName") or "",
+                    }
+                )
+            except Exception as e:
+                logger.exception(e)
+                raise serializers.ValidationError({"supplyChainConsignment": "Can't parse consignor or consignee"})
+
+        importer = supplyChainConsignment.get("consignee", {})
+        if importer:
+            importer_parts = [
+                importer.get("name"),
+                importer.get("id"),
+            ]
+            obj.importer_name = ' '.join(
+                (x for x in importer_parts if x)
+            )
+        obj.save()
+        return

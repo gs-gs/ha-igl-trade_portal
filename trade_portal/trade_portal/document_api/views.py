@@ -118,14 +118,16 @@ class CertificateFileView(QsMixin, views.APIView):
             raise serializers.ValidationError("multipart/form-data is expected")
         if 'file' not in self.request.FILES:
             raise serializers.ValidationError("The file 'file' is expected as multipart/form-data")
-        try:
-            json.loads(
-                self.request.POST.get('metadata')
-            )
-        except Exception as e:
-            raise serializers.ValidationError(
-                f"Please provide valid 'metadata' parameter as JSON dict ({str(e)})",
-            )
+
+        if self.request.POST.get('metadata'):
+            try:
+                json.loads(
+                    self.request.POST.get('metadata')
+                )
+            except Exception as e:
+                raise serializers.ValidationError(
+                    f"Please provide valid 'metadata' parameter as JSON dict ({str(e)})",
+                )
         return
 
     def post(self, request, *args, **kwargs):
@@ -136,7 +138,10 @@ class CertificateFileView(QsMixin, views.APIView):
         self._validate_request()
         # TODO: check if fileobj is a file and it's readable and so on
         file_obj = request.FILES['file']
-        metadata = json.loads(request.POST.get('metadata'))
+        if request.POST.get('metadata'):
+            metadata = json.loads(request.POST.get('metadata'))
+        else:
+            metadata = {}
 
         doc = self.get_object()
 

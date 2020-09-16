@@ -13,81 +13,6 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-class CertificateRenderer:
-
-    def render(self, document_obj):
-        cert_dict = self.get_minimal_certificate(document_obj)
-        # cert_dict.update(self.get_extended_certificate(document_obj))
-        return cert_dict
-
-    def get_minimal_certificate(self, doc):
-        if doc.type == doc.TYPE_PREF_COO:
-            isPreferential = True
-        else:
-            isPreferential = False
-        cert = {
-            "id": f"{doc.issuer.dot_separated_id}:coo:{doc.document_number}",
-            "issueDateTime": doc.created_at.isoformat(),
-            "name": f"{doc.fta} {doc.get_type_display()}",
-            "issuer": {
-                "id": f"{doc.issuer.full_business_id}",
-                "name": doc.issuer.name
-            },
-            "status": "issued",
-            "isPreferential": isPreferential,
-            "freeTradeAgreement": str(doc.fta),
-            "supplyChainConsignment": {
-                "exportCountry": {
-                    "code": str(doc.exporter.country),
-                },
-                "exporter": {
-                    "id": f"{doc.exporter.full_business_id}",
-                    "name": doc.exporter.name,
-                    # "postalAddress": {
-                    #   "line1": "161 Collins Street",
-                    #   "cityName": "Melbourne",
-                    #   "postcode": "3000",
-                    #   "countrySubDivisionName": "VIC",
-                    #   "countryCode": "AU"
-                    # }
-                },
-                "importCountry": {
-                    "code": doc.importing_country.code
-                },
-                # note: the importer is filled below
-
-                "includedConsignmentItems": [
-                    # https://github.com/edi3/edi3-regulatory/blob/develop/docs/certificates/OA-Sample-full.json#L82
-                    {
-                        "crossBorderRegulatoryProcedure": {
-                            "originCriteriaText": doc.origin_criteria,
-                        },
-                        "tradeLineItems": [
-                            {
-                                "sequenceNumber": 1,
-                                "invoiceReference": {
-                                    "id": f"invoice:{doc.invoice_number or 'unknown'}"
-                                },
-                                "tradeProduct": {
-                                    "harmonisedTariffCode": {
-                                        "classCode": "2204.21"  # ?
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-        if doc.importer_name:
-            cert["importer"] = {
-                # "id": "xxx",
-                "name": doc.importer_name,
-                # postal address is applicable as well
-            }
-        return cert
-
-
 class Un20200831CoORenderer:
     def render(self, doc):
         data = {
@@ -95,14 +20,18 @@ class Un20200831CoORenderer:
               "id": doc.document_number,
               "issueDateTime": doc.created_at.isoformat(),
               "name": "Certificate of Origin",
-              # "attachedFile": {
+              # "attachedFile": {  - filled later based on real binary file
               #   "file": "...",
               #   "encodingCode": "base64",
               #   "mimeCode": "application/pdf"
               # },
               "firstSignatoryAuthentication": {
                 "actualDateTime": doc.created_at.isoformat(),
-                # "statement": "string",
+                "statement": (
+                    "The undersigned hereby declares that the above-stated information is correct"
+                    " and that the goods exported to the importer comply with the origin requirements"
+                    " specified in the trade agreement."
+                ),
                 "providingTradeParty": {
                   "id": doc.issuer.full_business_id if doc.issuer else None,
                   "name": doc.issuer.name if doc.issuer else None,

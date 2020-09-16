@@ -81,11 +81,23 @@
   </div>
 
   {% if object.get_pdf_attachment %}
-    <p>The date specified above must match the information in the PDF document below - click "Back" to edit if not. Drag the QR code to a clear position on the document - the position will be remembered for this document type.</p>
+    <p>The date specified above must match the information in the PDF document below - click "Back" to edit if not.<br/>
+    {% if object.get_pdf_attachment.is_watermarked is False %}
+      Drag the QR code to a clear position on the document - the position will be remembered for this document type.
+    {% else %}
+      This file doesn't require adding a QR code manually.
+    {% endif %}
+    </p>
+
+    {% if object.is_api_created %}
+      <p>The document has been created from the API - please use the API to update it if needed.</p>
+    {% endif %}
 
     <form action="#" method="POST">
       {% csrf_token %}
-      <a href="{% url 'documents:fill' object.pk %}" class="btn btn-secondary">Back</a>
+      {% if not object.is_api_created %}
+        <a href="{% url 'documents:fill' object.pk %}" class="btn btn-secondary">Back</a>
+      {% endif %}
       <button type="submit" name="issue" class="btn btn-primary">Issue</button>
 
       {% if object.get_pdf_attachment.is_watermarked is False %}

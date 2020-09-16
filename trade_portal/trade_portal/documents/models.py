@@ -75,7 +75,7 @@ class Party(models.Model):
     business_id = models.CharField(
         max_length=256, help_text=_("ABN or UEN for example"), blank=True
     )
-    dot_separated_id = models.CharField(max_length=256, blank=True, default="a.b.c")
+    dot_separated_id = models.CharField(max_length=256, blank=True, default="")
     name = models.CharField(max_length=256, blank=True)
     country = CountryField(blank=True)
 
@@ -263,16 +263,18 @@ class Document(models.Model):
     )
 
     # OA verification status section
+    V_STATUS_NOT_STARTED = 'not-started'
     V_STATUS_PENDING = 'pending'
     V_STATUS_VALID = 'valid'
     V_STATUS_FAILED = 'failed'
     V_STATUS_ERROR = 'error'
 
     V_STATUS_CHOICES = (
-        (V_STATUS_PENDING, "Pending"),
-        (V_STATUS_VALID, "valid"),
-        (V_STATUS_FAILED, "failed"),
-        (V_STATUS_ERROR, "error"),
+        (V_STATUS_NOT_STARTED, _("Not Started")),
+        (V_STATUS_PENDING, _("Pending")),
+        (V_STATUS_VALID, _("Valid")),
+        (V_STATUS_FAILED, _("Failed")),
+        (V_STATUS_ERROR, _("Error")),
     )
 
     # UI workflow section - it's responsibility is to show/hide buttons
@@ -393,11 +395,11 @@ class Document(models.Model):
     # IGL message status
     status = models.CharField(
         _("Message Status"),
-        max_length=12, choices=MESSAGE_STATUS_CHOICES, default=STATUS_PENDING
+        max_length=12, choices=MESSAGE_STATUS_CHOICES, default=STATUS_NOT_SENT
     )
     verification_status = models.CharField(
         _("Verification Status"),
-        max_length=32, default=V_STATUS_PENDING,
+        max_length=32, default=V_STATUS_NOT_STARTED,
         choices=V_STATUS_CHOICES
     )
     workflow_status = models.CharField(
@@ -455,20 +457,21 @@ class Document(models.Model):
     def short_id(self):
         return str(self.id)[-6:]
 
+    @property
+    def is_api_created(self):
+        return bool(self.raw_certificate_data.get("certificateOfOrigin"))
+
     def get_rendered_edi3_document(self):
+        from trade_portal.edi3.certificates import Un20200831CoORenderer
+
         if self.raw_certificate_data.get("certificateOfOrigin"):
             # has been already rendered or sent through the API
             return {
                 "certificateOfOrigin": self.raw_certificate_data["certificateOfOrigin"]
             }
 
-        if self.importing_country != settings.ICL_APP_COUNTRY:
-            # outbound
-            # from trade_portal.edi3.certificates import CertificateRenderer
-            # return CertificateRenderer().render(self)
-            from trade_portal.edi3.certificates import Un20200831CoORenderer
-            return Un20200831CoORenderer().render(self)
-        else:
+        if self.importing_country == settings.ICL_APP_COUNTRY:
+            # inbound, the certificate may be somewhere
             if "oa_doc" in self.intergov_details:
                 return self.intergov_details["oa_doc"]
             else:
@@ -478,7 +481,8 @@ class Document(models.Model):
                 ).first()
                 if the_first_file:
                     return the_first_file.file.read().decode("utf-8")
-            return ''
+        # if came here - then just render it as usual
+        return Un20200831CoORenderer().render(self)
 
     @property
     def is_incoming(self):

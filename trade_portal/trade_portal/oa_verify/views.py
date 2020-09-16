@@ -150,15 +150,29 @@ class OaVerificationView(TemplateView):
                 raise OaVerificationError("Unable to unwrap the OA file - it's structure may be invalid")
             else:
                 result["template_url"] = result["unwrapped_file"].get("data", {}).get("$template", {}).get("url")
-                result["attachments"] = result["unwrapped_file"].get("data", {}).get("attachments") or []
+                result["attachments"] = self._parse_attachments(result["unwrapped_file"].get("data", {}))
         return result
+
+    def _parse_attachments(self, data):
+        """
+        This procedure is needed because different document formats have
+        their attachments in different places
+        """
+        attachments = data.get("attachments") or []
+        # is it UN CoO?
+        unCoOattachedFile = data.get("certificateOfOrigin", {}).get("attachedFile")
+        if unCoOattachedFile:
+            # format of each dict: file, encodingCode, mimeCode
+            attachments.append({
+                "type": unCoOattachedFile["mimeCode"],
+                "filename": "file." + unCoOattachedFile["mimeCode"].rsplit('/')[-1].lower(),
+                "data": unCoOattachedFile["file"],
+            })
+        return attachments
 
     # def render_oa_document(self, data):
     #     """
-    #     This implementation is VERY dumb
-    #     But we should call linked renderer (from the $template parameter)
-    #     and return HTML code (or something to init that client-side)
-    #     twice thinking about security of the solution
+    #     the implementation useful to show generic data from the document
     #     """
     #     result = ""
 

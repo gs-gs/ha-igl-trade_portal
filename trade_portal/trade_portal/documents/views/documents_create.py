@@ -122,8 +122,8 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
             messages.success(
                 self.request,
                 _(
-                    "The document you have just created will be notarised and will be sent "
-                    "to the importing country via the IGL."
+                    "The document you have just created will be notarised and sent "
+                    "to the importing jurisdiction via the IGL (if possible)."
                 )
             )
             lodge_document.apply_async(

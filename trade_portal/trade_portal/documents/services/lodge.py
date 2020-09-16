@@ -99,6 +99,9 @@ class BaseIgService:
 class DocumentService(BaseIgService):
 
     def issue(self, document: Document) -> bool:
+        document.verification_status = Document.V_STATUS_PENDING
+        document.save()
+
         subject = "{}.{}.{}".format(
             settings.ICL_APP_COUNTRY.upper(),
             (
