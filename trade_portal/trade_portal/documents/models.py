@@ -102,6 +102,21 @@ class Party(models.Model):
         super().save(*args, **kwargs)
 
     @property
+    def contact_info(self):
+        data = [
+            f'{self.line1}' if self.line1 else '',
+            f'{self.line2}' if self.line2 else '',
+            f'{self.city_name}' if self.city_name else '',
+            f'{self.postcode}' if self.postcode else '',
+            f'{self.countrySubDivisionName}' if self.countrySubDivisionName else '',
+            self.country.name if self.country else ''
+        ]
+        print(data)
+        return ', '.join(
+            (v for v in data if v.strip())
+        )
+
+    @property
     def full_business_id(self):
         if self.country == settings.ICL_APP_COUNTRY:
             return f"{settings.BID_PREFIX}:{self.business_id}"
@@ -372,20 +387,20 @@ class Document(models.Model):
         max_length=200, blank=True, default=""
     )
 
-    invoice_number = models.CharField(
-        _("Invoice Number"),
-        max_length=256, blank=True, default=""
-    )
-    origin_criteria = models.CharField(
-        _("Origin Criteria"),
-        max_length=32, blank=True, default="",
-        choices=(
-            ("WO", "WO"),
-            ("WP", "WP"),
-            ("PSR", "PSR"),
-            ("other", _("Other")),
-        )
-    )
+    # invoice_number = models.CharField(
+    #     _("Invoice Number"),
+    #     max_length=256, blank=True, default=""
+    # )
+    # origin_criteria = models.CharField(
+    #     _("Origin Criteria"),
+    #     max_length=32, blank=True, default="",
+    #     choices=(
+    #         ("WO", "WO"),
+    #         ("WP", "WP"),
+    #         ("PSR", "PSR"),
+    #         ("other", _("Other")),
+    #     )
+    # )
 
     intergov_details = JSONField(
         default=dict, blank=True,
@@ -443,7 +458,6 @@ class Document(models.Model):
             self.get_status_display(),
             str(self.pk),
             str(self.document_number),
-            self.invoice_number,
             self.consignment_ref_doc_issuer,
             self.consignment_ref_doc_number,
             self.importing_country.name,

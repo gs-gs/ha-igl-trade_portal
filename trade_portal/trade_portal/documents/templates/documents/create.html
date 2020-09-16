@@ -146,22 +146,6 @@
               {{ form.importer_name|as_crispy_field }}
             </div>
 
-            <div class="form-group" id="div_id_invoice_number">
-              <label for="id_invoice_number">
-                {% trans 'Invoice Number' %}
-                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_invoice_number_field' %}"><i class="icon icon-info"></i></span>
-              </label>
-              {{ form.invoice_number|as_crispy_field }}
-            </div>
-
-            <div class="form-group" id="div_id_origin_criteria">
-              <label for="id_origin_criteria">
-                {% trans 'Origin Criteria' %}
-                <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_origin_criteria_field' %}"><i class="icon icon-info"></i></span>
-              </label>
-              {{ form.origin_criteria|as_crispy_field }}
-            </div>
-
           </div>
         </fieldset>
 

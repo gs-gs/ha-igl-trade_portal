@@ -92,6 +92,7 @@
         {% if object.issuer.register_url %}
           {{ object.issuer.readable_identifier_name }}: <a href="{{ object.issuer.register_url }}" target="_blank">{{ object.issuer.business_id }}</a>
         {% endif %}
+        {{ object.issuer.contact_info }}
       </dd>
       <dt>{% trans 'Created by' %}</dt>
       <dd>
@@ -129,6 +130,8 @@
             {% if object.exporter.register_url %}
               {{ object.exporter.readable_identifier_name }}: <a href="{{ object.exporter.register_url }}" target="_blank">{{ object.exporter.business_id }}</a>
             {% endif %}
+            <br/>
+            {{ object.exporter.contact_info }}
           </dd>
           <dt>{% trans 'Importer name' %}</dt>
           <dd>{{ object.importer_name|default:"(not specified)" }}</dd>

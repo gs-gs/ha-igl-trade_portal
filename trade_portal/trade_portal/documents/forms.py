@@ -92,7 +92,6 @@ class DraftDocumentUpdateForm(forms.ModelForm):
             'document_number', 'fta', 'importing_country', 'exporter',
             'importer_name',
             'consignment_ref_doc_number', 'consignment_ref_doc_type', 'consignment_ref_doc_issuer',
-            'invoice_number', 'origin_criteria',
         )
 
     def __init__(self, *args, **kwargs):
@@ -103,10 +102,6 @@ class DraftDocumentUpdateForm(forms.ModelForm):
         self._prepare_fields()
 
     def _prepare_fields(self):
-        self.fields["origin_criteria"].choices = [
-            ('', 'Please Select Origin Criteria...'),
-        ] + self.fields["origin_criteria"].choices[1:]
-
         self.fields["consignment_ref_doc_type"].choices = [
             ('', 'Please Select Document Type...'),
         ] + self.fields["consignment_ref_doc_type"].choices[1:]
@@ -144,8 +139,6 @@ class DraftDocumentUpdateForm(forms.ModelForm):
         self.fields['document_number'].label = False
         self.fields['importing_country'].label = False
         self.fields['importer_name'].label = False
-        self.fields['invoice_number'].label = False
-        self.fields['origin_criteria'].label = False
 
         if self.instance.exporter:
             self.initial['exporter'] = self.instance.exporter.business_id
