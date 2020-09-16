@@ -448,9 +448,22 @@ class Document(models.Model):
 
         if self.raw_certificate_data.get("certificateOfOrigin"):
             # has been already rendered or sent through the API
-            return {
+            data = {
                 "certificateOfOrigin": self.raw_certificate_data["certificateOfOrigin"]
             }
+            # update it by attached files
+            pdf_attach = self.get_pdf_attachment()
+            if pdf_attach:
+                try:
+                    data['certificateOfOrigin']['attachedFile'] = {
+                        "file": b64encode(pdf_attach.file.read()).decode("utf-8"),
+                        "encodingCode": "base64",
+                        "mimeCode": pdf_attach.mimetype(),
+                    }
+                except Exception as e:
+                    logger.exception(e)
+                    pass
+            return data
 
         if self.importing_country == settings.ICL_APP_COUNTRY:
             # inbound, the certificate may be somewhere
