@@ -49,6 +49,7 @@
           {% for attach in verification_result.attachments %}
             <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary">{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
           {% endfor %}
+          <a href="data:application/json;base64,{{ verification_result.oa_base64 }}" class="btn btn-primary">OA file</a><br/><br/>
         {% else %}
           We display attachments only for valid documents.
         {% endif %}

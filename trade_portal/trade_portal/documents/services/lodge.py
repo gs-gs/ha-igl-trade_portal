@@ -302,7 +302,8 @@ class DocumentService(BaseIgService):
                   }
                 }
               ],
-            "attachments": self._render_uploaded_files(document),
+            # we have it in the certificate itself now, so no point to duplicate
+            # "attachments": self._render_uploaded_files(document),
             "recipient": {
                 "name": document.importer_name or "",
             },
@@ -737,12 +738,23 @@ class IncomingDocumentService(BaseIgService):
         return True
 
     def _process_oa2_document(self, doc: Document, data: dict):
-        attachments = data.pop("attachments")
+        # format of each dict: type, filename, data
+        attachments = data.pop("attachments", []) or []
+
+        # is it UN CoO?
+        unCoOattachedFile = data.get("certificateOfOrigin", {}).get("attachedFile")
+        if unCoOattachedFile:
+            # format of each dict: file, encodingCode, mimeCode
+            attachments.append({
+                "type": unCoOattachedFile["mimeCode"],
+                "filename": "file." + unCoOattachedFile["mimeCode"].rsplit('/')[-1].lower(),
+                "data": unCoOattachedFile["file"],
+            })
+
         for attach in attachments:
             bin_file = base64.b64decode(attach["data"].encode("utf-8"))
             af = DocumentFile.objects.create(
                 doc=doc,
-                # type=type,
                 filename=attach.get("filename") or "unknown.bin",
                 size=len(bin_file)
             )

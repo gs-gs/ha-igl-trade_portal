@@ -174,12 +174,20 @@ class CertificateSerializer(serializers.Serializer):
         )
 
         try:
-            issuer_id = cert_data.get("issuer", {}).get("id") or ""
+            issuer_data = cert_data.get("issuer", {})
+            issuer_id = issuer_data.get("id") or ""
             if ":" in issuer_id:
                 issuer_id = issuer_id.rsplit(":", maxsplit=1)[1]
             obj.issuer, _ = Party.objects.get_or_create(
-                name=cert_data.get("issuer", {}).get("name"),
+                name=issuer_data.get("name"),
                 business_id=issuer_id,
+                defaults={
+                    "postcode": issuer_data.get("postalAddress", {}).get("postcode") or "",
+                    "countrySubDivisionName": issuer_data.get("postalAddress", {}).get("postalAddress") or "",
+                    "line1": issuer_data.get("postalAddress", {}).get("line1") or "",
+                    "line2": issuer_data.get("postalAddress", {}).get("line2") or "",
+                    "city_name": issuer_data.get("postalAddress", {}).get("cityName") or "",
+                }
             )
         except Exception as e:
             logger.exception(e)
@@ -195,6 +203,13 @@ class CertificateSerializer(serializers.Serializer):
                 obj.exporter, _ = Party.objects.get_or_create(
                     name=consignor.get("name"),
                     business_id=exporter_bid,
+                    defaults={
+                        "postcode": consignor.get("postalAddress", {}).get("postcode") or "",
+                        "countrySubDivisionName": consignor.get("postalAddress", {}).get("postalAddress") or "",
+                        "line1": consignor.get("postalAddress", {}).get("line1") or "",
+                        "line2": consignor.get("postalAddress", {}).get("line2") or "",
+                        "city_name": consignor.get("postalAddress", {}).get("cityName") or "",
+                    }
                 )
             obj.importer_name = supplyChainConsignment.get("consignee", {}).get("name") or ""
         except Exception as e:

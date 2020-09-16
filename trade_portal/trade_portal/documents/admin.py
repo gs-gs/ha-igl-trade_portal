@@ -14,6 +14,7 @@ class FTAAdmin(admin.ModelAdmin):
 
 @admin.register(Party)
 class PartyAdmin(admin.ModelAdmin):
+    search_fields = ('name', 'business_id')
     list_display = (
         'business_id', 'type', 'bid_prefix', 'clear_business_id',
         'name', 'country',

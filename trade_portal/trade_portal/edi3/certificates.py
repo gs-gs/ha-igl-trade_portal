@@ -233,8 +233,8 @@ class Un20200831CoORenderer:
                     # "line1": "string",
                     # "line2": "string",
                     # "cityName": "string",
-                    # "postcode": "string",
-                    # "countrySubDivisionName": "string",
+                    "postcode": doc.exporter.postcode,
+                    "countrySubDivisionName": doc.exporter.countrySubDivisionName,
                     "countryCode": (
                         str(doc.exporter.country) if doc.exporter.country else None
                     )
@@ -246,10 +246,12 @@ class Un20200831CoORenderer:
                 # "id": "CH48834438",
                 "name": doc.importer_name,
                 "postalAddress": {
+                    # we hardly can determine the importer name for documents created
+                    # from UI, but the API ones won't even call this code
                     # "line1": "string",
                     # "line2": "string",
                     # "cityName": "string",
-                    # "postcode": "string",
+                    # "postcode": "1111",
                     # "countrySubDivisionName": "string",
                     "countryCode": str(doc.importing_country)
                 }

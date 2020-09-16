@@ -79,6 +79,12 @@ class Party(models.Model):
     name = models.CharField(max_length=256, blank=True)
     country = CountryField(blank=True)
 
+    postcode = models.CharField(max_length=12, blank=True, default="")
+    line1 = models.CharField(max_length=255, blank=True, default="")
+    line2 = models.CharField(max_length=255, blank=True, default="")
+    city_name = models.CharField(max_length=255, blank=True, default="")
+    countrySubDivisionName = models.CharField(max_length=255, blank=True, default="")
+
     def __str__(self):
         return f"{self.name} {self.business_id} {self.country}".strip()
 

@@ -104,7 +104,7 @@ class OaVerificationView(TemplateView):
                 logger.exception(e)
                 verify_result = {
                     "status": "error",
-                    "error_message": "The query seems to be invalid or unsupported",
+                    "error_message": f"The query seems to be invalid or unsupported ({str(e)})",
                 }
         elif self.request.POST.get("type") == "qrcode":
             the_code = self.request.POST.get("qrcode")
@@ -143,6 +143,7 @@ class OaVerificationView(TemplateView):
             try:
                 result["unwrapped_file"] = self._unwrap_file(cleartext)
                 result["oa_raw_data"] = json.loads(cleartext)
+                result["oa_base64"] = base64.b64encode(cleartext).decode('utf-8')
             except Exception as e:
                 logger.exception(e)
                 # or likely our code has some bug or unsupported format in it

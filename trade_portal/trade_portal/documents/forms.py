@@ -171,8 +171,16 @@ class DraftDocumentUpdateForm(forms.ModelForm):
                 "name": exporter_data.get("EntityName") or "",
                 "type": Party.TYPE_TRADER,
                 "country": settings.ICL_APP_COUNTRY,
+                "postcode": exporter_data.get("AddressPostcode") or "",
+                "countrySubDivisionName": exporter_data.get("AddressState") or "",
             }
         )
+        if exporter_party.postcode != exporter_data.get("AddressPostcode") or "":
+            # update the party
+            exporter_party.name = exporter_data.get("EntityName") or ""
+            exporter_party.postcode = exporter_data.get("AddressPostcode") or ""
+            exporter_party.countrySubDivisionName = exporter_data.get("AddressState") or ""
+            exporter_party.save()
         return exporter_party
 
     def save(self, *args, **kwargs):
