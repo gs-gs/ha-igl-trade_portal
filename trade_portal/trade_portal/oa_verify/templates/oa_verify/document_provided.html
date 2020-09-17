@@ -5,8 +5,17 @@
   <a href="./" class="btn btn-primary btn-sm" style="float: right;">Validate another</a>
 
   {% if verification_result.status == "valid" %}
-    <h2><span class="badge badge-success">Valid</span></h2><br/>
+    <h2><span class="badge badge-success">Valid</span></h2>
     <h4>Issued by: {{ verification_result.verify_result_rotated.ISSUER_IDENTITY.data.0.location }}</h4>
+
+    {% comment %}
+      although these checks look like hardcoded
+      the verification_result.status just not valid if at least one of them fail
+      so it's pointless to read them from verification_result.verify_result
+    {% endcomment %}
+    <em><i class="icon icon-info" style="color: green"></i> Document has not been tampered with</em><br/>
+    <em><i class="icon icon-info" style="color: green"></i> Document has been issued</em><br/>
+    <em><i class="icon icon-info" style="color: green"></i> Document issuer has been identified (see Logs tab)</em>
   {% else %}
     {% if verification_result.status == "invalid" %}
       <h2><span class="badge badge-danger">Invalid</span></h2>
