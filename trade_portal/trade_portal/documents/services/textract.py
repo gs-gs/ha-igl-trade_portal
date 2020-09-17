@@ -14,13 +14,17 @@ class MetadataExtractService:
 
     @classmethod
     def extract(cls, doc):
-        doc.extra_data["metadata"] = doc.extra_data.get("metadata", {}) or {}
-        old_md = doc.extra_data["metadata"].copy()
+        updated_md = {}
         for docfile in doc.files.all():
             if docfile.filename.lower().endswith(".pdf"):
                 md = cls.extract_docfile(docfile)
                 if md:
-                    doc.extra_data["metadata"].update(md)
+                    updated_md.update(md)
+
+        doc.refresh_from_db()  # because textraction takes a lot of time and document may change
+        doc.extra_data["metadata"] = doc.extra_data.get("metadata", {}) or {}
+        old_md = doc.extra_data["metadata"].copy()
+        doc.extra_data["metadata"].update(updated_md)
         if old_md != doc.extra_data["metadata"]:
             doc.save()
             logger.info("The document %s metadata has been updated", doc)

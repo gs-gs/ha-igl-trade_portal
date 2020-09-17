@@ -7,6 +7,16 @@ Data model documentation can be taken from https://app.swaggerhub.com/apis-docs/
 
 Base url is `/api/documents/v0/` - please prepend to any API endpoint url. Installation-specific, version-specific value.
 
+## How to perform the demo workflow
+
+1. Get some API token
+2. Send POST request to the https://trade.c2.devnet.trustbridge.io/api/documents/v0/CertificatesOfOrigin/ endpoint with body of the certificate to be created
+3. Remember the certificate ID from the response (it's UUID somewhere)
+4. Do things you need to do you bake your QR code into your PDF file and upload it as:
+5. sending multipart/form data POST request to the https://trade.c2.devnet.trustbridge.io/api/documents/v0/CertificatesOfOrigin/YOUR_CERT_ID_HERE/attachment/ with the file attached as "file"
+6. Perform issue step by sending empty POST request https://trade.c2.devnet.trustbridge.io/api/documents/v0/CertificatesOfOrigin/YOUR_CERT_ID_HERE/issue/
+7. Wait a couple of minutes and observe that link from the certificate details `OA.url` becomes working and validated.
+
 ## Auth
 
 All endpoints require correct auth.
