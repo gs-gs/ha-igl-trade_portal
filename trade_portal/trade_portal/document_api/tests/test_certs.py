@@ -313,3 +313,16 @@ def test_very_wrong_payloads(docapi_env):
     )
     assert resp.status_code == 400, resp.content
     assert resp.json() == {'payload': 'certificateOfOrigin must be provided'}
+
+    # wrong schema
+    resp = c.post(
+        '/api/documents/v0/CertificatesOfOrigin/',
+        {
+            "certificateOfOrigin": {
+                "not": "Expected",
+            }
+        },
+        format="json"
+    )
+    assert resp.status_code == 400, resp.content
+    assert resp.json() == {'exportCountry': 'must be a dict with code key'}

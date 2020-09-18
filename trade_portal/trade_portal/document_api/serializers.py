@@ -1,9 +1,12 @@
 import base64
 import collections
 import logging
+
+import jsonschema
 from rest_framework import serializers
 
 from trade_portal.documents.models import Document, FTA, Party, OaDetails
+from trade_portal.document_api.schema import CERT_SCHEMA
 
 logger = logging.getLogger(__name__)
 
@@ -106,15 +109,31 @@ class CertificateSerializer(serializers.Serializer):
         return data
 
     def validate(self, data):
-        cert_data = data["raw_certificate_data"].get("certificateOfOrigin")
-        if not self.instance and "freeTradeAgreement" not in cert_data:
-            raise serializers.ValidationError({"freeTradeAgreement": "Required field"})
-        if "freeTradeAgreement" in cert_data:
-            if not FTA.objects.filter(name=cert_data["freeTradeAgreement"]).exists():
-                ftas = ', '.join(FTA.objects.all().values_list('name', flat=True))
-                raise serializers.ValidationError(
-                    {"freeTradeAgreement": f"Doesn't exist in the system, possible choices are {ftas}"}
-                )
+        request_cert_data = data["raw_certificate_data"].get("certificateOfOrigin")
+
+        if self.instance and self.instance.pk:
+            full_cert_data = self.instance.raw_certificate_data.get("certificateOfOrigin", {})
+            full_cert_data.update(request_cert_data)
+        else:
+            full_cert_data = request_cert_data
+
+        # first step: validate the schema itself
+        try:
+            # in case of existing object - merge it to the existing data
+            # so schema validation passes on full data, not partial (PATCH)
+            jsonschema.validate(
+                full_cert_data,
+                CERT_SCHEMA
+            )
+        except jsonschema.exceptions.ValidationError as e:
+            raise serializers.ValidationError({"schema": str(e.args[0])})
+
+        # second: any custom validations
+        if not FTA.objects.filter(name=full_cert_data["freeTradeAgreement"]).exists():
+            ftas = ', '.join(FTA.objects.all().values_list('name', flat=True))
+            raise serializers.ValidationError(
+                {"freeTradeAgreement": f"Doesn't exist in the system, possible choices are {ftas}"}
+            )
         return data
 
     def to_internal_value(self, data):
