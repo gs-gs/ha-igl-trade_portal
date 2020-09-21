@@ -25,9 +25,9 @@
           <dd>{{ object.document_number|default:"(not specified)" }}</dd>
           <dt>{% trans 'FTA' %}</dt>
           <dd>{{ object.fta }}</dd>
-          <dt>{% trans 'Exporter' %}</dt>
+          <dt>{% trans 'Exporting country' %}</dt>
           <dd>{{ object.sending_jurisdiction.name }}</dd>
-          <dt>{% trans 'Importer' %}</dt>
+          <dt>{% trans 'Importing country' %}</dt>
           <dd>{{ object.importing_country.name }}</dd>
           <dt>{% trans 'Exporter' %}</dt>
           <dd>

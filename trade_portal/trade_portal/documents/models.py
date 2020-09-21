@@ -255,11 +255,12 @@ class OaDetails(models.Model):
                 return history_item.related_file
             return None
         else:
-            incoming_obj = doc.files.filter(
-                filename=doc.intergov_details["obj"]
-            ).first()
-            if incoming_obj:
-                return incoming_obj.file
+            if doc.intergov_details.get("obj"):
+                incoming_obj = doc.files.filter(
+                    filename=doc.intergov_details["obj"]
+                ).first()
+                if incoming_obj:
+                    return incoming_obj.file
 
 
 class Document(models.Model):
