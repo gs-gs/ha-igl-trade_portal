@@ -29,10 +29,25 @@ def dict_merge(dct, merge_dct):
             dct[k] = merge_dct[k]
 
 
+class CountryField(serializers.Field):
+    def to_representation(self, instance):
+        return instance.code if instance else None
+
+
 class ShortCertificateSerializer(serializers.ModelSerializer):
+    # the short readonly serializer for list endpoint
+    importingCountry = CountryField(source='importing_country', read_only=True)
+    verificationStatus = serializers.CharField(source="verification_status", read_only=True)
+
     class Meta:
         model = Document
-        fields = ('id', 'document_number', 'created_at')
+        fields = (
+            # base fields
+            'id', 'document_number', 'created_at',
+            # filter fields
+            'verificationStatus', 'status',
+            'exporter', 'importingCountry',
+        )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -41,12 +56,16 @@ class ShortCertificateSerializer(serializers.ModelSerializer):
 
 
 class CertificateSerializer(serializers.Serializer):
+    importingCountry = CountryField(source='importing_country', read_only=True)
+    verificationStatus = serializers.CharField(source="verification_status", read_only=True)
 
     class Meta:
         model = Document
         fields = (
-            'id', 'name',
+            'id', 'name', 'verificationStatus', 'status',
+            'importingCountry',
         )
+        read_only = ("id", "importingCountry", "verificationStatus", "status")
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")

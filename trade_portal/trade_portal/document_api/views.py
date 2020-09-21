@@ -18,7 +18,7 @@ from trade_portal.documents.tasks import textract_document, lodge_document
 
 
 class PaginationBy10(PageNumberPagination):
-    page_size = 10
+    page_size = 20
     page_size_query_param = 'page_size'
     max_page_size = 1000
 
@@ -88,6 +88,62 @@ class QsMixin(object):
 class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, mixins.UpdateModelMixin):
     queryset = Document.objects.all()
     pagination_class = PaginationBy10
+
+    def get_queryset(self):
+        """
+        Apply some filters (if provided)
+
+            verificationStatus={value}
+            messageStatus={value}
+            importingCountry={countryCode}
+            exporter={business identifier (ABN in AU)}
+            createdDateAfter={date}
+            createdDateBefore={date}
+
+        """
+        qs = super().get_queryset()
+
+        if self.request.method.upper() == "GET":
+            verificationStatus = self.request.GET.get("verificationStatus")
+            if verificationStatus:
+                qs = qs.filter(
+                    verification_status=verificationStatus
+                )
+            messageStatus = self.request.GET.get("messageStatus")
+            if messageStatus:
+                qs = qs.filter(
+                    status=messageStatus,
+                )
+            importingCountry = self.request.GET.get("importingCountry")
+            if importingCountry:
+                qs = qs.filter(
+                    importing_country=importingCountry,
+                )
+            exporter = self.request.GET.get("exporter")
+            if exporter:
+                qs = qs.filter(
+                    exporter__clear_business_id=exporter,
+                )
+
+            createdDateAfter = self.request.GET.get("createdDateAfter")
+            if createdDateAfter:
+                try:
+                    qs = qs.filter(
+                        created_at__date__gte=createdDateAfter
+                    )
+                except ValidationError as e:
+                    raise serializers.ValidationError({"createdDateAfter": e.error_list[0]})
+
+            createdDateBefore = self.request.GET.get("createdDateBefore")
+            if createdDateBefore:
+                try:
+                    qs = qs.filter(
+                        created_at__date__lte=createdDateBefore
+                    )
+                except ValidationError as e:
+                    raise serializers.ValidationError({"createdDateBefore": e.error_list[0]})
+
+        return qs
 
     def get_serializer(self, *args, **kwargs):
         """
