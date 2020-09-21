@@ -1,5 +1,7 @@
 import json
 
+from django.core.exceptions import ValidationError
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
 from rest_framework import (
@@ -77,7 +79,10 @@ class QsMixin(object):
         return qs
 
     def get_object(self):
-        return get_object_or_404(self.get_queryset(), pk=self.kwargs['pk'])
+        try:
+            return get_object_or_404(self.get_queryset(), pk=self.kwargs['pk'])
+        except ValidationError:
+            raise Http404()
 
 
 class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, mixins.UpdateModelMixin):
@@ -118,6 +123,9 @@ class CertificateFileView(QsMixin, views.APIView):
             raise serializers.ValidationError("multipart/form-data is expected")
         if 'file' not in self.request.FILES:
             raise serializers.ValidationError("The file 'file' is expected as multipart/form-data")
+
+        if not self.request.FILES["file"].name.lower().endswith(".pdf"):
+            raise serializers.ValidationError({"file": "PDF file required"})
 
         if self.request.POST.get('metadata'):
             try:
