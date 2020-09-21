@@ -1,0 +1,15 @@
+<script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+<link rel="stylesheet" href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css">
+
+<div id="id-swagger-container"></div>
+
+<script>
+window.onload = function() {
+  const ui = SwaggerUIBundle({
+    url: "https://api.swaggerhub.com/apis/gosource/coo/1.0.1",
+    dom_id: '#id-swagger-container',
+  })
+
+  window.ui = ui
+}
+</script>

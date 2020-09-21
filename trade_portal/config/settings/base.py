@@ -85,6 +85,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "trade_portal.users.apps.UsersConfig",
     "trade_portal.documents",
+    "trade_portal.document_api",
     "trade_portal.oa_verify",
     "trade_portal.websub_receiver.apps.WebSubReceiverAppConfig",
     "trade_portal",
@@ -121,7 +122,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "dj_pagination.middleware.PaginationMiddleware",
 ]
 
@@ -158,7 +159,8 @@ FIXTURE_DIRS = (str(APPS_DIR.path("fixtures")),)
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = f"ALLOW-FROM {BASE_URL}"
+# X_FRAME_OPTIONS = f"ALLOW-FROM {BASE_URL}"
+# X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # ADMIN
 ADMIN_URL = "admin/"
