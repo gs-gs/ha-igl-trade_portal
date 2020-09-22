@@ -38,6 +38,8 @@ class ShortCertificateSerializer(serializers.ModelSerializer):
     # the short readonly serializer for list endpoint
     importingCountry = CountryField(source='importing_country', read_only=True)
     verificationStatus = serializers.CharField(source="verification_status", read_only=True)
+    messageStatus = serializers.CharField(source="status", read_only=True)
+    exporter = serializers.SerializerMethodField()
 
     class Meta:
         model = Document
@@ -45,7 +47,7 @@ class ShortCertificateSerializer(serializers.ModelSerializer):
             # base fields
             'id', 'document_number', 'created_at',
             # filter fields
-            'verificationStatus', 'status',
+            'verificationStatus', 'messageStatus',
             'exporter', 'importingCountry',
         )
 
@@ -54,18 +56,22 @@ class ShortCertificateSerializer(serializers.ModelSerializer):
         self.org = kwargs.pop("org", None)
         super().__init__(*args, **kwargs)
 
+    def get_exporter(self, obj):
+        return obj.exporter.clear_business_id if obj.exporter else None
+
 
 class CertificateSerializer(serializers.Serializer):
     importingCountry = CountryField(source='importing_country', read_only=True)
     verificationStatus = serializers.CharField(source="verification_status", read_only=True)
+    messageStatus = serializers.CharField(source="status", read_only=True)
 
     class Meta:
         model = Document
         fields = (
-            'id', 'name', 'verificationStatus', 'status',
+            'id', 'name', 'verificationStatus', 'messageStatus',
             'importingCountry',
         )
-        read_only = ("id", "importingCountry", "verificationStatus", "status")
+        read_only = ("id", "importingCountry", "verificationStatus", "messageStatus")
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")

@@ -4,15 +4,12 @@ CERT_SCHEMA = {
     "type": "object",
     "properties": {
         "status": {
-            "description": "The status of the certificate of origin - but be one of the allowed state lifecycle values.",
             "type": "string"
         },
         "isPreferential": {
-            "description": "indicates whether the certificate is a preferential or non-preferential certificate of origin.",
             "type": "boolean"
         },
         "freeTradeAgreement": {
-            "description": "for preferential certificates of origin, the name of the free trade agreement (eg CHAFTA)",
             "type": "string"
         },
         "supplyChainConsignment": {
@@ -40,11 +37,9 @@ CERT_SCHEMA = {
     ],
     "components": {"schemas": {
         "CrossBorderRegulatoryProcedure": {
-            "description": "A set of formal steps to satisfy a cross-border regulation, law or convention.",
             "type": "object",
             "properties": {
                 "originCriteriaText": {
-                    "description": "The origin criteria, expressed as text, for this cross-border regulatory procedure.",
                     "type": "string"
                 }
             }
@@ -54,12 +49,10 @@ CERT_SCHEMA = {
             "type": "object",
             "properties": {
                 "actualDateTime": {
-                    "description": "The actual date, time, date time, or other date time value of this document authentication.",
                     "type": "string",
                     "format": "date-time"
                 },
                 "statement": {
-                    "description": "The statement, expressed as text, for this document authentication.",
                     "type": "string"
                 },
                 "providingTradeParty": {
@@ -75,7 +68,6 @@ CERT_SCHEMA = {
             }
         },
         "ExchangedDocument": {
-            "description": "A collection of data for a piece of written, printed or electronic matter that is exchanged between two or more parties.",
             "type": "object",
             "properties": {
                 "id": {
@@ -84,7 +76,6 @@ CERT_SCHEMA = {
                     "format": "uri"
                 },
                 "issueDateTime": {
-                    "description": "The date, time, date time or other date time value for the issuance of this exchanged document.",
                     "type": "string",
                     "format": "date-time"
                 },
@@ -139,7 +130,6 @@ CERT_SCHEMA = {
             "type": "object",
             "properties": {
                 "id": {
-                    "description": "A unique identifier for this logistics related location, such as a United Nations Location Code (UNLOCODE) or GS1 Global Location Number (GLN).",
                     "type": "string",
                     "format": "uri"
                 },
@@ -150,7 +140,6 @@ CERT_SCHEMA = {
             }
         },
         "LogisticsPackage": {
-            "description": "A self-contained wrapping or container within which goods can be contained for logistics purposes, such as a box or a barrel which can be filled, partially filled or empty.",
             "type": "object",
             "properties": {
                 "id": {
@@ -174,7 +163,7 @@ CERT_SCHEMA = {
                 "grossWeight": {
                     "allOf": [
                         {
-                            "description": "The measure of the gross weight (mass) of this logistics package and its contents."
+                            "description": "The measure of the gross weight (mass)"
                         },
                         {
                             "$ref": "#/components/schemas/Measure"
@@ -187,11 +176,9 @@ CERT_SCHEMA = {
             }
         },
         "LogisticsTransportMeans": {
-            "description": "The devices used to convey goods or other objects from place to place during logistics cargo movements.",
             "type": "object",
             "properties": {
                 "id": {
-                    "description": "An identifier of this logistics means of transport, such as the International Maritime Organization number of a vessel.",
                     "type": "string",
                     "format": "uri"
                 },
@@ -202,11 +189,9 @@ CERT_SCHEMA = {
             }
         },
         "LogisticsTransportMovement": {
-            "description": "The conveyance (physical carriage) of goods or other objects used for logistics transport purposes.",
             "type": "object",
             "properties": {
                 "id": {
-                    "description": "The unique identifier for this logistics transport movement, such as a voyage number, flight number, or trip number.",
                     "type": "string",
                     "format": "uri"
                 },
@@ -237,7 +222,6 @@ CERT_SCHEMA = {
             }
         },
         "ProductClassification": {
-            "description": "A systematic arrangement of products in classes or categories according to established criteria.",
             "type": "object",
             "properties": {
                 "classCode": {
@@ -279,7 +263,6 @@ CERT_SCHEMA = {
                     "type": "string"
                 },
                 "mIMECode": {
-                    "description": "The code specifying the Multipurpose Internet Mail Extensions (MIME) type for this specified binary file.",
                     "type": "string"
                 }
             },
@@ -288,7 +271,6 @@ CERT_SCHEMA = {
             ]
         },
         "SupplyChainConsignment": {
-            "description": "A separately identifiable collection of goods items to be transported or available to be transported from one consignor to one consignee in a supply chain via one or more modes of transport where each consignment is the subject of one single transport contract.",
             "type": "object",
             "properties": {
                 "id": {
@@ -350,7 +332,7 @@ CERT_SCHEMA = {
                 "loadingBaseportLocation": {
                     "allOf": [
                         {
-                            "description": "The baseport location at which this supply chain consignment is to be loaded on a means of transport according to the transport contract."
+                            "description": "The baseport location"
                         },
                         {
                             "$ref": "#/components/schemas/LogisticsLocation"
@@ -360,7 +342,7 @@ CERT_SCHEMA = {
                 "mainCarriageTransportMovement": {
                     "allOf": [
                         {
-                            "description": "A main carriage logistics transport movement for this supply chain consignment."
+                            "description": "A main carriage logistics transport movement"
                         },
                         {
                             "$ref": "#/components/schemas/LogisticsTransportMovement"
@@ -370,7 +352,7 @@ CERT_SCHEMA = {
                 "unloadingBaseportLocation": {
                     "allOf": [
                         {
-                            "description": "The baseport location at which this supply chain consignment is to be unloaded from a means of transport according to the transport contract."
+                            "description": "The baseport location"
                         },
                         {
                             "$ref": "#/components/schemas/LogisticsLocation"
@@ -380,7 +362,6 @@ CERT_SCHEMA = {
             }
         },
         "SupplyChainConsignmentItem": {
-            "description": "An item within a supply chain consignment of goods separately identified for transport and customs purposes.",
             "type": "object",
             "properties": {
                 "id": {
@@ -395,7 +376,7 @@ CERT_SCHEMA = {
                 "crossBorderRegulatoryProcedure": {
                     "allOf": [
                         {
-                            "description": "A cross-border regulatory procedure applicable to this supply chain consignment item."
+                            "description": "A cross-border regulatory procedure applicable to this supply chain"
                         },
                         {
                             "$ref": "#/components/schemas/CrossBorderRegulatoryProcedure"
@@ -422,7 +403,6 @@ CERT_SCHEMA = {
             }
         },
         "SupplyChainTradeLineItem": {
-            "description": "A collection of information specific to an item being used or reported on for supply chain trade purposes.",
             "type": "object",
             "properties": {
                 "sequenceNumber": {
@@ -459,7 +439,6 @@ CERT_SCHEMA = {
             }
         },
         "TradeAddress": {
-            "description": "The location at which a particular trade related organization or person may be found or reached.",
             "type": "object",
             "properties": {
                 "line1": {
@@ -479,7 +458,6 @@ CERT_SCHEMA = {
                     "type": "string"
                 },
                 "countrySubDivisionName": {
-                    "description": "A name, expressed as text, of the sub-division of a country for this trade address.",
                     "type": "string"
                 },
                 "countryCode": {
@@ -498,7 +476,6 @@ CERT_SCHEMA = {
             "$ref": "https://edi3.org/shared/openapi/ISO/codes.json#/components/schemas/ISO3166_Code"
         },
         "TradeCountry": {
-            "description": "The area of land that belongs to a nation together with its properties, such as population, political organization, etc., used or referenced for trade purposes.",
             "type": "object",
             "properties": {
                 "code": {
@@ -543,7 +520,6 @@ CERT_SCHEMA = {
             }
         },
         "TradeProduct": {
-            "description": "Any tangible output or service produced by human or mechanical effort or by a natural process for trade purposes.",
             "type": "object",
             "properties": {
                 "id": {
@@ -582,7 +558,6 @@ CERT_SCHEMA = {
             "type": "object",
             "properties": {
                 "departureDateTime": {
-                    "description": "A departure date, time, date time, or other date time value related to this transport event.",
                     "type": "string",
                     "format": "date-time"
                 }
