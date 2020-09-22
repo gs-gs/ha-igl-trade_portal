@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Document API spec</title>
+    <title>Swagger UI</title>
     <link
       rel="stylesheet"
       href="//unpkg.com/swagger-ui-dist@3.20.3/swagger-ui.css"
@@ -35,6 +35,10 @@
       charset="UTF-8"
     ></script>
     <script>
+      const SWAGGER_SPEC_URL =
+        window.SWAGGER_SPEC_URL ||
+        'https://api.swaggerhub.com/apis/gosource/coo/1.0.1';
+      const API_BASE_URL = window.API_BASE_URL || '';
       function HideTopbarPlugin() {
         // this plugin overrides the Topbar component to return nothing
         return {
@@ -45,9 +49,29 @@
           },
         };
       }
-      window.onload = function () {
+      async function fetchSwaggerSpec() {
+        const response = await fetch(SWAGGER_SPEC_URL);
+        return response.json();
+      }
+      window.onload = async function () {
+        const spec = await fetchSwaggerSpec();
+        spec.servers = [
+          {
+            url: window.location.href.split("#")[0].replace(/\/+$/, ""),
+            description: 'Current domain test setup',
+          },
+          {
+            url: 'https://trade.c1.devnet.trustbridge.io/api/documents/v0',
+            description: 'C1 test server',
+          },
+          {
+            url: 'https://trade.c2.devnet.trustbridge.io/api/documents/v0',
+            description: 'C2 test server',
+          }
+        ];
         const ui = SwaggerUIBundle({
-          url: 'https://api.swaggerhub.com/apis/gosource/coo/1.0.1', // url to swagger spec
+          // url: SWAGGER_SPEC_URL, // url to swagger spec
+          spec,
           dom_id: '#swagger-ui',
           deepLinking: true,
           presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
