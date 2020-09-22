@@ -178,27 +178,30 @@
     {% if object.status == object.STATUS_FAILED %}
       <div class="alert alert-danger">{% trans 'This document has been received with an error; see the Logs page for details. It usually means the technical error, not the certificate one.' %}</div>
     {% endif %}
-    {# render incoming document in a nice but quick way #}
-    {% if object.intergov_details.oa_doc %}
-    <div class="section-info">
-    <div class="subtitle section-info__title">{% trans 'Raw incoming data' %}</div>
-    <dl class="info-list">
-      {% for key, value in object.intergov_details.oa_doc.items %}
-        <dt>{{ key|capfirst }}</dt>
-        <dd>
-          {% if value.items %}
-            <div style='background-color: whitesmoke;'>
-            {% for subkey, subvalue in value.items %}
-              <strong>{{ subkey }}</strong>: {{ subvalue }}<br/>
-            {% endfor %}
-            </div>
-          {% else %}
-            {{ value }}
-          {% endif %}
-        </dd>
-      {% endfor %}
-      </fieldset>
-    {% endif %}
+
+    {% comment %}
+      {# render incoming document in a nice but quick way #}
+      {% if object.intergov_details.oa_doc %}
+      <div class="section-info">
+      <div class="subtitle section-info__title">{% trans 'Raw incoming data' %}</div>
+      <dl class="info-list">
+        {% for key, value in object.intergov_details.oa_doc.items %}
+          <dt>{{ key|capfirst }}</dt>
+          <dd>
+            {% if value.items %}
+              <div style='background-color: whitesmoke;'>
+              {% for subkey, subvalue in value.items %}
+                <strong>{{ subkey }}</strong>: {{ subvalue }}<br/>
+              {% endfor %}
+              </div>
+            {% else %}
+              {{ value }}
+            {% endif %}
+          </dd>
+        {% endfor %}
+        </fieldset>
+      {% endif %}
+    {% endcomment %}
   {% endif %}
 
 </div>

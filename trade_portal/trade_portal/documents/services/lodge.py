@@ -28,6 +28,7 @@ from trade_portal.documents.models import (
     FTA, Party, Document, DocumentHistoryItem,
     NodeMessage, OaDetails, DocumentFile,
 )
+from trade_portal.edi3.utils import party_from_json
 
 logger = logging.getLogger(__name__)
 
@@ -497,6 +498,8 @@ class NodeService(BaseIgService):
             oa=oad,
             created_by_org=None,
             status=Document.STATUS_INCOMING,
+            workflow_status=Document.WORKFLOW_STATUS_INCOMING,
+            verification_status=Document.V_STATUS_NOT_STARTED,
             sending_jurisdiction=message_body["sender"],
             importing_country=message_body["receiver"],
             intergov_details=message_body,
@@ -738,23 +741,119 @@ class IncomingDocumentService(BaseIgService):
             self._process_oa2_document(doc, unwrapped_oa)
         elif oa_version == "https://schema.openattestation.com/3.0/schema.json":
             self._process_oa3_document(doc, unwrapped_oa)
+        else:
+            return self._complain_and_die(
+                doc,
+                "Unknown OA version",
+                oa_version, doc,
+            )
         return True
 
     def _process_oa2_document(self, doc: Document, data: dict):
         # format of each dict: type, filename, data
-        attachments = data.pop("attachments", []) or []
+        if "certificateOfOrigin" in data:
+            # this is a new UN format
+            logger.info("Processing UN document format %s", doc)
+            coo = data.get("certificateOfOrigin")
+            self._parse_un_coo(doc, coo)
+        else:
+            # some old format
+            # TODO: drop it because nobody generates it anymore
+            # and think about more robust format support
+            logger.info("Processing old document format %s", doc)
+            self._parse_old_format(doc, data)
+        doc.intergov_details["oa_doc"] = data
+        doc.save()
+        return
 
-        # is it UN CoO?
-        unCoOattachedFile = data.get("certificateOfOrigin", {}).get("attachedFile")
+    def _parse_un_coo(self, doc, coo):
+        doc.document_number = coo.get("id")
+        doc.raw_certificate_data["certificateOfOrigin"] = coo
+
+        # the attachment
+        unCoOattachedFile = coo.get("attachedFile")
         if unCoOattachedFile:
-            # format of each dict: file, encodingCode, mimeCode
-            attachments.append({
-                "type": unCoOattachedFile["mimeCode"],
-                "filename": "file." + unCoOattachedFile["mimeCode"].rsplit('/')[-1].lower(),
-                "data": unCoOattachedFile["file"],
-            })
+            file_mimecode = unCoOattachedFile["mimeCode"]
+            file_ext = file_mimecode.rsplit('/')[-1].lower()
+            bin_file = base64.b64decode(unCoOattachedFile["file"].encode("utf-8"))
+            af = DocumentFile.objects.create(
+                doc=doc,
+                filename=f"file.{file_ext}" if file_ext else "unknown.bin",
+                size=len(bin_file),
+                is_watermarked=None,
+            )
+            path = default_storage.save(
+                f'incoming/{doc.id}/attach-{str(uuid.uuid4())}',
+                ContentFile(bin_file)
+            )
+            af.file = path
+            af.save()
 
-        for attach in attachments:
+        # parse FTA and other things
+        try:
+            issueDateTime = coo.get("issueDateTime")
+            if issueDateTime:
+                issueDateTime = dateutil.parser.isoparse(issueDateTime)
+                if issueDateTime:
+                    doc.created_at = issueDateTime
+        except Exception as e:
+            logger.exception(e)
+
+        try:
+            if coo.get("isPreferential") is True:
+                doc.type = Document.TYPE_PREF_COO
+            if coo.get("isPreferential") is False:
+                doc.type = Document.TYPE_NONPREF_COO
+        except Exception as e:
+            logger.exception(e)
+
+        try:
+            issuer_data = coo.get("issuer", {})
+            doc.issuer = party_from_json(issuer_data)
+        except Exception as e:
+            logger.exception(e)
+            logger.warning(
+                "Can't parse issuer for %s", doc
+            )
+
+        supplyChainConsignment = coo.get("supplyChainConsignment", {})
+        consignor = supplyChainConsignment.get("consignor", {})
+        importer = supplyChainConsignment.get("consignee", {})
+
+        if consignor:
+            try:
+                doc.exporter = party_from_json(consignor)
+                if importer:
+                    importer_parts = [
+                        importer.get("name"),
+                        importer.get("id"),
+                    ]
+                    doc.importer_name = ' '.join(
+                        (x for x in importer_parts if x)
+                    )
+            except Exception as e:
+                logger.exception(e)
+                logger.warning("Can't parse consignor or consignee for %s", doc)
+
+        try:
+            freeTradeAgreement = coo.get("freeTradeAgreement")
+            if freeTradeAgreement:
+                try:
+                    doc.fta = FTA.objects.get(name=freeTradeAgreement)
+                except Exception:
+                    logger.warning(
+                        "The FTA %s is passed in the inbound document but can't be found locally",
+                        freeTradeAgreement
+                    )
+        except Exception as e:
+            logger.exception(e)
+        return
+
+    def _parse_old_format(self, doc, data):
+        doc.document_number = data.get("id")
+
+        # parse attachments
+        for attach in data.pop("attachments", []) or []:
             bin_file = base64.b64decode(attach["data"].encode("utf-8"))
             af = DocumentFile.objects.create(
                 doc=doc,
@@ -768,8 +867,7 @@ class IncomingDocumentService(BaseIgService):
             af.file = path
             af.save()
 
-        doc.document_number = data.get("id")
-
+        # parse metadata
         try:
             # these actions are dangerous in terms of exceptions,
             # so we use catchall to handle them one by one if they occure
@@ -825,9 +923,6 @@ class IncomingDocumentService(BaseIgService):
 
         except Exception as e:
             logger.exception(e)
-        doc.intergov_details["oa_doc"] = data
-        doc.save()
-        return
 
     def _process_oa3_document(self, doc: Document, data: dict):
         return self._complain_and_die(

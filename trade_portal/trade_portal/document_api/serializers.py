@@ -5,8 +5,9 @@ import logging
 import jsonschema
 from rest_framework import serializers
 
-from trade_portal.documents.models import Document, FTA, Party, OaDetails
+from trade_portal.documents.models import Document, FTA, OaDetails
 from trade_portal.document_api.schema import CERT_SCHEMA
+from trade_portal.edi3.utils import party_from_json
 
 logger = logging.getLogger(__name__)
 
@@ -245,27 +246,7 @@ class CertificateSerializer(serializers.Serializer):
         """
         try:
             issuer_data = cert_data.get("issuer", {})
-            issuer_id = issuer_data.get("id") or ""
-            if ":" in issuer_id:
-                issuer_bid_prefix, issuer_clear_business_id = issuer_id.rsplit(":", maxsplit=1)
-            else:
-                issuer_clear_business_id = issuer_id
-                issuer_bid_prefix = ""
-            obj.issuer, _ = Party.objects.get_or_create(
-                bid_prefix=issuer_bid_prefix,
-                clear_business_id=issuer_clear_business_id,
-                business_id=issuer_id,
-                dot_separated_id=issuer_clear_business_id if "." in issuer_clear_business_id else "",
-                name=issuer_data.get("name"),
-                defaults={
-                    "country": issuer_data.get("postalAddress", {}).get("country") or "",
-                    "postcode": issuer_data.get("postalAddress", {}).get("postcode") or "",
-                    "countrySubDivisionName": issuer_data.get("postalAddress", {}).get("postalAddress") or "",
-                    "line1": issuer_data.get("postalAddress", {}).get("line1") or "",
-                    "line2": issuer_data.get("postalAddress", {}).get("line2") or "",
-                    "city_name": issuer_data.get("postalAddress", {}).get("cityName") or "",
-                }
-            )
+            obj.issuer = party_from_json(issuer_data)
         except Exception as e:
             logger.exception(e)
             raise serializers.ValidationError(
@@ -277,30 +258,7 @@ class CertificateSerializer(serializers.Serializer):
 
         if consignor:
             try:
-                exporter_id = consignor.get("id") or ""
-                if ":" in exporter_id:
-                    exporter_bid_prefix, exporter_clear_business_id = exporter_id.rsplit(":", maxsplit=1)
-                else:
-                    exporter_clear_business_id = exporter_id
-                    exporter_bid_prefix = ""
-
-                obj.exporter, _ = Party.objects.get_or_create(
-                    bid_prefix=exporter_bid_prefix,
-                    clear_business_id=exporter_clear_business_id,
-                    business_id=exporter_id,
-                    dot_separated_id=exporter_clear_business_id if "." in exporter_clear_business_id else "",
-
-                    name=consignor.get("name"),
-
-                    defaults={
-                        "country": consignor.get("postalAddress", {}).get("country") or "",
-                        "postcode": consignor.get("postalAddress", {}).get("postcode") or "",
-                        "countrySubDivisionName": consignor.get("postalAddress", {}).get("postalAddress") or "",
-                        "line1": consignor.get("postalAddress", {}).get("line1") or "",
-                        "line2": consignor.get("postalAddress", {}).get("line2") or "",
-                        "city_name": consignor.get("postalAddress", {}).get("cityName") or "",
-                    }
-                )
+                obj.exporter = party_from_json(consignor)
             except Exception as e:
                 logger.exception(e)
                 raise serializers.ValidationError({"supplyChainConsignment": "Can't parse consignor or consignee"})

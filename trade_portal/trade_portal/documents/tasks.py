@@ -58,6 +58,7 @@ def process_incoming_document_received(self, document_pk):
     try:
         IncomingDocumentService().process_new(doc)
     except Exception as e:
+        logger.exception(e)
         if getattr(e, "is_retryable", None) is True:
             # try to retry (no document has been downloaded yet from the remote or something)
             if self.request.retries < self.max_retries:
@@ -100,5 +101,6 @@ def process_incoming_document_received(self, document_pk):
 @celery_app.task(ignore_result=True,
                  max_retries=3, interval_start=10, interval_step=10, interval_max=50)
 def textract_document(document_id=None):
+    return
     doc = Document.objects.get(pk=document_id)
     MetadataExtractService.extract(doc)

@@ -147,7 +147,7 @@ class IntergovClient(object):
         resp = requests.get(
             endpoint,
             {
-                "as_country": str(self.COUNTRY)
+                "as_jurisdiction": str(self.COUNTRY)
             },
             headers={
                 auth_h_name: auth_h_value,

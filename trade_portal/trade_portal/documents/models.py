@@ -111,7 +111,6 @@ class Party(models.Model):
             f'{self.countrySubDivisionName}' if self.countrySubDivisionName else '',
             self.country.name if self.country else ''
         ]
-        print(data)
         return ', '.join(
             (v for v in data if v.strip())
         )
@@ -299,11 +298,13 @@ class Document(models.Model):
     WORKFLOW_STATUS_DRAFT = "draft"
     WORKFLOW_STATUS_ISSUED = "issued"
     WORKFLOW_STATUS_NOT_ISSUED = "not-issued"
+    WORKFLOW_STATUS_INCOMING = "incoming"
 
     WORKFLOW_STATUS_CHOICES = (
         (WORKFLOW_STATUS_DRAFT, "Draft"),
         (WORKFLOW_STATUS_ISSUED, "Issued"),
         (WORKFLOW_STATUS_NOT_ISSUED, "Not issued"),
+        (WORKFLOW_STATUS_INCOMING, "Incoming"),
     )
 
     TYPE_PREF_COO = "pref_coo"
