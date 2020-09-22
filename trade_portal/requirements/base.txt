@@ -28,6 +28,7 @@ django-recaptcha==2.0.6
 djangorestframework==3.11.0  # https://github.com/encode/django-rest-framework
 coreapi==2.3.3  # https://github.com/core-api/python-client
 jsonschema==3.2.0  # to validate the certificate
+django-cors-headers==3.5.0  # for JS APIs
 
 sentry-sdk==0.14.1  # https://github.com/getsentry/sentry-python
 django-storages[boto3]==1.9.1  # https://github.com/jschneier/django-storages

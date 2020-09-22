@@ -80,6 +80,7 @@ THIRD_PARTY_APPS = [
     "django_tables2",
     # "django_amazon_translate",
     "siteblocks",
+    "corsheaders",
 ]
 
 LOCAL_APPS = [
@@ -113,6 +114,7 @@ else:
     AUTH_PASSWORD_VALIDATORS = []
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -122,7 +124,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
-    # "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "dj_pagination.middleware.PaginationMiddleware",
 ]
 
@@ -159,8 +161,7 @@ FIXTURE_DIRS = (str(APPS_DIR.path("fixtures")),)
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SECURE_BROWSER_XSS_FILTER = True
-# X_FRAME_OPTIONS = f"ALLOW-FROM {BASE_URL}"
-# X_FRAME_OPTIONS = "SAMEORIGIN"
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # ADMIN
 ADMIN_URL = "admin/"
@@ -242,6 +243,9 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
+
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ALLOW_ALL_ORIGINS = True
 
 from .base_auth import *  # NOQA
 from .base_app import *  # NOQA
