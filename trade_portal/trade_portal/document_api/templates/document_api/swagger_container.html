@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Swagger UI</title>
+    <title>Documents API spec</title>
     <link
       rel="stylesheet"
       href="//unpkg.com/swagger-ui-dist@3.20.3/swagger-ui.css"
@@ -58,15 +58,7 @@
         spec.servers = [
           {
             url: window.location.href.split("#")[0].replace(/\/+$/, ""),
-            description: 'Current domain test setup',
-          },
-          {
-            url: 'https://trade.c1.devnet.trustbridge.io/api/documents/v0',
-            description: 'C1 test server',
-          },
-          {
-            url: 'https://trade.c2.devnet.trustbridge.io/api/documents/v0',
-            description: 'C2 test server',
+            description: 'Current domain setup',
           }
         ];
         const ui = SwaggerUIBundle({

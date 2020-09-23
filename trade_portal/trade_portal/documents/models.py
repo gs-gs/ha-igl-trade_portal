@@ -163,8 +163,9 @@ class OaDetails(models.Model):
         "users.Organisation", models.CASCADE,
         blank=True, null=True,
     )
-    uri = models.CharField(max_length=3000)
-    key = models.CharField(max_length=3000)
+    # these fields are blank for incoming documents when we don't know these values yet
+    uri = models.CharField(max_length=3000, blank=True)
+    key = models.CharField(max_length=3000, blank=True)
 
     iv_base64 = models.TextField(blank=True)
     tag_base64 = models.TextField(blank=True)

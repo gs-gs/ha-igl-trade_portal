@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from trade_portal.documents.services.lodge import NotaryService
+from trade_portal.documents.services.notarize import NotaryService
 
 
 class Command(BaseCommand):

@@ -51,7 +51,7 @@ def store_message_by_ping_body(self, ping_body):
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=6)
 def process_incoming_document_received(self, document_pk):
-    from trade_portal.documents.services.lodge import IncomingDocumentService
+    from trade_portal.documents.services.incoming import IncomingDocumentService
 
     doc = Document.objects.get(pk=document_pk)
     logger.info("Processing the incoming document %s", doc)
@@ -95,6 +95,8 @@ def process_incoming_document_received(self, document_pk):
             doc.status = Document.STATUS_FAILED
             doc.save()
             return False
+    else:
+        logger.info("Incoming document %s processed without errors", doc)
     return
 
 
