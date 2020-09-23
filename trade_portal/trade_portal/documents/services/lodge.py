@@ -64,6 +64,7 @@ class DocumentService(BaseIgService):
 
     def issue(self, document: Document) -> bool:
         document.verification_status = Document.V_STATUS_PENDING
+        document.status = Document.STATUS_PENDING
         document.save()
 
         subject = "{}.{}.{}".format(

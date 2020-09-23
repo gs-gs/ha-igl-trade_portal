@@ -98,7 +98,7 @@ class DraftDocumentUpdateForm(forms.ModelForm):
         self.fields["fta"].empty_label = 'Please Select FTA...'
 
         self.fields['importing_country'].choices = []
-        for fta in FTA.objects.all():
+        for fta in FTA.objects.order_by("id").all():
             for country in fta.country:
                 self.fields['importing_country'].choices.append(
                     (country, f"{country.name} ({fta.name})")
@@ -114,12 +114,14 @@ class DraftDocumentUpdateForm(forms.ModelForm):
             del self.fields['fta']
 
             all_active_countries = set()
-            for fta in FTA.objects.all():
+            for fta in FTA.objects.order_by("id").all():
                 for c in fta.country:
                     all_active_countries.add(c)
 
             self.fields['importing_country'].choices = (
-                (c.code, c.name) for c in all_active_countries
+                (c.code, c.name) for c in sorted(
+                    list(all_active_countries), key=lambda c: c.name
+                )
             )
         else:
             self.fields['fta'].label = False

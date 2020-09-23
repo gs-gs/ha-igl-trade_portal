@@ -211,7 +211,7 @@ class IncomingDocumentService(BaseIgService):
             if issueDateTime:
                 issueDateTime = dateutil.parser.isoparse(issueDateTime)
                 if issueDateTime:
-                    doc.created_at = issueDateTime
+                    doc.extra_data["issued_at"] = issueDateTime.isoformat()
         except Exception as e:
             logger.exception(e)
 
