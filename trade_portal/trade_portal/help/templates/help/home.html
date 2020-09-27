@@ -1,0 +1,20 @@
+{% extends "help/base.html" %}
+
+{% block extra_head %}{% endblock %}
+
+{% block help_content %}
+  <h2>Trade Portal Documentation</h2><br/>
+  <p>The trade portal is used to provide UI and API access to any authorized party
+  wanting to send the documents.</p>
+  <p>Although this party may integrate to the IGL node or OA notarisation services
+  independently - it's impractical for a large number of traders and chambers.</p>
+  <p>The basic workflow to use the website is:
+    <ol style='margin-left: 30px'>
+      <li>Register</li>
+      <li>Confirm access to some organisation (using business identifier - ABN for Australia)</li>
+      <li>Start sending documents using UI</li>
+      <li>or acquire API access and use API to submit them.</li>
+      <li>Observe incoming documents for own parties</li>
+    </ol>
+  </p>
+{% endblock %}

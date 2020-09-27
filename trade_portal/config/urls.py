@@ -1,4 +1,3 @@
-# from allauth.account.views import logout
 from django.conf import settings
 from django.urls import include, path
 from django.conf.urls.static import static
@@ -38,6 +37,8 @@ urlpatterns = [
     path("oidc/", include('mozilla_django_oidc.urls')),
 
     path('i18n/', include('django.conf.urls.i18n')),
+
+    path("help/", include('trade_portal.help.urls')),
 
     path(settings.ADMIN_URL, admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

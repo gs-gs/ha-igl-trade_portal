@@ -32,7 +32,7 @@ class CustomSignupForm(SignupForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["initial_business_id"].label = _("Your business") + settings.BID_NAME
+        self.fields["initial_business_id"].label = _("Your business") + " " + settings.BID_NAME
         self.fields["password1"].label = _("Choose a password")
         self.fields["email"].label = _("Your business email address")
 

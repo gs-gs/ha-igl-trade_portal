@@ -19,14 +19,28 @@ class TokensListView(LoginRequiredMixin, ListView):
     """
     template_name = "users/tokens/list.html"
 
-    def get_queryset(self):
+    def get(self, *args, **kwargs):
         current_org = self.request.user.get_current_org(self.request.session)
         if not current_org:
-            messages.error(
+            messages.warning(
                 self.request,
                 _("Please select current organisation before managing its tokens")
             )
             return redirect('users:detail')
+        return super().get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        current_org = self.request.user.get_current_org(self.request.session)
+        if not current_org:
+            messages.warning(
+                self.request,
+                _("Please select current organisation before managing its tokens")
+            )
+            return redirect('users:detail')
+        return super().post(*args, **kwargs)
+
+    def get_queryset(self):
+        current_org = self.request.user.get_current_org(self.request.session)
         qs = OrganisationAuthToken.objects.filter(
             org=current_org
         )

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block head_title %}Trade Portal Documentation{% endblock %}
+
+{% block content %}
+  <div class="content-box profile">
+    <div class="row">
+      <div class="col-md-2">
+        {# navigation #}
+        <ul style="list-style-type: none">
+          <li><a href="/help/">About</a></li>
+          <li><a href="/help/register/">Register</a></li>
+          <li><a href="/help/api/">API usage</a></li>
+        </ul>
+      </div>
+      <div class="col">
+        {% block help_content %}
+          ...
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

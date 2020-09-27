@@ -1,0 +1,18 @@
+{% extends "help/base.html" %}
+
+{% block extra_head %}{% endblock %}
+
+{% block help_content %}
+  <h2>API</h2><br/>
+  <p>Before you use the API please ensure that you have access to some organisation.</p>
+  <h3>Getting access token</h3>
+  <p>To issue a new token please navigate to your profile, then "Access tokens" section and press "Issue token" button.</p>
+  <p>After the token is created you can use it to access the API:
+    <pre>curl http://{domain_name}/api/documents/v0/CertificatesOfOrigin/
+     -H "Authorization: Token {your token here}"
+</pre></p>
+
+  <h3>Using the API</h3>
+  <p>This is a simple REST API - please use your favourite client library to work with it.</p>
+  <p><a href="/api/documents/v0/">Read the full API documentation and try it</a></p>
+{% endblock %}
