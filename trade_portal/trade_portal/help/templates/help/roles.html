@@ -1,0 +1,19 @@
+{% extends "help/base.html" %}
+
+{% block extra_head %}{% endblock %}
+
+{% block help_content %}
+  <h2>Roles</h2><br/>
+  <p>
+    Any organisation may have next roles:
+    <ul>
+      <li><strong>Trader</strong> &ndash; has access to any document received for its business identifier but can't directly send documents to other parties.</li>
+      <li><strong>Chambers</strong> &ndash; can send documents to other parties but don't see incoming documents</li>
+      <li><strong>Regulator</strong> &ndash; see all incoming documents arrived to that jurisdiction but can't directly send them</li>
+    </ul>
+  </p>
+  <p>
+    The most common access for new users is trader, sometimes it's chambers.
+  </p>
+  <p>To request a role for you organisation please make it active (using top right dropdown menu) and navigate to your Profile -> Request a role. You'll be asked for desired role. Please upload any evidence of that role you have (if any) or leave this field empty if you think it should be like this. After submission just wait till it's approved or denied (with a reason). You'll receive email once it's done.</p>
+{% endblock %}

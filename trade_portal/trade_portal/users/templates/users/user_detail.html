@@ -83,7 +83,7 @@
     <div class="profile-row">
       <div class="row">
         <div class="col-md-3">
-          <h2 class="subtitle">Authorised Roles</h2>
+          <h2 class="subtitle" id="roles">Authorised Roles</h2>
         </div>
         <div class="col-md-9 profile-row__content">
           {% if org_ms.org.is_trader %}
@@ -168,8 +168,6 @@
             {% endif %}
           {% endfor %}
 
-
-
           <a href="{% url 'users:role-request' %}" class="btn btn-primary btn-sm">Request a role</a>
         </div>
       </div>
@@ -212,10 +210,5 @@
   </div>
   {% endcomment %}
 
-  {% comment %}
-    <div class="form-actions form-actions--bordered">
-      <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-  {% endcomment %}
 </div>
 {% endblock content %}

@@ -138,6 +138,8 @@ class Organisation(models.Model):
             roles.append(_("Chamber"))
         if self.is_regulator:
             roles.append(_("Regulator"))
+        if not roles:
+            return "no roles"
         return ', '.join([
             str(r) for r in roles
         ])
@@ -145,6 +147,10 @@ class Organisation(models.Model):
     @cached_property
     def can_issue_certificates(self):
         return self.is_chambers
+
+    @cached_property
+    def has_roles(self):
+        return self.is_trader or self.is_chambers or self.is_regulator
 
 
 class OrgRoleRequest(models.Model):

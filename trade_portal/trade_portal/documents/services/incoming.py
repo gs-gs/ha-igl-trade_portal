@@ -236,6 +236,8 @@ class IncomingDocumentService(BaseIgService):
         consignor = supplyChainConsignment.get("consignor", {})
         importer = supplyChainConsignment.get("consignee", {})
 
+        doc.consignment_ref_doc_number = supplyChainConsignment.get("id") or ""
+
         if consignor:
             try:
                 doc.exporter = party_from_json(consignor)

@@ -23,8 +23,10 @@
         <dl class="info-list">
           <dt>{% trans 'Doc number' %}</dt>
           <dd>{{ object.document_number|default:"(not specified)" }}</dd>
-          <dt>{% trans 'FTA' %}</dt>
-          <dd>{{ object.fta }}</dd>
+          {% if object.fta %}
+            <dt>{% trans 'FTA' %}</dt>
+            <dd>{{ object.fta }}</dd>
+          {% endif %}
           <dt>{% trans 'Exporting country' %}</dt>
           <dd>{{ object.sending_jurisdiction.name }}</dd>
           <dt>{% trans 'Importing country' %}</dt>
