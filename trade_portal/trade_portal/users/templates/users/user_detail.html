@@ -62,13 +62,21 @@
         </div>
         <div class="col-md-9 profile-row__content">
           <div class="row mb-3">
-            <div class="col-md-3">ABN</div>
-            <div class="col-md-9"><a href="https://abr.business.gov.au/ABN/View?abn={{ org_ms.org.business_id }}" target="_blank">{{ org_ms.org.business_id }}</a></div>
+            <div class="col-md-3">{{ BID_NAME }}</div>
+            <div class="col-md-9">
+              {% if BID_NAME == "ABN" %}
+                <a href="https://abr.business.gov.au/ABN/View?abn={{ org_ms.org.business_id }}" target="_blank">{{ org_ms.org.business_id }}</a>
+              {% else %}
+                <a href="https://www.uen.gov.sg/" target="_blank">{{ org_ms.org.business_id }}</a>
+              {% endif %}
+            </div>
           </div>
-          <div class="row mb-3">
-            <div class="col-md-3">Domain name:</div>
-            <div class="col-md-9"><a href="//{{ org_ms.org.dot_separated_id }}" target="_blank">{{ org_ms.org.dot_separated_id }}</a></div>
-          </div>
+          {% comment %}
+            <div class="row mb-3">
+              <div class="col-md-3">Domain name:</div>
+              <div class="col-md-9"><a href="//{{ org_ms.org.dot_separated_id }}" target="_blank">{{ org_ms.org.dot_separated_id }}</a></div>
+            </div>
+          {% endcomment %}
           <div class="row">
             <div class="col-md-3">Verified:</div>
             <div class="col-md-9">

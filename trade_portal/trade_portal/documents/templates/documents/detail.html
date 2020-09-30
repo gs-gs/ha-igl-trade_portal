@@ -118,8 +118,10 @@
               {{ object.pk }}
             </dd>
           {% endif %}
-          <dt>{% trans 'FTA' %}</dt>
-          <dd>{{ object.fta }}</dd>
+          {% if object.fta %}
+            <dt>{% trans 'FTA' %}</dt>
+            <dd>{{ object.fta }}</dd>
+          {% endif %}
           <dt>{% trans 'Exporting country' %}</dt>
           <dd>{{ object.sending_jurisdiction.name }}</dd>
           <dt>{% trans 'Importing country' %}</dt>
