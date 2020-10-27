@@ -1,0 +1,117 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: "Open-Attestation Verify REST API"
+
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+    VerificationFragmentResult:
+      type: object
+      properties:
+        type:
+          type: string
+        status:
+          type: string
+          enum:
+            - VALID
+            - INVALID
+            - SKIPPED
+        name:
+          type: string
+      required:
+        - type
+        - status
+        - name
+      additionalProperties: true
+  responses:
+    InputError:
+      description: >
+        Input error
+      content:
+        application/json:
+          schema:
+            $ref:  '#/components/schemas/Error'
+    ServerError:
+      description: >
+        Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationResult:
+      description: >
+        Validation result.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - valid
+            properties:
+              valid:
+                type: boolean
+    ValidationFragmentsResult:
+      description: >
+        Validation fragments result
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/VerificationFragmentResult'
+
+paths:
+  /verify:
+    post:
+      summary: >
+        Verify issued state of a wrapped document, return a simple result
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          $ref: '#/components/responses/ValidationResult'
+        400:
+          $ref: '#/components/responses/InputError'
+        500:
+          $ref: '#/components/responses/ServerError'
+
+  /verify/fragments:
+    post:
+      summary: >
+        Verify issued state of a wrapped document, return a detailed result
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          $ref: '#/components/responses/ValidationFragmentsResult'
+        400:
+          $ref: '#/components/responses/InputError'
+        500:
+          $ref: '#/components/responses/ServerError'

@@ -1,0 +1,195 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: "Open-Attestation Framework REST API"
+
+components:
+  schemas:
+    Document:
+      description: Document of open attestation format
+      oneOf:
+        - $ref: 'open-attestation-2.0.yml#/components/schemas/document'
+        - $ref: 'open-attestation-3.0.yml#/components/schemas/document'
+    DocumentSchemaVersion:
+      type: string
+      enum:
+        - 'https://schema.openattestation.com/3.0/schema.json'
+        - 'https://schema.openattestation.com/2.0/schema.json'
+      default: 'https://schema.openattestation.com/3.0/schema.json'
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+  responses:
+    InputError:
+      description: >
+        Input error
+      content:
+        application/json:
+          schema:
+            $ref:  '#/components/schemas/Error'
+    ServerError:
+      description: >
+        Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationResult:
+      description: >
+        Validation result.
+        True if validation succeeds otherwise false.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - valid
+            properties:
+              valid:
+                type: boolean
+paths:
+  /document/wrap:
+    post:
+      summary: >
+        Wrap a document of open-attestation format
+      description: ""
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                document:
+                  $ref: '#/components/schemas/Document'
+                params:
+                  type: object
+                  properties:
+                    version:
+                      $ref: '#/components/schemas/DocumentSchemaVersion'
+      responses:
+        200:
+          description: >
+            Wrapped document
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          $ref: '#/components/responses/InputError'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /document/unwrap:
+    post:
+      summary: >
+        Unwrap a wrapped document of open-attestation format
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - document
+              properties:
+                document:
+                  description: Wrapped document
+                  type: object
+      responses:
+        200:
+          description: >
+            Unwrapped/original document
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          $ref: '#/components/responses/InputError'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /document/obfuscate:
+    post:
+      summary: >
+        Remove key-value pairs from a wrapped document without changing its signature
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - document
+                - keys
+              properties:
+                document:
+                  description: Wrapped document
+                  type: object
+                keys:
+                  description: JSON paths to remove
+                  type: array
+                  items:
+                    type: string
+      responses:
+        200:
+          description: >
+            Wrapped document with removed key-value pairs
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          $ref: '#/components/responses/InputError'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /document/validate/schema:
+    post:
+      summary: >
+        Validate a schema of a document
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - document
+              properties:
+                document:
+                  description: >
+                    The document can be any valid JSON object.
+                  type: object
+      responses:
+        200:
+          $ref: '#/components/responses/ValidationResult'
+        400:
+          $ref: '#/components/responses/InputError'
+        500:
+          $ref: '#/components/responses/ServerError'
+  /document/verify/signature:
+    post:
+      summary: >
+        Verify a signature of a wrapped document
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - document
+              properties:
+                document:
+                  description: >
+                    The document can be any valid JSON object.
+                  type: object
+      description: ""
+      responses:
+        200:
+          $ref: '#/components/responses/ValidationResult'
+        400:
+          $ref: '#/components/responses/InputError'
+        500:
+          $ref: '#/components/responses/ServerError'

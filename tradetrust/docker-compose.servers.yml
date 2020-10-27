@@ -1,0 +1,157 @@
+version: '3.5'
+
+networks:
+  internal:
+    name: tradetrust-document-store-internal
+
+services:
+
+  localstack:
+    image: localstack/localstack
+    container_name: tradetrust-localstack
+    environment:
+
+      EDGE_PORT: 10001
+      PORT_WEB_UI: 9999
+      HOSTNAME_EXTERNAL: tradetrust-localstack
+      LOCALSTACK_HOSTNAME: tradetrust-localstack
+      SERVICES: sqs,s3,iam
+      DEFAULT_REGION: us-east-1
+
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: access
+      AWS_SECRET_ACCESS_KEY: secretaccess
+
+    networks:
+      - internal
+    volumes:
+      - '${dockerstagedir:-.}/localstack:/docker-entrypoint-initaws.d'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+
+
+  ganache-cli:
+    image: trufflesuite/ganache-cli
+    container_name: tradetrust-ganache-cli
+    networks:
+      - internal
+    command: >
+        ganache-cli
+        --hostname 0.0.0.0
+        --port 8585
+        --networkId 15
+        --hardfork petersburg
+        --blockTime 0
+        --accounts 5
+        --unlock "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
+        --deterministic
+        --mnemonic "myth like bonus scare over problem client lizard pioneer submit female collect"
+
+
+  document-store-contract:
+    image: tradetrust/document-store-contract
+    container_name: tradetrust-document-store-contract
+    build:
+      context: "${dockerstagedir:-.}/document-store-contract"
+      dockerfile: Dockerfile
+      args:
+        DOCUMENT_STORE_MASTER_COMMIT: f51a29737c5ef31f753c765ea349603017867499
+    networks:
+      - internal
+    volumes:
+      - "${dockerstagedir:-.}/document-store-contract/scripts/truffle-config.js:/document-store-contract/truffle-config.js"
+      - "${dockerstagedir:-.}/document-store-contract/scripts/deploy-contracts.js:/document-store-contract/deploy-contracts.js"
+      - "${dockerstagedir:-.}/document-store-contract/addresses:/document-store-contract/addresses"
+      - "${dockerstagedir:-.}/document-store-contract/abi:/document-store-contract/abi"
+    environment:
+      DOCUMENT_STORE_NAME: Development
+      ADDRESSES_DIR: /document-store-contract/addresses
+    depends_on:
+      - ganache-cli
+
+
+  open-attestation-api:
+    image: tradetrust/open-attestation-api
+    container_name: tradetrust-open-attestation-api
+    build:
+      context: ${dockerstagedir:-.}/open-attestation-api
+      dockerfile: Dockerfile
+    networks:
+      - internal
+    volumes:
+      - /open-attestation-api/node_modules
+      - '${dockerstagedir:-.}/open-attestation-api:/open-attestation-api/'
+    ports:
+      - '9090:9090'
+    environment:
+      CONTAINER_MODE: server-development
+      PORT: 9090
+
+
+  open-attestation-verify-api:
+    image: tradetrust/open-attestation-verify-api
+    container_name: tradetrust-open-attestation-verify-api
+    build:
+      context: ${dockerstagedir:-.}/open-attestation-verify-api
+      dockerfile: Dockerfile
+    networks:
+      - internal
+    volumes:
+      - /open-attestation-verify-api/node_modules
+      - '${dockerstagedir:-.}/localstack:/aws'
+      - '${dockerstagedir:-.}/open-attestation-verify-api:/open-attestation-verify-api/'
+    ports:
+      - '9091:9091'
+    environment:
+      CONTAINER_MODE: server-development
+      PORT: 9091
+      # cloudflare or infura
+      ETHEREUM_PROVIDER: infura
+      # cloudflare works only with mainnet
+      # this is OA developers default infura api key, we probably need to use our own
+      INFURA_API_KEY: bb46da3f80e040e8ab73c0a9ff365d18
+
+
+  document-store-worker:
+    image: tradetrust/document-store-worker
+    container_name: tradetrust-document-store-worker
+    build:
+      context: ${dockerstagedir:-.}/document-store-worker
+      dockerfile: Dockerfile
+    networks:
+      - internal
+    volumes:
+      - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
+      - '${dockerstagedir:-.}/document-store-worker:/document-store-worker/'
+      - '${dockerstagedir:-.}/localstack:/aws'
+    depends_on:
+      - localstack
+    environment:
+
+      # SENTRY_DSN
+      # SENTRY_ENVIRONMENT
+      # SENTRY_RELEASE
+
+      CONTAINER_MODE: container
+
+      WORKER_POLLING_INTERVAL_SECONDS: 5
+      WORKER_POLLING_MAX_NUMBER_OF_MESSAGES: 1
+      WORKER_POLLING_MESSAGE_WAIT_TIME_SECONDS: 0
+      WORKER_POLLING_VISIBILITY_TIMEOUT: 60
+
+      OPEN_ATTESTATION_ENDPOINT: http://open-attestation-api:9090
+
+      BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
+
+      AWS_ENDPOINT_URL: http://tradetrust-localstack:10001
+      AWS_ACCESS_KEY_ID: access
+      AWS_SECRET_ACCESS_KEY: secretaccess
+      AWS_DEFAULT_REGION: us-east-1
+
+      DOCUMENT_STORE_ABI: /document-store-contract/abi/DocumentStore.local.dev.json
+      DOCUMENT_STORE_ADDRESS: /document-store-contract/addresses/DocumentStore.local.dev.address
+      DOCUMENT_STORE_OWNER_PUBLIC_KEY: "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
+      DOCUMENT_STORE_OWNER_PRIVATE_KEY: "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
+
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
+      UNPROCESSED_BUCKET_NAME: unprocessed
+      ISSUED_BUCKET_NAME: issued

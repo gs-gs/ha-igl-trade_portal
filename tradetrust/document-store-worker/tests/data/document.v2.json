@@ -1,0 +1,30 @@
+{
+  "version": "https://schema.openattestation.com/2.0/schema.json",
+  "id": "SERIAL_NUMBER_123",
+  "$$template": {
+    "name": "CUSTOM_TEMPLATE",
+    "type": "EMBEDDED_RENDERER",
+    "url": "https://localhost:3000/renderer"
+  },
+  "issuers": [
+    {
+      "name": "DEMO STORE",
+      "documentStore": "$DocumentStoreAddress",
+      "identityProof": {
+        "type": "DNS-TXT",
+        "location": "tradetrust.io"
+      }
+    }
+  ],
+  "recipient": {
+    "name": "Recipient Name"
+  },
+  "unknownKey": "unknownValue",
+  "attachments": [
+    {
+      "filename": "sample.pdf",
+      "type": "application/pdf",
+      "data": "BASE64_ENCODED_FILE"
+    }
+  ]
+}

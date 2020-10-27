@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+
+if [[ -z "$OA_VERIFY_API_LAMBDA_ZIP_FILENAME" ]]; then
+  echo "OA VERIFY API LAMBDA DEPLOYMENT SKIPPED"
+else
+  deploy_apigateway_lambda \
+    $OA_VERIFY_API_LAMBDA_ZIP_FILENAME\
+    $OA_VERIFY_API_LAMBDA_NAME\
+    $OA_VERIFY_API_NAME\
+    $OA_VERIFY_API_ENDPOINT_FILENAME
+fi

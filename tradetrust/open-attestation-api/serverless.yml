@@ -1,0 +1,15 @@
+service: openatt-api
+
+package:
+  excludeDevDependencies: true
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: ap-southeast-2
+
+functions:
+  openatt-api:
+    handler: src/index.handler

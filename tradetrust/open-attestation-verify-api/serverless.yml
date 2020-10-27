@@ -1,0 +1,15 @@
+service: open-attestation-verify-api
+
+package:
+  excludeDevDependencies: true
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: ap-southeast-2
+
+functions:
+  open-attestation-verify-api:
+    handler: src/index.handler
