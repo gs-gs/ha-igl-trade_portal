@@ -8,6 +8,7 @@ from trade_portal.documents.models import (
 from trade_portal.documents.services.lodge import DocumentService, NodeService
 from trade_portal.documents.services.textract import MetadataExtractService
 from trade_portal.documents.services.watermark import WatermarkService
+from trade_portal.oa_verify.services import OaVerificationService
 from config import celery_app
 
 logger = logging.getLogger(__name__)
@@ -106,3 +107,45 @@ def textract_document(document_id=None):
     return
     doc = Document.objects.get(pk=document_id)
     MetadataExtractService.extract(doc)
+
+
+@celery_app.task(bind=True, ignore_result=True, max_retries=10)
+def verify_own_document(self, document_id):
+    document = Document.objects.get(pk=document_id)
+    logger.info(
+        "Trying to verify own document %s, attempt %s",
+        document,
+        self.request.retries
+    )
+    vc = document.get_vc()
+    if not vc:
+        document.verification_status = Document.V_STATUS_ERROR
+        document.save()
+        logger.error("Unable to retrieve OA file for the document %s", document)
+        return
+
+    is_valid = OaVerificationService().verify_file(vc)
+    if is_valid is True:
+        document.verification_status = Document.V_STATUS_VALID
+        document.save()
+        return
+    if self.request.retries < self.max_retries:
+        logger.warning(
+            "Retrying own document %s verification task (%s)",
+            document,
+            self.request.retries
+        )
+        retry_delay = 15 + 30 * self.request.retries
+
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False) is True:
+            logger.warning("Not retrying the eager task")
+        else:
+            self.retry(countdown=retry_delay)
+    else:
+        # max retries but still not valid - mark as failed
+        document.verification_status = Document.V_STATUS_FAILED
+        document.save()
+        DocumentHistoryItem.objects.create(
+            type="error", document=document,
+            message=f"Unable to verify own document after {self.request.retries} attempts",
+        )

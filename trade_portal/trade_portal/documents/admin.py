@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.shortcuts import redirect
 
 from .models import (
     FTA, Party,
@@ -47,6 +48,13 @@ class DocumentAdmin(admin.ModelAdmin):
     )
     list_filter = ('status', 'type')
     inlines = [DocumentHistoryItemInlineAdmin]
+    actions = ["reverify_document"]
+
+    def reverify_document(self, request, qs):
+        from .tasks import verify_own_document
+        for obj in qs.all():
+            verify_own_document.delay(obj.pk)
+        return redirect(request.path_info)
 
 
 @admin.register(DocumentFile)

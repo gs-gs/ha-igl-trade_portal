@@ -1,0 +1,21 @@
+# Use this file to simply run the openattestation API locally
+# without all these lambda/localstack overhead
+
+# Use: docker-compose up
+#      curl http://localhost:9090/document/wrap
+
+version: '3.5'
+
+services:
+  open-attestation-api:
+      # image: tradetrust/open-attestation-api
+      # container_name: tradetrust-open-attestation-api
+      build:
+        context: .
+        dockerfile: Dockerfile
+      volumes:
+        - .:/open-attestation-api/'
+      ports:
+        - 9090:8080  # expect it on localhost:9090, could be any port number
+      environment:
+        CONTAINER_MODE: server-development

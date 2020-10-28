@@ -19,6 +19,9 @@ class OaVerificationService:
     As QR codes, binary files and so on.
     """
 
+    def wrap_file(self, unwrapped_json):
+        raise NotImplementedError()
+
     def verify_file(self, file_content):
         """
         Helper function which verifies the OA body and returns dict with some

@@ -63,6 +63,8 @@ class AESCipher:
 class DocumentService(BaseIgService):
 
     def issue(self, document: Document) -> bool:
+        from trade_portal.documents.tasks import verify_own_document
+
         document.verification_status = Document.V_STATUS_PENDING
         document.status = Document.STATUS_PENDING
         document.save()
@@ -111,6 +113,7 @@ class DocumentService(BaseIgService):
                 object_body=str(e),
             )
             document.status = Document.STATUS_FAILED
+            document.verification_status = Document.V_STATUS_ERROR
             document.save()
             return False
 
@@ -127,13 +130,14 @@ class DocumentService(BaseIgService):
                 )
             )
         else:
-            logger.warning("Received responce %s for oa doc wrap step", oa_doc_wrapped_resp)
+            logger.warning("Received response %s for oa doc wrap step", oa_doc_wrapped_resp)
             DocumentHistoryItem.objects.create(
                 type="error", document=document,
                 message=f"Error: OA document wrap failed with result {oa_doc_wrapped_resp.status_code}",
                 object_body=oa_doc_wrapped_resp.json(),
             )
             document.status = Document.STATUS_FAILED
+            document.verification_status = Document.V_STATUS_ERROR
             document.save()
             return False
 
@@ -162,11 +166,16 @@ class DocumentService(BaseIgService):
                 type="text", document=document,
                 message="OA document has been sent to the notary service",
             )
+            verify_own_document.apply_async(
+                args=[document.pk],
+                countdown=30
+            )
         else:
             DocumentHistoryItem.objects.create(
                 type="error", document=document,
                 message="OA document has NOT been sent to the notary service",
             )
+            document.verification_status = Document.V_STATUS_ERROR
 
         # and not the standard Intergov node communication
         # step6. Upload OA document to the node
@@ -185,6 +194,7 @@ class DocumentService(BaseIgService):
                 message="Error: Can't upload OA document as a message object",
             )
             document.status = Document.STATUS_FAILED
+            document.verification_status = Document.V_STATUS_ERROR
             document.save()
             return False
 
@@ -202,6 +212,7 @@ class DocumentService(BaseIgService):
                 object_body=message_json
             )
             document.status = Document.STATUS_FAILED
+            document.verification_status = Document.V_STATUS_ERROR
             document.save()
             return False
         document.workflow_status = Document.WORKFLOW_STATUS_ISSUED
