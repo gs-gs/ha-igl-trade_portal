@@ -209,17 +209,16 @@ pipeline {
                                 deployment_units = 'openatt-api'
                                 segment = 'clients'
                                 image_format = 'swagger'
-                                BUILD_SRC_DIR = 'clients/'
+                                BUILD_SRC_DIR = 'artefact/tradetrust/tradetrust/open-attestation-api/'
                             }
 
                             steps {
 
-                                dir('artefact/tradetrust/openatt_api/apigw') {
+                                dir('artefact/tradetrust/tradetrust/open-attestation-api/') {
                                     sh '''
-                                        mv "swagger.json" "swagger-extended-base.json"
-                                        zip -j "swagger.zip" "swagger-extended-base.json"
-                                        mkdir -p ${WORKSPACE}/clients/dist/
-                                        cp "swagger.zip" ${WORKSPACE}/clients/dist/swagger.zip
+                                    npm install swagger-cli --no-save
+                                    npx swagger-cli bundle --dereference --outfile openapi-extended-base.json --type json api.yml
+                                    npx swagger-cli validate openapi-extended-base.json
                                     '''
                                 }
 
@@ -246,13 +245,13 @@ pipeline {
                                 segment = 'clients'
                                 image_format = 'lambda'
 
-                                BUILD_PATH = 'ha-igl-p2/tradetrust/open-attestation-api'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/open-attestation-api'
                                 BUILD_SRC_DIR = ''
                             }
 
                             steps {
 
-                                dir('ha-igl-p2/tradetrust/open-attestation-api') {
+                                dir('artefact/tradetrust/tradetrust/open-attestation-api') {
                                     sh '''#!/bin/bash
                                         npm ci
                                         npx serverless package
@@ -284,10 +283,10 @@ pipeline {
                                 deployment_units = 'openatt-worker,openatt-contract'
                                 segment = 'channel'
                                 image_format = 'docker'
-                                BUILD_PATH = 'ha-igl-p2/tradetrust/document-store-worker'
-                                DOCKER_CONTEXT_DIR = 'ha-igl-p2/tradetrust/document-store-worker'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/document-store-worker'
+                                DOCKER_CONTEXT_DIR = 'artefact/tradetrust/tradetrust/document-store-worker'
                                 BUILD_SRC_DIR = ''
-                                DOCKER_FILE = 'ha-igl-p2/tradetrust/document-store-worker/Dockerfile'
+                                DOCKER_FILE = 'artefact/tradetrust/tradetrust/document-store-worker/Dockerfile'
                             }
 
                             steps {
@@ -315,21 +314,20 @@ pipeline {
                                 segment = 'clients'
                                 image_format = 'swagger'
 
-                                BUILD_PATH = 'ha-igl-p2/tradetrust/open-attestation-verify-api'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/open-attestation-verify-api'
                                 BUILD_SRC_DIR = ''
                             }
 
                             steps {
 
-                                dir('ha-igl-p2/tradetrust/open-attestation-verify-api') {
+                                dir('artefact/tradetrust/tradetrust/open-attestation-verify-api') {
                                     sh '''
                                         npm ci
-                                        npm run bundle-api-specs
-                                        npx swagger-cli bundle -t json -o swagger-extended-base.json api.yml
+                                        npx swagger-cli bundle -t json -o openapi-extended-base.json api.yml
 
-                                        zip -j "swagger.zip" "swagger-extended-base.json"
+                                        zip -j "openapi.zip" "openapi-extended-base.json"
                                         mkdir -p src/dist/
-                                        cp "swagger.zip" src/dist/swagger.zip
+                                        cp "openapi.zip" src/dist/openapi.zip
                                     '''
                                 }
 
@@ -356,13 +354,13 @@ pipeline {
                                 segment = 'clients'
                                 image_format = 'lambda'
 
-                                BUILD_PATH = 'ha-igl-p2/tradetrust/open-attestation-verify-api'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/open-attestation-verify-api'
                                 BUILD_SRC_DIR = ''
                             }
 
                             steps {
 
-                                dir('ha-igl-p2/tradetrust/open-attestation-verify-api') {
+                                dir('artefact/tradetrust/tradetrust/open-attestation-verify-api') {
                                     sh '''#!/bin/bash
                                         npm ci
                                         npx serverless package
