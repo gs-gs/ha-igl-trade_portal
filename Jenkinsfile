@@ -32,6 +32,7 @@ pipeline {
     environment {
         slack_channel = "#igl-automatic-messages"
         cd_environment = "c1"
+        properties_file = "/var/opt/properties/devnet.properties"
     }
 
     stages {
@@ -148,12 +149,23 @@ pipeline {
                             '''
                         }
 
-                        uploadImageToRegistry(
-                            "${env.properties_file}",
-                            "${env.deployment_units.split(',')[0]}",
-                            "${env.image_format}",
-                            "${env.git_commit}"
-                        )
+                        sh '''#!/bin/bash
+                        ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                        '''
+
+                        script {
+                            def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                            contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                        }
+
+                        sh '''#!/bin/bash
+                        ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                        '''
+
+                        script {
+                            def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                            contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                        }
 
                         build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
                                 extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
@@ -219,15 +231,29 @@ pipeline {
                                     npm install swagger-cli --no-save
                                     npx swagger-cli bundle --dereference --outfile openapi-extended-base.json --type json api.yml
                                     npx swagger-cli validate openapi-extended-base.json
+
+                                    zip -j "openapi.zip" "openapi-extended-base.json"
+                                    mkdir -p src/dist/
+                                    cp "openapi.zip" src/dist/openapi.zip
                                     '''
                                 }
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                                '''
 
-                                uploadImageToRegistry(
-                                    "${env.properties_file}",
-                                    "${env.deployment_units.split(',')[0]}",
-                                    "${env.image_format}",
-                                    "${env.git_commit}"
-                                )
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
 
                                 build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
@@ -260,12 +286,23 @@ pipeline {
                                     '''
                                 }
 
-                                uploadImageToRegistry(
-                                    "${env.properties_file}",
-                                    "${env.deployment_units.split(',')[0]}",
-                                    "${env.image_format}",
-                                    "${env.git_commit}"
-                                )
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
 
                                 build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
@@ -291,13 +328,23 @@ pipeline {
 
                             steps {
 
-                                uploadImageToRegistry(
-                                    "${env.properties_file}",
-                                    "${env.deployment_units.split(',')[0]}",
-                                    "${env.image_format}",
-                                    "${env.git_commit}"
-                                )
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                                '''
 
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
                                 build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
                                         string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
@@ -331,12 +378,23 @@ pipeline {
                                     '''
                                 }
 
-                                uploadImageToRegistry(
-                                    "${env.properties_file}",
-                                    "${env.deployment_units.split(',')[0]}",
-                                    "${env.image_format}",
-                                    "${env.git_commit}"
-                                )
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
 
                                 build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
@@ -369,12 +427,23 @@ pipeline {
                                     '''
                                 }
 
-                                uploadImageToRegistry(
-                                    "${env.properties_file}",
-                                    "${env.deployment_units.split(',')[0]}",
-                                    "${env.image_format}",
-                                    "${env.git_commit}"
-                                )
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${unit_git_commit}" -u "${deployment_unit}" -f "${image_format}"  || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
 
                                 build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
