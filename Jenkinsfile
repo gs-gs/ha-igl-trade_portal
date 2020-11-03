@@ -129,7 +129,7 @@ pipeline {
                         image_format = 'docker'
                         BUILD_PATH = 'artefact/trade_portal/'
                         DOCKER_CONTEXT_DIR = 'artefact/trade_portal/trade_portal/'
-                        BUILD_SRC_DIR = 'artefact/'
+                        BUILD_SRC_DIR = ''
                         DOCKER_FILE = 'artefact/trade_portal/trade_portal/compose/production/django/Dockerfile'
                     }
 
@@ -221,7 +221,8 @@ pipeline {
                                 deployment_units = 'openatt-api'
                                 segment = 'clients'
                                 image_format = 'swagger'
-                                BUILD_SRC_DIR = 'artefact/tradetrust/tradetrust/open-attestation-api/'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/open-attestation-api/'
+                                BUILD_SRC_DIR = ''
                             }
 
                             steps {
@@ -320,8 +321,8 @@ pipeline {
                                 segment = 'channel'
                                 image_format = 'docker'
                                 BUILD_PATH = 'artefact/tradetrust/tradetrust/document-store-worker'
-                                DOCKER_CONTEXT_DIR = 'artefact/tradetrust/tradetrust/document-store-worker'
                                 BUILD_SRC_DIR = ''
+                                DOCKER_CONTEXT_DIR = 'artefact/tradetrust/tradetrust/document-store-worker'
                                 DOCKER_FILE = 'artefact/tradetrust/tradetrust/document-store-worker/Dockerfile'
                             }
 
