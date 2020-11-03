@@ -167,7 +167,7 @@ pipeline {
                             contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                         }
 
-                        build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
+                        build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
                                 extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
                                 string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
                                 booleanParam(name: 'AUTODEPLOY', value: true),
@@ -254,8 +254,7 @@ pipeline {
                                     def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
-
-                                build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
+                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
                                         string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
@@ -304,7 +303,7 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
+                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
                                         string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
@@ -345,7 +344,7 @@ pipeline {
                                     def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
-                                build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
+                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
                                         string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
@@ -396,7 +395,7 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
+                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
                                         string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
@@ -445,7 +444,7 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "../cote-${params["cd_environment"]}/deploy-clients", wait: false, parameters: [
+                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
                                         string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
