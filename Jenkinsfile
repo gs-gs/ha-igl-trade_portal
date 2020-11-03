@@ -124,21 +124,26 @@ pipeline {
 
                     environment {
                         //hamlet deployment variables
-                        deployment_units = 'www-trd,www-task-trd,www-work-trd,www-util-trd'
-                        segment = 'clients'
-                        image_format = 'docker'
+                        DEPLOYMENT_UNITS = 'www-trd,www-task-trd,www-work-trd,www-util-trd'
+                        SEGMENT = 'clients'
                         BUILD_PATH = 'artefact/trade_portal/'
                         DOCKER_CONTEXT_DIR = 'artefact/trade_portal/trade_portal/'
-                        BUILD_SRC_DIR = 'artefact/'
+                        BUILD_SRC_DIR = ''
                         DOCKER_FILE = 'artefact/trade_portal/trade_portal/compose/production/django/Dockerfile'
+                        GENERATION_CONTEXT_DEFINED = ''
+
+                        image_format = 'docker'
                     }
 
                     steps {
 
                         dir('artefact/trade_portal/') {
                             script {
+                                def productProperties = readProperties interpolate: true, file: "${env.properties_file}";
+                                productProperties.each{ k, v -> env["${k}"] ="${v}" }
+
                                 repo = checkout scm
-                                env["git_commit"] = repo.GIT_COMMIT
+                                env["GIT_COMMIT"] = repo.GIT_COMMIT
                             }
                         }
 
@@ -159,7 +164,7 @@ pipeline {
                         }
 
                         sh '''#!/bin/bash
-                        ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                        ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
                         '''
 
                         script {
@@ -168,8 +173,8 @@ pipeline {
                         }
 
                         build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
-                                extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
-                                string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
+                                extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                 booleanParam(name: 'AUTODEPLOY', value: true),
                                 string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                         ]
@@ -208,8 +213,11 @@ pipeline {
                             steps {
                                 dir('artefact/tradetrust/') {
                                     script {
+                                        def productProperties = readProperties interpolate: true, file: "${env.properties_file}";
+                                        productProperties.each{ k, v -> env["${k}"] ="${v}" }
+
                                         repo = checkout scm
-                                        env["git_commit"] = repo.GIT_COMMIT
+                                        env["GIT_COMMIT"] = repo.GIT_COMMIT
                                     }
                                 }
                             }
@@ -218,10 +226,13 @@ pipeline {
                         stage('openatt-api') {
                             environment {
                                 //hamlet deployment variables
-                                deployment_units = 'openatt-api'
-                                segment = 'clients'
-                                image_format = 'swagger'
-                                BUILD_SRC_DIR = 'artefact/tradetrust/tradetrust/open-attestation-api/'
+                                DEPLOYMENT_UNITS = 'openatt-api'
+                                SEGMENT = 'clients'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/open-attestation-api/'
+                                BUILD_SRC_DIR = ''
+                                GENERATION_CONTEXT_DEFINED = ''
+
+                                image_format = 'openapi'
                             }
 
                             steps {
@@ -247,7 +258,7 @@ pipeline {
                                 }
 
                                 sh '''#!/bin/bash
-                                ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
                                 '''
 
                                 script {
@@ -255,8 +266,8 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
                                 build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
-                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
-                                        string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
+                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                        string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                 ]
@@ -266,12 +277,13 @@ pipeline {
                         stage('openatt-api-imp') {
                             environment {
                                 //hamlet deployment variables
-                                deployment_units = 'openatt-api-imp'
-                                segment = 'clients'
-                                image_format = 'lambda'
-
+                                DEPLOYMENT_UNITS = 'openatt-api-imp'
+                                SEGMENT = 'clients'
                                 BUILD_PATH = 'artefact/tradetrust/tradetrust/open-attestation-api'
                                 BUILD_SRC_DIR = ''
+                                GENERATION_CONTEXT_DEFINED = ''
+
+                                image_format = 'lambda'
                             }
 
                             steps {
@@ -295,7 +307,7 @@ pipeline {
                                 }
 
                                 sh '''#!/bin/bash
-                                ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
                                 '''
 
                                 script {
@@ -304,8 +316,8 @@ pipeline {
                                 }
 
                                 build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
-                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
-                                        string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
+                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                        string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                 ]
@@ -316,13 +328,15 @@ pipeline {
 
                             environment {
                                 //hamlet deployment variables
-                                deployment_units = 'openatt-worker,openatt-contract'
-                                segment = 'channel'
-                                image_format = 'docker'
+                                DEPLOYMENT_UNITS = 'openatt-worker,openatt-contract'
+                                SEGMENT = 'channel'
                                 BUILD_PATH = 'artefact/tradetrust/tradetrust/document-store-worker'
-                                DOCKER_CONTEXT_DIR = 'artefact/tradetrust/tradetrust/document-store-worker'
                                 BUILD_SRC_DIR = ''
+                                DOCKER_CONTEXT_DIR = 'artefact/tradetrust/tradetrust/document-store-worker'
                                 DOCKER_FILE = 'artefact/tradetrust/tradetrust/document-store-worker/Dockerfile'
+                                GENERATION_CONTEXT_DEFINED = ''
+
+                                image_format = 'docker'
                             }
 
                             steps {
@@ -337,7 +351,7 @@ pipeline {
                                 }
 
                                 sh '''#!/bin/bash
-                                ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
                                 '''
 
                                 script {
@@ -345,8 +359,8 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
                                 build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
-                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
-                                        string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
+                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                        string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                 ]
@@ -356,12 +370,14 @@ pipeline {
                         stage('openatt-verify-api') {
                             environment {
                                 //hamlet deployment variables
-                                deployment_units = 'openatt-verify-api'
-                                segment = 'clients'
-                                image_format = 'swagger'
-
+                                DEPLOYMENT_UNITS = 'openatt-verify-api'
+                                SEGMENT = 'clients'
                                 BUILD_PATH = 'artefact/tradetrust/tradetrust/open-attestation-verify-api'
                                 BUILD_SRC_DIR = ''
+                                GENERATION_CONTEXT_DEFINED = ''
+
+                                image_format = 'openapi'
+
                             }
 
                             steps {
@@ -387,7 +403,7 @@ pipeline {
                                 }
 
                                 sh '''#!/bin/bash
-                                ${AUTOMATION_DIR}/manageImages.sh -g "${git_commit}" -u "${deployment_units}" -f "${image_format}"  || exit $?
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
                                 '''
 
                                 script {
@@ -396,8 +412,8 @@ pipeline {
                                 }
 
                                 build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
-                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
-                                        string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
+                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                        string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                 ]
@@ -407,12 +423,13 @@ pipeline {
                         stage('openatt-verify-api-imp') {
                             environment {
                                 //hamlet deployment variables
-                                deployment_units = 'openatt-verify-api-imp'
-                                segment = 'clients'
-                                image_format = 'lambda'
-
+                                DEPLOYMENT_UNITS = 'openatt-verify-api-imp'
+                                SEGMENT = 'clients'
+                                GENERATION_CONTEXT_DEFINED = ''
                                 BUILD_PATH = 'artefact/tradetrust/tradetrust/open-attestation-verify-api'
                                 BUILD_SRC_DIR = ''
+
+                                image_format = 'lambda'
                             }
 
                             steps {
@@ -436,7 +453,7 @@ pipeline {
                                 }
 
                                 sh '''#!/bin/bash
-                                ${AUTOMATION_DIR}/manageImages.sh -g "${unit_git_commit}" -u "${deployment_unit}" -f "${image_format}"  || exit $?
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
                                 '''
 
                                 script {
@@ -445,8 +462,8 @@ pipeline {
                                 }
 
                                 build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
-                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.deployment_units}"),
-                                        string(name: 'GIT_COMMIT', value: "${env.git_commit}"),
+                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                        string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                 ]
