@@ -232,7 +232,7 @@ pipeline {
                                 BUILD_SRC_DIR = ''
                                 GENERATION_CONTEXT_DEFINED = ''
 
-                                image_format = 'swagger'
+                                image_format = 'openapi'
                             }
 
                             steps {
@@ -376,7 +376,7 @@ pipeline {
                                 BUILD_SRC_DIR = ''
                                 GENERATION_CONTEXT_DEFINED = ''
 
-                                image_format = 'swagger'
+                                image_format = 'openapi'
 
                             }
 
