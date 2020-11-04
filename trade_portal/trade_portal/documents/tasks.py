@@ -110,10 +110,10 @@ def textract_document(document_id=None):
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=10)
-def verify_own_document(self, document_id):
+def document_oa_verify(self, document_id):
     document = Document.objects.get(pk=document_id)
     logger.info(
-        "Trying to verify own document %s, attempt %s",
+        "Trying to verify document %s, attempt %s",
         document,
         self.request.retries
     )
@@ -121,16 +121,24 @@ def verify_own_document(self, document_id):
     if not vc:
         document.verification_status = Document.V_STATUS_ERROR
         document.save()
-        logger.error("Unable to retrieve OA file for the document %s", document)
+        logger.error("Unable to verify document: no VC can be retrieved for %s", document)
+        DocumentHistoryItem.objects.create(
+            type="error", document=document,
+            message="Unable to verify document: no VC can be retrieved",
+        )
         return
 
     is_valid = OaVerificationService().verify_file(vc.read())
     if is_valid is True:
         document.verification_status = Document.V_STATUS_VALID
         document.save()
+        DocumentHistoryItem.objects.create(
+            type="OA", document=document,
+            message="The document OA credential is valid",
+        )
         return
     if self.request.retries < self.max_retries:
-        logger.warning(
+        logger.info(
             "Retrying own document %s verification task (%s)",
             document,
             self.request.retries

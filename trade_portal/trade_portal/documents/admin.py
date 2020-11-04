@@ -1,3 +1,5 @@
+import random
+
 from django.contrib import admin
 from django.shortcuts import redirect
 
@@ -43,17 +45,20 @@ class DocumentHistoryItemInlineAdmin(admin.TabularInline):
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
     list_display = (
-        'created_at', 'workflow_status', 'verification_status', 'status',
-        'type', 'importing_country'
+        'id', 'document_number', 'created_at', 'workflow_status',
+        'verification_status', 'status', 'type', 'importing_country'
     )
     list_filter = ('status', 'type')
     inlines = [DocumentHistoryItemInlineAdmin]
     actions = ["reverify_document"]
 
     def reverify_document(self, request, qs):
-        from .tasks import verify_own_document
+        from .tasks import document_oa_verify
         for obj in qs.all():
-            verify_own_document.delay(obj.pk)
+            document_oa_verify.apply_async(
+                args=[obj.pk],
+                countdown=random.randint(2, 20)
+            )
         return redirect(request.path_info)
 
 

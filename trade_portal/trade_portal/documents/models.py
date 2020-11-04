@@ -261,6 +261,7 @@ class OaDetails(models.Model):
                 ).first()
                 if incoming_obj:
                     return incoming_obj.file
+        return
 
 
 class Document(models.Model):

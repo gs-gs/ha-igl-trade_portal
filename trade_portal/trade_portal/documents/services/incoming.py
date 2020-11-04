@@ -31,6 +31,8 @@ class IncomingDocumentProcessingError(Exception):
 class IncomingDocumentService(BaseIgService):
 
     def process_new(self, doc: Document):
+        from trade_portal.documents.tasks import document_oa_verify
+
         DocumentHistoryItem.objects.create(
             type="text", document=doc,
             message="Started the incoming document retrieval..."
@@ -90,6 +92,11 @@ class IncomingDocumentService(BaseIgService):
                 doc,
                 "Unable to render the object attached to this message",
             )
+        # schedule the verification
+        document_oa_verify.apply_async(
+            args=[doc.pk],
+            countdown=10
+        )
         return True
 
     def get_incoming_document_format(self, doc: Document, binary_obj_content):

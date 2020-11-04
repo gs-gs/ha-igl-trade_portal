@@ -63,7 +63,7 @@ class AESCipher:
 class DocumentService(BaseIgService):
 
     def issue(self, document: Document) -> bool:
-        from trade_portal.documents.tasks import verify_own_document
+        from trade_portal.documents.tasks import document_oa_verify
 
         document.verification_status = Document.V_STATUS_PENDING
         document.status = Document.STATUS_PENDING
@@ -166,7 +166,7 @@ class DocumentService(BaseIgService):
                 type="text", document=document,
                 message="OA document has been sent to the notary service",
             )
-            verify_own_document.apply_async(
+            document_oa_verify.apply_async(
                 args=[document.pk],
                 countdown=30
             )
