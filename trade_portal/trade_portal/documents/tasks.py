@@ -124,7 +124,7 @@ def verify_own_document(self, document_id):
         logger.error("Unable to retrieve OA file for the document %s", document)
         return
 
-    is_valid = OaVerificationService().verify_file(vc)
+    is_valid = OaVerificationService().verify_file(vc.read())
     if is_valid is True:
         document.verification_status = Document.V_STATUS_VALID
         document.save()
