@@ -128,8 +128,8 @@ def document_oa_verify(self, document_id):
         )
         return
 
-    is_valid = OaVerificationService().verify_file(vc.read())
-    if is_valid is True:
+    verify_response = OaVerificationService().verify_file(vc.read())
+    if verify_response.get("status") == "valid":
         document.verification_status = Document.V_STATUS_VALID
         document.save()
         DocumentHistoryItem.objects.create(
@@ -137,9 +137,18 @@ def document_oa_verify(self, document_id):
             message="The document OA credential is valid",
         )
         return
+    elif verify_response.get("status") == "error":
+        document.verification_status = Document.V_STATUS_ERROR
+        document.save()
+        logger.error("Unable to verify document: Error %s for %s", verify_response.get("error_message"), document)
+        DocumentHistoryItem.objects.create(
+            type="error", document=document,
+            message=f"Unable to verify document: {verify_response.get('error_message')}",
+        )
+        return
     if self.request.retries < self.max_retries:
         logger.info(
-            "Retrying own document %s verification task (%s)",
+            "Retrying the document %s verification task (%s)",
             document,
             self.request.retries
         )
@@ -155,5 +164,5 @@ def document_oa_verify(self, document_id):
         document.save()
         DocumentHistoryItem.objects.create(
             type="error", document=document,
-            message=f"Unable to verify own document after {self.request.retries} attempts",
+            message=f"Unable to verify the document after {self.request.retries} attempts",
         )
