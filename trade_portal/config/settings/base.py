@@ -223,6 +223,10 @@ BUILD_REFERENCE = env('BUILD_REFERENCE', default=None)
 CONFIGURATION_REFERENCE = env('CONFIGURATION_REFERENCE', default=None)
 APP_REFERENCE = env('APP_REFERENCE', default=None)
 
+DATE_FORMAT = 'd/m/Y'
+DATETIME_FORMAT = 'd/m/Y H:i:s'
+SHORT_DATETIME_FORMAT = 'd/m/Y H:i:s'
+
 DATE_INPUT_FORMATS = [
     '%Y-%m-%d', '%d/%m/%Y', '%d/%m/%y',
     '%b %d %Y', '%b %d, %Y',            # 'Oct 25 2006', 'Oct 25, 2006'
