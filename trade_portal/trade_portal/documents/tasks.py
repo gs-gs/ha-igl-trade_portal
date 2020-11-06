@@ -111,6 +111,12 @@ def textract_document(document_id=None):
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=10)
 def document_oa_verify(self, document_id):
+    """
+    When a new document is sent by us
+    Or received from remote party
+    We try to parse some OA document from it and verify it
+    Changing the verification status
+    """
     document = Document.objects.get(pk=document_id)
     logger.info(
         "Trying to verify document %s, attempt %s",
@@ -121,12 +127,22 @@ def document_oa_verify(self, document_id):
     if not vc:
         document.verification_status = Document.V_STATUS_ERROR
         document.save()
-        logger.error("Unable to verify document: no VC can be retrieved for %s", document)
+        logger.info("Unable to verify document: no VC can be retrieved for %s", document)
         DocumentHistoryItem.objects.create(
             type="error", document=document,
-            message="Unable to verify document: no VC can be retrieved",
+            message="Unable to verify document: no VC can be retrieved; it's either invalid or of non-OA format",
         )
         return
+    else:
+        # this is definitely OA, report that we have started the verification
+        # which will either end in `valid` status or `failed` if we give up doing that
+        if document.verification_status == Document.V_STATUS_NOT_STARTED:
+            document.verification_status = Document.V_STATUS_PENDING
+            document.save()
+            DocumentHistoryItem.objects.create(
+                type="OA", document=document,
+                message="Verification started...",
+            )
 
     verify_response = OaVerificationService().verify_file(vc.read())
     if verify_response.get("status") == "valid":
