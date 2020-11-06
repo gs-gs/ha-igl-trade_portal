@@ -480,8 +480,13 @@ class Document(models.Model):
                 ).first()
                 if the_first_file:
                     return the_first_file.file.read().decode("utf-8")
-        # if came here - then just render it as usual
-        return Un20200831CoORenderer().render(self)
+
+        if self.is_incoming:
+            # This is an incoming document, but it hasn't been downloaded yet
+            return None
+        else:
+            # if came here - then just render it as usual
+            return Un20200831CoORenderer().render(self)
 
     @property
     def is_incoming(self):

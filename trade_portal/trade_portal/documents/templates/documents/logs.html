@@ -10,7 +10,7 @@
 <div class="content-box">
   <a href="../" style="float: right"  class="btn btn-primary btn-sm">{% trans 'Go back to the document' %}</a>
 
-  <h1 class="page-title">{% trans 'Logs for' %} #{{ object.document_number }}</h1>
+  <h1 class="page-title">{% trans 'Logs for' %} {% if object.is_incoming %}{% trans 'incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} #{{ object.document_number|default:object.short_id }}</h1>
 
   <div class="section-info section-info--no-border">
     <div class="subtitle section-info__title">{% trans 'Document status history' %}</div>
@@ -26,10 +26,10 @@
         <tbody>
           {% for history_item in object.history.all %}
             <tr>
-              <td>{{ history_item.message }}<br/>{{ history_item.created_at }}</td>
+              <td style='max-width: 200px'>{{ history_item.message }}<br/>{{ history_item.created_at }}</td>
               <td>
                 {% if history_item.object_body %}
-                  <textarea style="font-size: 7pt; width: 200px; height: 100px;" readonly>{{ history_item.object_body|json_render }}</textarea>
+                  <textarea style="font-size: 7pt; min-width: 300px; height: 100px;" readonly>{{ history_item.object_body|json_render }}</textarea>
                 {% endif %}
               </td>
               <td>
@@ -45,21 +45,30 @@
     </div>
   </div>
 
-  <div class="section-info">
-    <h3 class="subtitle section-info__title">{% trans 'Document' %}</h3>
-    <textarea style="width: 100%; border: 0; height: 300px; font-size: 8pt" disabled>{{ object.get_rendered_edi3_document|json_render }}</textarea>
-  </div>
+
+  {% with object.get_rendered_edi3_document as rendered_document %}
+    {# some documents (like incoming but not downloaded) can't be rendered #}
+    {% if rendered_document %}
+      <div class="section-info">
+      <h3 class="subtitle section-info__title">{% trans 'Document' %}</h3>
+      <textarea style="width: 100%; border: 0; height: 300px; font-size: 8pt" disabled>{{ rendered_document|json_render }}</textarea>
+      </div>
+    {% endif %}
+  {% endwith %}
 
   {% if object.nodemessage_set.all %}
     <div class="section-info">
-      <h3 class="subtitle section-info__title">
       {% for nm in object.nodemessage_set.all %}
-      {{ nm.get_status_display }}
-      {% if nm.is_outbound %}{% trans 'outbound' %}{% else %}{% trans 'incoming' %}{%endif %}
-      {% trans 'message' %} {{ nm.body.sender_ref }}</h3>
-      <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
-      <small>{{ nm.history|join:", " }}</small>
-      <hr/>
+        <div class="row">
+          <div class="col-lg-6">
+            <strong>{{ nm.get_status_display }} message</strong><br/>
+            {{ nm.body.sender_ref }}<br/>
+            <small>{{ nm.history|join:", " }}</small>
+          </div>
+          <div class="col-lg-6">
+            <textarea style="width: 100%; border: 0px; height: 100px; font-size: 8pt" disabled>{{ nm.body|json_render }}</textarea>
+          </div>
+        </div>
       {% endfor %}
     </div>
   {% endif %}

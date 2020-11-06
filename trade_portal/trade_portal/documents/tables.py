@@ -29,8 +29,19 @@ class DocumentsTable(tables.Table):
     workflow_status = tables.Column(
         verbose_name=_("Workflow\nStatus")
     )
-    verification_status = tables.Column(
-        verbose_name=_("Verfication\nStatus")
+    verification_status = tables.TemplateColumn(
+        verbose_name=_("Verfication\nStatus"),
+        template_code="""
+        {% if record.verification_status == 'valid' %}
+          <span class='badge badge-success'>{{ record.get_verification_status_display }}</span>
+        {% else %}
+          {% if record.verification_status == 'failed' or record.verification_status == 'error' %}
+            <span class='badge badge-danger'>{{ record.get_verification_status_display }}</span>
+          {% else %}
+            <span class='badge badge-primary'>{{ record.get_verification_status_display }}</span>
+          {% endif %}
+        {% endif %}
+        """
     )
     status = tables.TemplateColumn(
         verbose_name=_("IGL\nStatus"),

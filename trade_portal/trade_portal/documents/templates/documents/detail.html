@@ -4,11 +4,11 @@
 {% load crispy_forms_tags %}
 {% load our_utils %}
 
-{% block title %}{% trans 'Document' %} #{{ object.document_number }}{% endblock %}
+{% block title %}{% trans 'Document' %} #{{ object.document_number|default:object.short_id }}{% endblock %}
 
 {% block content %}
 <div class="content-box">
-  <h1 class="page-title">{% if object.is_incoming %}{% trans 'Incoming' %}{% endif %} {{ object.get_type_display }} {{ object.document_number }}</h1>
+  <h1 class="page-title">{% if object.is_incoming %}{% trans 'Incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} #{{ object.document_number|default:object.short_id }}</h1>
 
   <div class="row" style="background-color: whitesmoke; padding: 10px">
     <div class="col">
