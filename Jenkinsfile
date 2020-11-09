@@ -181,7 +181,6 @@ pipeline {
                         build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                 extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                 string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                booleanParam(name: 'AUTODEPLOY', value: true),
                                 string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                 string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                         ]
@@ -275,7 +274,6 @@ pipeline {
                                 build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                         string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
@@ -326,7 +324,6 @@ pipeline {
                                 build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                         string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
@@ -370,7 +367,6 @@ pipeline {
                                 build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                         string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
@@ -424,7 +420,6 @@ pipeline {
                                 build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                         string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
@@ -475,7 +470,6 @@ pipeline {
                                 build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
                                         string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
