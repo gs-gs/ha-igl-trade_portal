@@ -138,6 +138,12 @@ pipeline {
                                 git changelog: false, credentialsId: 'github', poll: false, url: "${env["product_cmdb"]}", branch: "${env["product_cmdb_branch"]}"
                                 def productProperties = readProperties interpolate: true, file: "${properties_file}" ;
                                 productProperties.each{ k, v -> env["${k}"] ="${v}" }
+
+                                if( "${env["AWS_AUTOMATION_USER"]}" == "HA" ) {
+                                    env["HA_AWS_CREDENTIALS"] = credentials('aws')
+                                    env["HA_AWS_ACCESS_KEY_ID"] = "${env["HA_AWS_CREDENTIALS_USR"]}"
+                                    env["HA_AWS_SECRET_ACCESS_KEY"] = "${env["HA_AWS_CREDENTIALS_PSW"]}"
+                                }
                             }
                         }
 
