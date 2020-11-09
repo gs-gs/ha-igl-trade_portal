@@ -17,6 +17,11 @@ pipeline {
 
     parameters {
         booleanParam(
+            name: 'run_testing',
+            defaultValue: false,
+            description: "Enable testing"
+        )
+        booleanParam(
             name: 'force_deploy',
             defaultValue: false,
             description: 'Force deployment of all components'
@@ -33,6 +38,10 @@ pipeline {
 
     stages {
         stage('Testing') {
+            when {
+                equals expected: true, actual: params.run_testing
+            }
+
             stages {
                 stage('trade_portal') {
                     environment {
