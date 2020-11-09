@@ -17,15 +17,9 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: 'force_trade_portal',
-            defaultValue : false,
-            description: 'Force deployment of trade_portal components'
-        )
-
-        booleanParam(
-            name: 'force_tradetrust',
-            defaultValue : false,
-            description: 'Force deployment of tradetrust components'
+            name: 'force_deploy',
+            defaultValue: false,
+            description: 'Force deployment of all components'
         )
     }
 
@@ -116,10 +110,10 @@ pipeline {
             stages{
                 stage('trade_portal') {
                     when {
-
                         anyOf {
-                            equals expected: true, actual: params.force_trade_portal
+                            equals expected: true, actual: params.force_deploy
                             branch 'master'
+                            branch 'main'
                         }
                     }
 
@@ -209,8 +203,9 @@ pipeline {
 
                     when {
                         anyOf {
-                            equals expected: true, actual: params.force_tradetrust
+                            equals expected: true, actual: params.force_deploy
                             branch 'master'
+                            branch 'main'
                         }
                     }
 
