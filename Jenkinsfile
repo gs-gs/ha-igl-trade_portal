@@ -30,9 +30,10 @@ pipeline {
     }
 
     environment {
-        slack_channel = "#igl-automatic-messages"
-        cd_environment = "c1"
-        properties_file = "/var/opt/properties/devnet.properties"
+        deploy_stream_job = credentials('deploy_stream_job')
+        slack_channel = credentials('slack_channel')
+        properties_file = credentials('properties_file')
+        product_cmdb = credentials('product_cmdb')
     }
 
     stages {
@@ -137,11 +138,16 @@ pipeline {
 
                     steps {
 
+                        dir('.hamlet/cmdb') {
+                            script {
+                                git changelog: false, credentialsId: 'github', poll: false, url: "${env["product_cmdb"]}"
+                                def productProperties = readProperties interpolate: true, file: "${properties_file}" ;
+                                productProperties.each{ k, v -> env["${k}"] ="${v}" }
+                            }
+                        }
+
                         dir('artefact/trade_portal/') {
                             script {
-                                def productProperties = readProperties interpolate: true, file: "${env.properties_file}";
-                                productProperties.each{ k, v -> env["${k}"] ="${v}" }
-
                                 repo = checkout scm
                                 env["GIT_COMMIT"] = repo.GIT_COMMIT
                             }
@@ -172,11 +178,11 @@ pipeline {
                             contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                         }
 
-                        build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
+                        build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                 extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                 string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                booleanParam(name: 'AUTODEPLOY', value: true),
                                 string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                         ]
                     }
 
@@ -265,11 +271,11 @@ pipeline {
                                     def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
-                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                        string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
                             }
                         }
@@ -315,11 +321,11 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                        string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
                             }
                         }
@@ -358,11 +364,11 @@ pipeline {
                                     def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
-                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                        string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
                             }
                         }
@@ -411,11 +417,11 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                        string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
                             }
                         }
@@ -461,11 +467,11 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "../../deploy/deploy-${env["cd_environment"]}-clients", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
-                                        booleanParam(name: 'AUTODEPLOY', value: true),
                                         string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                        string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
                                 ]
                             }
                         }
