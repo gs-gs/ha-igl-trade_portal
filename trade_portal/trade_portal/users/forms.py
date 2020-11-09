@@ -56,7 +56,9 @@ class CustomSignupForm(SignupForm):
     def save(self, *args, **kwargs):
         user = super().save(*args, **kwargs)
         user.mobile_number = self.cleaned_data.get("mobile_number") or ""
-        user.initial_business_id = self.cleaned_data.get("initial_business_id") or ""
+        user.initial_business_id = (
+            self.cleaned_data.get("initial_business_id") or ""
+        ).replace(" ", "")
         user.save()
         notify_about_new_user_created.apply_async(
             [user.pk],
