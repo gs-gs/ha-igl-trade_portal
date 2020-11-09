@@ -28,6 +28,7 @@ pipeline {
         slack_channel = credentials('slack_channel')
         properties_file = credentials('properties_file')
         product_cmdb = credentials('product_cmdb')
+        product_cmdb_branch = credentials('product_cmdb_branch')
     }
 
     stages {
@@ -134,7 +135,7 @@ pipeline {
 
                         dir('.hamlet/cmdb') {
                             script {
-                                git changelog: false, credentialsId: 'github', poll: false, url: "${env["product_cmdb"]}"
+                                git changelog: false, credentialsId: 'github', poll: false, url: "${env["product_cmdb"]}", branch: "${env["product_cmdb_branch"]}"
                                 def productProperties = readProperties interpolate: true, file: "${properties_file}" ;
                                 productProperties.each{ k, v -> env["${k}"] ="${v}" }
                             }
