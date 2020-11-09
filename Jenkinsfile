@@ -329,7 +329,7 @@ pipeline {
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-worker,openatt-contract'
-                                SEGMENT = 'channel'
+                                SEGMENT = 'clients'
                                 BUILD_PATH = 'artefact/tradetrust/tradetrust/document-store-worker'
                                 BUILD_SRC_DIR = ''
                                 DOCKER_CONTEXT_DIR = 'artefact/tradetrust/tradetrust/document-store-worker'
