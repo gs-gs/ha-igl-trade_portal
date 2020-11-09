@@ -149,10 +149,9 @@ pipeline {
                                 productProperties.each{ k, v -> env["${k}"] ="${v}" }
 
                                 if( "${env["AWS_AUTOMATION_USER"]}" == "HA" ) {
-                                    withCredentials([string(credentialsId: 'aws', variable: 'aws_creds')]) {
-                                        env["HA_AWS_CREDENTIALS"] = "${env["aws_creds"]}"
-                                        env["HA_AWS_ACCESS_KEY_ID"] = "${env["HA_AWS_CREDENTIALS_USR"]}"
-                                        env["HA_AWS_SECRET_ACCESS_KEY"] = "${env["HA_AWS_CREDENTIALS_PSW"]}"
+                                    withCredentials([usernamePassword(credentialsId: 'aws', usernameVariable: 'aws_access_key', passwordVariable: 'aws_secret_key')]) {
+                                        env["HA_AWS_ACCESS_KEY_ID"] = "${env["aws_access_key"]}"
+                                        env["HA_AWS_SECRET_ACCESS_KEY"] = "${env["aws_secret_key"]}"
                                     }
                                 }
                             }
