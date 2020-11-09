@@ -178,7 +178,7 @@ pipeline {
                             contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                         }
 
-                        build job: "${env["deploy_stream_job"}", wait: false, parameters: [
+                        build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                 extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                 string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                 booleanParam(name: 'AUTODEPLOY', value: true),
@@ -272,7 +272,7 @@ pipeline {
                                     def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
-                                build job: "${env["deploy_stream_job"}", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
@@ -323,7 +323,7 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "${env["deploy_stream_job"}", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
@@ -367,7 +367,7 @@ pipeline {
                                     def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
-                                build job: "${env["deploy_stream_job"}", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
@@ -421,7 +421,7 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "${env["deploy_stream_job"}", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
@@ -472,7 +472,7 @@ pipeline {
                                     contextProperties.each{ k, v -> env["${k}"] ="${v}" }
                                 }
 
-                                build job: "${env["deploy_stream_job"}", wait: false, parameters: [
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
                                         extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
                                         string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
                                         booleanParam(name: 'AUTODEPLOY', value: true),
