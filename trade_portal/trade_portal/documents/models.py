@@ -201,8 +201,8 @@ class OaDetails(models.Model):
             "payload": {
                 "uri": self.uri,
                 "key": self.key,
-                "permittedActions": ["VIEW"],
-                "redirect": config.UA_VERIFY_HOST
+                # "permittedActions": ["VIEW"],
+                # "redirect": config.UA_VERIFY_HOST
             }
         }
         return (
