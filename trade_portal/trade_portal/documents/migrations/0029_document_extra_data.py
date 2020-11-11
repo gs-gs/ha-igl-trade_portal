@@ -7,13 +7,17 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0028_auto_20200818_1951'),
+        ("documents", "0028_auto_20200818_1951"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='document',
-            name='extra_data',
-            field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, help_text='Extra data like the QR code position'),
+            model_name="document",
+            name="extra_data",
+            field=django.contrib.postgres.fields.jsonb.JSONField(
+                blank=True,
+                default=dict,
+                help_text="Extra data like the QR code position",
+            ),
         ),
     ]

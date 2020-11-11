@@ -5,13 +5,20 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
 from rest_framework import (
-    viewsets, mixins, generics, views, serializers, status, exceptions,
+    viewsets,
+    mixins,
+    generics,
+    views,
+    serializers,
+    status,
+    exceptions,
 )
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from trade_portal.document_api.serializers import (
-    CertificateSerializer, ShortCertificateSerializer,
+    CertificateSerializer,
+    ShortCertificateSerializer,
 )
 from trade_portal.documents.models import Document, DocumentFile
 from trade_portal.documents.tasks import textract_document, lodge_document
@@ -19,12 +26,11 @@ from trade_portal.documents.tasks import textract_document, lodge_document
 
 class PaginationBy10(PageNumberPagination):
     page_size = 20
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 1000
 
 
 class QsMixin(object):
-
     @cached_property
     def current_org(self):
         # DRF token auth
@@ -52,40 +58,38 @@ class QsMixin(object):
             pass
         elif self.current_org.is_chambers:
             # chambers can see only their own documents
-            qs = qs.filter(
-                created_by_org=self.current_org
-            )
+            qs = qs.filter(created_by_org=self.current_org)
         elif self.current_org.is_trader:
-            qs = qs.filter(
-                importer_name__in=(
-                    self.current_org.name,
-                    self.current_org.business_id,
+            qs = (
+                qs.filter(
+                    importer_name__in=(
+                        self.current_org.name,
+                        self.current_org.business_id,
+                    )
                 )
-            ) | qs.filter(
-                exporter__clear_business_id=self.current_org.business_id
-            ).exclude(
-                exporter__clear_business_id=""
-            ) | qs.filter(
-                exporter__name=self.current_org.name
-            ).exclude(
-                exporter__name=""
+                | qs.filter(
+                    exporter__clear_business_id=self.current_org.business_id
+                ).exclude(exporter__clear_business_id="")
+                | qs.filter(exporter__name=self.current_org.name).exclude(
+                    exporter__name=""
+                )
             )
         else:
             qs = Document.objects.none()
 
-        qs = qs.select_related(
-            "issuer", "exporter"
-        )
+        qs = qs.select_related("issuer", "exporter")
         return qs
 
     def get_object(self):
         try:
-            return get_object_or_404(self.get_queryset(), pk=self.kwargs['pk'])
+            return get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
         except ValidationError:
             raise Http404()
 
 
-class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, mixins.UpdateModelMixin):
+class CertificateViewSet(
+    QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, mixins.UpdateModelMixin
+):
     queryset = Document.objects.all()
     pagination_class = PaginationBy10
 
@@ -106,9 +110,7 @@ class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, 
         if self.request.method.upper() == "GET":
             verificationStatus = self.request.GET.get("verificationStatus")
             if verificationStatus:
-                qs = qs.filter(
-                    verification_status=verificationStatus
-                )
+                qs = qs.filter(verification_status=verificationStatus)
             messageStatus = self.request.GET.get("messageStatus")
             if messageStatus:
                 qs = qs.filter(
@@ -128,20 +130,20 @@ class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, 
             createdDateAfter = self.request.GET.get("createdDateAfter")
             if createdDateAfter:
                 try:
-                    qs = qs.filter(
-                        created_at__date__gte=createdDateAfter
-                    )
+                    qs = qs.filter(created_at__date__gte=createdDateAfter)
                 except ValidationError as e:
-                    raise serializers.ValidationError({"createdDateAfter": e.error_list[0]})
+                    raise serializers.ValidationError(
+                        {"createdDateAfter": e.error_list[0]}
+                    )
 
             createdDateBefore = self.request.GET.get("createdDateBefore")
             if createdDateBefore:
                 try:
-                    qs = qs.filter(
-                        created_at__date__lte=createdDateBefore
-                    )
+                    qs = qs.filter(created_at__date__lte=createdDateBefore)
                 except ValidationError as e:
-                    raise serializers.ValidationError({"createdDateBefore": e.error_list[0]})
+                    raise serializers.ValidationError(
+                        {"createdDateBefore": e.error_list[0]}
+                    )
 
         return qs
 
@@ -150,8 +152,8 @@ class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, 
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
-        kwargs['user'] = self.request.user
-        kwargs['org'] = self.current_org
+        kwargs["user"] = self.request.user
+        kwargs["org"] = self.current_org
         if self.request.method == "GET" and "pk" not in self.kwargs:
             ser_cls = ShortCertificateSerializer(*args, **kwargs)
         else:
@@ -161,8 +163,7 @@ class CertificateViewSet(QsMixin, viewsets.ViewSet, generics.ListCreateAPIView, 
     def create(self, *args, **kwargs):
         if not self.current_org.can_issue_certificates:
             raise exceptions.MethodNotAllowed(
-                "POST",
-                detail="This organisation can't create certificates"
+                "POST", detail="This organisation can't create certificates"
             )
         return super().create(*args, **kwargs)
 
@@ -175,19 +176,19 @@ class CertificateFileView(QsMixin, views.APIView):
 
     def _validate_request(self):
         # do sanity check
-        if not self.request.META['CONTENT_TYPE'].startswith('multipart/form-data'):
+        if not self.request.META["CONTENT_TYPE"].startswith("multipart/form-data"):
             raise serializers.ValidationError("multipart/form-data is expected")
-        if 'file' not in self.request.FILES:
-            raise serializers.ValidationError("The file 'file' is expected as multipart/form-data")
+        if "file" not in self.request.FILES:
+            raise serializers.ValidationError(
+                "The file 'file' is expected as multipart/form-data"
+            )
 
         if not self.request.FILES["file"].name.lower().endswith(".pdf"):
             raise serializers.ValidationError({"file": "PDF file required"})
 
-        if self.request.POST.get('metadata'):
+        if self.request.POST.get("metadata"):
             try:
-                json.loads(
-                    self.request.POST.get('metadata')
-                )
+                json.loads(self.request.POST.get("metadata"))
             except Exception as e:
                 raise serializers.ValidationError(
                     f"Please provide valid 'metadata' parameter as JSON dict ({str(e)})",
@@ -201,9 +202,9 @@ class CertificateFileView(QsMixin, views.APIView):
         """
         self._validate_request()
         # TODO: check if fileobj is a file and it's readable and so on
-        file_obj = request.FILES['file']
-        if request.POST.get('metadata'):
-            metadata = json.loads(request.POST.get('metadata'))
+        file_obj = request.FILES["file"]
+        if request.POST.get("metadata"):
+            metadata = json.loads(request.POST.get("metadata"))
         else:
             metadata = {}
 
@@ -225,32 +226,22 @@ class CertificateFileView(QsMixin, views.APIView):
         docfile.file.save(file_obj.name, file_obj, save=True)
         docfile.save()
 
-        textract_document.apply_async(
-            [doc.pk],
-            countdown=2
-        )
+        textract_document.apply_async([doc.pk], countdown=2)
 
-        return Response(
-            metadata,
-            status=status.HTTP_201_CREATED
-        )
+        return Response(metadata, status=status.HTTP_201_CREATED)
 
 
 class CertificateIssueView(QsMixin, views.APIView):
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
         if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
-            raise serializers.ValidationError("Document must have 'draft' workflow status")
+            raise serializers.ValidationError(
+                "Document must have 'draft' workflow status"
+            )
         if not obj.get_pdf_attachment():
             raise serializers.ValidationError("PDF file must be attached")
         obj.workflow_status = Document.WORKFLOW_STATUS_ISSUED
         obj.save()
-        lodge_document.apply_async(
-            [obj.pk],
-            countdown=2
-        )
+        lodge_document.apply_async([obj.pk], countdown=2)
 
-        return Response(
-            {},
-            status=status.HTTP_200_OK
-        )
+        return Response({}, status=status.HTTP_200_OK)

@@ -7,28 +7,32 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0003_organisation_dot_separated_id'),
-        ('documents', '0014_documenthistoryitem'),
+        ("users", "0003_organisation_dot_separated_id"),
+        ("documents", "0014_documenthistoryitem"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='OaUrl',
-            new_name='OaDetails',
+            old_name="OaUrl",
+            new_name="OaDetails",
         ),
         migrations.AddField(
-            model_name='documenthistoryitem',
-            name='object_body',
+            model_name="documenthistoryitem",
+            name="object_body",
             field=models.TextField(blank=True),
         ),
         migrations.AlterField(
-            model_name='documenthistoryitem',
-            name='document',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='history', to='documents.Document'),
+            model_name="documenthistoryitem",
+            name="document",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="history",
+                to="documents.Document",
+            ),
         ),
         migrations.AlterField(
-            model_name='documenthistoryitem',
-            name='message',
+            model_name="documenthistoryitem",
+            name="message",
             field=models.TextField(blank=True, max_length=2000),
         ),
     ]

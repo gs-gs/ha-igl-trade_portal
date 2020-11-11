@@ -6,33 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0032_auto_20200909_2240'),
+        ("documents", "0032_auto_20200909_2240"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='party',
-            name='city_name',
-            field=models.CharField(blank=True, default='', max_length=255),
+            model_name="party",
+            name="city_name",
+            field=models.CharField(blank=True, default="", max_length=255),
         ),
         migrations.AddField(
-            model_name='party',
-            name='countrySubDivisionName',
-            field=models.CharField(blank=True, default='', max_length=255),
+            model_name="party",
+            name="countrySubDivisionName",
+            field=models.CharField(blank=True, default="", max_length=255),
         ),
         migrations.AddField(
-            model_name='party',
-            name='line1',
-            field=models.CharField(blank=True, default='', max_length=255),
+            model_name="party",
+            name="line1",
+            field=models.CharField(blank=True, default="", max_length=255),
         ),
         migrations.AddField(
-            model_name='party',
-            name='line2',
-            field=models.CharField(blank=True, default='', max_length=255),
+            model_name="party",
+            name="line2",
+            field=models.CharField(blank=True, default="", max_length=255),
         ),
         migrations.AddField(
-            model_name='party',
-            name='postcode',
-            field=models.CharField(blank=True, default='', max_length=12),
+            model_name="party",
+            name="postcode",
+            field=models.CharField(blank=True, default="", max_length=12),
         ),
     ]

@@ -6,23 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0020_auto_20200709_1744'),
+        ("documents", "0020_auto_20200709_1744"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='documenthistoryitem',
-            name='linked_obj_id',
+            model_name="documenthistoryitem",
+            name="linked_obj_id",
             field=models.CharField(blank=True, max_length=128),
         ),
         migrations.AlterField(
-            model_name='party',
-            name='business_id',
-            field=models.CharField(blank=True, help_text='ABN or UEN for example', max_length=256),
+            model_name="party",
+            name="business_id",
+            field=models.CharField(
+                blank=True, help_text="ABN or UEN for example", max_length=256
+            ),
         ),
         migrations.AlterField(
-            model_name='party',
-            name='type',
-            field=models.CharField(blank=True, choices=[('t', 'Trader'), ('c', 'Chambers'), ('o', 'Other')], default='o', max_length=1),
+            model_name="party",
+            name="type",
+            field=models.CharField(
+                blank=True,
+                choices=[("t", "Trader"), ("c", "Chambers"), ("o", "Other")],
+                default="o",
+                max_length=1,
+            ),
         ),
     ]

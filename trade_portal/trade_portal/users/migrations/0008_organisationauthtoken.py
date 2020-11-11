@@ -10,22 +10,53 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0007_auto_20200806_2337'),
+        ("users", "0007_auto_20200806_2337"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrganisationAuthToken',
+            name="OrganisationAuthToken",
             fields=[
-                ('uuid', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('access_token', models.CharField(max_length=40, unique=True, verbose_name='Key')),
-                ('readable_name', models.CharField(blank=True, default='', help_text="For example, 'PC37/office3' - or any other text useful for you", max_length=1024)),
-                ('org', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='oauth2_tokens', to='users.Organisation')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='api_tokens', to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                (
+                    "uuid",
+                    models.UUIDField(
+                        default=uuid.uuid4, primary_key=True, serialize=False
+                    ),
+                ),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    "access_token",
+                    models.CharField(max_length=40, unique=True, verbose_name="Key"),
+                ),
+                (
+                    "readable_name",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="For example, 'PC37/office3' - or any other text useful for you",
+                        max_length=1024,
+                    ),
+                ),
+                (
+                    "org",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="oauth2_tokens",
+                        to="users.Organisation",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="api_tokens",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-created_at',),
+                "ordering": ("-created_at",),
             },
         ),
     ]

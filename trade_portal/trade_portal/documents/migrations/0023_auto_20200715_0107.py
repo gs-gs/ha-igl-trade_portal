@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0022_auto_20200714_2155'),
+        ("documents", "0022_auto_20200714_2155"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='party',
-            name='bid_prefix',
-            field=models.CharField(blank=True, default='', max_length=64),
+            model_name="party",
+            name="bid_prefix",
+            field=models.CharField(blank=True, default="", max_length=64),
         ),
         migrations.AddField(
-            model_name='party',
-            name='clear_business_id',
-            field=models.CharField(blank=True, default='', max_length=128),
+            model_name="party",
+            name="clear_business_id",
+            field=models.CharField(blank=True, default="", max_length=128),
         ),
     ]

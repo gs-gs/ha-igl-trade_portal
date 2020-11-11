@@ -10,29 +10,43 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('users', '0002_auto_20200526_0339'),
-        ('documents', '0003_auto_20200526_0408'),
+        ("users", "0002_auto_20200526_0339"),
+        ("documents", "0003_auto_20200526_0408"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='party',
-            name='created_by_org',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='parties', to='users.Organisation'),
+            model_name="party",
+            name="created_by_org",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="parties",
+                to="users.Organisation",
+            ),
         ),
         migrations.AddField(
-            model_name='party',
-            name='created_by_user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='parties_created', to=settings.AUTH_USER_MODEL),
+            model_name="party",
+            name="created_by_user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="parties_created",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='party',
-            name='business_id',
-            field=models.CharField(blank=True, help_text='Abn for example', max_length=256),
+            model_name="party",
+            name="business_id",
+            field=models.CharField(
+                blank=True, help_text="Abn for example", max_length=256
+            ),
         ),
         migrations.AlterField(
-            model_name='party',
-            name='country',
+            model_name="party",
+            name="country",
             field=django_countries.fields.CountryField(blank=True, max_length=2),
         ),
     ]

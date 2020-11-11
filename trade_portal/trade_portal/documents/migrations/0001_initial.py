@@ -20,90 +20,259 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Document',
+            name="Document",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('type', models.CharField(choices=[('pref_coo', 'Preferential Document of Origin'), ('non_pref_coo', 'Non-preferential Document of Origin')], max_length=64)),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('importing_country', django_countries.fields.CountryField(max_length=2)),
-                ('importer_name', models.CharField(blank=True, default='', help_text='If known', max_length=256)),
-                ('document_number', models.CharField(blank=True, default='', max_length=256)),
-                ('consignment_ref', models.CharField(blank=True, default='', max_length=256)),
-                ('intergov_details', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, help_text='Details about communication with the Intergov')),
-                ('status', models.CharField(choices=[('draft', 'Draft'), ('complete', 'Complete'), ('lodged', 'Lodged'), ('sent', 'Sent'), ('accepted', 'Accepted'), ('rejected', 'Rejected'), ('acquitted', 'Acquitted'), ('error', 'Error')], default='draft', max_length=12)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, primary_key=True, serialize=False
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("pref_coo", "Preferential Document of Origin"),
+                            ("non_pref_coo", "Non-preferential Document of Origin"),
+                        ],
+                        max_length=64,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    "importing_country",
+                    django_countries.fields.CountryField(max_length=2),
+                ),
+                (
+                    "importer_name",
+                    models.CharField(
+                        blank=True, default="", help_text="If known", max_length=256
+                    ),
+                ),
+                (
+                    "document_number",
+                    models.CharField(blank=True, default="", max_length=256),
+                ),
+                (
+                    "consignment_ref",
+                    models.CharField(blank=True, default="", max_length=256),
+                ),
+                (
+                    "intergov_details",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="Details about communication with the Intergov",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("draft", "Draft"),
+                            ("complete", "Complete"),
+                            ("lodged", "Lodged"),
+                            ("sent", "Sent"),
+                            ("accepted", "Accepted"),
+                            ("rejected", "Rejected"),
+                            ("acquitted", "Acquitted"),
+                            ("error", "Error"),
+                        ],
+                        default="draft",
+                        max_length=12,
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-created_at',),
+                "ordering": ("-created_at",),
             },
         ),
         migrations.CreateModel(
-            name='FTA',
+            name="FTA",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, default='', max_length=256)),
-                ('country', django_countries.fields.CountryField(max_length=746, multiple=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, default="", max_length=256)),
+                (
+                    "country",
+                    django_countries.fields.CountryField(max_length=746, multiple=True),
+                ),
             ],
             options={
-                'verbose_name': 'FTA',
-                'verbose_name_plural': 'FTAs',
-                'ordering': ('name',),
+                "verbose_name": "FTA",
+                "verbose_name_plural": "FTAs",
+                "ordering": ("name",),
             },
         ),
         migrations.CreateModel(
-            name='Party',
+            name="Party",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(blank=True, default='o', max_length=1)),
-                ('business_id', models.CharField(help_text='Abn for example', max_length=256)),
-                ('name', models.CharField(blank=True, max_length=256)),
-                ('country', django_countries.fields.CountryField(max_length=2)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("type", models.CharField(blank=True, default="o", max_length=1)),
+                (
+                    "business_id",
+                    models.CharField(help_text="Abn for example", max_length=256),
+                ),
+                ("name", models.CharField(blank=True, max_length=256)),
+                ("country", django_countries.fields.CountryField(max_length=2)),
             ],
         ),
         migrations.CreateModel(
-            name='NodeMessage',
+            name="NodeMessage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now, help_text='For received messages - when received by us', verbose_name='Created in the system')),
-                ('sender_ref', models.CharField(max_length=200, unique=True)),
-                ('subject', models.CharField(blank=True, default='', help_text='Conversation identificator', max_length=200)),
-                ('body', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict, help_text='generic discrete format, exactly like API returns')),
-                ('history', django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=list, help_text='Status changes and other historical events in a simple format')),
-                ('is_outbound', models.BooleanField(default=False)),
-                ('document', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='documents.Document')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now,
+                        help_text="For received messages - when received by us",
+                        verbose_name="Created in the system",
+                    ),
+                ),
+                ("sender_ref", models.CharField(max_length=200, unique=True)),
+                (
+                    "subject",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="Conversation identificator",
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "body",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True,
+                        default=dict,
+                        help_text="generic discrete format, exactly like API returns",
+                    ),
+                ),
+                (
+                    "history",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True,
+                        default=list,
+                        help_text="Status changes and other historical events in a simple format",
+                    ),
+                ),
+                ("is_outbound", models.BooleanField(default=False)),
+                (
+                    "document",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="documents.Document",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-created_at',),
+                "ordering": ("-created_at",),
             },
         ),
         migrations.CreateModel(
-            name='DocumentFile',
+            name="DocumentFile",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('file', models.FileField(upload_to=trade_portal.documents.models.generate_docfile_filename)),
-                ('filename', models.CharField(blank=True, default='unknown.pdf', help_text='Original name of the uploaded file', max_length=1000)),
-                ('size', models.IntegerField(blank=True, default=None, null=True)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('doc', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='documents.Document')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, primary_key=True, serialize=False
+                    ),
+                ),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    "file",
+                    models.FileField(
+                        upload_to=trade_portal.documents.models.generate_docfile_filename
+                    ),
+                ),
+                (
+                    "filename",
+                    models.CharField(
+                        blank=True,
+                        default="unknown.pdf",
+                        help_text="Original name of the uploaded file",
+                        max_length=1000,
+                    ),
+                ),
+                ("size", models.IntegerField(blank=True, default=None, null=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "doc",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="files",
+                        to="documents.Document",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-created_at',),
+                "ordering": ("-created_at",),
             },
         ),
         migrations.AddField(
-            model_name='document',
-            name='exporter',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='documents_exported', to='documents.Party'),
+            model_name="document",
+            name="exporter",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="documents_exported",
+                to="documents.Party",
+            ),
         ),
         migrations.AddField(
-            model_name='document',
-            name='fta',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='documents.FTA'),
+            model_name="document",
+            name="fta",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, to="documents.FTA"
+            ),
         ),
         migrations.AddField(
-            model_name='document',
-            name='issuer',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='documents_issued', to='documents.Party'),
+            model_name="document",
+            name="issuer",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="documents_issued",
+                to="documents.Party",
+            ),
         ),
     ]

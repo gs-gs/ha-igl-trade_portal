@@ -4,9 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import (
-    DetailView, RedirectView, UpdateView, View
-)
+from django.views.generic import DetailView, RedirectView, UpdateView, View
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -19,12 +17,12 @@ User = get_user_model()
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
-
     def get_object(self):
         return self.request.user
 
     def post(self, request, *args, **kwargs):
         from trade_portal.users.tasks import notify_staff_about_evidence_uploaded
+
         if "evidence" in request.FILES:
             for validator in OrgRoleRequest._meta.get_field("evidence").validators:
                 try:
@@ -38,20 +36,19 @@ class UserDetailView(LoginRequiredMixin, DetailView):
                 created_by=request.user,
                 status__in=[
                     OrgRoleRequest.STATUS_EVIDENCE,
-                    OrgRoleRequest.STATUS_REQUESTED
-                ]
+                    OrgRoleRequest.STATUS_REQUESTED,
+                ],
             )
             req.evidence = request.FILES["evidence"]
             if req.status == OrgRoleRequest.STATUS_EVIDENCE:
                 req.status = OrgRoleRequest.STATUS_REQUESTED
-                notify_staff_about_evidence_uploaded.apply_async(
-                    [req.id],
-                    countdown=1
-                )
+                notify_staff_about_evidence_uploaded.apply_async([req.id], countdown=1)
             req.save()
             messages.success(
                 request,
-                _("The file has been uploaded as an evidence and the request has been sent to review")
+                _(
+                    "The file has been uploaded as an evidence and the request has been sent to review"
+                ),
             )
         return redirect(request.path_info)
 
@@ -69,9 +66,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         return User.objects.get(pk=self.request.user.pk)
 
     def form_valid(self, form):
-        messages.info(
-            self.request, _("Your profile has been updated successfully")
-        )
+        messages.info(self.request, _("Your profile has been updated successfully"))
         return super().form_valid(form)
 
 
@@ -100,9 +95,9 @@ class ChangeOrgView(LoginRequiredMixin, View):
             # no need to check the permissions for that org
             org = Organisation.objects.get(pk=new_org_id)
         else:
-            org_ms = request.user.orgmembership_set.all().filter(
-                org_id=new_org_id
-            ).first()
+            org_ms = (
+                request.user.orgmembership_set.all().filter(org_id=new_org_id).first()
+            )
 
             if not org_ms:
                 messages.error(request, _("You don't have access to that org anymore"))
@@ -111,7 +106,6 @@ class ChangeOrgView(LoginRequiredMixin, View):
 
         request.session["current_org_id"] = int(org.pk)
         messages.success(
-            request,
-            _('The %s has been selected as the current organisation') % org
+            request, _("The %s has been selected as the current organisation") % org
         )
         return redirect(next_url)

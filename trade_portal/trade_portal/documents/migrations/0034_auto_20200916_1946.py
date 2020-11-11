@@ -6,31 +6,53 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0033_auto_20200916_1644'),
+        ("documents", "0033_auto_20200916_1644"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='document',
-            name='invoice_number',
+            model_name="document",
+            name="invoice_number",
         ),
         migrations.RemoveField(
-            model_name='document',
-            name='origin_criteria',
+            model_name="document",
+            name="origin_criteria",
         ),
         migrations.AlterField(
-            model_name='document',
-            name='status',
-            field=models.CharField(choices=[('not-sent', 'Not Sent'), ('pending', 'Pending'), ('failed', 'Failed'), ('validated', 'Validated'), ('incoming', 'Incoming')], default='not-sent', max_length=12, verbose_name='Message Status'),
+            model_name="document",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("not-sent", "Not Sent"),
+                    ("pending", "Pending"),
+                    ("failed", "Failed"),
+                    ("validated", "Validated"),
+                    ("incoming", "Incoming"),
+                ],
+                default="not-sent",
+                max_length=12,
+                verbose_name="Message Status",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='verification_status',
-            field=models.CharField(choices=[('not-started', 'Not Started'), ('pending', 'Pending'), ('valid', 'Valid'), ('failed', 'Failed'), ('error', 'Error')], default='not-started', max_length=32, verbose_name='Verification Status'),
+            model_name="document",
+            name="verification_status",
+            field=models.CharField(
+                choices=[
+                    ("not-started", "Not Started"),
+                    ("pending", "Pending"),
+                    ("valid", "Valid"),
+                    ("failed", "Failed"),
+                    ("error", "Error"),
+                ],
+                default="not-started",
+                max_length=32,
+                verbose_name="Verification Status",
+            ),
         ),
         migrations.AlterField(
-            model_name='party',
-            name='dot_separated_id',
-            field=models.CharField(blank=True, default='', max_length=256),
+            model_name="party",
+            name="dot_separated_id",
+            field=models.CharField(blank=True, default="", max_length=256),
         ),
     ]

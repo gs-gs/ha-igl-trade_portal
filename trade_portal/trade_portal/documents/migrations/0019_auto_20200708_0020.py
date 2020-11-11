@@ -9,23 +9,37 @@ import django_countries.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0018_document_sending_jurisdiction'),
+        ("documents", "0018_document_sending_jurisdiction"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='document',
-            name='sending_jurisdiction',
-            field=django_countries.fields.CountryField(default='SG', max_length=2),
+            model_name="document",
+            name="sending_jurisdiction",
+            field=django_countries.fields.CountryField(default="SG", max_length=2),
         ),
         migrations.AlterField(
-            model_name='documentfile',
-            name='created_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="documentfile",
+            name="created_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='nodemessage',
-            name='status',
-            field=models.CharField(choices=[('sent', 'Sent'), ('accepted', 'Accepted'), ('rejected', 'Rejected'), ('accepted', 'Inbound')], default='sent', max_length=16),
+            model_name="nodemessage",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("sent", "Sent"),
+                    ("accepted", "Accepted"),
+                    ("rejected", "Rejected"),
+                    ("accepted", "Inbound"),
+                ],
+                default="sent",
+                max_length=16,
+            ),
         ),
     ]

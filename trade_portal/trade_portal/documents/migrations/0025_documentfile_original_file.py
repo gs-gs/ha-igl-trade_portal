@@ -7,14 +7,17 @@ import trade_portal.documents.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0024_auto_20200804_0129'),
+        ("documents", "0024_auto_20200804_0129"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='documentfile',
-            name='original_file',
-            field=models.FileField(default='', upload_to=trade_portal.documents.models.generate_docfile_filename),
+            model_name="documentfile",
+            name="original_file",
+            field=models.FileField(
+                default="",
+                upload_to=trade_portal.documents.models.generate_docfile_filename,
+            ),
             preserve_default=False,
         ),
     ]

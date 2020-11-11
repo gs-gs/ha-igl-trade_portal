@@ -7,28 +7,48 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0006_auto_20200805_0542'),
+        ("users", "0006_auto_20200805_0542"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='orgrolerequest',
-            name='evidence_name',
-            field=models.CharField(blank=True, default='', max_length=1024),
+            model_name="orgrolerequest",
+            name="evidence_name",
+            field=models.CharField(blank=True, default="", max_length=1024),
         ),
         migrations.AddField(
-            model_name='orgrolerequest',
-            name='reject_reason',
-            field=models.CharField(blank=True, default='', max_length=1024),
+            model_name="orgrolerequest",
+            name="reject_reason",
+            field=models.CharField(blank=True, default="", max_length=1024),
         ),
         migrations.AlterField(
-            model_name='orgrolerequest',
-            name='evidence',
-            field=models.FileField(blank=True, null=True, upload_to='', validators=[django.core.validators.FileExtensionValidator(allowed_extensions=['jpeg', 'jpg', 'png', 'pdf', 'doc', 'docx', 'odt', 'gif'])]),
+            model_name="orgrolerequest",
+            name="evidence",
+            field=models.FileField(
+                blank=True,
+                null=True,
+                upload_to="",
+                validators=[
+                    django.core.validators.FileExtensionValidator(
+                        allowed_extensions=[
+                            "jpeg",
+                            "jpg",
+                            "png",
+                            "pdf",
+                            "doc",
+                            "docx",
+                            "odt",
+                            "gif",
+                        ]
+                    )
+                ],
+            ),
         ),
         migrations.AlterField(
-            model_name='orgrolerequest',
-            name='role',
-            field=models.CharField(choices=[('trader', 'Trader'), ('chambers', 'Chamber')], max_length=16),
+            model_name="orgrolerequest",
+            name="role",
+            field=models.CharField(
+                choices=[("trader", "Trader"), ("chambers", "Chamber")], max_length=16
+            ),
         ),
     ]

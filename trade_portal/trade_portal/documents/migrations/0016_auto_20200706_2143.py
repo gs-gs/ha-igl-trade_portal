@@ -6,26 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0015_auto_20200704_0548'),
+        ("documents", "0015_auto_20200704_0548"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='documenthistoryitem',
-            options={'ordering': ('created_at',)},
+            name="documenthistoryitem",
+            options={"ordering": ("created_at",)},
         ),
         migrations.AlterModelOptions(
-            name='oadetails',
-            options={'ordering': ('created_at',), 'verbose_name_plural': 'OA details'},
+            name="oadetails",
+            options={"ordering": ("created_at",), "verbose_name_plural": "OA details"},
         ),
         migrations.AddField(
-            model_name='oadetails',
-            name='iv_base64',
+            model_name="oadetails",
+            name="iv_base64",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='oadetails',
-            name='tag_base64',
+            model_name="oadetails",
+            name="tag_base64",
             field=models.TextField(blank=True),
         ),
     ]

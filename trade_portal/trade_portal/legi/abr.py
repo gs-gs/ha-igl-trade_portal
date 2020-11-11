@@ -16,17 +16,20 @@ def fetch_abn_info(abn):
     if not abn or len(abn) != 11:
         return None
 
-    if getattr(settings, 'DUMB_ABR_REQUESTS', False):
+    if getattr(settings, "DUMB_ABR_REQUESTS", False):
         return {
-            'Abn': str(abn),
-            'AbnStatus': 'Active',
-            'Acn': '',
-            'AddressDate': '2014-09-20',
-            'AddressPostcode': '4815', 'AddressState': 'QLD',
-            'BusinessName': [], 'EntityName': 'CATS, THERE ARE',
-            'EntityTypeCode': 'IND', 'EntityTypeName': 'Individual/Sole Trader',
-            'Gst': None,
-            'Message': ''
+            "Abn": str(abn),
+            "AbnStatus": "Active",
+            "Acn": "",
+            "AddressDate": "2014-09-20",
+            "AddressPostcode": "4815",
+            "AddressState": "QLD",
+            "BusinessName": [],
+            "EntityName": "CATS, THERE ARE",
+            "EntityTypeCode": "IND",
+            "EntityTypeName": "Individual/Sole Trader",
+            "Gst": None,
+            "Message": "",
         }
 
     if settings.ABR_UUID:
@@ -63,18 +66,14 @@ def fetch_abn_info_api(abn):
     }
     resp = requests.get(
         "https://abr.business.gov.au/json/AbnDetails.aspx",
-        {
-            "callback": "callback",
-            "abn": abn,
-            "guid": settings.ABR_UUID
-        }
+        {"callback": "callback", "abn": abn, "guid": settings.ABR_UUID},
     )
     if resp.status_code != 200:
         logger.warning("ABR request ended with the status code %s", resp.status_code)
         return result
     body = resp.content.decode("utf-8")
     if body.startswith("callback"):
-        body = body[len("callback"):]
+        body = body[len("callback") :]
     body = body.strip("(").strip(")")
     body = json.loads(body)
 

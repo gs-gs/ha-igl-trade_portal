@@ -7,13 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0030_document_raw_certificate_data'),
+        ("documents", "0030_document_raw_certificate_data"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='documentfile',
-            name='metadata',
-            field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict),
+            model_name="documentfile",
+            name="metadata",
+            field=django.contrib.postgres.fields.jsonb.JSONField(
+                blank=True, default=dict
+            ),
         ),
     ]

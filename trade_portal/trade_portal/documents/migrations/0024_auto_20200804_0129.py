@@ -6,23 +6,40 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0023_auto_20200715_0107'),
+        ("documents", "0023_auto_20200715_0107"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='documentfile',
-            name='is_watermarked',
-            field=models.NullBooleanField(default=False, help_text="None if doesn't need to be watermarked, False if pending and True if done"),
+            model_name="documentfile",
+            name="is_watermarked",
+            field=models.NullBooleanField(
+                default=False,
+                help_text="None if doesn't need to be watermarked, False if pending and True if done",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='importer_name',
-            field=models.CharField(blank=True, default='', help_text='Organisation name or business ID (ABN, UEN)', max_length=256),
+            model_name="document",
+            name="importer_name",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Organisation name or business ID (ABN, UEN)",
+                max_length=256,
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('failed', 'Failed'), ('validated', 'Validated'), ('incoming', 'Incoming')], default='pending', max_length=12),
+            model_name="document",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("failed", "Failed"),
+                    ("validated", "Validated"),
+                    ("incoming", "Incoming"),
+                ],
+                default="pending",
+                max_length=12,
+            ),
         ),
     ]

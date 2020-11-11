@@ -13,7 +13,9 @@ class FeedbackForm(forms.ModelForm):
     class Meta:
         model = FeedbackItem
         fields = [
-            'text', 'email', 'contact',
+            "text",
+            "email",
+            "contact",
         ]
 
     def __init__(self, user, *args, **kwargs):
@@ -25,14 +27,13 @@ class FeedbackForm(forms.ModelForm):
             del self.fields["captcha"]
         if self.user:
             self.fields["email"].initial = user.email
-            self.fields["contact"].initial = "\n".join([
-                f"{user.first_name} {user.last_name}".strip() or user.username,
-            ])
+            self.fields["contact"].initial = "\n".join(
+                [
+                    f"{user.first_name} {user.last_name}".strip() or user.username,
+                ]
+            )
 
     def save(self, *args, **kwargs):
         self.instance.user = self.user
         super().save(*args, **kwargs)
-        send_feedback_notification.apply_async(
-            [self.instance.pk],
-            countdown=3
-        )
+        send_feedback_notification.apply_async([self.instance.pk], countdown=3)

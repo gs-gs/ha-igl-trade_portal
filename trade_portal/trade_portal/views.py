@@ -21,12 +21,17 @@ class VerificationView(TemplateView):
 class LogoutInitiateView(View):
     def get(self, request, *args, **kwargs):
         next_url = (
-            "https" if request.is_secure() else "http"
-        ) + "://" + request.get_host() + "/logout"
+            ("https" if request.is_secure() else "http")
+            + "://"
+            + request.get_host()
+            + "/logout"
+        )
         return redirect(
-            settings.OIDC_OP_LOGOUT_ENDPOINT +
-            "?client_id=" + settings.OIDC_RP_CLIENT_ID +
-            "&logout_uri=" + next_url
+            settings.OIDC_OP_LOGOUT_ENDPOINT
+            + "?client_id="
+            + settings.OIDC_RP_CLIENT_ID
+            + "&logout_uri="
+            + next_url
         )
 
 

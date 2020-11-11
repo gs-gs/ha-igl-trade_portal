@@ -6,13 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0009_document_search_field'),
+        ("documents", "0009_document_search_field"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='document',
-            name='status',
-            field=models.CharField(choices=[('issued', 'Issued'), ('accepted', 'Accepted'), ('disputed', 'Disputed'), ('rejected', 'Rejected'), ('acquitted', 'Acquitted'), ('expired', 'Expired'), ('error', 'Error')], default='issued', max_length=12),
+            model_name="document",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("issued", "Issued"),
+                    ("accepted", "Accepted"),
+                    ("disputed", "Disputed"),
+                    ("rejected", "Rejected"),
+                    ("acquitted", "Acquitted"),
+                    ("expired", "Expired"),
+                    ("error", "Error"),
+                ],
+                default="issued",
+                max_length=12,
+            ),
         ),
     ]

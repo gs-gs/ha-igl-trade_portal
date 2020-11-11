@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0012_document_oa'),
+        ("documents", "0012_document_oa"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='oaurl',
-            name='ciphertext',
+            model_name="oaurl",
+            name="ciphertext",
             field=models.TextField(blank=True),
         ),
     ]

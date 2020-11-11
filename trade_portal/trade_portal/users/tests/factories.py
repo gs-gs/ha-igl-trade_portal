@@ -29,9 +29,9 @@ class UserFactory(DjangoModelFactory):
     @post_generation
     def org(self, *args, **kwargs):
         from trade_portal.users.models import Organisation, OrgMembership
+
         o1, _ = Organisation.objects.get_or_create(
-            name="first",
-            is_chambers=True, is_regulator=True, is_trader=True
+            name="first", is_chambers=True, is_regulator=True, is_trader=True
         )
         ms, _ = OrgMembership.objects.get_or_create(
             user=self,

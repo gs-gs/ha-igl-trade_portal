@@ -63,7 +63,7 @@ class OaVerificationService:
             try:
                 result["unwrapped_file"] = self._unwrap_file(file_content)
                 result["oa_raw_data"] = json.loads(file_content)
-                result["oa_base64"] = base64.b64encode(file_content).decode('utf-8')
+                result["oa_base64"] = base64.b64encode(file_content).decode("utf-8")
             except Exception as e:
                 logger.exception(e)
                 # or likely our code has some bug or unsupported format in it
@@ -71,8 +71,15 @@ class OaVerificationService:
                     "Unable to unwrap the OA file - it's structure may be invalid"
                 )
             else:
-                result["template_url"] = result["unwrapped_file"].get("data", {}).get("$template", {}).get("url")
-                result["attachments"] = self._parse_attachments(result["unwrapped_file"].get("data", {}))
+                result["template_url"] = (
+                    result["unwrapped_file"]
+                    .get("data", {})
+                    .get("$template", {})
+                    .get("url")
+                )
+                result["attachments"] = self._parse_attachments(
+                    result["unwrapped_file"].get("data", {})
+                )
         return result
 
     def _api_verify_file(self, file_content):
@@ -81,7 +88,7 @@ class OaVerificationService:
                 config.OA_VERIFY_API_URL,
                 files={
                     "file": file_content,
-                }
+                },
             )
         except Exception as e:
             raise OaVerificationError(
@@ -98,7 +105,8 @@ class OaVerificationService:
         else:
             logger.warning(
                 "%s resp from the OA Verify endpoint - %s",
-                resp.status_code, resp.content
+                resp.status_code,
+                resp.content,
             )
             raise OaVerificationError(
                 f"Verifier temporary unavailable (error {resp.status_code}); please try again later"
@@ -109,6 +117,7 @@ class OaVerificationService:
         Warning: it's less reliable but quick
         It's better to cal OA.unwrap() method
         """
+
         def unwrap_it(what):
             if isinstance(what, str):
                 # wrapped something
@@ -128,15 +137,9 @@ class OaVerificationService:
                     else:
                         return what
             elif isinstance(what, list):
-                return [
-                    unwrap_it(x) for x in what
-                ]
+                return [unwrap_it(x) for x in what]
             elif isinstance(what, dict):
-                return {
-                    k: unwrap_it(v)
-                    for k, v
-                    in what.items()
-                }
+                return {k: unwrap_it(v) for k, v in what.items()}
             else:
                 return what
 
@@ -153,9 +156,12 @@ class OaVerificationService:
         unCoOattachedFile = data.get("certificateOfOrigin", {}).get("attachedFile")
         if unCoOattachedFile:
             # format of each dict: file, encodingCode, mimeCode
-            attachments.append({
-                "type": unCoOattachedFile["mimeCode"],
-                "filename": "file." + unCoOattachedFile["mimeCode"].rsplit('/')[-1].lower(),
-                "data": unCoOattachedFile["file"],
-            })
+            attachments.append(
+                {
+                    "type": unCoOattachedFile["mimeCode"],
+                    "filename": "file."
+                    + unCoOattachedFile["mimeCode"].rsplit("/")[-1].lower(),
+                    "data": unCoOattachedFile["file"],
+                }
+            )
         return attachments

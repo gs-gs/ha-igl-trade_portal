@@ -19,20 +19,24 @@ class AbnLookupView(View):
             abn = None
 
         if not abn or len(abn) != 11:
-            return JsonResponse({
-                "status": "fail",
-                "msg": "Wrong ABN format",
-            })
+            return JsonResponse(
+                {
+                    "status": "fail",
+                    "msg": "Wrong ABN format",
+                }
+            )
 
         try:
             abn_info = fetch_abn_info(abn)
         except Exception as e:
             logger.exception(e)
-            return JsonResponse({
-                "status": "fail",
-                "snippet": "(no data about this ABN is available)",
-                "abn": abn,
-            })
+            return JsonResponse(
+                {
+                    "status": "fail",
+                    "snippet": "(no data about this ABN is available)",
+                    "abn": abn,
+                }
+            )
         else:
             try:
                 abn_info.pop("BusinessName", None)
@@ -45,8 +49,5 @@ class AbnLookupView(View):
             )
             status = "ok" if not abn_info.get("Message") else "not_found"
             resp = abn_info.copy()
-            resp.update({
-                "snippet": snippet,
-                "status": status
-            })
+            resp.update({"snippet": snippet, "status": status})
             return JsonResponse(resp)

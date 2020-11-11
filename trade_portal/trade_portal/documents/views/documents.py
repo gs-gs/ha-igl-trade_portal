@@ -5,7 +5,9 @@ from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect
 from django.views.generic import (
-    DetailView, ListView, UpdateView,
+    DetailView,
+    ListView,
+    UpdateView,
 )
 from django_tables2 import SingleTableView
 from django.urls import reverse
@@ -22,7 +24,6 @@ from trade_portal.utils.monitoring import statsd_timer
 
 
 class DocumentQuerysetMixin(AccessMixin):
-
     def get_queryset(self):
         qs = Document.objects.all()
         user = self.request.user
@@ -32,30 +33,24 @@ class DocumentQuerysetMixin(AccessMixin):
             pass
         elif current_org.is_chambers:
             # chambers can see only their own documents
-            qs = qs.filter(
-                created_by_org=current_org
-            )
+            qs = qs.filter(created_by_org=current_org)
         elif current_org.is_trader:
-            qs = qs.filter(
-                importer_name__in=(
-                    current_org.name,
-                    current_org.business_id,
+            qs = (
+                qs.filter(
+                    importer_name__in=(
+                        current_org.name,
+                        current_org.business_id,
+                    )
                 )
-            ) | qs.filter(
-                exporter__clear_business_id=current_org.business_id
-            ).exclude(
-                exporter__clear_business_id=""
-            ) | qs.filter(
-                exporter__name=current_org.name
-            ).exclude(
-                exporter__name=""
+                | qs.filter(
+                    exporter__clear_business_id=current_org.business_id
+                ).exclude(exporter__clear_business_id="")
+                | qs.filter(exporter__name=current_org.name).exclude(exporter__name="")
             )
         else:
             qs = Document.objects.none()
 
-        qs = qs.select_related(
-            "issuer", "exporter"
-        )
+        qs = qs.select_related("issuer", "exporter")
         return qs
 
     def dispatch(self, request, *args, **kwargs):
@@ -69,14 +64,14 @@ class DocumentQuerysetMixin(AccessMixin):
                     _(
                         "You are not a member of any organisation - which is "
                         "mandatory to access the documents page"
-                    )
+                    ),
                 )
-                return redirect('users:detail')
+                return redirect("users:detail")
         return super().dispatch(request, *args, **kwargs)
 
 
 class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
-    template_name = 'documents/list.html'
+    template_name = "documents/list.html"
     model = Document
     table_class = DocumentsTable
     table_pagination = {
@@ -92,26 +87,20 @@ class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
         # TODO: implement start and end date after the date format is updated
         status_filter = self.request.GET.get("status_filter", "").strip() or None
         if status_filter:
-            qs = qs.filter(
-                status=status_filter
-            )
+            qs = qs.filter(status=status_filter)
         type_filter = self.request.GET.get("type_filter", "").strip() or None
         if type_filter:
-            qs = qs.filter(
-                type=type_filter
-            )
+            qs = qs.filter(type=type_filter)
         exporter_filter = self.request.GET.get("exporter_filter", "").strip() or None
         if exporter_filter:
             qs = qs.filter(
-                Q(exporter__business_id__icontains=exporter_filter) |
-                Q(exporter__name__icontains=exporter_filter) |
-                Q(exporter__dot_separated_id__icontains=exporter_filter)
+                Q(exporter__business_id__icontains=exporter_filter)
+                | Q(exporter__name__icontains=exporter_filter)
+                | Q(exporter__dot_separated_id__icontains=exporter_filter)
             )
         importer_filter = self.request.GET.get("importer_filter", "").strip() or None
         if importer_filter:
-            qs = qs.filter(
-                importer_name__icontains=importer_filter
-            )
+            qs = qs.filter(importer_name__icontains=importer_filter)
 
         q = self.request.GET.get("q", "").strip() or None
         if q:
@@ -125,7 +114,7 @@ class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
 
 
 class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
-    template_name = 'documents/detail.html'
+    template_name = "documents/detail.html"
     model = Document
 
     def get(self, request, *args, **kwargs):
@@ -133,14 +122,12 @@ class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
         if obj.workflow_status == Document.WORKFLOW_STATUS_DRAFT:
             # this is draft statement, show user the step2 submission
             # page in all cases
-            return redirect(
-                'documents:issue', obj.pk
-            )
+            return redirect("documents:issue", obj.pk)
         return super().get(request, *args, **kwargs)
 
 
 class DocumentLogsView(Login, DocumentQuerysetMixin, DetailView):
-    template_name = 'documents/logs.html'
+    template_name = "documents/logs.html"
     model = Document
 
 
@@ -149,9 +136,9 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
 
     def get_object(self):
         try:
-            c = self.get_queryset().get(pk=self.kwargs['pk'])
+            c = self.get_queryset().get(pk=self.kwargs["pk"])
             if "file_pk" in self.kwargs:
-                doc = c.files.get(id=self.kwargs['file_pk'])
+                doc = c.files.get(id=self.kwargs["file_pk"])
             elif self.doc_type == "oa":
                 doc = c.get_vc()
             elif self.doc_type == "pdf":
@@ -170,7 +157,7 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
             content_type = (
                 "application/pdf"
                 if document.filename.lower().endswith(".pdf")
-                else 'application/octet-stream'
+                else "application/octet-stream"
             )
             if self.request.GET.get("original"):
                 the_file = document.original_file
@@ -180,29 +167,30 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
             if self.request.GET.get("as_png"):
                 response = HttpResponse(
                     WatermarkService().get_first_page_as_png(the_file),
-                    content_type="image/png"
+                    content_type="image/png",
                 )
             else:
                 response = HttpResponse(the_file, content_type=content_type)
-                if not self.request.GET.get('inline'):
-                    response['Content-Disposition'] = 'attachment; filename="%s"' % document.filename
+                if not self.request.GET.get("inline"):
+                    response["Content-Disposition"] = (
+                        'attachment; filename="%s"' % document.filename
+                    )
         elif document is None:
             raise Http404()
         elif self.doc_type == "oa":
             # OA document from the OA details object
-            response = HttpResponse(document, content_type='application/json')
-            response['Content-Disposition'] = 'attachment; filename=OA.json'
+            response = HttpResponse(document, content_type="application/json")
+            response["Content-Disposition"] = "attachment; filename=OA.json"
         else:
             raise Exception("Unkown document type")
         return response
 
 
 class DocumentHistoryFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
-
     def get_object(self):
         try:
-            c = self.get_queryset().get(pk=self.kwargs['pk'])
-            historyitem = c.history.get(id=self.kwargs['history_item_id'])
+            c = self.get_queryset().get(pk=self.kwargs["pk"])
+            historyitem = c.history.get(id=self.kwargs["history_item_id"])
             if not historyitem.related_file:
                 raise ObjectDoesNotExist()
         except ObjectDoesNotExist:
@@ -212,13 +200,17 @@ class DocumentHistoryFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
     def get(self, *args, **kwargs):
         # standard file approach
         historyitem = self.get_object()
-        response = HttpResponse(historyitem.related_file, content_type='application/octet-stream')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % historyitem.related_file.name
+        response = HttpResponse(
+            historyitem.related_file, content_type="application/octet-stream"
+        )
+        response["Content-Disposition"] = (
+            'attachment; filename="%s"' % historyitem.related_file.name
+        )
         return response
 
 
 class ConsignmentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
-    template_name = 'documents/consignment-update.html'
+    template_name = "documents/consignment-update.html"
     form_class = ConsignmentSectionUpdateForm
 
     def dispatch(self, *args, **kwargs):
@@ -227,14 +219,13 @@ class ConsignmentUpdateView(Login, DocumentQuerysetMixin, UpdateView):
         if not current_org.is_chambers and not current_org.is_trader:
             messages.error(
                 self.request,
-                _("Only chambers and trade party can update these details")
+                _("Only chambers and trade party can update these details"),
             )
-            return redirect('/documents/')
+            return redirect("/documents/")
         return super().dispatch(*args, **kwargs)
 
     def get_success_url(self):
         messages.success(
-            self.request,
-            _("The consignment details have been saved successfully")
+            self.request, _("The consignment details have been saved successfully")
         )
-        return reverse('documents:detail', args=[self.object.pk])
+        return reverse("documents:detail", args=[self.object.pk])

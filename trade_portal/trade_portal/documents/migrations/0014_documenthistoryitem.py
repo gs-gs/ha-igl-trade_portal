@@ -8,22 +8,36 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0013_oaurl_ciphertext'),
+        ("documents", "0013_oaurl_ciphertext"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DocumentHistoryItem',
+            name="DocumentHistoryItem",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('type', models.CharField(max_length=200)),
-                ('message', models.TextField(max_length=2000)),
-                ('linked_obj_id', models.CharField(max_length=128)),
-                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='documents.Document')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                ("type", models.CharField(max_length=200)),
+                ("message", models.TextField(max_length=2000)),
+                ("linked_obj_id", models.CharField(max_length=128)),
+                (
+                    "document",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="documents.Document",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-created_at',),
+                "ordering": ("-created_at",),
             },
         ),
     ]

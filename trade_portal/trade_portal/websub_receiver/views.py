@@ -7,14 +7,15 @@ from django.views.generic import View
 from django.utils.decorators import method_decorator
 
 from trade_portal.documents.tasks import (
-    update_message_by_sender_ref, store_message_by_ping_body,
+    update_message_by_sender_ref,
+    store_message_by_ping_body,
 )
 from trade_portal.utils.monitoring import statsd_timer
 
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name="dispatch")
 class BaseNotificationReceiveView(View):
     """
     Base view which just reads the body and passes it to the
@@ -33,6 +34,7 @@ class BaseNotificationReceiveView(View):
       }
     '
     """
+
     is_thin = False  # Once true -> don't require the body to be JSON document
 
     def _process_notification(self, *args, **kwargs):
@@ -109,6 +111,6 @@ class ConversationPingView(BaseNotificationReceiveView):
     def _process_notification(self, event):
         logger.info(
             "Received conversation ping about %s but not processing it yet",
-            self.kwargs["subject"]
+            self.kwargs["subject"],
         )
         return

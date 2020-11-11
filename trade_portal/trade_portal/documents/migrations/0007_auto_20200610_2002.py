@@ -6,37 +6,66 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0006_auto_20200609_2112'),
+        ("documents", "0006_auto_20200609_2112"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='document',
-            name='consignment_ref',
+            model_name="document",
+            name="consignment_ref",
         ),
         migrations.AddField(
-            model_name='document',
-            name='consignment_ref_doc_issuer',
-            field=models.CharField(blank=True, default='', help_text='Consignment details', max_length=200, verbose_name='Document Issuer'),
+            model_name="document",
+            name="consignment_ref_doc_issuer",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Consignment details",
+                max_length=200,
+                verbose_name="Document Issuer",
+            ),
         ),
         migrations.AddField(
-            model_name='document',
-            name='consignment_ref_doc_number',
-            field=models.CharField(blank=True, default='', help_text='Consignment details', max_length=256, verbose_name='Document Number'),
+            model_name="document",
+            name="consignment_ref_doc_number",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Consignment details",
+                max_length=256,
+                verbose_name="Document Number",
+            ),
         ),
         migrations.AddField(
-            model_name='document',
-            name='consignment_ref_doc_type',
-            field=models.CharField(blank=True, choices=[('ConNote', 'ConNote'), ('HouseBill', 'HouseBill'), ('MasterBill', 'MasterBill')], help_text='Consignment details', max_length=100, verbose_name='Document Type'),
+            model_name="document",
+            name="consignment_ref_doc_type",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("ConNote", "ConNote"),
+                    ("HouseBill", "HouseBill"),
+                    ("MasterBill", "MasterBill"),
+                ],
+                help_text="Consignment details",
+                max_length=100,
+                verbose_name="Document Type",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='document_number',
-            field=models.CharField(default='', max_length=256),
+            model_name="document",
+            name="document_number",
+            field=models.CharField(default="", max_length=256),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='type',
-            field=models.CharField(choices=[('pref_coo', 'Preferential Certificate of Origin'), ('non_pref_coo', 'Non-preferential Certificate of Origin')], max_length=64, verbose_name='Document type'),
+            model_name="document",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("pref_coo", "Preferential Certificate of Origin"),
+                    ("non_pref_coo", "Non-preferential Certificate of Origin"),
+                ],
+                max_length=64,
+                verbose_name="Document type",
+            ),
         ),
     ]

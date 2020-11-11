@@ -18,14 +18,15 @@ class User(AbstractUser):
     initial_business_id = models.CharField(
         max_length=500,
         help_text=_("The value provided by user on registration step"),
-        blank=True, default=""
+        blank=True,
+        default="",
     )
-    mobile_number = models.CharField(
-        max_length=32, blank=True, default=""
-    )
+    mobile_number = models.CharField(max_length=32, blank=True, default="")
     verified_mobile_number = models.CharField(
-        max_length=32, blank=True, default="",
-        help_text=_("Value appears here only after validation")
+        max_length=32,
+        blank=True,
+        default="",
+        help_text=_("Value appears here only after validation"),
     )
 
     class Meta(AbstractUser.Meta):
@@ -65,8 +66,7 @@ class User(AbstractUser):
                 current_org_ms = None
                 if current_org_id:
                     current_org_ms = OrgMembership.objects.filter(
-                        user=self,
-                        org_id=current_org_id
+                        user=self, org_id=current_org_id
                     ).first()
                 if not current_org_ms:
                     current_org_ms = OrgMembership.objects.filter(
@@ -80,18 +80,16 @@ class User(AbstractUser):
         return org
 
     def get_orgs_with_provided_bid(self):
-        return Organisation.objects.filter(
-            business_id=self.initial_business_id
-        )
+        return Organisation.objects.filter(business_id=self.initial_business_id)
 
 
 class OrgMembership(models.Model):
-    ROLE_ADMIN = 'a'
-    ROLE_USER = 'u'
+    ROLE_ADMIN = "a"
+    ROLE_USER = "u"
 
     ROLES = (
-        (ROLE_ADMIN, _('Admin (can add users)')),
-        (ROLE_USER, _('User (can use org but not add users)'))
+        (ROLE_ADMIN, _("Admin (can add users)")),
+        (ROLE_USER, _("User (can use org but not add users)")),
     )
 
     org = models.ForeignKey("Organisation", models.CASCADE)
@@ -107,14 +105,13 @@ class Organisation(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     users = models.ManyToManyField(
-        "User", related_name="users",
+        "User",
+        related_name="users",
         through=OrgMembership,
-        through_fields=('org', 'user'),
+        through_fields=("org", "user"),
     )
     business_id = models.CharField(
-        max_length=64,
-        help_text=_('ABN for Australia'),
-        blank=True
+        max_length=64, help_text=_("ABN for Australia"), blank=True
     )
     dot_separated_id = models.CharField(
         max_length=256, blank=True, default="fill.that.value.au"
@@ -140,9 +137,7 @@ class Organisation(models.Model):
             roles.append(_("Regulator"))
         if not roles:
             return "no roles"
-        return ', '.join([
-            str(r) for r in roles
-        ])
+        return ", ".join([str(r) for r in roles])
 
     @cached_property
     def can_issue_certificates(self):
@@ -162,10 +157,10 @@ class OrgRoleRequest(models.Model):
         (ROLE_CHAMBERS, _("Chamber")),
     )
 
-    STATUS_REQUESTED = 'requested'
-    STATUS_EVIDENCE = 'evidence'
-    STATUS_APPROVED = 'approved'
-    STATUS_REJECTED = 'rejected'
+    STATUS_REQUESTED = "requested"
+    STATUS_EVIDENCE = "evidence"
+    STATUS_APPROVED = "approved"
+    STATUS_REJECTED = "rejected"
 
     STATUS_CHOICES = (
         (STATUS_REQUESTED, _("Requested")),
@@ -185,28 +180,32 @@ class OrgRoleRequest(models.Model):
         max_length=16, default=STATUS_REQUESTED, choices=STATUS_CHOICES
     )
     evidence = models.FileField(
-        blank=True, null=True,
-        validators=[FileExtensionValidator(allowed_extensions=[
-            'jpeg',
-            'jpg',
-            'png',
-            'pdf',
-            'doc',
-            'docx',
-            'odt',
-            'gif',
-        ])]
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=[
+                    "jpeg",
+                    "jpg",
+                    "png",
+                    "pdf",
+                    "doc",
+                    "docx",
+                    "odt",
+                    "gif",
+                ]
+            )
+        ],
     )
 
     handled_by = models.ForeignKey(
-        User, models.SET_NULL, blank=True, null=True,
-        related_name="orgrequests_handled"
+        User, models.SET_NULL, blank=True, null=True, related_name="orgrequests_handled"
     )
     reject_reason = models.CharField(max_length=1024, blank=True, default="")
     evidence_name = models.CharField(max_length=1024, blank=True, default="")
 
     class Meta:
-        ordering = ('-created_at',)
+        ordering = ("-created_at",)
 
     def __str__(self):
         return "{} for {}".format(self.get_role_display(), self.org)
@@ -217,35 +216,39 @@ class OrganisationAuthToken(models.Model):
     Just an auth token from the DRF which is linked to the organisation
     as well as user
     """
+
     uuid = models.UUIDField(default=uuid.uuid4, primary_key=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='api_tokens',
-        on_delete=models.CASCADE, verbose_name=_("User")
+        settings.AUTH_USER_MODEL,
+        related_name="api_tokens",
+        on_delete=models.CASCADE,
+        verbose_name=_("User"),
     )
     org = models.ForeignKey(
         Organisation,
         on_delete=models.CASCADE,
-        related_name='oauth2_tokens',
+        related_name="oauth2_tokens",
     )
     access_token = models.CharField(
-        _("Key"), max_length=40, unique=True,
+        _("Key"),
+        max_length=40,
+        unique=True,
     )
 
     readable_name = models.CharField(
-        max_length=1024, blank=True, default='',
-        help_text=_("For example, 'PC37/office3' - or any other text useful for you")
+        max_length=1024,
+        blank=True,
+        default="",
+        help_text=_("For example, 'PC37/office3' - or any other text useful for you"),
     )
 
     class Meta:
-        ordering = ('-created_at',)
+        ordering = ("-created_at",)
 
     def __str__(self):
-        return '{} for {}'.format(
-            self.short_access_token(),
-            self.org.name
-        )
+        return "{} for {}".format(self.short_access_token(), self.org.name)
 
     def save(self, *args, **kwargs):
         if not self.access_token:

@@ -10,81 +10,145 @@ import django_countries.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0026_auto_20200804_1827'),
+        ("documents", "0026_auto_20200804_1827"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='oadetails',
-            options={'ordering': ('-created_at',), 'verbose_name': 'OA details', 'verbose_name_plural': 'OA details'},
+            name="oadetails",
+            options={
+                "ordering": ("-created_at",),
+                "verbose_name": "OA details",
+                "verbose_name_plural": "OA details",
+            },
         ),
         migrations.AlterModelOptions(
-            name='party',
-            options={'ordering': ('name',), 'verbose_name': 'party', 'verbose_name_plural': 'parties'},
+            name="party",
+            options={
+                "ordering": ("name",),
+                "verbose_name": "party",
+                "verbose_name_plural": "parties",
+            },
         ),
         migrations.AddField(
-            model_name='oadetails',
-            name='oa_file',
-            field=models.FileField(blank=True, help_text='Wrapped OA document, JSON', upload_to=''),
+            model_name="oadetails",
+            name="oa_file",
+            field=models.FileField(
+                blank=True, help_text="Wrapped OA document, JSON", upload_to=""
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='created_at',
-            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name='created at'),
+            model_name="document",
+            name="created_at",
+            field=models.DateTimeField(
+                default=django.utils.timezone.now, verbose_name="created at"
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='created_by_org',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='users.Organisation', verbose_name='created by org'),
+            model_name="document",
+            name="created_by_org",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="users.Organisation",
+                verbose_name="created by org",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='created_by_user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='created by user'),
+            model_name="document",
+            name="created_by_user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="created by user",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='document_number',
-            field=models.CharField(default='', max_length=256, verbose_name='Document number'),
+            model_name="document",
+            name="document_number",
+            field=models.CharField(
+                default="", max_length=256, verbose_name="Document number"
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='exporter',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='documents_exported', to='documents.Party', verbose_name='exporter'),
+            model_name="document",
+            name="exporter",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="documents_exported",
+                to="documents.Party",
+                verbose_name="exporter",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='importer_name',
-            field=models.CharField(blank=True, default='', help_text='Organisation name or business ID (ABN, UEN)', max_length=256, verbose_name='Importer name'),
+            model_name="document",
+            name="importer_name",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Organisation name or business ID (ABN, UEN)",
+                max_length=256,
+                verbose_name="Importer name",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='importing_country',
-            field=django_countries.fields.CountryField(max_length=2, verbose_name='Importing jurisdiction'),
+            model_name="document",
+            name="importing_country",
+            field=django_countries.fields.CountryField(
+                max_length=2, verbose_name="Importing jurisdiction"
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='issuer',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='documents_issued', to='documents.Party', verbose_name='issuer'),
+            model_name="document",
+            name="issuer",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="documents_issued",
+                to="documents.Party",
+                verbose_name="issuer",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='sending_jurisdiction',
-            field=django_countries.fields.CountryField(default='AU', max_length=2, verbose_name='Sending jurisdiction'),
+            model_name="document",
+            name="sending_jurisdiction",
+            field=django_countries.fields.CountryField(
+                default="AU", max_length=2, verbose_name="Sending jurisdiction"
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('failed', 'Failed'), ('validated', 'Validated'), ('incoming', 'Incoming')], default='pending', max_length=12, verbose_name='Status'),
+            model_name="document",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("failed", "Failed"),
+                    ("validated", "Validated"),
+                    ("incoming", "Incoming"),
+                ],
+                default="pending",
+                max_length=12,
+                verbose_name="Status",
+            ),
         ),
         migrations.AlterField(
-            model_name='fta',
-            name='country',
-            field=django_countries.fields.CountryField(max_length=746, multiple=True, verbose_name='country'),
+            model_name="fta",
+            name="country",
+            field=django_countries.fields.CountryField(
+                max_length=746, multiple=True, verbose_name="country"
+            ),
         ),
         migrations.AlterField(
-            model_name='fta',
-            name='name',
-            field=models.CharField(blank=True, default='', max_length=256, verbose_name='name'),
+            model_name="fta",
+            name="name",
+            field=models.CharField(
+                blank=True, default="", max_length=256, verbose_name="name"
+            ),
         ),
     ]

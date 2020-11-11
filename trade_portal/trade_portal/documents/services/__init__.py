@@ -31,6 +31,6 @@ class BaseIgService:
         ig_client = IntergovClient(
             country=settings.ICL_APP_COUNTRY,
             endpoints=settings.IGL_APIS,
-            auth_class=ig_auth_class
+            auth_class=ig_auth_class,
         )
         return ig_client

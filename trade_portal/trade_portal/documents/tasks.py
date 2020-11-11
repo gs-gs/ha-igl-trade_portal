@@ -3,7 +3,8 @@ import logging
 from django.conf import settings
 
 from trade_portal.documents.models import (
-    Document, DocumentHistoryItem,
+    Document,
+    DocumentHistoryItem,
 )
 from trade_portal.documents.services.lodge import DocumentService, NodeService
 from trade_portal.documents.services.textract import MetadataExtractService
@@ -14,13 +15,17 @@ from config import celery_app
 logger = logging.getLogger(__name__)
 
 
-@celery_app.task(ignore_result=True,
-                 max_retries=3, interval_start=10, interval_step=10, interval_max=50)
+@celery_app.task(
+    ignore_result=True,
+    max_retries=3,
+    interval_start=10,
+    interval_step=10,
+    interval_max=50,
+)
 def lodge_document(document_id=None):
     doc = Document.objects.get(pk=document_id)
     DocumentHistoryItem.objects.create(
-        document=doc,
-        message="Starting the issue step..."
+        document=doc, message="Starting the issue step..."
     )
 
     WatermarkService().watermark_document(doc)
@@ -38,14 +43,26 @@ def lodge_document(document_id=None):
             doc.save()
 
 
-@celery_app.task(bind=True, ignore_result=True,
-                 max_retries=3, interval_start=10, interval_step=10, interval_max=50)
+@celery_app.task(
+    bind=True,
+    ignore_result=True,
+    max_retries=3,
+    interval_start=10,
+    interval_step=10,
+    interval_max=50,
+)
 def update_message_by_sender_ref(self, sender_ref):
     NodeService().update_message_by_sender_ref(sender_ref)
 
 
-@celery_app.task(bind=True, ignore_result=True,
-                 max_retries=3, interval_start=10, interval_step=10, interval_max=50)
+@celery_app.task(
+    bind=True,
+    ignore_result=True,
+    max_retries=3,
+    interval_start=10,
+    interval_step=10,
+    interval_max=50,
+)
 def store_message_by_ping_body(self, ping_body):
     NodeService().store_message_by_ping_body(ping_body)
 
@@ -66,19 +83,23 @@ def process_incoming_document_received(self, document_pk):
                 logger.warning(
                     "Retrying the doc %s processing task %sth time",
                     doc,
-                    self.request.retries
+                    self.request.retries,
                 )
                 retry_delay = 15 + 30 * self.request.retries
                 DocumentHistoryItem.objects.create(
-                    type="error", document=doc,
+                    type="error",
+                    document=doc,
                     message=f"Error, will be trying again in {retry_delay}s",
                     object_body=str(e),
                 )
                 self.retry(countdown=retry_delay)
             else:
-                logger.error("Max retries reached for the document %s, marking as error", doc)
+                logger.error(
+                    "Max retries reached for the document %s, marking as error", doc
+                )
                 DocumentHistoryItem.objects.create(
-                    type="error", document=doc,
+                    type="error",
+                    document=doc,
                     message=f"Unable to process document after {self.request.retries} retries",
                     object_body=str(e),
                 )
@@ -89,7 +110,8 @@ def process_incoming_document_received(self, document_pk):
             # non-retryable exception
             logger.exception(e)
             DocumentHistoryItem.objects.create(
-                type="error", document=doc,
+                type="error",
+                document=doc,
                 message="Unable to process document, non-retryable exception",
                 object_body=str(e),
             )
@@ -101,8 +123,13 @@ def process_incoming_document_received(self, document_pk):
     return
 
 
-@celery_app.task(ignore_result=True,
-                 max_retries=3, interval_start=10, interval_step=10, interval_max=50)
+@celery_app.task(
+    ignore_result=True,
+    max_retries=3,
+    interval_start=10,
+    interval_step=10,
+    interval_max=50,
+)
 def textract_document(document_id=None):
     return
     doc = Document.objects.get(pk=document_id)
@@ -119,17 +146,18 @@ def document_oa_verify(self, document_id):
     """
     document = Document.objects.get(pk=document_id)
     logger.info(
-        "Trying to verify document %s, attempt %s",
-        document,
-        self.request.retries
+        "Trying to verify document %s, attempt %s", document, self.request.retries
     )
     vc = document.get_vc()
     if not vc:
         document.verification_status = Document.V_STATUS_ERROR
         document.save()
-        logger.info("Unable to verify document: no VC can be retrieved for %s", document)
+        logger.info(
+            "Unable to verify document: no VC can be retrieved for %s", document
+        )
         DocumentHistoryItem.objects.create(
-            type="error", document=document,
+            type="error",
+            document=document,
             message="Unable to verify document: no VC can be retrieved; it's either invalid or of non-OA format",
         )
         return
@@ -140,7 +168,8 @@ def document_oa_verify(self, document_id):
             document.verification_status = Document.V_STATUS_PENDING
             document.save()
             DocumentHistoryItem.objects.create(
-                type="OA", document=document,
+                type="OA",
+                document=document,
                 message="Verification started...",
             )
 
@@ -149,16 +178,22 @@ def document_oa_verify(self, document_id):
         document.verification_status = Document.V_STATUS_VALID
         document.save()
         DocumentHistoryItem.objects.create(
-            type="OA", document=document,
+            type="OA",
+            document=document,
             message="The document OA credential is valid",
         )
         return
     elif verify_response.get("status") == "error":
         document.verification_status = Document.V_STATUS_ERROR
         document.save()
-        logger.error("Unable to verify document: Error %s for %s", verify_response.get("error_message"), document)
+        logger.error(
+            "Unable to verify document: Error %s for %s",
+            verify_response.get("error_message"),
+            document,
+        )
         DocumentHistoryItem.objects.create(
-            type="error", document=document,
+            type="error",
+            document=document,
             message=f"Unable to verify document: {verify_response.get('error_message')}",
         )
         return
@@ -166,7 +201,7 @@ def document_oa_verify(self, document_id):
         logger.info(
             "Retrying the document %s verification task (%s)",
             document,
-            self.request.retries
+            self.request.retries,
         )
         retry_delay = 15 + 30 * self.request.retries
 
@@ -179,6 +214,7 @@ def document_oa_verify(self, document_id):
         document.verification_status = Document.V_STATUS_FAILED
         document.save()
         DocumentHistoryItem.objects.create(
-            type="error", document=document,
+            type="error",
+            document=document,
             message=f"Unable to verify the document after {self.request.retries} attempts",
         )

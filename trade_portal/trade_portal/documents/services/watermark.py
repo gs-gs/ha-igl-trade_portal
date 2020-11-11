@@ -8,7 +8,8 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 from trade_portal.documents.models import (
-    Document, DocumentFile,
+    Document,
+    DocumentFile,
 )
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ class WatermarkService:
     """
     Helper to add QR code to the uploaded PDF file assuming it doesn't have any
     """
+
     def watermark_document(self, document: Document):
         qrcode_image = document.oa.get_qr_image()
         for docfile in document.files.filter(is_watermarked=False):
@@ -46,12 +48,8 @@ class WatermarkService:
         qrcode_stream = io.BytesIO()
         c = canvas.Canvas(qrcode_stream, pagesize=A4)
 
-        x_loc = float(
-            docfile.doc.extra_data.get("qr_x_position") or 83
-        ) / 100
-        y_loc = 1 - float(
-            docfile.doc.extra_data.get("qr_y_position") or 4
-        ) / 100
+        x_loc = float(docfile.doc.extra_data.get("qr_x_position") or 83) / 100
+        y_loc = 1 - float(docfile.doc.extra_data.get("qr_y_position") or 4) / 100
 
         if x_loc < 0:
             x_loc = 0
@@ -69,8 +67,11 @@ class WatermarkService:
 
         c.drawImage(
             ImageReader(qrcode_image),
-            image_x_loc, image_y_loc,
-            width=image_width, height=image_width, preserveAspectRatio=1,
+            image_x_loc,
+            image_y_loc,
+            width=image_width,
+            height=image_width,
+            preserveAspectRatio=1,
         )
         c.save()
 
@@ -90,15 +91,12 @@ class WatermarkService:
         output_file.write(outputStream)
 
         old_filename_parts = docfile.file.name.rsplit(".", maxsplit=1)
-        new_filename = ".".join([
-            old_filename_parts[0].rstrip(".altered"),
-            "altered",
-            old_filename_parts[1]
-        ])
+        new_filename = ".".join(
+            [old_filename_parts[0].rstrip(".altered"), "altered", old_filename_parts[1]]
+        )
         outputStream.seek(0)
         new_saved_filename = default_storage.save(
-            new_filename,
-            ContentFile(outputStream.read())
+            new_filename, ContentFile(outputStream.read())
         )
         docfile.file = new_saved_filename
         logger.info("Saved altered PDF file as %s", new_saved_filename)
@@ -120,7 +118,7 @@ class WatermarkService:
         pdf_bytes.seek(0)
         img = Image(file=pdf_bytes, resolution=resolution)
         img.convert("png")
-        img.format = 'png'
+        img.format = "png"
         stream = io.BytesIO()
         img.save(file=stream)
         stream.seek(0)

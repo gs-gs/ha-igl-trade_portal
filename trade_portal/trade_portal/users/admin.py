@@ -3,7 +3,9 @@ from django.contrib.auth import admin as auth_admin
 from django.contrib.auth import get_user_model
 
 from trade_portal.users.models import (
-    Organisation, OrgMembership, OrgRoleRequest,
+    Organisation,
+    OrgMembership,
+    OrgRoleRequest,
     OrganisationAuthToken,
 )
 from trade_portal.users.forms import UserChangeForm
@@ -16,21 +18,31 @@ class UserAdmin(auth_admin.UserAdmin):
     form = UserChangeForm
     # add_form = UserCreationForm
     list_display = [
-        "pk", "username", "email",
-        "first_name", "last_name", "is_staff", "is_superuser",
+        "pk",
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_staff",
+        "is_superuser",
     ]
     list_filter = ["is_staff", "is_superuser"]
     search_fields = ["username", "email"]
     fieldsets = auth_admin.UserAdmin.fieldsets + (
-        ("Business Data", {'fields': ('mobile_number', 'initial_business_id')}),
+        ("Business Data", {"fields": ("mobile_number", "initial_business_id")}),
     )
 
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
     list_display = (
-        "pk", "name", "business_id", "dot_separated_id",
-        "is_trader", "is_chambers", "is_regulator"
+        "pk",
+        "name",
+        "business_id",
+        "dot_separated_id",
+        "is_trader",
+        "is_chambers",
+        "is_regulator",
     )
 
 
@@ -46,4 +58,4 @@ class OrgRoleRequestAdmin(admin.ModelAdmin):
 
 @admin.register(OrganisationAuthToken)
 class OrganisationAuthTokenAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'org', 'short_access_token', 'readable_name')
+    list_display = ("created_at", "org", "short_access_token", "readable_name")

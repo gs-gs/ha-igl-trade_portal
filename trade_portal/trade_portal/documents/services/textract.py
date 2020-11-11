@@ -38,6 +38,7 @@ class MetadataExtractService:
         # pdf2image pypdf2
         from pdf2image import convert_from_bytes
         from PyPDF2 import PdfFileWriter, PdfFileReader
+
         # import time
 
         # First we get only the first page of the document
@@ -70,18 +71,24 @@ class MetadataExtractService:
             right_part.save(tmp_dir + ".2.png", "PNG")
 
             # run Tesseract
-            subprocess.run([
-                "tesseract",  # base command
-                tmp_dir + ".1.png",  # input filename
-                tmp_dir + ".1.png",  # out prefix - tesseract will create .txt file with that name
-            ])
+            subprocess.run(
+                [
+                    "tesseract",  # base command
+                    tmp_dir + ".1.png",  # input filename
+                    tmp_dir
+                    + ".1.png",  # out prefix - tesseract will create .txt file with that name
+                ]
+            )
             text1 = open(tmp_dir + ".1.png" + ".txt", "r").read()
 
-            subprocess.run([
-                "tesseract",  # base command
-                tmp_dir + ".2.png",  # input filename
-                tmp_dir + ".2.png",  # out prefix - tesseract will create .txt file with that name
-            ])
+            subprocess.run(
+                [
+                    "tesseract",  # base command
+                    tmp_dir + ".2.png",  # input filename
+                    tmp_dir
+                    + ".2.png",  # out prefix - tesseract will create .txt file with that name
+                ]
+            )
             text2 = open(tmp_dir + ".2.png" + ".txt", "r").read()
 
             os.remove(tmp_dir + ".1.png")
@@ -115,18 +122,14 @@ class MetadataExtractService:
                 if lines_acc:
                     # new block while the prev block is present
                     if len(lines_acc) > 1:
-                        md[lines_acc[0].strip()] = "\n".join(
-                            lines_acc[1:]
-                        ).strip()
+                        md[lines_acc[0].strip()] = "\n".join(lines_acc[1:]).strip()
                 lines_acc = []
             if line and line[0].isdigit() and line[1] == ".":
                 # may be a block start
                 if lines_acc:
                     # new block while the prev block is present
                     if len(lines_acc) > 1:
-                        md[lines_acc[0].strip()] = "\n".join(
-                            lines_acc[1:]
-                        ).strip()
+                        md[lines_acc[0].strip()] = "\n".join(lines_acc[1:]).strip()
                     lines_acc = [line]
                 else:
                     # just start a new block

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0008_party_dot_separated_id'),
+        ("documents", "0008_party_dot_separated_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='document',
-            name='search_field',
-            field=models.TextField(blank=True, default=''),
+            model_name="document",
+            name="search_field",
+            field=models.TextField(blank=True, default=""),
         ),
     ]

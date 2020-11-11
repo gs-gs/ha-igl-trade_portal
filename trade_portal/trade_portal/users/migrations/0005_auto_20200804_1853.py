@@ -6,23 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0004_auto_20200714_2147'),
+        ("users", "0004_auto_20200714_2147"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='initial_business_id',
-            field=models.CharField(blank=True, default='', help_text='The value provided by user on registration step', max_length=500),
+            model_name="user",
+            name="initial_business_id",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="The value provided by user on registration step",
+                max_length=500,
+            ),
         ),
         migrations.AddField(
-            model_name='user',
-            name='mobile_number',
-            field=models.CharField(blank=True, default='', max_length=32),
+            model_name="user",
+            name="mobile_number",
+            field=models.CharField(blank=True, default="", max_length=32),
         ),
         migrations.AddField(
-            model_name='user',
-            name='verified_mobile_number',
-            field=models.CharField(blank=True, default='', help_text='Value appears here only after validation', max_length=32),
+            model_name="user",
+            name="verified_mobile_number",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Value appears here only after validation",
+                max_length=32,
+            ),
         ),
     ]

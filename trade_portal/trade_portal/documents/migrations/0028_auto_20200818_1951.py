@@ -6,24 +6,49 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0027_auto_20200817_1934'),
+        ("documents", "0027_auto_20200817_1934"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='document',
-            name='verification_status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('valid', 'valid'), ('failed', 'failed'), ('error', 'error')], default='pending', max_length=32, verbose_name='Verification Status'),
+            model_name="document",
+            name="verification_status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("valid", "valid"),
+                    ("failed", "failed"),
+                    ("error", "error"),
+                ],
+                default="pending",
+                max_length=32,
+                verbose_name="Verification Status",
+            ),
         ),
         migrations.AddField(
-            model_name='document',
-            name='workflow_status',
-            field=models.CharField(choices=[('draft', 'Draft'), ('issued', 'Issued')], default='draft', max_length=32, verbose_name='Workflow status'),
+            model_name="document",
+            name="workflow_status",
+            field=models.CharField(
+                choices=[("draft", "Draft"), ("issued", "Issued")],
+                default="draft",
+                max_length=32,
+                verbose_name="Workflow status",
+            ),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('failed', 'Failed'), ('validated', 'Validated'), ('incoming', 'Incoming')], default='pending', max_length=12, verbose_name='Message Status'),
+            model_name="document",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("failed", "Failed"),
+                    ("validated", "Validated"),
+                    ("incoming", "Incoming"),
+                ],
+                default="pending",
+                max_length=12,
+                verbose_name="Message Status",
+            ),
         ),
-        migrations.RunSQL("UPDATE documents_document SET workflow_status = 'issued';")
+        migrations.RunSQL("UPDATE documents_document SET workflow_status = 'issued';"),
     ]

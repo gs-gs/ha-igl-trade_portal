@@ -10,7 +10,7 @@ from django.utils import timezone
 logger = logging.getLogger(__name__)
 
 
-class NotaryService():
+class NotaryService:
     """
     Service made solely for files notarisation.
     In it's current state it just puts some file to some bucket and ensurees that
@@ -25,25 +25,26 @@ class NotaryService():
         import boto3  # local import because some setups may not even use it
 
         if not config.OA_UNPROCESSED_BUCKET_NAME:
-            logger.warning("Asked to notarize file but the service is not configured well")
+            logger.warning(
+                "Asked to notarize file but the service is not configured well"
+            )
             return False
 
         s3_config = {
-            'aws_access_key_id': config.OA_AWS_ACCESS_KEYS.split(":")[0] or None,
-            'aws_secret_access_key': config.OA_AWS_ACCESS_KEYS.split(":")[1] or None,
-            'region_name': None,
+            "aws_access_key_id": config.OA_AWS_ACCESS_KEYS.split(":")[0] or None,
+            "aws_secret_access_key": config.OA_AWS_ACCESS_KEYS.split(":")[1] or None,
+            "region_name": None,
         }
-        s3res = boto3.resource('s3', **s3_config).Bucket(config.OA_UNPROCESSED_BUCKET_NAME)
+        s3res = boto3.resource("s3", **s3_config).Bucket(
+            config.OA_UNPROCESSED_BUCKET_NAME
+        )
 
-        body = document_body.encode('utf-8')
+        body = document_body.encode("utf-8")
         content_length = len(body)
 
         date = str(timezone.now().date())
         key = f"{date}/{doc_key}.json"
-        s3res.Object(key).put(
-            Body=body,
-            ContentLength=content_length
-        )
+        s3res.Object(key).put(Body=body, ContentLength=content_length)
         logger.info("The file %s to be notarized has been uploaded", key)
         cls.send_manual_notification(key)
         return True
@@ -62,27 +63,27 @@ class NotaryService():
             return
 
         s3_config = {
-            'aws_access_key_id': config.OA_AWS_ACCESS_KEYS.split(":")[0] or None,
-            'aws_secret_access_key': config.OA_AWS_ACCESS_KEYS.split(":")[1] or None,
-            'region_name': 'ap-southeast-2',
+            "aws_access_key_id": config.OA_AWS_ACCESS_KEYS.split(":")[0] or None,
+            "aws_secret_access_key": config.OA_AWS_ACCESS_KEYS.split(":")[1] or None,
+            "region_name": "ap-southeast-2",
         }
 
-        unprocessed_queue = boto3.resource('sqs', **s3_config).Queue(
+        unprocessed_queue = boto3.resource("sqs", **s3_config).Queue(
             config.OA_UNPROCESSED_QUEUE_URL
         )
-        unprocessed_queue.send_message(MessageBody=json.dumps({
-           "Records": [
-              {
-                 "s3": {
-                    "bucket": {
-                       "name": config.OA_UNPROCESSED_BUCKET_NAME
-                    },
-                    "object": {
-                       "key": key
-                    }
-                 }
-              }
-           ]
-        }))
+        unprocessed_queue.send_message(
+            MessageBody=json.dumps(
+                {
+                    "Records": [
+                        {
+                            "s3": {
+                                "bucket": {"name": config.OA_UNPROCESSED_BUCKET_NAME},
+                                "object": {"key": key},
+                            }
+                        }
+                    ]
+                }
+            )
+        )
         logger.info("The notification about file %s to be notarized has been sent", key)
         return

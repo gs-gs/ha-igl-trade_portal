@@ -7,23 +7,32 @@ import django_countries.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0019_auto_20200708_0020'),
+        ("documents", "0019_auto_20200708_0020"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='documenthistoryitem',
-            name='related_file',
-            field=models.FileField(blank=True, upload_to=''),
+            model_name="documenthistoryitem",
+            name="related_file",
+            field=models.FileField(blank=True, upload_to=""),
         ),
         migrations.AlterField(
-            model_name='document',
-            name='sending_jurisdiction',
-            field=django_countries.fields.CountryField(default='AU', max_length=2),
+            model_name="document",
+            name="sending_jurisdiction",
+            field=django_countries.fields.CountryField(default="AU", max_length=2),
         ),
         migrations.AlterField(
-            model_name='nodemessage',
-            name='status',
-            field=models.CharField(choices=[('sent', 'Sent'), ('accepted', 'Accepted'), ('rejected', 'Rejected'), ('inbound', 'Inbound')], default='sent', max_length=16),
+            model_name="nodemessage",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("sent", "Sent"),
+                    ("accepted", "Accepted"),
+                    ("rejected", "Rejected"),
+                    ("inbound", "Inbound"),
+                ],
+                default="sent",
+                max_length=16,
+            ),
         ),
     ]

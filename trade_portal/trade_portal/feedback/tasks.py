@@ -36,6 +36,6 @@ def send_feedback_notification(fb_id):
         f"{email_text}\n\nYou can review it in the admin panel.",
         settings.DEFAULT_FROM_EMAIL,
         recipient_list=[config.FEEDBACK_EMAIL],
-        fail_silently=False
+        fail_silently=False,
     )
     return

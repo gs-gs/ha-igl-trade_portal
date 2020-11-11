@@ -13,7 +13,10 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 from trade_portal.documents.models import (
-    FTA, Party, Document, DocumentHistoryItem,
+    FTA,
+    Party,
+    Document,
+    DocumentHistoryItem,
     DocumentFile,
 )
 from trade_portal.documents.services import BaseIgService
@@ -29,13 +32,13 @@ class IncomingDocumentProcessingError(Exception):
 
 
 class IncomingDocumentService(BaseIgService):
-
     def process_new(self, doc: Document):
         from trade_portal.documents.tasks import document_oa_verify
 
         DocumentHistoryItem.objects.create(
-            type="text", document=doc,
-            message="Started the incoming document retrieval..."
+            type="text",
+            document=doc,
+            message="Started the incoming document retrieval...",
         )
         # 1. Download the obj from the document API
         try:
@@ -48,8 +51,7 @@ class IncomingDocumentService(BaseIgService):
         # do we have it already?
         try:
             the_file = DocumentFile.objects.filter(
-                doc=doc,
-                filename=doc.intergov_details["obj"]
+                doc=doc, filename=doc.intergov_details["obj"]
             ).first()
             if the_file:
                 logger.info("We already have that file, funny")
@@ -62,14 +64,15 @@ class IncomingDocumentService(BaseIgService):
 
             path = default_storage.save(
                 f'incoming/{doc.id}/{doc.intergov_details["obj"]}.json',
-                ContentFile(binary_obj_content)
+                ContentFile(binary_obj_content),
             )
             # TODO: kill the old file before?
             the_file.file = path
             the_file.save()
         except Exception as e:
             DocumentHistoryItem.objects.create(
-                type="error", document=doc,
+                type="error",
+                document=doc,
                 message="Failed to store obj from the message",
                 object_body=str(e),
             )
@@ -78,10 +81,11 @@ class IncomingDocumentService(BaseIgService):
             return False
 
         DocumentHistoryItem.objects.create(
-            type="docfile", document=doc,
+            type="docfile",
+            document=doc,
             message="Downloaded the obj from the root message",
             object_body=the_file.filename,
-            linked_obj_id=the_file.pk
+            linked_obj_id=the_file.pk,
         )
         # we have saved the obj file, now we are able to parse it
         try:
@@ -93,10 +97,7 @@ class IncomingDocumentService(BaseIgService):
                 "Unable to render the object attached to this message",
             )
         # schedule the verification
-        document_oa_verify.apply_async(
-            args=[doc.pk],
-            countdown=10
-        )
+        document_oa_verify.apply_async(args=[doc.pk], countdown=10)
         return True
 
     def get_incoming_document_format(self, doc: Document, binary_obj_content):
@@ -109,8 +110,7 @@ class IncomingDocumentService(BaseIgService):
             logger.info("Found some JSON obj for incoming document %s", doc)
         else:
             return self._complain_and_die(
-                doc,
-                "Incoming document has no supported obj (can't parse it)"
+                doc, "Incoming document has no supported obj (can't parse it)"
             )
             return False
 
@@ -118,28 +118,30 @@ class IncomingDocumentService(BaseIgService):
             return self._complain_and_die(
                 doc,
                 "While incoming document %s obj is json - it's still unsupported",
-                doc
+                doc,
             )
             return False
 
         oa_version = json_content.get("version")
         supported_versions = (
             "https://schema.openattestation.com/2.0/schema.json",
-            "https://schema.openattestation.com/3.0/schema.json"
+            "https://schema.openattestation.com/3.0/schema.json",
         )
 
         if oa_version not in supported_versions:
             return self._complain_and_die(
                 doc,
                 "Incoming document %s obj format '%s' is not supported",
-                doc, oa_version
+                doc,
+                oa_version,
             )
 
         # wow, it's even OA document
         DocumentHistoryItem.objects.create(
-            type="message", document=doc,
+            type="message",
+            document=doc,
             message="Found OA document",
-            object_body=oa_version
+            object_body=oa_version,
         )
 
         try:
@@ -149,15 +151,16 @@ class IncomingDocumentService(BaseIgService):
                     "document": json_content,
                     "params": {
                         "version": oa_version,
-                    }
-                }
+                    },
+                },
             ).json()
         except Exception as e:
             logger.exception(e)
             return self._complain_and_die(
                 doc,
                 "Can't unwrap %s document for %s",
-                oa_version, doc,
+                oa_version,
+                doc,
             )
 
         if oa_version == "https://schema.openattestation.com/2.0/schema.json":
@@ -168,7 +171,8 @@ class IncomingDocumentService(BaseIgService):
             return self._complain_and_die(
                 doc,
                 "Unknown OA version",
-                oa_version, doc,
+                oa_version,
+                doc,
             )
         return True
 
@@ -197,7 +201,7 @@ class IncomingDocumentService(BaseIgService):
         unCoOattachedFile = coo.get("attachedFile")
         if unCoOattachedFile:
             file_mimecode = unCoOattachedFile["mimeCode"]
-            file_ext = file_mimecode.rsplit('/')[-1].lower()
+            file_ext = file_mimecode.rsplit("/")[-1].lower()
             bin_file = base64.b64decode(unCoOattachedFile["file"].encode("utf-8"))
             af = DocumentFile.objects.create(
                 doc=doc,
@@ -206,8 +210,7 @@ class IncomingDocumentService(BaseIgService):
                 is_watermarked=None,
             )
             path = default_storage.save(
-                f'incoming/{doc.id}/attach-{str(uuid.uuid4())}',
-                ContentFile(bin_file)
+                f"incoming/{doc.id}/attach-{str(uuid.uuid4())}", ContentFile(bin_file)
             )
             af.file = path
             af.save()
@@ -235,9 +238,7 @@ class IncomingDocumentService(BaseIgService):
             doc.issuer = party_from_json(issuer_data)
         except Exception as e:
             logger.exception(e)
-            logger.warning(
-                "Can't parse issuer for %s", doc
-            )
+            logger.warning("Can't parse issuer for %s", doc)
 
         supplyChainConsignment = coo.get("supplyChainConsignment", {})
         consignor = supplyChainConsignment.get("consignor", {})
@@ -253,9 +254,7 @@ class IncomingDocumentService(BaseIgService):
                         importer.get("name"),
                         importer.get("id"),
                     ]
-                    doc.importer_name = ' '.join(
-                        (x for x in importer_parts if x)
-                    )
+                    doc.importer_name = " ".join((x for x in importer_parts if x))
             except Exception as e:
                 logger.exception(e)
                 logger.warning("Can't parse consignor or consignee for %s", doc)
@@ -268,7 +267,7 @@ class IncomingDocumentService(BaseIgService):
                 except Exception:
                     logger.warning(
                         "The FTA %s is passed in the inbound document but can't be found locally",
-                        freeTradeAgreement
+                        freeTradeAgreement,
                     )
         except Exception as e:
             logger.exception(e)
@@ -283,11 +282,10 @@ class IncomingDocumentService(BaseIgService):
             af = DocumentFile.objects.create(
                 doc=doc,
                 filename=attach.get("filename") or "unknown.bin",
-                size=len(bin_file)
+                size=len(bin_file),
             )
             path = default_storage.save(
-                f'incoming/{doc.id}/attach-{str(uuid.uuid4())}',
-                ContentFile(bin_file)
+                f"incoming/{doc.id}/attach-{str(uuid.uuid4())}", ContentFile(bin_file)
             )
             af.file = path
             af.save()
@@ -303,7 +301,11 @@ class IncomingDocumentService(BaseIgService):
                 if issueDateTime:
                     doc.created_at = issueDateTime
 
-            if (data.get("name") or "").lower().endswith("Certificate of Origin".lower()):
+            if (
+                (data.get("name") or "")
+                .lower()
+                .endswith("Certificate of Origin".lower())
+            ):
                 # Certificate of Origin
                 if data.get("isPreferential") is True:
                     doc.type = Document.TYPE_PREF_COO
@@ -320,7 +322,7 @@ class IncomingDocumentService(BaseIgService):
                         country=doc.sending_jurisdiction,
                         defaults={
                             "name": exporter.get("name") or "",
-                        }
+                        },
                     )
             issuer = data.get("issuer")
             if issuer:
@@ -330,7 +332,7 @@ class IncomingDocumentService(BaseIgService):
                     country=doc.sending_jurisdiction,
                     defaults={
                         "name": issuer.get("name") or "",
-                    }
+                    },
                 )
             freeTradeAgreement = data.get("freeTradeAgreement")
             if freeTradeAgreement:
@@ -339,7 +341,7 @@ class IncomingDocumentService(BaseIgService):
                 except Exception:
                     logger.warning(
                         "The FTA %s is passed in the inbound document but can't be found locally",
-                        freeTradeAgreement
+                        freeTradeAgreement,
                     )
             importer = data.get("importer", {})
             if importer and isinstance(importer, dict):
@@ -358,7 +360,8 @@ class IncomingDocumentService(BaseIgService):
     def _complain_and_die(self, doc: Document, message, *message_args):
         logger.info(message, *message_args)
         DocumentHistoryItem.objects.create(
-            type="error", document=doc,
+            type="error",
+            document=doc,
             message=message % message_args,
         )
         return False

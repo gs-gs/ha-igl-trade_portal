@@ -9,22 +9,33 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0003_organisation_dot_separated_id'),
-        ('documents', '0010_auto_20200630_0126'),
+        ("users", "0003_organisation_dot_separated_id"),
+        ("documents", "0010_auto_20200630_0126"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OaUrl',
+            name="OaUrl",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('uri', models.CharField(max_length=3000)),
-                ('key', models.CharField(max_length=3000)),
-                ('created_for', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='users.Organisation')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, primary_key=True, serialize=False
+                    ),
+                ),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                ("uri", models.CharField(max_length=3000)),
+                ("key", models.CharField(max_length=3000)),
+                (
+                    "created_for",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="users.Organisation",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('created_at',),
+                "ordering": ("created_at",),
             },
         ),
     ]

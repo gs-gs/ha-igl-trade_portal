@@ -12,5 +12,5 @@ def settings_context(_request):
     return {
         "ICL_APP_COUNTRY": settings.ICL_APP_COUNTRY,
         "BID_NAME": settings.BID_NAME,
-        "current_org": current_org
+        "current_org": current_org,
     }

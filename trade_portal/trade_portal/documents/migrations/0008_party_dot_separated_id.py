@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0007_auto_20200610_2002'),
+        ("documents", "0007_auto_20200610_2002"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='party',
-            name='dot_separated_id',
-            field=models.CharField(blank=True, default='a.b.c', max_length=256),
+            model_name="party",
+            name="dot_separated_id",
+            field=models.CharField(blank=True, default="a.b.c", max_length=256),
         ),
     ]

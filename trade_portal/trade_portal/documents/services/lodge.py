@@ -21,8 +21,10 @@ from django.utils import timezone
 from intergov_client.predicates import Predicates
 
 from trade_portal.documents.models import (
-    Document, DocumentHistoryItem,
-    NodeMessage, OaDetails,
+    Document,
+    DocumentHistoryItem,
+    NodeMessage,
+    OaDetails,
 )
 from trade_portal.documents.services import BaseIgService
 from trade_portal.documents.services.notarize import NotaryService
@@ -40,7 +42,7 @@ class AESCipher:
         return s + (self.BS - len(s) % self.BS) * chr(self.BS - len(s) % self.BS)
 
     def unpad(self, s):
-        return s[:-ord(s[len(s)-1:])]
+        return s[: -ord(s[len(s) - 1 :])]
 
     def encrypt_with_params_separate(self, raw):
         encoded = base64.b64encode(raw.encode("utf-8"))
@@ -49,7 +51,7 @@ class AESCipher:
         return (
             base64.b64encode(cipher.nonce).decode("utf-8"),
             base64.b64encode(tag).decode("utf-8"),
-            base64.b64encode(ciphertext).decode("utf-8")
+            base64.b64encode(ciphertext).decode("utf-8"),
         )
 
     def decrypt(self, iv, tag, ciphertext):
@@ -61,7 +63,6 @@ class AESCipher:
 
 
 class DocumentService(BaseIgService):
-
     def issue(self, document: Document) -> bool:
         from trade_portal.documents.tasks import document_oa_verify
 
@@ -71,27 +72,24 @@ class DocumentService(BaseIgService):
 
         subject = "{}.{}.{}".format(
             settings.ICL_APP_COUNTRY.upper(),
-            (
-                document.created_by_org.business_id
-            ).replace('.', '-'),
+            (document.created_by_org.business_id).replace(".", "-"),
             document.short_id,
         )
 
         # step 2. Render the OAv2 doc with attachments
-        oa_doc = self._render_oa_v2_document(
-            document, subject
-        )
+        oa_doc = self._render_oa_v2_document(document, subject)
         # step 2. Append EDI3 document, merging them on the root level
         oa_doc.update(document.get_rendered_edi3_document())
 
         DocumentHistoryItem.objects.create(
-            type="text", document=document,
+            type="text",
+            document=document,
             message=f"OA document has been generated, size: {len(json.dumps(oa_doc))}b",
             # object_body=json.dumps(oa_doc)
             related_file=default_storage.save(
-                f'incoming/{document.id}/oa-doc.json',
-                ContentFile(json.dumps(oa_doc, indent=2).encode("utf-8"))
-            )
+                f"incoming/{document.id}/oa-doc.json",
+                ContentFile(json.dumps(oa_doc, indent=2).encode("utf-8")),
+            ),
         )
 
         # step 3, slow: wrap OA document using external api for wrapping documents
@@ -101,14 +99,15 @@ class DocumentService(BaseIgService):
                 json={
                     "document": oa_doc,
                     "params": {
-                        "version": 'https://schema.openattestation.com/2.0/schema.json',
-                    }
-                }
+                        "version": "https://schema.openattestation.com/2.0/schema.json",
+                    },
+                },
             )
         except Exception as e:
             logger.exception(e)
             DocumentHistoryItem.objects.create(
-                type="error", document=document,
+                type="error",
+                document=document,
                 message="Error: OA document wrap failed with error",
                 object_body=str(e),
             )
@@ -119,20 +118,26 @@ class DocumentService(BaseIgService):
 
         if oa_doc_wrapped_resp.status_code == 200:
             oa_doc_wrapped = oa_doc_wrapped_resp.json()
-            wrapped_doc_merkle_root = oa_doc_wrapped.get("signature", {}).get("merkleRoot") or subject
+            wrapped_doc_merkle_root = (
+                oa_doc_wrapped.get("signature", {}).get("merkleRoot") or subject
+            )
             oa_doc_wrapped_json = json.dumps(oa_doc_wrapped)
             DocumentHistoryItem.objects.create(
-                type="text", document=document,
+                type="text",
+                document=document,
                 message=f"OA document has been wrapped, new size: {len(oa_doc_wrapped_json)}b",
                 related_file=default_storage.save(
-                    f'incoming/{document.id}/oa-doc-wrapped.json',
-                    ContentFile(oa_doc_wrapped_json.encode("utf-8"))
-                )
+                    f"incoming/{document.id}/oa-doc-wrapped.json",
+                    ContentFile(oa_doc_wrapped_json.encode("utf-8")),
+                ),
             )
         else:
-            logger.warning("Received response %s for oa doc wrap step", oa_doc_wrapped_resp)
+            logger.warning(
+                "Received response %s for oa doc wrap step", oa_doc_wrapped_resp
+            )
             DocumentHistoryItem.objects.create(
-                type="error", document=document,
+                type="error",
+                document=document,
                 message=f"Error: OA document wrap failed with result {oa_doc_wrapped_resp.status_code}",
                 object_body=oa_doc_wrapped_resp.json(),
             )
@@ -149,30 +154,29 @@ class DocumentService(BaseIgService):
         # step4. encrypt and publish ciphertext
         # oa_wrapped_body
         (
-            document.oa.iv_base64, document.oa.tag_base64, document.oa.ciphertext
-        ) = self._aes_encrypt(
-            oa_wrapped_body,
-            document.oa.key
-        )
+            document.oa.iv_base64,
+            document.oa.tag_base64,
+            document.oa.ciphertext,
+        ) = self._aes_encrypt(oa_wrapped_body, document.oa.key)
         document.oa.save()
         DocumentHistoryItem.objects.create(
-            type="text", document=document,
+            type="text",
+            document=document,
             message="OA document encrypted and ciphertext saved",
         )
 
         # step5. Notarize the document
         if NotaryService.notarize_file(subject, oa_wrapped_body):
             DocumentHistoryItem.objects.create(
-                type="text", document=document,
+                type="text",
+                document=document,
                 message="OA document has been sent to the notary service",
             )
-            document_oa_verify.apply_async(
-                args=[document.pk],
-                countdown=30
-            )
+            document_oa_verify.apply_async(args=[document.pk], countdown=30)
         else:
             DocumentHistoryItem.objects.create(
-                type="error", document=document,
+                type="error",
+                document=document,
                 message="OA document has NOT been sent to the notary service",
             )
             document.verification_status = Document.V_STATUS_ERROR
@@ -184,13 +188,15 @@ class DocumentService(BaseIgService):
         )
         if oa_uploaded_info:
             DocumentHistoryItem.objects.create(
-                type="text", document=document,
+                type="text",
+                document=document,
                 message="Uploaded OA document as a message object",
                 object_body=json.dumps(oa_uploaded_info),
             )
         else:
             DocumentHistoryItem.objects.create(
-                type="error", document=document,
+                type="error",
+                document=document,
                 message="Error: Can't upload OA document as a message object",
             )
             document.status = Document.STATUS_FAILED
@@ -202,14 +208,15 @@ class DocumentService(BaseIgService):
         message_json = self._render_intergov_message(
             document,
             subject=wrapped_doc_merkle_root,
-            obj_multihash=oa_uploaded_info['multihash']
+            obj_multihash=oa_uploaded_info["multihash"],
         )
         posted_message = self.ig_client.post_message(message_json)
         if not posted_message:
             DocumentHistoryItem.objects.create(
-                type="error", document=document,
+                type="error",
+                document=document,
                 message="Error: unable to post Node message",
-                object_body=message_json
+                object_body=message_json,
             )
             document.status = Document.STATUS_FAILED
             document.verification_status = Document.V_STATUS_ERROR
@@ -224,15 +231,15 @@ class DocumentService(BaseIgService):
             sender_ref=posted_message["sender_ref"],
             subject=posted_message["subject"],
             body=posted_message,
-            history=[
-                f"Posted with status {posted_message['status']}"
-            ],
-            is_outbound=True
+            history=[f"Posted with status {posted_message['status']}"],
+            is_outbound=True,
         )
         DocumentHistoryItem.objects.create(
-            type="nodemessage", document=document,
+            type="nodemessage",
+            document=document,
             message="The node message has been dispatched",
-            object_body=json.dumps(posted_message), linked_obj_id=msg.id,
+            object_body=json.dumps(posted_message),
+            linked_obj_id=msg.id,
         )
 
         logging.info("Posted message %s", posted_message)
@@ -246,18 +253,20 @@ class DocumentService(BaseIgService):
             mt, enc = mimetypes.guess_type(file.filename, strict=False)
             uploaded.append(
                 {
-                    "type": mt or 'binary/octet-stream',
+                    "type": mt or "binary/octet-stream",
                     "filename": file.filename,
-                    "data": base64.b64encode(file.file.read()).decode("utf-8")
+                    "data": base64.b64encode(file.file.read()).decode("utf-8"),
                 }
             )
         return uploaded
 
     def _render_oa_v2_document(self, document: Document, subject: str) -> dict:
-        tt_key_location = settings.BASE_URL.replace("https://", "").replace("http://", "")
+        tt_key_location = settings.BASE_URL.replace("https://", "").replace(
+            "http://", ""
+        )
 
         if ":" in tt_key_location:
-            tt_key_location = tt_key_location.split(':', maxsplit=1)[0]
+            tt_key_location = tt_key_location.split(":", maxsplit=1)[0]
 
         doc = {
             "version": "open-attestation/2.0",
@@ -265,22 +274,22 @@ class DocumentService(BaseIgService):
             "name": f"OA document for {document.get_type_display()}",
             "validFrom": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "$template": {
-              "name": "COO",
-              "type": "EMBEDDED_RENDERER",
-              "url": config.OA_RENDERER_HOST,
-              # "url": "https://chafta.tradetrust.io"
+                "name": "COO",
+                "type": "EMBEDDED_RENDERER",
+                "url": config.OA_RENDERER_HOST,
+                # "url": "https://chafta.tradetrust.io"
             },
             # OAv2 field
             "issuers": [
                 {
-                  "name": document.issuer.name,
-                  "documentStore": config.OA_NOTARY_CONTRACT,
-                  "identityProof": {
-                    "type": "DNS-TXT",
-                    "location": tt_key_location,
-                  }
+                    "name": document.issuer.name,
+                    "documentStore": config.OA_NOTARY_CONTRACT,
+                    "identityProof": {
+                        "type": "DNS-TXT",
+                        "location": tt_key_location,
+                    },
                 }
-              ],
+            ],
             # we have it in the certificate itself now, so no point to duplicate
             # "attachments": self._render_uploaded_files(document),
             "recipient": {
@@ -293,7 +302,9 @@ class DocumentService(BaseIgService):
         cipher = AESCipher(key)
         return cipher.encrypt_with_params_separate(opentext)
 
-    def _render_intergov_message(self, document: Document, subject: str, obj_multihash: str) -> dict:
+    def _render_intergov_message(
+        self, document: Document, subject: str, obj_multihash: str
+    ) -> dict:
         return {
             "predicate": Predicates.CoO_ISSUED,
             "sender": settings.ICL_APP_COUNTRY,
@@ -309,14 +320,14 @@ class DocumentService(BaseIgService):
         # but now we just guessing it
 
         try:
-            subj = message['subject'].replace(".", "-")  # FIXME: otherwise subscr go crazy
+            subj = message["subject"].replace(
+                ".", "-"
+            )  # FIXME: otherwise subscr go crazy
             self.ig_client.subscribe(
                 predicate=f"subject.{subj}.status",
                 callback=(
-                    settings.ICL_TRADE_PORTAL_HOST +
-                    reverse("websub:conversation-ping", args=[
-                        message['subject']
-                    ])
+                    settings.ICL_TRADE_PORTAL_HOST
+                    + reverse("websub:conversation-ping", args=[message["subject"]])
                 ),
             )
         except Exception as e:
@@ -326,10 +337,11 @@ class DocumentService(BaseIgService):
             self.ig_client.subscribe(
                 predicate=f"message.{message['sender_ref']}.status",
                 callback=(
-                    settings.ICL_TRADE_PORTAL_HOST +
-                    reverse("websub:message-thin-ping", args=[
-                        message['sender'] + ":" + message['sender_ref']
-                    ])
+                    settings.ICL_TRADE_PORTAL_HOST
+                    + reverse(
+                        "websub:message-thin-ping",
+                        args=[message["sender"] + ":" + message["sender_ref"]],
+                    )
                 ),
             )
         except Exception as e:
@@ -337,7 +349,6 @@ class DocumentService(BaseIgService):
 
 
 class NodeService(BaseIgService):
-
     def update_message_by_sender_ref(self, sender_ref: str) -> bool:
         """
         We received some light notification about the message updated,
@@ -350,9 +361,7 @@ class NodeService(BaseIgService):
             return False
 
         sender, short_sender_ref = sender_ref.split(":", maxsplit=1)
-        node_msg = NodeMessage.objects.filter(
-            sender_ref=short_sender_ref
-        ).first()
+        node_msg = NodeMessage.objects.filter(sender_ref=short_sender_ref).first()
         if not node_msg:
             logger.error(
                 "Got request to update message status by sender ref but "
@@ -381,17 +390,14 @@ class NodeService(BaseIgService):
             node_msg.save()
 
         # 3. optional processing steps (send reply/ack msg, etc)
-        node_msg.trigger_processing(
-            new_status=msg_body["status"]
-        )
+        node_msg.trigger_processing(new_status=msg_body["status"])
         return True
 
     def subscribe_to_new_messages(self) -> None:
         result = self.ig_client.subscribe(
             predicate="message.*",
             callback=(
-                settings.ICL_TRADE_PORTAL_HOST +
-                reverse("websub:message-incoming")
+                settings.ICL_TRADE_PORTAL_HOST + reverse("websub:message-incoming")
             ),
         )
         if result:
@@ -417,11 +423,13 @@ class NodeService(BaseIgService):
             )
             return False
         # try to get existing document with the same subject
-        first_fit_message = NodeMessage.objects.exclude(
-            document__isnull=True
-        ).filter(
-            subject=msg_body["subject"],
-        ).first()
+        first_fit_message = (
+            NodeMessage.objects.exclude(document__isnull=True)
+            .filter(
+                subject=msg_body["subject"],
+            )
+            .first()
+        )
         if first_fit_message:
             document = first_fit_message.document
         else:
@@ -441,13 +449,15 @@ class NodeService(BaseIgService):
                     body=msg_body,
                     history=[
                         f"Received at {timezone.now()}",
-                    ]
-                )
+                    ],
+                ),
             )
             if created:
                 msg.trigger_processing()
             else:
-                logger.info("Message %s is already in the system", msg_body["sender_ref"])
+                logger.info(
+                    "Message %s is already in the system", msg_body["sender_ref"]
+                )
         return True
 
     def _start_new_conversation(self, message_body: dict) -> None:
@@ -461,7 +471,7 @@ class NodeService(BaseIgService):
         if message_body["predicate"] not in NEW_DOC_PREDICATES:
             logger.warning(
                 "Received conversation starting message with predicate %s which is not a document-starting",
-                message_body["predicate"]
+                message_body["predicate"],
             )
             return
 
@@ -492,11 +502,12 @@ class NodeService(BaseIgService):
                 body=message_body,
                 history=[
                     f"Received at {timezone.now()}",
-                ]
-            )
+                ],
+            ),
         )
         DocumentHistoryItem.objects.create(
-            type="nodemessage", document=new_doc,
+            type="nodemessage",
+            document=new_doc,
             message=(
                 "First message in the conversation has been received and "
                 "the document processing has been scheduled in the background"
@@ -504,8 +515,5 @@ class NodeService(BaseIgService):
             object_body=json.dumps(message_body),
             linked_obj_id=msg.pk,
         )
-        process_incoming_document_received.apply_async(
-            [new_doc.pk],
-            countdown=2
-        )
+        process_incoming_document_received.apply_async([new_doc.pk], countdown=2)
         return

@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0011_oaurl'),
+        ("documents", "0011_oaurl"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='document',
-            name='oa',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='documents.OaUrl'),
+            model_name="document",
+            name="oa",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="documents.OaUrl",
+            ),
         ),
     ]

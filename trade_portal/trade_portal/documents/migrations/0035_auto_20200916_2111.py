@@ -6,21 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0034_auto_20200916_1946'),
+        ("documents", "0034_auto_20200916_1946"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='document',
-            name='consignment_ref_doc_issuer',
+            model_name="document",
+            name="consignment_ref_doc_issuer",
         ),
         migrations.RemoveField(
-            model_name='document',
-            name='consignment_ref_doc_type',
+            model_name="document",
+            name="consignment_ref_doc_type",
         ),
         migrations.AlterField(
-            model_name='document',
-            name='consignment_ref_doc_number',
-            field=models.CharField(blank=True, default='', max_length=256, verbose_name='Consignment Number'),
+            model_name="document",
+            name="consignment_ref_doc_number",
+            field=models.CharField(
+                blank=True,
+                default="",
+                max_length=256,
+                verbose_name="Consignment Number",
+            ),
         ),
     ]

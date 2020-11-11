@@ -12,7 +12,7 @@ if settings.STATSD_HOST:
         host=settings.STATSD_HOST,
         port=settings.STATSD_PORT,
         sample_rate=1,
-        disabled=False
+        disabled=False,
     )
 
 
@@ -36,7 +36,7 @@ def get_stack_size():
 base_stack = get_stack_size() + 30
 
 
-class statsd_timer():
+class statsd_timer:
     def __init__(self, counter_name):
         self.counter_name = counter_name
 

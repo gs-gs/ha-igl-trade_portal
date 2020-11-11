@@ -26,6 +26,6 @@ class RoleRequestView(LoginRequiredMixin, CreateView):
             _(
                 "The role request has been placed; "
                 "It typically takes 2 workings days to review it"
-            )
+            ),
         )
-        return reverse('users:detail')
+        return reverse("users:detail")

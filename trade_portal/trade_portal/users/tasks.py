@@ -16,18 +16,23 @@ def custom_template_email(*args, **kwargs):
     """
     Just some default parameters set for our use-case
     """
-    kwargs.update({
-        "from_email": settings.DEFAULT_FROM_EMAIL,
-        "fail_silently": True,
-    })
-    kwargs["context"]["HOST"] = settings.ICL_TRADE_PORTAL_HOST
-    return send_templated_mail(
-        *args, **kwargs
+    kwargs.update(
+        {
+            "from_email": settings.DEFAULT_FROM_EMAIL,
+            "fail_silently": True,
+        }
     )
+    kwargs["context"]["HOST"] = settings.ICL_TRADE_PORTAL_HOST
+    return send_templated_mail(*args, **kwargs)
 
 
-@celery_app.task(ignore_result=True,
-                 max_retries=3, interval_start=10, interval_step=10, interval_max=50)
+@celery_app.task(
+    ignore_result=True,
+    max_retries=3,
+    interval_start=10,
+    interval_step=10,
+    interval_max=50,
+)
 def update_org_fields(org_id):
     """
     For freshly created org
@@ -46,7 +51,9 @@ def update_org_fields(org_id):
             entity_code = abn_info.get("EntityTypeCode") or "org"
             if business_name:
                 org.name = business_name
-                org.dot_separated_id = f"{org.business_id}.{entity_code}.{settings.BID_NAME}"
+                org.dot_separated_id = (
+                    f"{org.business_id}.{entity_code}.{settings.BID_NAME}"
+                )
                 org.save()
                 logger.info("Organisation %s name has been updated", org)
     return
@@ -63,9 +70,9 @@ def notify_about_new_user_created(user_id):
         return
 
     custom_template_email(
-        template_name='user_created_to_staff',
+        template_name="user_created_to_staff",
         recipient_list=[config.USERS_NOTIFICATIONS_MAILBOX],
-        context={'user': user},
+        context={"user": user},
     )
 
 
@@ -78,9 +85,9 @@ def notify_user_about_being_approved(user_id, action_taken):
     user = User.objects.get(pk=user_id)
 
     custom_template_email(
-        template_name='user_approved_to_user',
+        template_name="user_approved_to_user",
         recipient_list=[user.email],
-        context={'user': user},
+        context={"user": user},
     )
 
 
@@ -95,9 +102,9 @@ def notify_role_requested(request_id):
         return
 
     custom_template_email(
-        template_name='role_requested_to_staff',
+        template_name="role_requested_to_staff",
         recipient_list=[config.USERS_NOTIFICATIONS_MAILBOX],
-        context={'req': req},
+        context={"req": req},
     )
 
 
@@ -110,9 +117,9 @@ def notify_user_about_role_request_changed(req_id):
     req = OrgRoleRequest.objects.get(pk=req_id)
 
     custom_template_email(
-        template_name='role_request_changed_to_user',
+        template_name="role_request_changed_to_user",
         recipient_list=[req.created_by.email],
-        context={'req': req},
+        context={"req": req},
     )
 
 
@@ -130,7 +137,7 @@ def notify_staff_about_evidence_uploaded(req_id):
         return
 
     custom_template_email(
-        template_name='evidence_uploaded_to_staff',
+        template_name="evidence_uploaded_to_staff",
         recipient_list=[config.USERS_NOTIFICATIONS_MAILBOX],
-        context={'req': req},
+        context={"req": req},
     )

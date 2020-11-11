@@ -6,27 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0003_organisation_dot_separated_id'),
+        ("users", "0003_organisation_dot_separated_id"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='organisation',
-            name='type',
+            model_name="organisation",
+            name="type",
         ),
         migrations.AddField(
-            model_name='organisation',
-            name='is_chambers',
+            model_name="organisation",
+            name="is_chambers",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='organisation',
-            name='is_regulator',
+            model_name="organisation",
+            name="is_regulator",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='organisation',
-            name='is_trader',
+            model_name="organisation",
+            name="is_trader",
             field=models.BooleanField(default=False),
         ),
     ]

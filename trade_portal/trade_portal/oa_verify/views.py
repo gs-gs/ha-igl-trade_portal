@@ -10,7 +10,8 @@ from django.views.generic import TemplateView
 
 from trade_portal.documents.services.lodge import AESCipher
 from trade_portal.oa_verify.services import (
-    OaVerificationService, OaVerificationError,
+    OaVerificationService,
+    OaVerificationError,
 )
 
 logger = logging.getLogger(__name__)
@@ -53,14 +54,11 @@ class OaVerificationView(TemplateView):
                 logger.exception(e)
                 messages.warning(
                     self.request,
-                    "There is a verification request which can't be parsed"
+                    "There is a verification request which can't be parsed",
                 )
             else:
                 # the JSON is valid and some parameters are present
-                return {
-                    "uri": uri,
-                    "key": key
-                }
+                return {"uri": uri, "key": key}
         return None
 
     def post(self, request, *args, **kwargs):

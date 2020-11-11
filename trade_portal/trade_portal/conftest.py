@@ -26,7 +26,7 @@ def normal_user(db):
     user.set_password("password")
     user.save()
     user.web_client = Client()
-    user.web_client.login(username=user.username, password='password')
+    user.web_client.login(username=user.username, password="password")
     return user
 
 
@@ -36,5 +36,5 @@ def staff_user(db):
     user.set_password("password")
     user.save()
     user.web_client = Client()
-    user.web_client.login(username=user.username, password='password')
+    user.web_client.login(username=user.username, password="password")
     return user

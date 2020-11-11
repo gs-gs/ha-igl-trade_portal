@@ -12,8 +12,9 @@ class WebSubReceiverAppConfig(AppConfig):
     verbose_name = "WebSub Receiver module"
 
     def ready(self):
-        is_unittest = getattr(settings, 'IS_UNITTEST', False)
+        is_unittest = getattr(settings, "IS_UNITTEST", False)
         is_debug = settings.DEBUG
         if is_debug and not is_unittest:
             from trade_portal.websub_receiver.tasks import subscribe_to_new_messages
+
             subscribe_to_new_messages()

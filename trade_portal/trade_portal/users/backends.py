@@ -22,7 +22,7 @@ class MyOIDCAB(OIDCAuthenticationBackend):
 
     def get_username(self, claims):
         """Generate username based on claims."""
-        return claims.get('email')
+        return claims.get("email")
 
     def _fill_user(self, user, claims):
         return  # while they are not implemented on the Cognito side
@@ -44,13 +44,11 @@ class MyOIDCAB(OIDCAuthenticationBackend):
 
     def create_user(self, claims):
         """Return object for a newly created user account."""
-        email = claims.get('email')
+        email = claims.get("email")
         username = self.get_username(claims)
         user = self.UserModel.objects.create_user(username, email)
         self._fill_user(user, claims)
-        self.request.session["email_verified"] = (
-            claims.get("email_verified") == "true"
-        )
+        self.request.session["email_verified"] = claims.get("email_verified") == "true"
         return user
 
     def update_user(self, user, claims):

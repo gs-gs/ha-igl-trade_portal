@@ -11,16 +11,21 @@ def party_from_json(json_data):
         bid_prefix=issuer_bid_prefix,
         clear_business_id=issuer_clear_business_id,
         business_id=issuer_id,
-        dot_separated_id=issuer_clear_business_id if "." in issuer_clear_business_id else "",
+        dot_separated_id=issuer_clear_business_id
+        if "." in issuer_clear_business_id
+        else "",
         name=json_data.get("name"),
         defaults={
             "country": json_data.get("postalAddress", {}).get("country") or "",
             "postcode": json_data.get("postalAddress", {}).get("postcode") or "",
-            "countrySubDivisionName": json_data.get("postalAddress", {}).get("postalAddress") or "",
+            "countrySubDivisionName": json_data.get("postalAddress", {}).get(
+                "postalAddress"
+            )
+            or "",
             "line1": json_data.get("postalAddress", {}).get("line1") or "",
             "line2": json_data.get("postalAddress", {}).get("line2") or "",
             "city_name": json_data.get("postalAddress", {}).get("cityName") or "",
-        }
+        },
     )
     # TODO: update adresses if changed
     return the_party

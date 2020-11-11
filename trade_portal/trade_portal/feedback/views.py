@@ -14,8 +14,5 @@ class FeedbackView(CreateView):
         return kw
 
     def get_success_url(self):
-        messages.success(
-            self.request,
-            "Thanks for your feedback! We have received it."
-        )
+        messages.success(self.request, "Thanks for your feedback! We have received it.")
         return "/"

@@ -12,15 +12,13 @@ class DocumentCreateForm(forms.ModelForm):
 
     class Meta:
         model = Document
-        fields = (
-            'file',
-        )
+        fields = ("file",)
 
     def __init__(self, *args, **kwargs):
-        self.oa = kwargs.pop('oa')
-        self.dtype = kwargs.pop('dtype')
-        self.user = kwargs.pop('user')
-        self.current_org = kwargs.pop('current_org')
+        self.oa = kwargs.pop("oa")
+        self.dtype = kwargs.pop("dtype")
+        self.user = kwargs.pop("user")
+        self.current_org = kwargs.pop("current_org")
         super().__init__(*args, **kwargs)
         self.instance.type = self.dtype
 
@@ -38,9 +36,7 @@ class DocumentCreateForm(forms.ModelForm):
         result = super().save(*args, **kwargs)
         uploaded_file = self.cleaned_data.get("file")
         if uploaded_file:
-            DocumentFile.objects.filter(
-                doc=self.instance
-            ).delete()
+            DocumentFile.objects.filter(doc=self.instance).delete()
             df = DocumentFile(
                 doc=self.instance,
                 size=uploaded_file.size,
@@ -56,10 +52,7 @@ class DocumentCreateForm(forms.ModelForm):
             message=f"The document has been created by {self.user}",
         )
 
-        textract_document.apply_async(
-            [result.pk],
-            countdown=2
-        )
+        textract_document.apply_async([result.pk], countdown=2)
 
         return result
 
@@ -68,42 +61,45 @@ class DraftDocumentUpdateForm(forms.ModelForm):
 
     exporter = forms.CharField(
         label=f"Exporter or manufacturer {settings.BID_NAME}",
-        max_length=32, help_text=(
-            "Please enter 11-digit ABN"
-        ) if settings.BID_NAME == "ABN" else "Please enter 8 digits + letter"
+        max_length=32,
+        help_text=("Please enter 11-digit ABN")
+        if settings.BID_NAME == "ABN"
+        else "Please enter 8 digits + letter",
     )
     consignment_ref_doc_number = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control'}
-        ),
-        required=False
+        widget=forms.TextInput(attrs={"class": "form-control"}), required=False
     )
 
     class Meta:
         model = Document
         fields = (
-            'document_number', 'fta', 'importing_country', 'exporter',
-            'importer_name',
-            'consignment_ref_doc_number',
+            "document_number",
+            "fta",
+            "importing_country",
+            "exporter",
+            "importer_name",
+            "consignment_ref_doc_number",
         )
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        self.current_org = kwargs.pop('current_org')
+        self.user = kwargs.pop("user")
+        self.current_org = kwargs.pop("current_org")
         super().__init__(*args, **kwargs)
         self.dtype = self.instance.type
         self._prepare_fields()
 
     def _prepare_fields(self):
-        self.fields["fta"].empty_label = 'Please Select FTA...'
+        self.fields["fta"].empty_label = "Please Select FTA..."
 
-        self.fields['importing_country'].choices = []
+        self.fields["importing_country"].choices = []
         for fta in FTA.objects.order_by("id").all():
             for country in fta.country:
-                self.fields['importing_country'].choices.append(
+                self.fields["importing_country"].choices.append(
                     (country, f"{country.name} ({fta.name})")
                 )
-        self.fields['importing_country'].help_text = (
+        self.fields[
+            "importing_country"
+        ].help_text = (
             "The list is limited to the trade agreements entered in the system"
         )
         self.fields["importer_name"].label = "Importer Name (if known)"
@@ -111,27 +107,26 @@ class DraftDocumentUpdateForm(forms.ModelForm):
         self.fields["exporter"].widget.attrs["class"] = "form-control"
 
         if self.dtype == Document.TYPE_NONPREF_COO:
-            del self.fields['fta']
+            del self.fields["fta"]
 
             all_active_countries = set()
             for fta in FTA.objects.order_by("id").all():
                 for c in fta.country:
                     all_active_countries.add(c)
 
-            self.fields['importing_country'].choices = (
-                (c.code, c.name) for c in sorted(
-                    list(all_active_countries), key=lambda c: c.name
-                )
+            self.fields["importing_country"].choices = (
+                (c.code, c.name)
+                for c in sorted(list(all_active_countries), key=lambda c: c.name)
             )
         else:
-            self.fields['fta'].label = False
+            self.fields["fta"].label = False
 
-        self.fields['document_number'].label = False
-        self.fields['importing_country'].label = False
-        self.fields['importer_name'].label = False
+        self.fields["document_number"].label = False
+        self.fields["importing_country"].label = False
+        self.fields["importer_name"].label = False
 
         if self.instance.exporter:
-            self.initial['exporter'] = self.instance.exporter.business_id
+            self.initial["exporter"] = self.instance.exporter.business_id
             self.fields["exporter"].initial = self.instance.exporter.business_id
 
     def clean_exporter(self):
@@ -156,13 +151,15 @@ class DraftDocumentUpdateForm(forms.ModelForm):
                 "country": settings.ICL_APP_COUNTRY,
                 "postcode": exporter_data.get("AddressPostcode") or "",
                 "countrySubDivisionName": exporter_data.get("AddressState") or "",
-            }
+            },
         )
         if exporter_party.postcode != exporter_data.get("AddressPostcode") or "":
             # update the party
             exporter_party.name = exporter_data.get("EntityName") or ""
             exporter_party.postcode = exporter_data.get("AddressPostcode") or ""
-            exporter_party.countrySubDivisionName = exporter_data.get("AddressState") or ""
+            exporter_party.countrySubDivisionName = (
+                exporter_data.get("AddressState") or ""
+            )
             exporter_party.save()
         return exporter_party
 
@@ -181,7 +178,7 @@ class DraftDocumentUpdateForm(forms.ModelForm):
                     else Party.TYPE_CHAMBERS
                 ),
                 "dot_separated_id": self.current_org.dot_separated_id,
-            }
+            },
         )
         self.instance.issuer = issuer_party
         return super().save(*args, **kwargs)
@@ -189,14 +186,9 @@ class DraftDocumentUpdateForm(forms.ModelForm):
 
 class ConsignmentSectionUpdateForm(forms.ModelForm):
     consignment_ref_doc_number = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control'}
-        ),
-        required=False
+        widget=forms.TextInput(attrs={"class": "form-control"}), required=False
     )
 
     class Meta:
         model = Document
-        fields = (
-            'consignment_ref_doc_number',
-        )
+        fields = ("consignment_ref_doc_number",)
