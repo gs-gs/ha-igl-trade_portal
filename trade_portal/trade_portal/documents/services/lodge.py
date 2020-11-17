@@ -261,7 +261,8 @@ class DocumentService(BaseIgService):
         return uploaded
 
     def _render_oa_v2_document(self, document: Document, subject: str) -> dict:
-        tt_key_location = settings.BASE_URL.replace("https://", "").replace(
+        tt_host = config.OA_NOTARY_DOMAIN or settings.BASE_URL
+        tt_key_location = tt_host.replace("https://", "").replace(
             "http://", ""
         )
 
