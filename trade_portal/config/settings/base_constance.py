@@ -6,7 +6,7 @@ CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 
 CONSTANCE_CONFIG = {
     "ENABLE_CAPTCHA": (
-        True,
+        False,
         "Use Google ReCaptchaV3; disable for legal or debug/hotfix reasons; "
         "enable otherwise once configured correctly",
     ),

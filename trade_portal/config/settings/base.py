@@ -81,6 +81,7 @@ THIRD_PARTY_APPS = [
     # "django_amazon_translate",
     "siteblocks",
     "corsheaders",
+    "captcha",
 ]
 
 LOCAL_APPS = [
@@ -89,6 +90,7 @@ LOCAL_APPS = [
     "trade_portal.document_api",
     "trade_portal.oa_verify",
     "trade_portal.help",
+    "trade_portal.feedback",
     "trade_portal.websub_receiver.apps.WebSubReceiverAppConfig",
     "trade_portal",
 ]
@@ -251,6 +253,11 @@ REST_FRAMEWORK = {
 
 CORS_URLS_REGEX = r'^/api/.*$'
 CORS_ALLOW_ALL_ORIGINS = True
+
+RECAPTCHA_PUBLIC_KEY = env("RECAPTCHA_PUBLIC_KEY", default="")
+RECAPTCHA_PRIVATE_KEY = env("RECAPTCHA_PRIVATE_KEY", default="")
+RECAPTCHA_REQUIRED_SCORE = 0.85
+
 
 from .base_auth import *  # NOQA
 from .base_app import *  # NOQA
