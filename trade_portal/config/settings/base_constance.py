@@ -60,13 +60,36 @@ CONSTANCE_CONFIG = {
         "Unversal actions QR code base host - the one handling that querysetring "
         "and redirecting to the correct verify endpoint.",
     ),
-    "UA_VERIFY_HOST": (
-        "https://dev.tradetrust.io",
-        "Universal actions verify host, Must not end with /",
-    ),
     # Renderer we use by default
     "OA_RENDERER_HOST": (
         "https://renderer-openatt.c2.devnet.trustbridge.io",
         "The host with protocol without trailing slash",
     ),
+
+
+    "BRANDING_TITLE": (
+        "IGL Trade Portal (beta)",
+        "The text shown on the page headers"
+    )
 }
+
+
+CONSTANCE_CONFIG_FIELDSETS = {
+    'Open Attestation': (
+        'OA_NOTARY_CONTRACT', 'OA_NOTARY_DOMAIN', 'OA_WRAP_API_URL',
+        'OA_UNPROCESSED_QUEUE_URL', 'OA_UNPROCESSED_BUCKET_NAME', 'OA_AWS_ACCESS_KEYS',
+        'OA_VERIFY_API_URL', 'UA_BASE_HOST',
+    ),
+}
+
+used = []
+for fields in CONSTANCE_CONFIG_FIELDSETS.values():
+    used += list(fields)
+
+general = []
+for field_name in CONSTANCE_CONFIG.keys():
+    if field_name not in used:
+        general.append(field_name)
+del used
+
+CONSTANCE_CONFIG_FIELDSETS['General Options'] = tuple(general)

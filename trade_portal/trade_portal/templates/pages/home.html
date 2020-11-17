@@ -9,7 +9,7 @@
 {% block content %}
 <div class="home-content">
   <div class="hero-box home-content__hero">
-    <h1 class="hero-box__title">{% trans 'IGL Trade Portal' %}</h1>
+    <h1 class="hero-box__title">{% trans BRANDING_TITLE %}</h1>
     <p class="hero-box__description">{% blocktrans %}The Inter Government Ledger (IGL) is a global platform that supoorts the digitisation of cross-border trade.  Documents such as certificates of origin, phyto-certificates, and others that are currently paper documents can be digitised and linked to the relevant consignment.{% endblocktrans %}</p>
     {% if not request.user.is_authenticated %}
       <a href="/accounts/signup/" class="btn btn-light hero-box__action">{% trans 'Register' %}</a>

@@ -1,3 +1,4 @@
+from constance import config
 from django.conf import settings
 
 
@@ -12,5 +13,6 @@ def settings_context(_request):
     return {
         "ICL_APP_COUNTRY": settings.ICL_APP_COUNTRY,
         "BID_NAME": settings.BID_NAME,
+        "BRANDING_TITLE": config.BRANDING_TITLE,
         "current_org": current_org,
     }
