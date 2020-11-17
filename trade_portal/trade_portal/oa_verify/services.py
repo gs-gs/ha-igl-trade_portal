@@ -55,7 +55,7 @@ class OaVerificationService:
             result["verify_result_rotated"] = {}
 
             for row in api_verify_resp:
-                if row["status"].lower() == "invalid":
+                if row["status"].lower() not in ("valid", "skipped"):
                     result["status"] = "invalid"
                 result["verify_result_rotated"][row.get("type")] = row
         if result["status"] == "valid":
