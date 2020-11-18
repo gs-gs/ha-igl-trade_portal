@@ -64,7 +64,10 @@ class Config:
             'ABI': Config.load_json_file(os.environ['DOCUMENT_STORE_ABI'])['abi'],
             'Owner': {
                 'PublicKey': os.environ['DOCUMENT_STORE_OWNER_PUBLIC_KEY'],
-                'PrivateKey': os.environ['DOCUMENT_STORE_OWNER_PRIVATE_KEY']
+                'PrivateKey': Config.get_env_or_singleline_file_value(
+                                    'DOCUMENT_STORE_OWNER_PRIVATE_KEY',
+                                    not_empty=True
+                )
             }
         }
 
