@@ -136,8 +136,8 @@ def textract_document(document_id=None):
     MetadataExtractService.extract(doc)
 
 
-@celery_app.task(bind=True, ignore_result=True, max_retries=10)
-def document_oa_verify(self, document_id):
+@celery_app.task(bind=True, ignore_result=True, max_retries=80)  # around 2 hours of retries
+def document_oa_verify(self, document_id, do_retries=True):
     """
     When a new document is sent by us
     Or received from remote party
@@ -197,24 +197,30 @@ def document_oa_verify(self, document_id):
             message=f"Unable to verify document: {verify_response.get('error_message')}",
         )
         return
-    if self.request.retries < self.max_retries:
-        logger.info(
-            "Retrying the document %s verification task (%s)",
-            document,
-            self.request.retries,
-        )
-        retry_delay = 15 + 30 * self.request.retries
+    if do_retries:
+        if self.request.retries < self.max_retries:
+            logger.info(
+                "Retrying the document %s verification task (%s)",
+                document,
+                self.request.retries,
+            )
+            if self.request.retries < 10:
+                retry_delay = 30  # seconds
+            else:
+                retry_delay = 120  # seconds
 
-        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False) is True:
-            logger.warning("Not retrying the eager task")
+            if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False) is True:
+                logger.warning("Not retrying the eager task")
+            else:
+                self.retry(countdown=retry_delay)
         else:
-            self.retry(countdown=retry_delay)
+            # max retries but still not valid - mark as failed
+            document.verification_status = Document.V_STATUS_FAILED
+            document.save()
+            DocumentHistoryItem.objects.create(
+                type="error",
+                document=document,
+                message=f"Unable to verify the document after {self.request.retries} attempts",
+            )
     else:
-        # max retries but still not valid - mark as failed
-        document.verification_status = Document.V_STATUS_FAILED
-        document.save()
-        DocumentHistoryItem.objects.create(
-            type="error",
-            document=document,
-            message=f"Unable to verify the document after {self.request.retries} attempts",
-        )
+        logger.info("not scheduling any retries because started directly")

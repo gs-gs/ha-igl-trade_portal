@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin as Login, AccessMixin
 from django.core.exceptions import ObjectDoesNotExist
@@ -20,7 +22,10 @@ from trade_portal.documents.forms import (
 from trade_portal.documents.models import Document, DocumentFile
 from trade_portal.documents.services.watermark import WatermarkService
 from trade_portal.documents.tables import DocumentsTable
+from trade_portal.documents.tasks import document_oa_verify
 from trade_portal.utils.monitoring import statsd_timer
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentQuerysetMixin(AccessMixin):
@@ -124,6 +129,16 @@ class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
             # page in all cases
             return redirect("documents:issue", obj.pk)
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if "refresh_oa_status" in request.POST:
+            try:
+                document_oa_verify(obj.pk, do_retries=False)
+            except Exception as e:
+                logger.exception(e)
+            messages.success(request, "The OA credential verification has been initiated")
+        return redirect(request.path_info)
 
 
 class DocumentLogsView(Login, DocumentQuerysetMixin, DetailView):

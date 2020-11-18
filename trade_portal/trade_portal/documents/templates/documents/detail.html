@@ -27,7 +27,7 @@
       <br/>
 
       {% blocktrans %}
-      The ABF has verified your document and added a digital proof. The PDF with QR can be sent to any party that normally requires the document. Authenticity can be verified simply by scanning the QR. The VC (Verifiable Credential) is the native digital version of the document and may be sent to any party that wishes to automate processing and verification.
+      The ABF has verified your document and added a digital proof. The PDF with QR can be sent to any party that normally requires the document. Authenticity can be verified simply by scanning the QR. The VC (Verifiable Credential) is the native digital version of the document and may be sent to any party that wishes to automate processing and verification. It can take up to an hour to notarise a credential to the blockchain.
       {% endblocktrans %}
       <br/>
 
@@ -43,6 +43,14 @@
         <a href="{% url 'documents:oa-download' object.id %}" class="btn btn-primary btn-sm" style="width: 150px">Download VC</a>
       {% else %}
         <a href="#" class="btn btn-secondary btn-sm" disabled style="width: 150px" title="{% trans 'Just a moment, we are preparing your document...' %}">Download VC</a>
+      {% endif %}
+
+      {% if object.verification_status != object.V_STATUS_VALID %}
+        <form method="POST" style="display: inline">
+          {% csrf_token %}
+          <button type="submit" name="refresh_oa_status"
+            class="btn btn-primary btn-sm" title="Re-run the validation">Status refresh</button>
+        </form>
       {% endif %}
     </div>
     <div class="col">
