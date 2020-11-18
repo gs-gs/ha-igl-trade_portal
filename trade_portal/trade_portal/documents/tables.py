@@ -39,10 +39,10 @@ class DocumentsTable(tables.Table):
         verbose_name=_("IGL\nStatus"),
         template_code="""
         {% if record.status == 'not-sent' %}
-            <span class='badge badge-default'>Not Sent</span>
+            <span class='badge badge-info'>Not Sent</span>
         {% endif %}
         {% if record.status == 'pending' %}
-            <span class='badge badge-warning'>{{ record.get_status_display }}</span>
+            <span class='badge badge-info'>{{ record.get_status_display }}</span>
         {% endif %}
         {% if record.status == 'validated' %}
             <span class='badge badge-success'>{{ record.get_status_display }}</span>

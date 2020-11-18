@@ -21,13 +21,17 @@
           {% if object.verification_status == object.V_STATUS_VALID %}
             <span class="badge badge-success">{{ object.get_verification_status_display }}</span>
           {% else %}
-            <span class="badge badge-info">{{ object.get_verification_status_display }}</span>
+            <span class="badge badge-primary"
+                  {% if object.verification_status == object.V_STATUS_PENDING %}
+                    title="It can take up to an hour to notarise a credential to the blockchain."
+                  {% endif %}
+              >{{ object.get_verification_status_display }}</span>
           {% endif %}
         {% endif %}
       <br/>
 
       {% blocktrans %}
-      The ABF has verified your document and added a digital proof. The PDF with QR can be sent to any party that normally requires the document. Authenticity can be verified simply by scanning the QR. The VC (Verifiable Credential) is the native digital version of the document and may be sent to any party that wishes to automate processing and verification. It can take up to an hour to notarise a credential to the blockchain.
+      The ABF has verified your document and added a digital proof. The PDF with QR can be sent to any party that normally requires the document. Authenticity can be verified simply by scanning the QR. The VC (Verifiable Credential) is the native digital version of the document and may be sent to any party that wishes to automate processing and verification.
       {% endblocktrans %}
       <br/>
 
@@ -40,16 +44,16 @@
         {% endif %}
       {% endfor %}
       {% if document.get_vc %}
-        <a href="{% url 'documents:oa-download' object.id %}" class="btn btn-primary btn-sm" style="width: 150px">Download VC</a>
+        <a href="{% url 'documents:oa-download' object.id %}" class="btn btn-primary btn-sm" style="min-width: 130px">Download VC</a>
       {% else %}
-        <a href="#" class="btn btn-secondary btn-sm" disabled style="width: 150px" title="{% trans 'Just a moment, we are preparing your document...' %}">Download VC</a>
+        <a href="#" class="btn btn-secondary btn-sm" disabled style="min-width: 130px" title="{% trans 'Just a moment, we are preparing your document...' %}">Download VC</a>
       {% endif %}
 
       {% if object.verification_status != object.V_STATUS_VALID %}
         <form method="POST" style="display: inline">
           {% csrf_token %}
           <button type="submit" name="refresh_oa_status"
-            class="btn btn-primary btn-sm" title="Re-run the validation">Status refresh</button>
+            class="btn btn-primary btn-sm" style="min-width: 130px"  title="Re-run the validation">Status refresh</button>
         </form>
       {% endif %}
     </div>
@@ -62,7 +66,11 @@
         {% if object.status == object.STATUS_VALIDATED or object.status == object.STATUS_INCOMING %}
           <span class="badge badge-success">{{ object.get_status_display }}</span>
         {% else %}
-          <span class="badge badge-info">{{ object.get_status_display }}</span>
+          <span class="badge badge-info"
+                {% if object.status == object.STATUS_NOT_SENT %}
+                  title="no IGL channel exists for this message type and country"
+                {% endif %}
+            >{{ object.get_status_display }}</span>
         {% endif %}
       {% endif %}
 
