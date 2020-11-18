@@ -3,7 +3,9 @@ import time
 import urllib
 import boto3
 import requests
-from web3 import Web3, gas_strategies
+from web3 import Web3
+from web3.gas_strategies.time_based import fast_gas_price_strategy, medium_gas_price_strategy
+
 from src.loggers import logging
 
 logger = logging.getLogger('WORKER')
@@ -48,10 +50,10 @@ class Worker:
             if type(self.config['Blockchain']['GasPrice']) == str:
                 gas_price_strategy = None
                 if self.config['Blockchain']['GasPrice'] == 'fast':
-                    gas_price_strategy = gas_strategies.time_based.fast_gas_price_strategy
+                    gas_price_strategy = fast_gas_price_strategy
 
                 if self.config['Blockchain']['GasPrice'] == 'medium':
-                    gas_price_strategy = gas_strategies.time_based.medium_gas_price_strategy
+                    gas_price_strategy = medium_gas_price_strategy
 
                 if gas_price_strategy is None:
                     raise Exception("invalid gas price strategy")
