@@ -70,7 +70,14 @@ CONSTANCE_CONFIG = {
     "BRANDING_TITLE": (
         "IGL Trade Portal (beta)",
         "The text shown on the page headers"
-    )
+    ),
+
+    "IGL_CHANNELS_CONFIGURED": (
+        "",
+        "To what channels this installation can send documents; value example is SG,CN "
+        "and if the target country not in the list then IGL message status will be 'not sent'. "
+        "Comma-separated 2-letter country names without spaces and any other characters except the comma"
+    ),
 }
 
 
@@ -80,6 +87,9 @@ CONSTANCE_CONFIG_FIELDSETS = {
         'OA_UNPROCESSED_QUEUE_URL', 'OA_UNPROCESSED_BUCKET_NAME', 'OA_AWS_ACCESS_KEYS',
         'OA_VERIFY_API_URL', 'UA_BASE_HOST',
     ),
+    "Node Configuration": (
+        "IGL_CHANNELS_CONFIGURED",
+    )
 }
 
 used = []

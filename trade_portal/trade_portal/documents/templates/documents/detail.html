@@ -55,7 +55,17 @@
     </div>
     <div class="col">
       <strong>Inter-Government Message</strong><br/>
-      Status: {{ object.get_status_display }}<br/>
+
+      {% if object.status == object.STATUS_FAILED %}
+        <span class="badge badge-danger">{{ object.get_status_display }}</span>
+      {% else %}
+        {% if object.status == object.STATUS_VALIDATED or object.status == object.STATUS_INCOMING %}
+          <span class="badge badge-success">{{ object.get_status_display }}</span>
+        {% else %}
+          <span class="badge badge-info">{{ object.get_status_display }}</span>
+        {% endif %}
+      {% endif %}
+
       {% blocktrans %}
       <p>The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes</p>
       {% endblocktrans %}

@@ -67,7 +67,7 @@ class DocumentService(BaseIgService):
         from trade_portal.documents.tasks import document_oa_verify
 
         document.verification_status = Document.V_STATUS_PENDING
-        document.status = Document.STATUS_PENDING
+        document.status = Document.STATUS_NOT_SENT
         document.save()
 
         subject = "{}.{}.{}".format(
@@ -181,69 +181,80 @@ class DocumentService(BaseIgService):
             )
             document.verification_status = Document.V_STATUS_ERROR
 
-        # and not the standard Intergov node communication
-        # step6. Upload OA document to the node
-        oa_uploaded_info = self.ig_client.post_text_document(
-            document.importing_country, oa_wrapped_body
-        )
-        if oa_uploaded_info:
-            DocumentHistoryItem.objects.create(
-                type="text",
-                document=document,
-                message="Uploaded OA document as a message object",
-                object_body=json.dumps(oa_uploaded_info),
+        # and now goes the standard Intergov node communication
+
+        if str(document.importing_country).upper() in config.IGL_CHANNELS_CONFIGURED.upper().split(","):
+            document.status = Document.STATUS_PENDING
+            document.save()
+            # step6. Upload OA document to the node
+            oa_uploaded_info = self.ig_client.post_text_document(
+                document.importing_country, oa_wrapped_body
             )
+            if oa_uploaded_info:
+                DocumentHistoryItem.objects.create(
+                    type="text",
+                    document=document,
+                    message="Uploaded OA document as a message object",
+                    object_body=json.dumps(oa_uploaded_info),
+                )
+            else:
+                DocumentHistoryItem.objects.create(
+                    type="error",
+                    document=document,
+                    message="Error: Can't upload OA document as a message object",
+                )
+                document.status = Document.STATUS_FAILED
+                document.save()
+                return False
+
+            # Post the message
+            message_json = self._render_intergov_message(
+                document,
+                subject=wrapped_doc_merkle_root,
+                obj_multihash=oa_uploaded_info["multihash"],
+            )
+            posted_message = self.ig_client.post_message(message_json)
+            if not posted_message:
+                DocumentHistoryItem.objects.create(
+                    type="error",
+                    document=document,
+                    message="Error: unable to post Node message",
+                    object_body=message_json,
+                )
+                document.status = Document.STATUS_FAILED
+                document.save()
+                return False
+            document.workflow_status = Document.WORKFLOW_STATUS_ISSUED
+            document.save()
+
+            msg = NodeMessage.objects.create(
+                status=NodeMessage.STATUS_SENT,
+                document=document,
+                sender_ref=posted_message["sender_ref"],
+                subject=posted_message["subject"],
+                body=posted_message,
+                history=[f"Posted with status {posted_message['status']}"],
+                is_outbound=True,
+            )
+            DocumentHistoryItem.objects.create(
+                type="nodemessage",
+                document=document,
+                message="The node message has been dispatched",
+                object_body=json.dumps(posted_message),
+                linked_obj_id=msg.id,
+            )
+
+            logging.info("Posted message %s", posted_message)
+            self._subscribe_to_message_updates(posted_message)
         else:
             DocumentHistoryItem.objects.create(
-                type="error",
+                type="message",
                 document=document,
-                message="Error: Can't upload OA document as a message object",
+                message="Not sending the IGL message - the receiver is not in supported channels list",
             )
-            document.status = Document.STATUS_FAILED
-            document.verification_status = Document.V_STATUS_ERROR
+            document.workflow_status = Document.WORKFLOW_STATUS_ISSUED
+            document.status = Document.STATUS_NOT_SENT
             document.save()
-            return False
-
-        # Post the message
-        message_json = self._render_intergov_message(
-            document,
-            subject=wrapped_doc_merkle_root,
-            obj_multihash=oa_uploaded_info["multihash"],
-        )
-        posted_message = self.ig_client.post_message(message_json)
-        if not posted_message:
-            DocumentHistoryItem.objects.create(
-                type="error",
-                document=document,
-                message="Error: unable to post Node message",
-                object_body=message_json,
-            )
-            document.status = Document.STATUS_FAILED
-            document.verification_status = Document.V_STATUS_ERROR
-            document.save()
-            return False
-        document.workflow_status = Document.WORKFLOW_STATUS_ISSUED
-        document.save()
-
-        msg = NodeMessage.objects.create(
-            status=NodeMessage.STATUS_SENT,
-            document=document,
-            sender_ref=posted_message["sender_ref"],
-            subject=posted_message["subject"],
-            body=posted_message,
-            history=[f"Posted with status {posted_message['status']}"],
-            is_outbound=True,
-        )
-        DocumentHistoryItem.objects.create(
-            type="nodemessage",
-            document=document,
-            message="The node message has been dispatched",
-            object_body=json.dumps(posted_message),
-            linked_obj_id=msg.id,
-        )
-
-        logging.info("Posted message %s", posted_message)
-        self._subscribe_to_message_updates(posted_message)
         return True
 
     def _render_uploaded_files(self, document: Document) -> list:
