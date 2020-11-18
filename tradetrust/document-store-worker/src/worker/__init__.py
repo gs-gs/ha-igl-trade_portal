@@ -33,7 +33,7 @@ class Worker:
 
     def eth_connect(self):
         logger.debug('eth_connect')
-        self.web3 = Web3(Web3.HTTPProvider(config['Endpoint']))
+        self.web3 = Web3(Web3.HTTPProvider(self.config['Blockchain']['Endpoint']))
 
         logger.info(
             'Worker connected to blockchain node at %s, '
