@@ -58,7 +58,7 @@ class Worker:
                 if gas_price_strategy is None:
                     raise Exception("invalid gas price strategy")
 
-                self.web3.setGasPriceStrategy(gas_price_strategy)
+                self.web3.eth.setGasPriceStrategy(gas_price_strategy)
                 self.config['Blockchain']['GasPrice'] = self.web3.eth.generateGasPrice()
 
                 logger.info('Finding GasPrice strategy:%s price:%s', gas_price_strategy, self.config['Blockchain']['GasPrice'])
