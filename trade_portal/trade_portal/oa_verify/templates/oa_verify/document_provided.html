@@ -19,7 +19,7 @@
   {% else %}
     {% if verification_result.status == "invalid" %}
       <h2><span class="badge badge-danger">Invalid</span></h2>
-      <h4>Some of verification aspects are invalid or tampered with</h4>
+      <h4>Some verification aspects are invalid or document has been tampered with</h4>
       {% for key, value in verification_result.verify_result_rotated.items %}
         {% if value.status == "INVALID" %}{{ key }} {% endif %}
       {% endfor %}

@@ -1,4 +1,4 @@
-You are receiving this email because you have registered on the Secure Trade Line test system.
+You are receiving this email because you have registered on the IGL Trade Portal system.
 To continue using the system you must verify your email address.
 
 Click this link to verify your email {{ activate_url }}

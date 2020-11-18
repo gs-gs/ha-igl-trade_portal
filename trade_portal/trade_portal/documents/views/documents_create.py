@@ -129,8 +129,8 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
             messages.success(
                 self.request,
                 _(
-                    "The document you have just created will be notarised and sent "
-                    "to the importing jurisdiction via the IGL (if possible)."
+                    "The document will be issued as a Verifiable Credential (VC) and,"
+                    " if a direct G2G channel exists, will also be sent to the importing regulator"
                 ),
             )
             lodge_document.apply_async([obj.pk], countdown=2)

@@ -17,7 +17,7 @@
 {% block content %}
 <div class="container">
   <h2>{% trans 'Pending users' %}</h2>
-  <p>{% blocktrans %}These users are freshly registered and have no organisation assighed - thus may need manual action to be able to use the portal. If the {{ BID_NAME }} entered on registration correlates to existing organisation (already created in the Portal) you will be able to grant this user access to this organisation. If there is no such organisation it may be created. Users have no access to the Portal functionality while in this list.{% endblocktrans %}</p>
+  <p>{% blocktrans %}These users are freshly registered and have no organisation assigned - thus may need manual action to be able to use the portal. If the {{ BID_NAME }} entered on registration correlates to existing organisation (already created in the Portal) you will be able to grant this user access to this organisation. If there is no such organisation it may be created. Users have no access to the Portal functionality while in this list.{% endblocktrans %}</p>
 
   {% autopaginate pending_users 50 %}
 
