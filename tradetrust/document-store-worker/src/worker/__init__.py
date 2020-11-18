@@ -3,7 +3,7 @@ import time
 import urllib
 import boto3
 import requests
-from web3 import Web3
+from web3 import Web3, gas_strategies
 from src.loggers import logging
 
 logger = logging.getLogger('WORKER')
@@ -33,7 +33,8 @@ class Worker:
 
     def eth_connect(self):
         logger.debug('eth_connect')
-        self.web3 = Web3(Web3.HTTPProvider(self.config['Blockchain']['Endpoint']))
+        self.web3 = Web3(Web3.HTTPProvider(config['Endpoint']))
+
         logger.info(
             'Worker connected to blockchain node at %s, '
             'networkId:%s '
@@ -42,6 +43,23 @@ class Worker:
             self.web3.net.version,
             self.web3.eth.chainId
         )
+
+        if self.config['Blockchain']['GasPrice'] is not None:
+            if type(self.config['Blockchain']['GasPrice']) == str:
+                gas_price_strategy = None
+                if self.config['Blockchain']['GasPrice'] == 'fast':
+                    gas_price_strategy = gas_strategies.time_based.fast_gas_price_strategy
+
+                if self.config['Blockchain']['GasPrice'] == 'medium':
+                    gas_price_strategy = gas_strategies.time_based.medium_gas_price_strategy
+
+                if gas_price_strategy is None:
+                    raise Exception("invalid gas price strategy")
+
+                self.web3.setGasPriceStrategy(gas_price_strategy)
+                self.config['Blockchain']['GasPrice'] = self.web3.eth.generateGasPrice()
+
+                logger.info('Finding GasPrice strategy:%s price:%s', gas_price_strategy, self.config['Blockchain']['GasPrice'])
 
     def unprocessed_queue_connect(self):
         logger.debug('unprocessed_queue_connect')
@@ -132,6 +150,10 @@ class Worker:
             'from': public_key,
             'nonce': nonce
         }
+
+        if self.config['Blockchain']['GasPrice'] is not None:
+            transaction['gasPrice'] = self.config['Blockchain']['GasPrice']
+
         merkleRoot = wrapped_document['signature']['merkleRoot']
         unsigned_transaction = self.document_store.functions.issue(merkleRoot).buildTransaction(transaction)
         signed_transaction = self.web3.eth.account.sign_transaction(unsigned_transaction, private_key=private_key)
@@ -141,7 +163,7 @@ class Worker:
 
     def _wait_for_transaction_receipt(self, tx_hash):
         logger.debug('wait_for_transaction_receipt')
-        return self.web3.eth.waitForTransactionReceipt(tx_hash, 180)
+        return self.web3.eth.waitForTransactionReceipt(tx_hash, self.config['Blockchain']['ReceiptTimeout'])
 
     def issue_document(self, wrapped_document):
         logger.debug('issue_document')
@@ -263,6 +285,8 @@ class Worker:
     def start(self):  # pragma: no cover
         polling_interval = self.config['Worker']['Polling']['IntervalSeconds']
         logger.info("Starting the worker with polling_interval %s", polling_interval)
+
+
         while True:
             self.poll()
             time.sleep(polling_interval)

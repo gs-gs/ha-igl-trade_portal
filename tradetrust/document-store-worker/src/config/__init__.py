@@ -53,7 +53,9 @@ class Config:
         )
 
         blockchain = {
-            'Endpoint': os.environ['BLOCKCHAIN_ENDPOINT']
+            'Endpoint': os.environ['BLOCKCHAIN_ENDPOINT'],
+            'GasPrice' : os.environ.get('BLOCKCHAIN_GAS_PRICE', None ),
+            'ReceiptTimeout' : int(os.environ.get('BLOCKCHAIN_RECEIPT_TIMEOUT', 180))
         }
 
         document_store = {
