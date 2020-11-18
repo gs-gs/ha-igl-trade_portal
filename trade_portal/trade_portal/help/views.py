@@ -134,7 +134,7 @@ class OaVerificationView(TemplateView):
         for row in oa_verify_resp:
             if row["status"].lower() == "invalid":
                 result["status"] = "invalid"
-            result["verify_result_rotated"][row.get("type")] = row
+            result["verify_result_rotated"][row.get("name")] = row
 
         if result["status"] == "valid":
             # worth further parsing only if the file is valid

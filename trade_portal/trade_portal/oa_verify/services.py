@@ -57,7 +57,7 @@ class OaVerificationService:
             for row in api_verify_resp:
                 if row["status"].lower() not in ("valid", "skipped"):
                     result["status"] = "invalid"
-                result["verify_result_rotated"][row.get("type")] = row
+                result["verify_result_rotated"][row.get("name")] = row
         if result["status"] == "valid":
             # worth further parsing only if the file is valid
             try:
