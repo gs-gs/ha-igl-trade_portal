@@ -36,6 +36,9 @@ class IntergovClient(object):
             raise Exception("Country parameter is invalid")
         self.COUNTRY = country
 
+        if not isinstance(endpoints, dict):
+            raise Exception("Correct endpoints must be provided")
+
         self.auth_class = auth_class
         self.ENDPOINTS = endpoints
 
@@ -54,7 +57,7 @@ class IntergovClient(object):
             },
         )
         if not str(resp.status_code).startswith("2"):
-            logger.warning("Non-2xx responce for message retrieval; %s", resp.content)
+            logger.warning("Non-2xx response for message retrieval; %s", resp.content)
             return None
         return resp.json()
 

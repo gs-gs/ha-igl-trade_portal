@@ -1,5 +1,5 @@
 [run]
-include = trade_portal/*
-omit = *migrations*, *tests*
+include = trade_portal/* intergov_client/*
+omit = *migrations*, *tests*, *template*
 plugins =
     django_coverage_plugin
