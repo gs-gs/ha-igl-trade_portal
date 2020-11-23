@@ -4,6 +4,7 @@ Things related to the CoO packaging and sending to the upstream
 import io
 import logging
 
+from constance import config
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
@@ -20,9 +21,14 @@ class WatermarkService:
     Helper to add QR code to the uploaded PDF file assuming it doesn't have any
     """
 
-    def watermark_document(self, document: Document):
+    def watermark_document(self, document: Document, force: bool = False):
         qrcode_image = document.oa.get_qr_image()
-        for docfile in document.files.filter(is_watermarked=False):
+
+        qset = document.files.all()
+        if force is False:
+            qset = qset.filter(is_watermarked=False)
+
+        for docfile in qset:
             if docfile.filename.lower().endswith(".pdf"):
                 self.add_watermark(docfile, qrcode_image)
         return
@@ -37,7 +43,7 @@ class WatermarkService:
         import PIL
         from reportlab.pdfgen import canvas
         from reportlab.lib.utils import ImageReader
-        from reportlab.lib.units import cm
+        from reportlab.lib.units import mm
         from reportlab.lib.pagesizes import A4
         from PyPDF2 import PdfFileWriter, PdfFileReader
 
@@ -60,7 +66,7 @@ class WatermarkService:
         if y_loc > 100:
             y_loc = 100
 
-        image_width = 3 * cm
+        image_width = config.QR_CODE_SIZE_MM * mm
 
         image_x_loc = A4[0] * x_loc
         image_y_loc = A4[1] * y_loc - image_width

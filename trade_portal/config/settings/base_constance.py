@@ -78,6 +78,10 @@ CONSTANCE_CONFIG = {
         "and if the target country not in the list then IGL message status will be 'not sent'. "
         "Comma-separated 2-letter country names without spaces and any other characters except the comma"
     ),
+    "QR_CODE_SIZE_MM": (
+        26,
+        "The size (millimeters) of QR code to watermark over PDFs we generate"
+    )
 }
 
 

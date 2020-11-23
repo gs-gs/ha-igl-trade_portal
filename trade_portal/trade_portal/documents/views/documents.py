@@ -33,13 +33,13 @@ class DocumentQuerysetMixin(AccessMixin):
         qs = Document.objects.all()
         user = self.request.user
         current_org = user.get_current_org(self.request.session)
-        if current_org.is_regulator:
+        if current_org and current_org.is_regulator:
             # regulator can see everything
             pass
-        elif current_org.is_chambers:
+        elif current_org and current_org.is_chambers:
             # chambers can see only their own documents
             qs = qs.filter(created_by_org=current_org)
-        elif current_org.is_trader:
+        elif current_org and current_org.is_trader:
             qs = (
                 qs.filter(
                     importer_name__in=(

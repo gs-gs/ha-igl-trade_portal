@@ -1,3 +1,4 @@
+from constance import config
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin as Login
 from django.shortcuts import redirect
@@ -90,6 +91,7 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
             c["initial_qr_y_value"] = last_issued_document.extra_data.get(
                 "qr_y_position"
             )
+        c["QR_CODE_SIZE_MM"] = config.QR_CODE_SIZE_MM
         return c
 
     def _get_data_warnings(self):
