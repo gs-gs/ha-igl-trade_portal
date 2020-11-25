@@ -3,9 +3,14 @@ import collections
 import logging
 
 import jsonschema
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from rest_framework import serializers
 
-from trade_portal.documents.models import Document, FTA, OaDetails
+from trade_portal.documents.models import (
+    Document, DocumentFile, FTA, OaDetails,
+    generate_docfile_filename,
+)
 from trade_portal.document_api.schema import CERT_SCHEMA
 from trade_portal.edi3.utils import party_from_json
 
@@ -173,6 +178,7 @@ class CertificateSerializer(serializers.Serializer):
                     "freeTradeAgreement": f"Doesn't exist in the system, possible choices are {ftas}"
                 }
             )
+        # TODO: validate if the file passes is base64 encoded and correct and is PDF
         return data
 
     def to_internal_value(self, data):
@@ -247,6 +253,25 @@ class CertificateSerializer(serializers.Serializer):
 
         # some business logic - propagating some fields to the model instance
         self._fill_model_from_json(obj, cert_data)
+
+        # save file if provided
+        attachedfile = cert_data.get("attachedFile")
+        if attachedfile:
+            attachedfile.get("mimeCode")
+            if attachedfile.get("encodingCode") == "base64":
+                binary_decoded_file = base64.b64decode(attachedfile.get("file"))
+                file_path = default_storage.save(
+                    generate_docfile_filename(obj, "file.pdf"),
+                    ContentFile(binary_decoded_file),
+                )
+                DocumentFile.objects.create(
+                    doc=obj,
+                    created_by=self.user,
+                    file=file_path,
+                    filename="file.pdf",
+                    size=len(binary_decoded_file),
+                    is_watermarked=None,
+                )
 
         return obj
 

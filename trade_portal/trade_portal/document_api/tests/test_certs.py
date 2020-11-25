@@ -1,3 +1,4 @@
+import base64
 import random
 
 import pytest
@@ -10,7 +11,7 @@ from rest_framework.test import (
 )
 from django.utils import timezone
 
-from trade_portal.documents.models import Document, FTA
+from trade_portal.documents.models import Document, DocumentFile, FTA
 from trade_portal.document_api.views import CertificateViewSet
 from trade_portal.users.models import (
     Organisation,
@@ -147,33 +148,6 @@ CERT_EXAMPLE = {
 }
 
 
-@pytest.fixture
-def docapi_env():
-    ret = {}
-    FTA.objects.get_or_create(name="China-Australia Free Trade Agreement")
-    FTA.objects.get_or_create(name="AANZFTA First Protocol")
-    ret["u1"] = UserFactory()
-    ret["u2"] = UserFactory()
-
-    # hacky move u2 to org2
-    org2 = Organisation.objects.create(name="Regulator", is_regulator=True)
-    ms = OrgMembership.objects.get(
-        user=ret["u2"],
-    )
-    ms.org = org2
-    ms.save()
-
-    # create 2 tokens
-    ret["t1"] = OrganisationAuthToken.objects.create(
-        user=ret["u1"], org=ret["u1"].direct_orgs[0]
-    )
-    ret["t2"] = OrganisationAuthToken.objects.create(
-        user=ret["u2"], org=ret["u2"].direct_orgs[0]
-    )
-
-    return ret
-
-
 def test_integration_workflow(docapi_env):
     u1 = UserFactory()
 
@@ -183,10 +157,10 @@ def test_integration_workflow(docapi_env):
     c.auth = HTTPBasicAuth(u1.username, "password")
 
     assert Document.objects.count() == 0
+    assert DocumentFile.objects.count() == 0
     certificate_body = CERT_EXAMPLE.copy()
 
     # create some certificate
-
     resp = c.post(
         "http://testserver/api/documents/v0/CertificatesOfOrigin/",
         json=certificate_body,
@@ -197,6 +171,7 @@ def test_integration_workflow(docapi_env):
 
     cert = Document.objects.get(pk=cert_id)
     assert Document.objects.count() == 1
+    assert DocumentFile.objects.count() == 0  # because there is no file info in the initial payload
     assert cert.document_number == certificate_body["certificateOfOrigin"]["id"]
 
     # retrieve it
@@ -234,10 +209,66 @@ def test_integration_workflow(docapi_env):
     assert len(cert_data.keys()) > 5, cert_data
     assert cert_data["freeTradeAgreement"] == "AANZFTA First Protocol"
     assert cert.fta and cert.fta.name == "AANZFTA First Protocol"
-
     # TODO: file upload
     # TODO: change status
     return
+
+
+def test_document_create_with_file_attached(docapi_env):
+    t1 = docapi_env["t1"]
+    c = APIClient()
+    c.credentials(HTTP_AUTHORIZATION=f"Token {t1.access_token}")
+
+    cert_payload = CERT_EXAMPLE.copy()
+    cert_payload["certificateOfOrigin"].update({
+        # TODO: use and validate PDF
+        "attachedFile": {
+            "file": base64.b64encode(b'the file content'),
+            "encodingCode": "base64",
+            "mimeCode": "application/pdf",
+        }
+    })
+
+    assert Document.objects.count() == 0
+    assert DocumentFile.objects.count() == 0
+
+    # wrong payload, attached file is list, not dict
+    cert_payload["certificateOfOrigin"].update({
+        # TODO: use and validate PDF
+        "attachedFile": ["a", "b"]
+    })
+    resp = c.post(
+        "/api/documents/v0/CertificatesOfOrigin/", CERT_EXAMPLE, format="json"
+    )
+    assert resp.status_code == 400
+    assert resp.json() == {'schema': ["['a', 'b'] is not of type 'object'"]}
+
+    # wrong, no required items
+    cert_payload["certificateOfOrigin"].update({
+        # TODO: use and validate PDF
+        "attachedFile": {"some": "field"}
+    })
+    resp = c.post(
+        "/api/documents/v0/CertificatesOfOrigin/", CERT_EXAMPLE, format="json"
+    )
+    assert resp.status_code == 400
+    assert resp.json() == {'schema': ["'file' is a required property"]}
+
+    # correct payload
+    cert_payload["certificateOfOrigin"].update({
+        # TODO: use and validate PDF
+        "attachedFile": {
+            "file": base64.b64encode(b'the file content'),
+            "encodingCode": "base64",
+            "mimeCode": "application/pdf",
+        }
+    })
+    resp = c.post(
+        "/api/documents/v0/CertificatesOfOrigin/", CERT_EXAMPLE, format="json"
+    )
+    assert resp.status_code == 201
+    assert Document.objects.count() == 1
+    assert DocumentFile.objects.count() == 1
 
 
 def test_org_permission_to_create(docapi_env):
