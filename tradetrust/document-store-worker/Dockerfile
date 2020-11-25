@@ -1,6 +1,6 @@
 FROM python:3.8-alpine
 
-RUN apk update && apk add bash make g++ gcc curl
+RUN apk update && apk add bash make g++ gcc curl git
 
 WORKDIR /document-store-worker
 
