@@ -1,5 +1,6 @@
 import os
 import json
+from libtrustbridge.utils.conf import string_or_b64kms
 
 
 class Config:
@@ -54,8 +55,8 @@ class Config:
 
         blockchain = {
             'Endpoint': os.environ['BLOCKCHAIN_ENDPOINT'],
-            'GasPrice' : os.environ.get('BLOCKCHAIN_GAS_PRICE', None ),
-            'ReceiptTimeout' : int(os.environ.get('BLOCKCHAIN_RECEIPT_TIMEOUT', 180))
+            'GasPrice': os.environ.get('BLOCKCHAIN_GAS_PRICE', None),
+            'ReceiptTimeout': int(os.environ.get('BLOCKCHAIN_RECEIPT_TIMEOUT', 180))
         }
 
         document_store = {
@@ -66,10 +67,7 @@ class Config:
             'ABI': Config.load_json_file(os.environ['DOCUMENT_STORE_ABI'])['abi'],
             'Owner': {
                 'PublicKey': os.environ['DOCUMENT_STORE_OWNER_PUBLIC_KEY'],
-                'PrivateKey': Config.get_env_or_singleline_file_value(
-                                    'DOCUMENT_STORE_OWNER_PRIVATE_KEY',
-                                    not_empty=True
-                )
+                'PrivateKey': string_or_b64kms(os.environ['DOCUMENT_STORE_OWNER_PRIVATE_KEY'])
             }
         }
 
