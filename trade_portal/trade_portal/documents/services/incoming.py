@@ -71,6 +71,7 @@ class IncomingDocumentService(BaseIgService):
             the_file.save()
         except Exception as e:
             DocumentHistoryItem.objects.create(
+                is_error=True,
                 type="error",
                 document=doc,
                 message="Failed to store obj from the message",
@@ -360,6 +361,7 @@ class IncomingDocumentService(BaseIgService):
     def _complain_and_die(self, doc: Document, message, *message_args):
         logger.info(message, *message_args)
         DocumentHistoryItem.objects.create(
+            is_error=True,
             type="error",
             document=doc,
             message=message % message_args,

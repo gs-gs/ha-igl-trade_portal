@@ -519,6 +519,8 @@ class DocumentHistoryItem(models.Model):
     # sometimes we want to save large file (like OA unwrapped one)
     related_file = models.FileField(blank=True)
 
+    is_error = models.BooleanField(default=False)
+
     class Meta:
         ordering = ("created_at",)
 
@@ -698,6 +700,7 @@ class NodeMessage(models.Model):
                     self,
                 )
                 DocumentHistoryItem.objects.create(
+                    is_error=True,
                     type="nodemessage",
                     document=self.document,
                     message=_(

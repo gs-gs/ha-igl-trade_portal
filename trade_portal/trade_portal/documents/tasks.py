@@ -87,6 +87,7 @@ def process_incoming_document_received(self, document_pk):
                 )
                 retry_delay = 15 + 30 * self.request.retries
                 DocumentHistoryItem.objects.create(
+                    is_error=True,
                     type="error",
                     document=doc,
                     message=f"Error, will be trying again in {retry_delay}s",
@@ -98,6 +99,7 @@ def process_incoming_document_received(self, document_pk):
                     "Max retries reached for the document %s, marking as error", doc
                 )
                 DocumentHistoryItem.objects.create(
+                    is_error=True,
                     type="error",
                     document=doc,
                     message=f"Unable to process document after {self.request.retries} retries",
@@ -110,6 +112,7 @@ def process_incoming_document_received(self, document_pk):
             # non-retryable exception
             logger.exception(e)
             DocumentHistoryItem.objects.create(
+                is_error=True,
                 type="error",
                 document=doc,
                 message="Unable to process document, non-retryable exception",
@@ -156,6 +159,7 @@ def document_oa_verify(self, document_id, do_retries=True):
             "Unable to verify document: no VC can be retrieved for %s", document
         )
         DocumentHistoryItem.objects.create(
+            is_error=True,
             type="error",
             document=document,
             message="Unable to verify document: no VC can be retrieved; it's either invalid or of non-OA format",
@@ -192,6 +196,7 @@ def document_oa_verify(self, document_id, do_retries=True):
             document,
         )
         DocumentHistoryItem.objects.create(
+            is_error=True,
             type="error",
             document=document,
             message=f"Unable to verify document: {verify_response.get('error_message')}",
@@ -218,6 +223,7 @@ def document_oa_verify(self, document_id, do_retries=True):
             document.verification_status = Document.V_STATUS_FAILED
             document.save()
             DocumentHistoryItem.objects.create(
+                is_error=True,
                 type="error",
                 document=document,
                 message=f"Unable to verify the document after {self.request.retries} attempts",

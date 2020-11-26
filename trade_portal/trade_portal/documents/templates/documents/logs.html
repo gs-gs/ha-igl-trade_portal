@@ -25,7 +25,7 @@
         </thead>
         <tbody>
           {% for history_item in object.history.all %}
-            <tr>
+            <tr {% if history_item.is_error %}style="background-color: #faa"{% endif %}>
               <td style='max-width: 200px'>{{ history_item.message }}<br/>{{ history_item.created_at }}</td>
               <td>
                 {% if history_item.object_body %}

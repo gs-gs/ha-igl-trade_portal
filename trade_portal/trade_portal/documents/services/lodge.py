@@ -106,6 +106,7 @@ class DocumentService(BaseIgService):
         except Exception as e:
             logger.exception(e)
             DocumentHistoryItem.objects.create(
+                is_error=True,
                 type="error",
                 document=document,
                 message="Error: OA document wrap failed with error",
@@ -136,6 +137,7 @@ class DocumentService(BaseIgService):
                 "Received response %s for oa doc wrap step", oa_doc_wrapped_resp
             )
             DocumentHistoryItem.objects.create(
+                is_error=True,
                 type="error",
                 document=document,
                 message=f"Error: OA document wrap failed with result {oa_doc_wrapped_resp.status_code}",
@@ -175,6 +177,7 @@ class DocumentService(BaseIgService):
             document_oa_verify.apply_async(args=[document.pk], countdown=30)
         else:
             DocumentHistoryItem.objects.create(
+                is_error=True,
                 type="error",
                 document=document,
                 message="OA document has NOT been sent to the notary service",
@@ -199,6 +202,7 @@ class DocumentService(BaseIgService):
                 )
             else:
                 DocumentHistoryItem.objects.create(
+                    is_error=True,
                     type="error",
                     document=document,
                     message="Error: Can't upload OA document as a message object",
@@ -216,6 +220,7 @@ class DocumentService(BaseIgService):
             posted_message = self.ig_client.post_message(message_json)
             if not posted_message:
                 DocumentHistoryItem.objects.create(
+                    is_error=True,
                     type="error",
                     document=document,
                     message="Error: unable to post Node message",
