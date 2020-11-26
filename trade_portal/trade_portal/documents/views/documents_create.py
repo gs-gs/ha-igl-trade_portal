@@ -128,12 +128,12 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
             obj.extra_data["qr_x_position"] = request.POST.get("qr_x")
             obj.extra_data["qr_y_position"] = request.POST.get("qr_y")
             obj.save()
+
+            message = "The document will be issued as a Verifiable Credential (VC)"
+            # and, if a direct G2G channel exists, will also be sent to the importing regulator
             messages.success(
                 self.request,
-                _(
-                    "The document will be issued as a Verifiable Credential (VC) and,"
-                    " if a direct G2G channel exists, will also be sent to the importing regulator"
-                ),
+                _(message),
             )
             lodge_document.apply_async([obj.pk], countdown=2)
 

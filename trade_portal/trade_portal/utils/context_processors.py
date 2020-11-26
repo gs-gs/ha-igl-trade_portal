@@ -15,4 +15,5 @@ def settings_context(_request):
         "BID_NAME": settings.BID_NAME,
         "BRANDING_TITLE": config.BRANDING_TITLE,
         "current_org": current_org,
+        "IS_CONNECTED_TO_IGL": bool(config.IGL_CHANNELS_CONFIGURED.strip())  # True if there is at least one channel
     }

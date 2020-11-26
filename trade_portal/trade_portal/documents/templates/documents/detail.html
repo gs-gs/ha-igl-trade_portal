@@ -58,25 +58,27 @@
       {% endif %}
     </div>
     <div class="col">
-      <strong>Inter-Government Message</strong><br/>
+      {% if IS_CONNECTED_TO_IGL %}
+        <strong>Inter-Government Message</strong><br/>
 
-      {% if object.status == object.STATUS_FAILED %}
-        <span class="badge badge-danger">{{ object.get_status_display }}</span>
-      {% else %}
-        {% if object.status == object.STATUS_VALIDATED or object.status == object.STATUS_INCOMING %}
-          <span class="badge badge-success">{{ object.get_status_display }}</span>
+        {% if object.status == object.STATUS_FAILED %}
+          <span class="badge badge-danger">{{ object.get_status_display }}</span>
         {% else %}
-          <span class="badge badge-info"
-                {% if object.status == object.STATUS_NOT_SENT %}
-                  title="no IGL channel exists for this message type and country"
-                {% endif %}
-            >{{ object.get_status_display }}</span>
+          {% if object.status == object.STATUS_VALIDATED or object.status == object.STATUS_INCOMING %}
+            <span class="badge badge-success">{{ object.get_status_display }}</span>
+          {% else %}
+            <span class="badge badge-info"
+                  {% if object.status == object.STATUS_NOT_SENT %}
+                    title="no IGL channel exists for this message type and country"
+                  {% endif %}
+              >{{ object.get_status_display }}</span>
+          {% endif %}
         {% endif %}
-      {% endif %}
 
-      {% blocktrans %}
-      <p>The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes</p>
-      {% endblocktrans %}
+        {% blocktrans %}
+        <p>The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes</p>
+        {% endblocktrans %}
+      {% endif %}
       <a href="logs/" class="btn btn-primary btn-sm" style="width: 150px">Logs</a><br/>
     </div>
   </div>

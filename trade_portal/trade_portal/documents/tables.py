@@ -1,5 +1,5 @@
-# tutorial/tables.py
 import django_tables2 as tables
+from constance import config
 from django.utils.translation import gettext_lazy as _
 
 from .models import Document
@@ -88,3 +88,8 @@ class DocumentsTable(tables.Table):
             "consignment_details",
             "logs_link",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not bool(config.IGL_CHANNELS_CONFIGURED.strip()):
+            self.exclude = ('status',)
