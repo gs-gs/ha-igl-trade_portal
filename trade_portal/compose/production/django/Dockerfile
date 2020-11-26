@@ -49,9 +49,8 @@ RUN sed -i 's/\r$//g' /start-flower && \
 
 COPY --chown=django:django . /app
 
-RUN DJANGO_SETTINGS_MODULE="config.settings.production" DJANGO_SECRET_KEY="123" DATABASE_URL="postgres://" python /app/manage.py collectstatic --noinput > /dev/null
-RUN DJANGO_SETTINGS_MODULE="config.settings.production" DJANGO_SECRET_KEY="123" DATABASE_URL="postgres://" python /app/manage.py compilemessages > /dev/null
-
+RUN bash -c "set -o allexport && source /app/devops/localdocker/common.env && DJANGO_SETTINGS_MODULE="config.settings.production" DJANGO_SECRET_KEY="123" DATABASE_URL="postgres://" python /app/manage.py collectstatic --noinput" > /dev/null
+RUN bash -c "set -o allexport && source /app/devops/localdocker/common.env && DJANGO_SETTINGS_MODULE="config.settings.production" DJANGO_SECRET_KEY="123" DATABASE_URL="postgres://" python /app/manage.py compilemessages" > /dev/null
 
 # enable PDF conversion in wand/imagemagick
 RUN python -c "result = open('/etc/ImageMagick-6/policy.xml').read().replace('rights="\""none"\"" pattern="\""PDF"\""', 'rights="\""read | write"\"" pattern="\""PDF"\""'); open('/etc/ImageMagick-6/policy.xml', 'w').write(result)"

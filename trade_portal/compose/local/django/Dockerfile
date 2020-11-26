@@ -46,7 +46,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN DATABASE_URL="postgres://" python /app/manage.py collectstatic --noinput  > /dev/null
-RUN DATABASE_URL="postgres://" python /app/manage.py compilemessages > /dev/null
+RUN bash -c "set -o allexport && source /app/devops/localdocker/common.env && DATABASE_URL="postgres://" python /app/manage.py collectstatic --noinput" > /dev/null
+RUN bash -c "set -o allexport && source /app/devops/localdocker/common.env && DATABASE_URL="postgres://" python /app/manage.py compilemessages" > /dev/null
 
 ENTRYPOINT ["/entrypoint"]
