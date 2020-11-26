@@ -47,3 +47,37 @@ else:
 
 
 ABR_UUID = env("ABR_UUID", default=None) or None
+
+
+# The value required by notarisation workflow; must be set along with the OA_NOTARY_DOMAIN
+OA_NOTARY_CONTRACT = env("OA_NOTARY_CONTRACT")
+# The value required by notarisation workflow; this is the domain where value from the OA_NOTARY_CONTRACT
+# is set in the DNS records. Coupled with OA_NOTARY_CONTRACT. Leave empty to use default website domain.
+OA_NOTARY_DOMAIN = env("OA_NOTARY_DOMAIN")
+
+# Either local or remote setup which is able to wrap documents
+# (the API providing /wrap and /unwrap endpoints)
+OA_WRAP_API_URL = env("OA_WRAP_API_URL")
+
+# ## Variables needed for notarisastion step, which relies on buckets/queues
+# ## may be replaced by other mechanisms once they are defined
+# ## You could use AWS cloud, minio or AWS localstack to provide these values
+
+# Do not send manual notifications if empty; must be available using the OA access keys
+OA_UNPROCESSED_QUEUE_URL = env("OA_UNPROCESSED_QUEUE_URL")
+# Just a plain bucket name, do not send files to notarisation if empty
+OA_UNPROCESSED_BUCKET_NAME = env("OA_UNPROCESSED_BUCKET_NAME")
+
+# Values in format accesskey:secretkey, None if empty (policy defined)
+OA_AWS_ACCESS_KEYS = env("OA_AWS_ACCESS_KEYS", default="") or None
+
+# Some endpoint (without any non-transparent auth) which verifies the OA JSON document passed to it
+OA_VERIFY_API_URL = env("OA_VERIFY_API_URL")
+
+# ## Universal actions QR code parameters
+
+# Unversal actions QR code base host - the one handling that querysetring "
+# and redirecting to the correct verify endpoint.",
+UA_BASE_HOST = env("UA_BASE_HOST")
+# Renderer we use by default; The host with protocol without trailing slash
+OA_RENDERER_HOST = env("OA_RENDERER_HOST")

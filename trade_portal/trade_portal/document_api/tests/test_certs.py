@@ -11,13 +11,8 @@ from rest_framework.test import (
 )
 from django.utils import timezone
 
-from trade_portal.documents.models import Document, DocumentFile, FTA
+from trade_portal.documents.models import Document, DocumentFile
 from trade_portal.document_api.views import CertificateViewSet
-from trade_portal.users.models import (
-    Organisation,
-    OrgMembership,
-    OrganisationAuthToken,
-)
 from trade_portal.users.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db(transaction=True)

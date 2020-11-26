@@ -8,7 +8,6 @@ import uuid
 from base64 import b64encode
 from urllib.parse import quote
 
-from constance import config
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -206,10 +205,10 @@ class OaDetails(models.Model):
                 "uri": self.uri,
                 "key": self.key,
                 # "permittedActions": ["VIEW"],
-                # "redirect": config.UA_VERIFY_HOST
+                # "redirect": settings.UA_VERIFY_HOST
             },
         }
-        return f"{config.UA_BASE_HOST}?q={quote(json.dumps(params))}"
+        return f"{settings.UA_BASE_HOST}?q={quote(json.dumps(params))}"
 
     @classmethod
     def retrieve_new(cls, for_org):

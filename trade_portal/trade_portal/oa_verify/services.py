@@ -4,7 +4,7 @@ import logging
 
 import requests
 
-from constance import config
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class OaVerificationService:
     def _api_verify_file(self, file_content):
         try:
             resp = requests.post(
-                config.OA_VERIFY_API_URL,
+                settings.OA_VERIFY_API_URL,
                 files={
                     "file": file_content,
                 },

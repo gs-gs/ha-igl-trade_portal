@@ -8,7 +8,7 @@ import uuid
 
 import dateutil.parser
 import requests
-from constance import config
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
@@ -146,7 +146,7 @@ class IncomingDocumentService(BaseIgService):
 
         try:
             unwrapped_oa = requests.post(
-                config.OA_WRAP_API_URL + "/document/unwrap",
+                settings.OA_WRAP_API_URL + "/document/unwrap",
                 json={
                     "document": json_content,
                     "params": {

@@ -95,7 +95,7 @@ class DocumentService(BaseIgService):
         # step 3, slow: wrap OA document using external api for wrapping documents
         try:
             oa_doc_wrapped_resp = requests.post(
-                config.OA_WRAP_API_URL + "/document/wrap",
+                settings.OA_WRAP_API_URL + "/document/wrap",
                 json={
                     "document": oa_doc,
                     "params": {
@@ -272,7 +272,7 @@ class DocumentService(BaseIgService):
         return uploaded
 
     def _render_oa_v2_document(self, document: Document, subject: str) -> dict:
-        tt_host = config.OA_NOTARY_DOMAIN or settings.BASE_URL
+        tt_host = settings.OA_NOTARY_DOMAIN or settings.BASE_URL
         tt_key_location = tt_host.replace("https://", "").replace(
             "http://", ""
         )
@@ -288,14 +288,14 @@ class DocumentService(BaseIgService):
             "$template": {
                 "name": "COO",
                 "type": "EMBEDDED_RENDERER",
-                "url": config.OA_RENDERER_HOST,
+                "url": settings.OA_RENDERER_HOST,
                 # "url": "https://chafta.tradetrust.io"
             },
             # OAv2 field
             "issuers": [
                 {
                     "name": document.issuer.name,
-                    "documentStore": config.OA_NOTARY_CONTRACT,
+                    "documentStore": settings.OA_NOTARY_CONTRACT,
                     "identityProof": {
                         "type": "DNS-TXT",
                         "location": tt_key_location,
