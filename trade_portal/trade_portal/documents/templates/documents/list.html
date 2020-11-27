@@ -21,7 +21,7 @@
           </div>
         </div>
         <div class="desktop-advance-filter-btn">
-          <a class="btn btn-md btn-link btn-advance-filter" type="button" data-toggle="collapse" href="#advancedFilter" role="button" aria-expanded="false" aria-controls="collapseExample">{% trans 'Advanced filter' %}</a>
+          <a class="btn btn-md btn-link btn-advance-filter" type="button" data-toggle="collapse" href="#advancedFilter" role="button" aria-expanded="false" aria-controls="collapseExample">{% trans 'Advanced filter' %} {% if adv_filter_count %}({{ adv_filter_count }}){% endif %}</a>
         </div>
       </div>
       <div class="col-md-6 items-list__action">
@@ -67,10 +67,10 @@
         </div>
         <div class="advanced-filter__col">
           <div class="form-group">
-            <select name="status_filter" class="form-control">
-              <option value="" selected>{% trans 'Any status' %}</option>
-              {% for item, title in Document.STATUS_CHOICES %}
-                <option value="{{ item }}" {% if item == request.GET.status_filter %}selected{% endif %}>{{ title }}</option>
+            <select name="vstatus" class="form-control">
+              <option value="" selected>{% trans 'Any verification status' %}</option>
+              {% for item, title in Document.V_STATUS_CHOICES %}
+                <option value="{{ item }}" {% if item == request.GET.vstatus %}selected{% endif %}>{{ title }}</option>
               {% endfor %}
             </select>
           </div>
@@ -99,7 +99,8 @@
         </div>
       </div>
       <div class="advanced-filter__submit">
-        <button class="btn btn-md btn-primary" type="submit">{% trans 'Save' %}</button>
+        <a href="{{ request.path_info }}" class="btn btn-md btn-secondary">{% trans "Reset filters" %}</a>
+        <button class="btn btn-md btn-primary" type="submit">{% trans "Apply filter" %}</button>
       </div>
     </div>
     </form>

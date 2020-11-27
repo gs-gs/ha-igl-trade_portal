@@ -91,9 +91,9 @@ class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         # apply the filters
-        status_filter = self.request.GET.get("status_filter", "").strip() or None
-        if status_filter:
-            qs = qs.filter(status=status_filter)
+        vstatus = self.request.GET.get("vstatus", "").strip() or None
+        if vstatus:
+            qs = qs.filter(verification_status=vstatus)
         type_filter = self.request.GET.get("type_filter", "").strip() or None
         if type_filter:
             qs = qs.filter(type=type_filter)
@@ -137,7 +137,21 @@ class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
     def get_context_data(self, *args, **kwargs):
         c = super().get_context_data(*args, **kwargs)
         c["Document"] = Document
+        c["adv_filter_count"] = self._get_applied_filters_count()
         return c
+
+    def _get_applied_filters_count(self):
+        """
+        Return number of filters where user selected anything (for Advanced Filter counter)
+        """
+        return sum([
+            int(bool(self.request.GET.get("created_after"))),
+            int(bool(self.request.GET.get("created_before"))),
+            int(bool(self.request.GET.get("importer_filter"))),
+            int(bool(self.request.GET.get("exporter_filter"))),
+            int(bool(self.request.GET.get("type_filter"))),
+            int(bool(self.request.GET.get("vstatus"))),
+        ])
 
 
 class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
