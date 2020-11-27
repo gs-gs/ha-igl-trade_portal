@@ -95,11 +95,20 @@ class OaVerificationView(TemplateView):
             try:
                 verify_result = self._parse_and_verify_qrcode(query=query)
             except Exception as e:
-                logger.exception(e)
-                verify_result = {
-                    "status": "error",
-                    "error_message": f"The query seems to be invalid or unsupported ({str(e)})",
-                }
+                if str(e) == "Nonce cannot be empty":
+                    verify_result = {
+                        "status": "error",
+                        "error_message": (
+                            "The query seems to be invalid or unsupported "
+                            "(most likely the document is not issued yet)"
+                        ),
+                    }
+                else:
+                    logger.exception(e)
+                    verify_result = {
+                        "status": "error",
+                        "error_message": f"The query seems to be invalid or unsupported ({str(e)})",
+                    }
         elif self.request.POST.get("type") == "qrcode":
             the_code = self.request.POST.get("qrcode")
             try:
