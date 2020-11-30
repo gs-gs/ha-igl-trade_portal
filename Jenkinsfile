@@ -507,6 +507,95 @@ pipeline {
                         }
                     }
                 }
+
+                stage('plunger') {
+
+                    when {
+                        anyOf {
+                            equals expected: true, actual: params.force_deploy
+                            branch 'master'
+                            branch 'main'
+                        }
+                    }
+
+                    stages{
+                        stage('Setup') {
+                            steps {
+                                dir('artefact/plunger/') {
+                                    script {
+                                        def productProperties = readProperties interpolate: true, file: "${env.properties_file}";
+                                        productProperties.each{ k, v -> env["${k}"] ="${v}" }
+
+                                        repo = checkout scm
+                                        env["GIT_COMMIT"] = repo.GIT_COMMIT
+                                    }
+                                }
+                            }
+                        }
+
+                        stage('plunger-task') {
+
+                            environment {
+                                //hamlet deployment variables
+                                DEPLOYMENT_UNITS = 'openatt-plunger'
+                                SEGMENT = 'clients'
+                                BUILD_PATH = 'artefact/plunger/trade_portal/scripts/plugner'
+                                BUILD_SRC_DIR = ''
+                                DOCKER_CONTEXT_DIR = 'artefact/plunger/trade_portal/scripts/plugner'
+                                DOCKER_FILE = 'artefact/plunger/trade_portal/scripts/plugner/Dockerfile'
+                                GENERATION_CONTEXT_DEFINED = ''
+
+                                image_format = 'docker'
+                            }
+
+                            steps {
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
+                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                        string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
+                                        string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                        string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
+                                ]
+                            }
+                        }
+                    }
+
+                    post {
+                        success {
+                            slackSend (
+                                message: "*Success* | <${BUILD_URL}|${JOB_NAME}> \n Plugner artefact completed",
+                                channel: "${env["slack_channel"]}",
+                                color: "#50C878"
+                            )
+                        }
+
+                        failure {
+                            slackSend (
+                                message: "*Failure* | <${BUILD_URL}|${JOB_NAME}> \n Plugner artefact failed",
+                                channel: "${env["slack_channel"]}",
+                                color: "#B22222"
+                            )
+                        }
+                    }
+                }
+
             }
         }
     }
