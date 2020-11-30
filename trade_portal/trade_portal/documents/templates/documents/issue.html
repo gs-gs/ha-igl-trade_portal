@@ -96,6 +96,7 @@
       {% if not object.is_api_created %}
         <a href="{% url 'documents:fill' object.pk %}" class="btn btn-secondary">Back</a>
       {% endif %}
+      <button type="submit" name="issue-without-qr-code" class="btn btn-secondary">Issue without QR code</button>
       <button type="submit" name="issue" class="btn btn-primary">Issue</button>
 
       {% if object.get_pdf_attachment.is_watermarked is False %}

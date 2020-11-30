@@ -123,7 +123,13 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
         obj = self.get_object()
         if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
             return redirect("documents:detail", obj.pk)
-        if "issue" in request.POST:
+        if "issue" in request.POST or "issue-without-qr-code" in request.POST:
+            if "issue-without-qr-code" in request.POST:
+                att = obj.get_pdf_attachment()
+                if att:
+                    # we mark it as not requiring watermarking
+                    att.is_watermarked = None
+                    att.save()
             obj.workflow_status = Document.WORKFLOW_STATUS_ISSUED
             obj.extra_data["qr_x_position"] = request.POST.get("qr_x")
             obj.extra_data["qr_y_position"] = request.POST.get("qr_y")
