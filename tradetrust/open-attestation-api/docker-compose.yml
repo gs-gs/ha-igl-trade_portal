@@ -16,6 +16,6 @@ services:
       volumes:
         - .:/open-attestation-api/'
       ports:
-        - 9090:8080  # expect it on localhost:9090, could be any port number
+        - 9010:8080  # expect it on localhost:9010, could be any port number
       environment:
         CONTAINER_MODE: server-development
