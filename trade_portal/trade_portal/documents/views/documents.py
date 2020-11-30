@@ -1,5 +1,6 @@
 import logging
 
+import dateutil.parser
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin as Login, AccessMixin
 from django.core.exceptions import ObjectDoesNotExist
@@ -89,10 +90,10 @@ class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        # TODO: implement start and end date after the date format is updated
-        status_filter = self.request.GET.get("status_filter", "").strip() or None
-        if status_filter:
-            qs = qs.filter(status=status_filter)
+        # apply the filters
+        vstatus = self.request.GET.get("vstatus", "").strip() or None
+        if vstatus:
+            qs = qs.filter(verification_status=vstatus)
         type_filter = self.request.GET.get("type_filter", "").strip() or None
         if type_filter:
             qs = qs.filter(type=type_filter)
@@ -107,6 +108,27 @@ class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
         if importer_filter:
             qs = qs.filter(importer_name__icontains=importer_filter)
 
+        try:
+            created_after = dateutil.parser.parse(
+                self.request.GET.get("created_after") or "",
+                parserinfo=dateutil.parser.parserinfo(dayfirst=True)
+            )
+        except ValueError:
+            created_after = None
+        try:
+            created_before = dateutil.parser.parse(
+                self.request.GET.get("created_before") or "",
+                parserinfo=dateutil.parser.parserinfo(dayfirst=True)
+            )
+        except ValueError:
+            created_before = None
+
+        if created_after:
+            qs = qs.filter(created_at__date__gte=created_after.date())
+        if created_before:
+            qs = qs.filter(created_at__date__lte=created_before.date())
+
+        # filter by the free-text search field
         q = self.request.GET.get("q", "").strip() or None
         if q:
             qs = qs.filter(search_field__icontains=q)
@@ -115,7 +137,21 @@ class DocumentListView(Login, DocumentQuerysetMixin, SingleTableView, ListView):
     def get_context_data(self, *args, **kwargs):
         c = super().get_context_data(*args, **kwargs)
         c["Document"] = Document
+        c["adv_filter_count"] = self._get_applied_filters_count()
         return c
+
+    def _get_applied_filters_count(self):
+        """
+        Return number of filters where user selected anything (for Advanced Filter counter)
+        """
+        return sum([
+            int(bool(self.request.GET.get("created_after"))),
+            int(bool(self.request.GET.get("created_before"))),
+            int(bool(self.request.GET.get("importer_filter"))),
+            int(bool(self.request.GET.get("exporter_filter"))),
+            int(bool(self.request.GET.get("type_filter"))),
+            int(bool(self.request.GET.get("vstatus"))),
+        ])
 
 
 class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
