@@ -539,10 +539,10 @@ pipeline {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-plunger'
                                 SEGMENT = 'clients'
-                                BUILD_PATH = 'artefact/plunger/trade_portal/scripts/plugner'
+                                BUILD_PATH = 'artefact/plunger/trade_portal/scripts/plunger'
                                 BUILD_SRC_DIR = ''
-                                DOCKER_CONTEXT_DIR = 'artefact/plunger/trade_portal/scripts/plugner'
-                                DOCKER_FILE = 'artefact/plunger/trade_portal/scripts/plugner/Dockerfile'
+                                DOCKER_CONTEXT_DIR = 'artefact/plunger/trade_portal/scripts/plunger'
+                                DOCKER_FILE = 'artefact/plunger/trade_portal/scripts/plunger/Dockerfile'
                                 GENERATION_CONTEXT_DEFINED = ''
 
                                 image_format = 'docker'
