@@ -70,3 +70,9 @@ shell-open-attestation-verify-api:
 .ONESHELL:
 shell-document-store-worker:
 	@ docker-compose exec document-store-worker /bin/bash
+
+
+.PHONY: shell-monitoring
+.ONESHELL:
+shell-monitoring:
+	@ docker-compose exec monitoring /bin/bash

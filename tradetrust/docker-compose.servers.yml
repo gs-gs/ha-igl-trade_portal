@@ -15,7 +15,7 @@ services:
       PORT_WEB_UI: 9999
       HOSTNAME_EXTERNAL: tradetrust-localstack
       LOCALSTACK_HOSTNAME: tradetrust-localstack
-      SERVICES: sqs,s3,iam
+      SERVICES: sqs,s3,iam,cloudwatch
       DEFAULT_REGION: us-east-1
 
       AWS_DEFAULT_REGION: us-east-1
@@ -46,6 +46,26 @@ services:
         --deterministic
         --mnemonic "myth like bonus scare over problem client lizard pioneer submit female collect"
 
+
+  monitoring:
+    image: tradetrust/monitoring
+    container_name: tradetrust-monitoring
+    build:
+      context: "${dockerstagedir:-.}/monitoring"
+      dockerfile: Dockerfile
+    networks:
+      - internal
+    volumes:
+      - "/monitoring/node_modules"
+      - "${dockerstagedir:-.}/monitoring:/monitoring"
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: access
+      AWS_SECRET_ACCESS_KEY: secretaccess
+      AWS_ENDPOINT_URL: http://tradetrust-localstack:10001
+
+      HTTP_BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
+      ACCOUNT_ADDRESS: "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
 
   document-store-contract:
     image: tradetrust/document-store-contract
