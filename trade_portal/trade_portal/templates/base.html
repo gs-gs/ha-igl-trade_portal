@@ -89,16 +89,19 @@
                     <li class="site-nav__item">
                       <a class="site-nav__item-link" href="/admin/" target="_new">{% trans 'Admin Panel' %}</a>
                     </li>
+                    <li class="site-nav__item">
+                      <a class="site-nav__item-link" href="{% url 'monitoring:index' %}">{% trans 'Monitoring' %}</a>
+                    </li>
                   {% endif %}
                   <li class="site-nav__item">
                     <a class="site-nav__item-link" href="/profile/">{{ user }}</a>
                   </li>
                   {% if request.user.is_superuser %}
                     <li class="site-nav__item">
-                    <a class="site-nav__item-link" href="{% url 'users:pending' %}">{% trans 'Pending Users' %}</a>
+                      <a class="site-nav__item-link" href="{% url 'users:pending' %}">{% trans 'Pending Users' %}</a>
                     </li>
                     <li class="site-nav__item">
-                    <a class="site-nav__item-link" href="{% url 'users:roles-requests' %}">{% trans 'Roles Requests' %}</a>
+                      <a class="site-nav__item-link" href="{% url 'users:roles-requests' %}">{% trans 'Roles Requests' %}</a>
                     </li>
                   {% endif %}
                   <li class="site-nav__item">

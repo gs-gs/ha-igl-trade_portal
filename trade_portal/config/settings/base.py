@@ -85,14 +85,15 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "trade_portal.users.apps.UsersConfig",
-    "trade_portal.documents",
-    "trade_portal.document_api",
-    "trade_portal.oa_verify",
-    "trade_portal.help",
-    "trade_portal.feedback",
-    "trade_portal.websub_receiver.apps.WebSubReceiverAppConfig",
     "trade_portal",
+    "trade_portal.document_api",
+    "trade_portal.documents",
+    "trade_portal.feedback",
+    "trade_portal.help",
+    "trade_portal.monitoring",
+    "trade_portal.oa_verify",
+    "trade_portal.users.apps.UsersConfig",
+    "trade_portal.websub_receiver.apps.WebSubReceiverAppConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 CRISPY_TEMPLATE_PACK = "bootstrap4"

@@ -19,6 +19,7 @@ urlpatterns = [
     path("verification/", VerificationView.as_view()),
 
     path("documents/", include("trade_portal.documents.urls", namespace="documents")),
+    path("monitoring/", include("trade_portal.monitoring.urls", namespace="monitoring")),
     path(
         "api/documents/v0/",
         include("trade_portal.document_api.urls", namespace="document-api-v0")

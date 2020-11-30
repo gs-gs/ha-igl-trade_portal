@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load our_utils %}
+
+{% block title %}{% trans 'Monitoring' %}{% endblock %}
+
+{% block content %}
+<div class="content-box">
+  <h1 class="page-title">{% trans 'Monitoring' %}</h1>
+
+  <div class="row">
+    <div class="col col-lg-6">
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th>Total documents issued</th>
+            <td>{{ total_documents_issued }}</td>
+          </tr>
+          <tr>
+            <th>Total documents draft</th>
+            <td>{{ total_documents_draft }}</td>
+          </tr>
+          <tr>
+            <th>Total parties for our jurisdiction</th>
+            <td>{{ total_parties }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock content %}
