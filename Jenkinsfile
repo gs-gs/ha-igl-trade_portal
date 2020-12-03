@@ -17,9 +17,9 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: 'run_testing',
+            name: 'force_tests',
             defaultValue: true,
-            description: "Enable testing"
+            description: "force all tests to run"
         )
         booleanParam(
             name: 'force_deploy',
@@ -38,12 +38,16 @@ pipeline {
 
     stages {
         stage('Testing') {
-            when {
-                equals expected: true, actual: params.run_testing
-            }
 
             stages {
                 stage('trade_portal') {
+                    when {
+                        anyOf {
+                            equals expected: true, actual: params.force_tests
+                            changeset "trade_portal/**"
+                        }
+                    }
+
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
                         COMPOSE_FILE = 'docker-compose.yml'
@@ -100,6 +104,12 @@ pipeline {
                 }
 
                 stage('openatt_worker') {
+                    when {
+                        anyOf {
+                            equals expected: true, actual: params.force_tests
+                            changeset "tradetrust/**"
+                        }
+                    }
                     environment {
                         COMPOSE_FILE = 'docker-compose.servers.yml'
                     }
