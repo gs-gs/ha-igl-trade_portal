@@ -531,6 +531,56 @@ pipeline {
                                 ]
                             }
                         }
+
+                        stage('openatt-eth-mon') {
+                            environment {
+                                //hamlet deployment variables
+                                DEPLOYMENT_UNITS = 'openatt-eth-mon'
+                                SEGMENT = 'clients'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/monitoring'
+                                BUILD_SRC_DIR = ''
+                                GENERATION_CONTEXT_DEFINED = ''
+
+                                image_format = 'lambda'
+                            }
+
+                            steps {
+
+                                dir('artefact/tradetrust/tradetrust/monitoring') {
+                                    sh '''#!/bin/bash
+                                        npm ci
+                                        npx serverless package
+                                        mkdir -p src/dist
+                                        cp .serverless/tradetrust-monitoring.zip src/dist/lambda.zip
+                                    '''
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
+                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                        string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
+                                        string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                        string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
+                                ]
+                            }
+                        }
                     }
 
                     post {
