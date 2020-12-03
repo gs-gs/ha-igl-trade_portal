@@ -42,7 +42,7 @@ pipeline {
             stages {
                 stage('trade_portal') {
                     when {
-                        anyOf {
+                        allOf {
                             equals expected: true, actual: params.force_tests
                             changeset "trade_portal/**"
                         }
@@ -105,7 +105,7 @@ pipeline {
 
                 stage('openatt_worker') {
                     when {
-                        anyOf {
+                        allOf {
                             equals expected: true, actual: params.force_tests
                             changeset "tradetrust/**"
                         }
@@ -124,9 +124,10 @@ pipeline {
                             docker-compose up --build --remove-orphans --renew-anon-volumes -d
 
                             # run testing
-                            docker-compose run -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
-                            docker-compose run -T document-store-worker coverage -m tests
-                            docker-compose run -T document-store-worker coverage report -m
+                            sleep 30s
+                            docker-compose exec -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
+                            docker-compose exec -T document-store-worker coverage -m tests
+                            docker-compose exec -T document-store-worker coverage report -m
                             '''
                         }
                     }
@@ -502,6 +503,62 @@ pipeline {
                                         npx serverless package
                                         mkdir -p src/dist
                                         cp .serverless/open-attestation-verify-api.zip src/dist/lambda.zip
+                                    '''
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_BASE_DIR}/setContext.sh || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                sh '''#!/bin/bash
+                                ${AUTOMATION_DIR}/manageImages.sh -g "${GIT_COMMIT}" -f "${image_format}"  || exit $?
+                                '''
+
+                                script {
+                                    def contextProperties = readProperties interpolate: true, file: "${WORKSPACE}/context.properties";
+                                    contextProperties.each{ k, v -> env["${k}"] ="${v}" }
+                                }
+
+                                build job: "${env["deploy_stream_job"]}", wait: false, parameters: [
+                                        extendedChoice(name: 'DEPLOYMENT_UNITS', value: "${env.DEPLOYMENT_UNITS}"),
+                                        string(name: 'GIT_COMMIT', value: "${env.GIT_COMMIT}"),
+                                        string(name: 'IMAGE_FORMATS', value: "${env.image_format}"),
+                                        string(name: 'SEGMENT', value: "${env["SEGMENT"]}")
+                                ]
+                            }
+                        }
+
+                        stage('openatt-eth-mon') {
+                            environment {
+                                //hamlet deployment variables
+                                DEPLOYMENT_UNITS = 'openatt-eth-mon'
+                                SEGMENT = 'clients'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/monitoring'
+                                BUILD_SRC_DIR = ''
+                                GENERATION_CONTEXT_DEFINED = ''
+
+                                image_format = 'lambda'
+                            }
+
+                            steps {
+
+                                dir('artefact/tradetrust/tradetrust/monitoring') {
+                                    sh '''#!/bin/bash
+                                        current_py="$( pyenv global )"
+                                        pyenv install 3.8.0
+                                        pyenv global 3.8.0
+
+                                        npm ci
+                                        npx serverless package
+                                        mkdir -p src/dist
+                                        cp .serverless/tradetrust-monitoring.zip src/dist/lambda.zip
+
+                                        pyenv global "${current_py}"
                                     '''
                                 }
 

@@ -7,3 +7,4 @@
 **/node_modules
 test-report.xml
 listener-blocks-log
+.serverless
