@@ -10,7 +10,8 @@ from src.worker import Worker
 @mock.patch.dict(
     os.environ,
     {
-        'WORKER_POLLING_MESSAGE_WAIT_TIME_SECONDS': '1'
+        'WORKER_POLLING_MESSAGE_WAIT_TIME_SECONDS': '1',
+        'BLOCKCHAIN_GAS_PRICE' : 'fast'
     }
 )
 def test(unprocessed_queue, unprocessed_bucket, issued_bucket, unwrap, wrap):

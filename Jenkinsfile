@@ -17,9 +17,9 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: 'run_testing',
-            defaultValue: false,
-            description: "Enable testing"
+            name: 'force_tests',
+            defaultValue: true,
+            description: "force all tests to run"
         )
         booleanParam(
             name: 'force_deploy',
@@ -38,14 +38,19 @@ pipeline {
 
     stages {
         stage('Testing') {
-            when {
-                equals expected: true, actual: params.run_testing
-            }
 
             stages {
                 stage('trade_portal') {
+                    when {
+                        anyOf {
+                            equals expected: true, actual: params.force_tests
+                            changeset "trade_portal/**"
+                        }
+                    }
+
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
+                        COMPOSE_FILE = 'docker-compose.yml'
                     }
 
                     steps {
@@ -62,12 +67,10 @@ pipeline {
 
                             # build the docker service
                             touch local.env
-                            docker-compose -f docker-compose.yml up --build -d
+                            docker-compose up --build -d
 
                             # run testing
-                            docker-compose -f docker-compose.yml run -T django py.test --junitxml=/app/tests/junit.xml
-                            docker-compose -f docker-compose.yml run -T django coverage run -m pytest
-                            docker-compose -f docker-compose.yml run -T django coverage html
+                            docker-compose run -T django py.test --junitxml=/app/tests/junit.xml
                             '''
                         }
                     }
@@ -83,20 +86,7 @@ pipeline {
 
                         always {
                             dir('test/trade_portal/trade_portal'){
-
-                                junit 'tests/*.xml'
-
-                                publishHTML(
-                                    [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: true,
-                                        keepAll: true,
-                                        reportDir: 'htmlcov',
-                                        reportFiles: 'index.html',
-                                        reportName: 'Trade Portal Coverage Report',
-                                        reportTitles: ''
-                                    ]
-                                )
+                                junit 'tests/junit.xml'
                             }
                         }
 
@@ -104,8 +94,8 @@ pipeline {
                             // Cleanup trade portal app
                             dir('test/trade_portal/trade_portal') {
                                 sh '''#!/bin/bash
-                                    if [[ -f docker-compose.yml ]]; then
-                                        docker-compose -f docker-compose.yml down --rmi local -v --remove-orphans
+                                    if [[ -f "${COMPOSE_FILE}" ]]; then
+                                        docker-compose down --rmi local -v --remove-orphans
                                     fi
                                 '''
                             }
@@ -113,6 +103,60 @@ pipeline {
                     }
                 }
 
+                stage('openatt_worker') {
+                    when {
+                        anyOf {
+                            equals expected: true, actual: params.force_tests
+                            changeset "tradetrust/**"
+                        }
+                    }
+                    environment {
+                        COMPOSE_FILE = 'docker-compose.servers.yml'
+                    }
+                    steps {
+                        dir('test/openatt_worker') {
+                            checkout scm
+                        }
+
+                        dir('test/openatt_worker/tradetrust') {
+                            sh '''#!/bin/bash
+
+                            docker-compose up --build --remove-orphans --renew-anon-volumes -d
+
+                            # run testing
+                            docker-compose run -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
+                            docker-compose run -T document-store-worker coverage -m tests
+                            docker-compose run -T document-store-worker coverage report -m
+                            '''
+                        }
+                    }
+                    post {
+                        failure {
+                            slackSend (
+                                message: "*Warning* | <${BUILD_URL}|${JOB_NAME}> \n document-store-worker testing failed",
+                                channel: "${env["slack_channel"]}",
+                                color: "#f18500"
+                            )
+                        }
+
+                        always {
+                            dir('test/openatt_worker/tradetrust/document-store-worker'){
+                                junit 'test-report.xml'
+                            }
+                        }
+
+                        cleanup {
+                            // Cleanup trade portal app
+                            dir('test/openatt_worker/tradetrust/') {
+                                sh '''#!/bin/bash
+                                    if [[ -f "${COMPOSE_FILE}" ]]; then
+                                        docker-compose down --rmi local -v --remove-orphans
+                                    fi
+                                '''
+                            }
+                        }
+                    }
+                }
             }
         }
 
