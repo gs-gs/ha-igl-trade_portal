@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
     interval_start=10,
     interval_step=10,
     interval_max=50,
+    time_limit=300,
+    soft_time_limit=290,
 )
 def lodge_document(document_id=None):
     doc = Document.objects.get(pk=document_id)
@@ -33,6 +35,13 @@ def lodge_document(document_id=None):
     try:
         DocumentService().issue(doc)
     except Exception as e:
+        DocumentHistoryItem.objects.create(
+            is_error=True,
+            type="error",
+            document=doc,
+            message="Unable to issue the document: exception",
+            object_body=str(e),
+        )
         if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False) is True:
             # for local setups it's handy to raise exception
             raise
