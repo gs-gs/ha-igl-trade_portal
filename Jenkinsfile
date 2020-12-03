@@ -18,7 +18,7 @@ pipeline {
     parameters {
         booleanParam(
             name: 'run_testing',
-            defaultValue: false,
+            defaultValue: true,
             description: "Enable testing"
         )
         booleanParam(
@@ -67,8 +67,6 @@ pipeline {
 
                             # run testing
                             docker-compose run -T django py.test --junitxml=/app/tests/junit.xml
-                            docker-compose run -T django coverage run -m pytest
-                            docker-compose run -T django coverage report -m
                             '''
                         }
                     }
