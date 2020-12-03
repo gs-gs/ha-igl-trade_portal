@@ -46,6 +46,7 @@ pipeline {
                 stage('trade_portal') {
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
+                        COMPOSE_FILE = 'docker-compose.yml'
                     }
 
                     steps {
@@ -62,12 +63,12 @@ pipeline {
 
                             # build the docker service
                             touch local.env
-                            docker-compose -f docker-compose.yml up --build -d
+                            docker-compose up --build -d
 
                             # run testing
-                            docker-compose -f docker-compose.yml run -T django py.test --junitxml=/app/tests/junit.xml
-                            docker-compose -f docker-compose.yml run -T django coverage run -m pytest
-                            docker-compose -f docker-compose.yml run -T django coverage html
+                            docker-compose run -T django py.test --junitxml=/app/tests/junit.xml
+                            docker-compose run -T django coverage run -m pytest
+                            docker-compose run -T django coverage report -m
                             '''
                         }
                     }
@@ -83,20 +84,7 @@ pipeline {
 
                         always {
                             dir('test/trade_portal/trade_portal'){
-
-                                junit 'tests/*.xml'
-
-                                publishHTML(
-                                    [
-                                        allowMissing: true,
-                                        alwaysLinkToLastBuild: true,
-                                        keepAll: true,
-                                        reportDir: 'htmlcov',
-                                        reportFiles: 'index.html',
-                                        reportName: 'Trade Portal Coverage Report',
-                                        reportTitles: ''
-                                    ]
-                                )
+                                junit 'tests/junit.xml'
                             }
                         }
 
@@ -104,8 +92,8 @@ pipeline {
                             // Cleanup trade portal app
                             dir('test/trade_portal/trade_portal') {
                                 sh '''#!/bin/bash
-                                    if [[ -f docker-compose.yml ]]; then
-                                        docker-compose -f docker-compose.yml down --rmi local -v --remove-orphans
+                                    if [[ -f "${COMPOSE_FILE}" ]]; then
+                                        docker-compose down --rmi local -v --remove-orphans
                                     fi
                                 '''
                             }
@@ -131,7 +119,6 @@ pipeline {
                             docker-compose run -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
                             docker-compose run -T document-store-worker coverage -m tests
                             docker-compose run -T document-store-worker coverage report -m
-                            docker-compose run -T document-store-worker coverage xml -o .coverage/coverage.xml
                             '''
                         }
                     }
