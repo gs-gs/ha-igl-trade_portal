@@ -5,4 +5,4 @@ set -o pipefail
 set -o nounset
 
 
-celery -A config.celery_app worker --concurrency="${APP_WORKER_COUNT:-2}" -l INFO
+celery -A config.celery_app worker --concurrency="${APP_WORKER_COUNT:-4}" -l INFO

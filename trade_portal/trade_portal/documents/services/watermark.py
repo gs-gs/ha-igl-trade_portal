@@ -3,6 +3,7 @@ Things related to the CoO packaging and sending to the upstream
 """
 import io
 import logging
+import time
 
 from constance import config
 from django.core.files.base import ContentFile
@@ -11,6 +12,7 @@ from django.core.files.storage import default_storage
 from trade_portal.documents.models import (
     Document,
     DocumentFile,
+    DocumentHistoryItem,
 )
 
 logger = logging.getLogger(__name__)
@@ -30,7 +32,16 @@ class WatermarkService:
 
         for docfile in qset:
             if docfile.filename.lower().endswith(".pdf"):
+                t0 = time.time()
                 self.add_watermark(docfile, qrcode_image)
+                time_spent = round(time.time() - t0, 4)  # seconds
+                DocumentHistoryItem.objects.create(
+                    is_error=False,
+                    type="message",
+                    document=document,
+                    message=f"QR code applied to the PDF document in {time_spent}s",
+                    object_body=str(docfile),
+                )
         return
 
     def add_watermark(self, docfile: DocumentFile, qrcode_image) -> None:

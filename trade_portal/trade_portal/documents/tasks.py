@@ -1,4 +1,5 @@
 import logging
+import time
 
 from django.conf import settings
 
@@ -33,7 +34,9 @@ def lodge_document(document_id=None):
     WatermarkService().watermark_document(doc)
 
     try:
+        t0 = time.time()
         DocumentService().issue(doc)
+        issue_time_spent = round(time.time() - t0, 4)
     except Exception as e:
         DocumentHistoryItem.objects.create(
             is_error=True,
@@ -50,6 +53,13 @@ def lodge_document(document_id=None):
             logger.info("Marking document %s as failed", doc)
             doc.status = Document.STATUS_FAILED
             doc.save()
+    else:
+        DocumentHistoryItem.objects.create(
+            is_error=False,
+            type="message",
+            document=doc,
+            message=f"The document issued in {issue_time_spent}s",
+        )
 
 
 @celery_app.task(
@@ -76,7 +86,7 @@ def store_message_by_ping_body(self, ping_body):
     NodeService().store_message_by_ping_body(ping_body)
 
 
-@celery_app.task(bind=True, ignore_result=True, max_retries=20)
+@celery_app.task(bind=True, ignore_result=True, max_retries=40)
 def process_incoming_document_received(self, document_pk):
     from trade_portal.documents.services.incoming import IncomingDocumentService
 
@@ -89,12 +99,12 @@ def process_incoming_document_received(self, document_pk):
             # try to retry (no document has been downloaded yet from the remote or something)
             if self.request.retries < self.max_retries:
                 retry_delay = 15 + 5 * self.request.retries
-                if self.request.retries > 5:
+                if self.request.retries > 10:  # worth to be worried
                     logger.exception(e)
                     # start to complain only if things get real
                     logger.warning(
                         "Retrying the doc %s processing task %sth time",
-                        doc,
+                        doc.pk,
                         self.request.retries,
                     )
                     DocumentHistoryItem.objects.create(
@@ -107,7 +117,7 @@ def process_incoming_document_received(self, document_pk):
                 self.retry(countdown=retry_delay)
             else:
                 logger.error(
-                    "Max retries reached for the document %s, marking as error", doc
+                    "Max retries reached for the document %s, marking as error (%s)", doc.pk, str(e)
                 )
                 DocumentHistoryItem.objects.create(
                     is_error=True,
