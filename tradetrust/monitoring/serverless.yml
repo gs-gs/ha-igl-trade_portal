@@ -1,0 +1,37 @@
+# serverless.yml
+
+service: tradetrust-monitoring
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
+provider:
+  name: aws
+  runtime: python3.8
+
+functions:
+  monitor_account_balance:
+    handler: src.monitor.account_balance
+    environment:
+      ACCOUNT_ADDRESS: ${env:ACCOUNT_ADDRESS}
+      HTTP_BLOCKCHAIN_ENDPOINT: ${env:HTTP_BLOCKCHAIN_ENDPOINT}
+
+  monitor_account_pending_transactions:
+    handler: src.monitor.account_pending_transactions
+    environment:
+      ACCOUNT_ADDRESS: ${env:ACCOUNT_ADDRESS}
+      HTTP_BLOCKCHAIN_ENDPOINT: ${env:HTTP_BLOCKCHAIN_ENDPOINT}
+
+  monitor_ethereum_node_chain_id:
+    handler: src.monitor.ethereum_node_chain_id
+    environment:
+      HTTP_BLOCKCHAIN_ENDPOINT: ${env:HTTP_BLOCKCHAIN_ENDPOINT}
+
+  monitor_ethereum_node_network_id:
+    handler: src.monitor.ethereum_node_network_id
+    environment:
+      HTTP_BLOCKCHAIN_ENDPOINT: ${env:HTTP_BLOCKCHAIN_ENDPOINT}
