@@ -73,6 +73,7 @@ class DocumentAdmin(admin.ModelAdmin):
     list_filter = ("status", "type")
     inlines = [DocumentHistoryItemInlineAdmin]
     actions = ["reverify_document"]
+    raw_id_fields = ("oa", "issuer", "exporter", )
 
     def reverify_document(self, request, qs):
         from .tasks import document_oa_verify
@@ -87,6 +88,7 @@ class DocumentAdmin(admin.ModelAdmin):
 @admin.register(DocumentFile)
 class DocumentFileAdmin(admin.ModelAdmin):
     list_display = ("created_at", "doc", "file", "size")
+    raw_id_fields = ("doc",)
 
 
 @admin.register(NodeMessage)

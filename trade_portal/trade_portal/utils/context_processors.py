@@ -10,6 +10,7 @@ def settings_context(_request):
         current_org = _request.user.get_current_org(_request.session)
     else:
         current_org = None
+
     return {
         "ICL_APP_COUNTRY": settings.ICL_APP_COUNTRY,
         "BID_NAME": settings.BID_NAME,
