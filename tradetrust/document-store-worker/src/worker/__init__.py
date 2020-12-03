@@ -47,7 +47,7 @@ class Worker:
         )
 
         if self.config['Blockchain']['GasPrice'] is not None:
-            if type(self.config['Blockchain']['GasPrice']) == str:
+            if not self.config['Blockchain']['GasPrice'].isnumeric():
                 gas_price_strategy = None
                 if self.config['Blockchain']['GasPrice'] == 'fast':
                     gas_price_strategy = fast_gas_price_strategy
@@ -61,7 +61,10 @@ class Worker:
                 self.web3.eth.setGasPriceStrategy(gas_price_strategy)
                 self.config['Blockchain']['GasPrice'] = self.web3.eth.generateGasPrice()
 
-                logger.info('Finding GasPrice strategy:%s price:%s', gas_price_strategy, self.config['Blockchain']['GasPrice'])
+            else:
+                self.config['Blockchain']['GasPrice'] = int(self.config['Blockchain']['GasPrice'])
+
+            logger.info('Setting GasPrice price: %s wei', self.config['Blockchain']['GasPrice'])
 
     def unprocessed_queue_connect(self):
         logger.debug('unprocessed_queue_connect')

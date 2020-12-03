@@ -113,6 +113,55 @@ pipeline {
                     }
                 }
 
+                stage('openatt_worker') {
+                    environment {
+                        COMPOSE_FILE = 'docker-compose.servers.yml'
+                    }
+                    steps {
+                        dir('test/openatt_worker') {
+                            checkout scm
+                        }
+
+                        dir('test/openatt_worker/tradetrust') {
+                            sh '''#!/bin/bash
+
+                            docker-compose up --build --remove-orphans --renew-anon-volumes -d
+
+                            # run testing
+                            docker-compose run -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
+                            docker-compose run -T document-store-worker coverage -m tests
+                            docker-compose run -T document-store-worker coverage report -m
+                            docker-compose run -T document-store-worker coverage xml -o .coverage/coverage.xml
+                            '''
+                        }
+                    }
+                    post {
+                        failure {
+                            slackSend (
+                                message: "*Warning* | <${BUILD_URL}|${JOB_NAME}> \n document-store-worker testing failed",
+                                channel: "${env["slack_channel"]}",
+                                color: "#f18500"
+                            )
+                        }
+
+                        always {
+                            dir('test/openatt_worker/tradetrust/document-store-worker'){
+                                junit 'test-report.xml'
+                            }
+                        }
+
+                        cleanup {
+                            // Cleanup trade portal app
+                            dir('test/openatt_worker/tradetrust/') {
+                                sh '''#!/bin/bash
+                                    if [[ -f "${COMPOSE_FILE}" ]]; then
+                                        docker-compose down --rmi local -v --remove-orphans
+                                    fi
+                                '''
+                            }
+                        }
+                    }
+                }
             }
         }
 
