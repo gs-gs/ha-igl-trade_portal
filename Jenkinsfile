@@ -18,7 +18,7 @@ pipeline {
     parameters {
         booleanParam(
             name: 'force_tests',
-            defaultValue: true,
+            defaultValue: false,
             description: "force all tests to run"
         )
         booleanParam(
