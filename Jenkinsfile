@@ -42,7 +42,7 @@ pipeline {
             stages {
                 stage('trade_portal') {
                     when {
-                        anyOf {
+                        allOf {
                             equals expected: true, actual: params.force_tests
                             changeset "trade_portal/**"
                         }
@@ -105,7 +105,7 @@ pipeline {
 
                 stage('openatt_worker') {
                     when {
-                        anyOf {
+                        allOf {
                             equals expected: true, actual: params.force_tests
                             changeset "tradetrust/**"
                         }
@@ -124,9 +124,10 @@ pipeline {
                             docker-compose up --build --remove-orphans --renew-anon-volumes -d
 
                             # run testing
-                            docker-compose run -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
-                            docker-compose run -T document-store-worker coverage -m tests
-                            docker-compose run -T document-store-worker coverage report -m
+                            sleep 30s
+                            docker-compose exec -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
+                            docker-compose exec -T document-store-worker coverage -m tests
+                            docker-compose exec -T document-store-worker coverage report -m
                             '''
                         }
                     }
@@ -548,10 +549,16 @@ pipeline {
 
                                 dir('artefact/tradetrust/tradetrust/monitoring') {
                                     sh '''#!/bin/bash
+                                        current_py="$( pyenv global )"
+                                        pyenv install 3.8.0
+                                        pyenv global 3.8.0
+
                                         npm ci
                                         npx serverless package
                                         mkdir -p src/dist
                                         cp .serverless/tradetrust-monitoring.zip src/dist/lambda.zip
+
+                                        pyenv global "${current_py}"
                                     '''
                                 }
 
