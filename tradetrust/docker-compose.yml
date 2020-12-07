@@ -167,6 +167,8 @@ services:
       OPEN_ATTESTATION_ENDPOINT: /aws/oa-api.endpoint
 
       BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
+      BLOCKCHAIN_GAS_PRICE: fast
+      BLOCKCHAIN_GAS_PRICE_REFRESH_RATE: 10
 
       AWS_ENDPOINT_URL: http://tradetrust-localstack:10001
       AWS_ACCESS_KEY_ID: access

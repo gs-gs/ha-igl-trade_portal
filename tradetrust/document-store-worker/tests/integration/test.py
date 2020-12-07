@@ -2,9 +2,9 @@ import os
 import time
 import json
 from unittest import mock
-from string import Template
 from src.config import Config
 from src.worker import Worker
+from tests.data import DOCUMENT_V2_TEMPLATE, DOCUMENT_V3_TEMPLATE
 
 
 @mock.patch.dict(
@@ -20,15 +20,15 @@ def test(unprocessed_queue, unprocessed_bucket, issued_bucket, unwrap, wrap):
     # overriding safe VisibilityTimeout
     config['Worker']['Polling']['VisibilityTimeout'] = 1
     queue_test_wait_time_seconds = config['Worker']['Polling']['VisibilityTimeout'] * 2
-    with open('/document-store-worker/tests/data/document.v2.json', 'rt') as f:
-        document_v2 = Template(f.read()).substitute(DocumentStoreAddress=document_store_address)
-        document_v2 = json.loads(document_v2)
-        wrapped_document_v2 = wrap(document_v2, '2.0')
 
-    with open('/document-store-worker/tests/data/document.v3.json', 'rt') as f:
-        document_v3 = Template(f.read()).substitute(DocumentStoreAddress=document_store_address)
-        document_v3 = json.loads(document_v3)
-        wrapped_document_v3 = wrap(document_v3, '3.0')
+    document_v2 = DOCUMENT_V2_TEMPLATE.substitute(DocumentStoreAddress=document_store_address)
+    document_v2 = json.loads(document_v2)
+    wrapped_document_v2 = wrap(document_v2, '2.0')
+
+    document_v3 = DOCUMENT_V3_TEMPLATE.substitute(DocumentStoreAddress=document_store_address)
+    document_v3 = json.loads(document_v3)
+    wrapped_document_v3 = wrap(document_v3, '3.0')
+
     worker = Worker(config)
     index = 1
     # checking both schema versions to test auto version definition

@@ -4,6 +4,7 @@ import urllib
 import boto3
 import requests
 from web3 import Web3
+from web3.exceptions import TimeExhausted
 from web3.gas_strategies.time_based import fast_gas_price_strategy, medium_gas_price_strategy
 
 from src.loggers import logging
@@ -23,18 +24,29 @@ class DocumentError(Exception):
     pass
 
 
+class TransactionTimeoutException(Exception):
+    pass
+
+
 class Worker:
 
     def __init__(self, config=None):
         self.config = config
-        self.eth_connect()
-        self.unprocessed_queue_connect()
-        self.unprocessed_bucket_connect()
-        self.issued_bucket_connect()
-        self.connect_to_contract()
 
-    def eth_connect(self):
-        logger.debug('eth_connect')
+        self.connect_resources()
+
+        self.set_gas_price_strategy()
+        self.update_gas_price()
+
+    def connect_resources(self):
+        self.connect_blockchain_node()
+        self.connect_unprocessed_queue()
+        self.connect_unprocessed_bucket()
+        self.connect_issued_bucket()
+        self.connect_contract()
+
+    def connect_blockchain_node(self):
+        logger.debug('connect_blockchain_node')
         self.web3 = Web3(Web3.HTTPProvider(self.config['Blockchain']['Endpoint']))
 
         logger.info(
@@ -46,28 +58,51 @@ class Worker:
             self.web3.eth.chainId
         )
 
-        if self.config['Blockchain']['GasPrice'] is not None:
-            if not self.config['Blockchain']['GasPrice'].isnumeric():
-                gas_price_strategy = None
-                if self.config['Blockchain']['GasPrice'] == 'fast':
-                    gas_price_strategy = fast_gas_price_strategy
+    def set_gas_price_strategy(self):
+        logger.debug('set_gas_price_strategy')
+        gas_price_config = self.config['Blockchain']['GasPrice']
 
-                if self.config['Blockchain']['GasPrice'] == 'medium':
-                    gas_price_strategy = medium_gas_price_strategy
+        self.dynamic_gas_price_strategy = False
 
-                if gas_price_strategy is None:
-                    raise Exception("invalid gas price strategy")
+        # static gas price strategy
+        try:
+            self.gas_price = int(gas_price_config)
+            logger.info('gas price strategy=static, price=%s', self.gas_price)
+            return
+        except (ValueError, TypeError):
+            pass
 
-                self.web3.eth.setGasPriceStrategy(gas_price_strategy)
-                self.config['Blockchain']['GasPrice'] = self.web3.eth.generateGasPrice()
+        # fast time based strategy, 60 sec per transaction
+        if gas_price_config == 'fast':
+            self.dynamic_gas_price_strategy = True
+            self.web3.eth.setGasPriceStrategy(fast_gas_price_strategy)
+            logger.info('gas price strategy=fast(60sec), price=dynamic')
+        # medium time based strategy, 5 min per transaction
+        elif gas_price_config == 'medium':
+            self.dynamic_gas_price_strategy = True
+            self.web3.eth.setGasPriceStrategy(medium_gas_price_strategy)
+            logger.info('gas price strategy=medium(5min), price=dynamic')
+        else:
+            raise Exception(f'Invalid gas price strategy:{repr(gas_price_config)}')
+        return gas_price_config
 
-            else:
-                self.config['Blockchain']['GasPrice'] = int(self.config['Blockchain']['GasPrice'])
+    def update_gas_price(self):
+        logger.debug('update_gas_price')
+        # update gas price only if gas price strategy is set
+        if self.dynamic_gas_price_strategy:
+            self.gas_price = self.web3.eth.generateGasPrice()
+        self.transactions_count = 1
+        logger.info('gas price=%s', 'default' if self.gas_price is None else self.gas_price)
+        logger.debug('transactions count reset')
 
-            logger.info('Setting GasPrice price: %s wei', self.config['Blockchain']['GasPrice'])
+    def refresh_gas_price(self):
+        logger.debug('refresh_gas_price')
+        if self.transactions_count % self.config['Blockchain']['GasPriceRefreshRate'] == 0:
+            self.update_gas_price()
+            logger.debug('gas price refreshed')
 
-    def unprocessed_queue_connect(self):
-        logger.debug('unprocessed_queue_connect')
+    def connect_unprocessed_queue(self):
+        logger.debug('connect_unprocessed_queue')
         config = self.config['AWS']['Config']
         queue_url = self.config['AWS']['Resources']['Queues']['Unprocessed']
         self.unprocessed_queue = boto3.resource('sqs', **config).Queue(queue_url)
@@ -76,16 +111,16 @@ class Worker:
         config = self.config['AWS']['Config']
         return boto3.resource('s3', **config).Bucket(bucket_name)
 
-    def unprocessed_bucket_connect(self):
-        logger.debug('unprocessed_bucket_connect')
+    def connect_unprocessed_bucket(self):
+        logger.debug('connect_unprocessed_bucket')
         self.unprocessed_bucket = self._connect_to_bucket(self.config['AWS']['Resources']['Buckets']['Unprocessed'])
 
-    def issued_bucket_connect(self):
-        logger.debug('issued_bucket_connect')
+    def connect_issued_bucket(self):
+        logger.debug('connect_issued_bucket')
         self.issued_bucket = self._connect_to_bucket(self.config['AWS']['Resources']['Buckets']['Issued'])
 
-    def connect_to_contract(self):
-        logger.debug('connect_to_contract')
+    def connect_contract(self):
+        logger.debug('connect_contract')
         self.document_store = self.web3.eth.contract(
             self.config['DocumentStore']['Address'],
             abi=self.config['DocumentStore']['ABI']
@@ -95,16 +130,11 @@ class Worker:
     def wrap_document(self, document, version):
         if not isinstance(document, dict):
             raise Exception("a dict must be passed to the wrap_document")
-        is_wrapped = (
-            "data" in document
-            and "signature" in document
-        )
+        is_wrapped = "data" in document and "signature" in document
         if is_wrapped:
             raise Exception("The document is already wrapped")
         logger.debug('wrap_document')
-        url = urllib.parse.urljoin(
-            self.config['OpenAttestation']['Endpoint'], 'document/wrap'
-        )
+        url = urllib.parse.urljoin(self.config['OpenAttestation']['Endpoint'], 'document/wrap')
         payload = {
             'document': document,
             'params': {
@@ -146,19 +176,19 @@ class Worker:
         else:
             raise RuntimeError(response.text)
 
-    def _create_issue_document_transaction(self, wrapped_document):
+    def create_issue_document_transaction(self, wrapped_document):
         logger.debug('create_issue_document_transaction')
         public_key = self.config['DocumentStore']['Owner']['PublicKey']
         private_key = self.config['DocumentStore']['Owner']['PrivateKey']
-        nonce = self.web3.eth.getTransactionCount(public_key, 'pending')
+        # excluding pending transactions to not cause transactions replication
+        # this way duplicate transactions will just cancel each other
+        nonce = self.web3.eth.getTransactionCount(public_key, 'latest')
         transaction = {
             'from': public_key,
             'nonce': nonce
         }
 
-        if self.config['Blockchain']['GasPrice'] is not None:
-            transaction['gasPrice'] = self.config['Blockchain']['GasPrice']
-
+        transaction['gasPrice'] = self.gas_price
         merkleRoot = wrapped_document['signature']['merkleRoot']
         unsigned_transaction = self.document_store.functions.issue(merkleRoot).buildTransaction(transaction)
         signed_transaction = self.web3.eth.account.sign_transaction(unsigned_transaction, private_key=private_key)
@@ -166,14 +196,17 @@ class Worker:
         logger.info('[%s] documentStore.issue(%s) %s', Web3.toHex(tx_hash), merkleRoot, unsigned_transaction)
         return tx_hash
 
-    def _wait_for_transaction_receipt(self, tx_hash):
+    def wait_for_transaction_receipt(self, tx_hash):
         logger.debug('wait_for_transaction_receipt')
-        return self.web3.eth.waitForTransactionReceipt(tx_hash, self.config['Blockchain']['ReceiptTimeout'])
+        try:
+            return self.web3.eth.waitForTransactionReceipt(tx_hash, self.config['Blockchain']['ReceiptTimeout'])
+        except TimeExhausted as e:
+            raise TransactionTimeoutException() from e
 
     def issue_document(self, wrapped_document):
         logger.debug('issue_document')
-        tx_hash = self._create_issue_document_transaction(wrapped_document)
-        receipt = self._wait_for_transaction_receipt(tx_hash)
+        tx_hash = self.create_issue_document_transaction(wrapped_document)
+        receipt = self.wait_for_transaction_receipt(tx_hash)
         if receipt.status != 1:
             raise RuntimeError(json.dumps(Web3.toJSON(receipt)))
 
@@ -261,17 +294,24 @@ class Worker:
                     wrapped_document = document.copy()
                     document = self.unwrap_document(document, version)
                 self.verify_document_store_address(document, version)
+                self.refresh_gas_price()
                 self.issue_document(wrapped_document)
                 self.put_document(key, wrapped_document)
+                self.transactions_count += 1
                 return True
             except DocumentError as e:
                 logger.exception(e)
                 return True
+            except TransactionTimeoutException:
+                # next transaction will replace this one using actual gas price because of the same nonce value
+                logger.warn('Transaction timed out, updating gas price.')
+                self.update_gas_price()
+                return False
             except Exception as e:
                 logger.exception(e)
                 return False
 
-    def _receive_messages(self):
+    def receive_messages(self):
         # logger.debug('receive_messages')
         return self.unprocessed_queue.receive_messages(
             WaitTimeSeconds=self.config['Worker']['Polling']['WaitTimeSeconds'],
@@ -281,7 +321,7 @@ class Worker:
 
     def poll(self):
         # logger.debug('poll')
-        for message in self._receive_messages():
+        for message in self.receive_messages():
             if self.process_message(message):
                 logger.debug('message.delete')
                 message.delete()
@@ -290,7 +330,6 @@ class Worker:
     def start(self):  # pragma: no cover
         polling_interval = self.config['Worker']['Polling']['IntervalSeconds']
         logger.info("Starting the worker with polling_interval %s", polling_interval)
-
 
         while True:
             self.poll()
