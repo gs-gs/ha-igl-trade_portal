@@ -165,9 +165,9 @@ def test_validate_document_schema(requests):
 
 
 @mock.patch('src.worker.Web3.toJSON')
-@mock.patch('src.worker.Worker._create_issue_document_transaction')
-@mock.patch('src.worker.Worker._wait_for_transaction_receipt')
-def test_issue_document_transaction_error(_wait_for_transaction_receipt, _create_issue_document_transaction, toJSON):
+@mock.patch('src.worker.Worker.create_issue_document_transaction')
+@mock.patch('src.worker.Worker.wait_for_transaction_receipt')
+def test_issue_document_transaction_error(wait_for_transaction_receipt, create_issue_document_transaction, toJSON):
     config = Config.from_environ()
     worker = Worker(config)
     wrapped_document = {}
@@ -176,13 +176,13 @@ def test_issue_document_transaction_error(_wait_for_transaction_receipt, _create
     receipt = mock.MagicMock
     receipt.status = 0
     toJSON.return_value = {'receipt': {'id': 1}}
-    _create_issue_document_transaction.return_value = tx_hash
-    _wait_for_transaction_receipt.return_value = receipt
+    create_issue_document_transaction.return_value = tx_hash
+    wait_for_transaction_receipt.return_value = receipt
     with pytest.raises(RuntimeError) as einfo:
         worker.issue_document(wrapped_document)
     assert str(einfo.value) == json.dumps(toJSON.return_value)
-    _create_issue_document_transaction.assert_called_once_with(wrapped_document)
-    _wait_for_transaction_receipt.assert_called_once_with(tx_hash)
+    create_issue_document_transaction.assert_called_once_with(wrapped_document)
+    wait_for_transaction_receipt.assert_called_once_with(tx_hash)
     toJSON.assert_called_once_with(receipt)
 
 
