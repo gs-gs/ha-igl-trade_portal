@@ -11,7 +11,7 @@ from tests.data import DOCUMENT_V2_TEMPLATE, DOCUMENT_V3_TEMPLATE
     os.environ,
     {
         'WORKER_POLLING_MESSAGE_WAIT_TIME_SECONDS': '1',
-        'BLOCKCHAIN_GAS_PRICE' : 'fast'
+        'BLOCKCHAIN_GAS_PRICE': 'fast'
     }
 )
 def test(unprocessed_queue, unprocessed_bucket, issued_bucket, unwrap, wrap):
@@ -56,3 +56,13 @@ def test(unprocessed_queue, unprocessed_bucket, issued_bucket, unwrap, wrap):
         MaxNumberOfMessages=1,
         VisibilityTimeout=0
     )
+
+    # Checking issuing already issued wrapped document
+    # it should be moved to issued bucket without calling contract.issue method
+    # after signature and document store verifications passed
+    key = 'issued-wrapped-document'
+    assert worker.is_issued_document(wrapped_document_v2)
+    unprocessed_bucket.Object(key).put(Body=json.dumps(wrapped_document_v2))
+    worker.poll()
+    issued_document = json.load(issued_bucket.Object(key).get()['Body'])
+    assert issued_document == wrapped_document_v2
