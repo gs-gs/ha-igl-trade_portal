@@ -77,6 +77,8 @@ class OaVerificationService:
                     .get("$template", {})
                     .get("url")
                 )
+                if result["template_url"] and not result["template_url"].startswith("http"):
+                    result["template_url"] = "https://" + result["template_url"]
                 result["attachments"] = self._parse_attachments(
                     result["unwrapped_file"].get("data", {})
                 )
