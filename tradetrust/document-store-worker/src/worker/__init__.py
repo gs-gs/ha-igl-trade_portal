@@ -176,6 +176,30 @@ class Worker:
         else:
             raise RuntimeError(response.text)
 
+    def verify_document_signature(self, wrapped_document):
+        logger.debug('verify_document_signature')
+        if not isinstance(wrapped_document, dict):
+            raise Exception("a dict must be passed to verify signature")
+        is_wrapped = "data" in wrapped_document and "signature" in wrapped_document
+        if not is_wrapped:
+            raise Exception("The document is not wrapped")
+        url = urllib.parse.urljoin(self.config['OpenAttestation']['Endpoint'], 'document/verify/signature')
+        payload = {
+            'document': wrapped_document,
+        }
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            if not response.json()['valid']:
+                raise DocumentError('Document signature is invalid')
+        elif response.status_code == 400:
+            raise DocumentError(response.text)
+        else:
+            raise RuntimeError(response.text)
+
+    def is_issued_document(self, wrapped_document):
+        logger.debug('is_issued_document')
+        return self.document_store.functions.isIssued(wrapped_document['signature']['merkleRoot']).call()
+
     def create_issue_document_transaction(self, wrapped_document):
         logger.debug('create_issue_document_transaction')
         public_key = self.config['DocumentStore']['Owner']['PublicKey']
@@ -281,10 +305,7 @@ class Worker:
                 key, document = self.load_unprocessed_document(record)
                 version = self.get_document_version(document)
 
-                is_wrapped = (
-                    "data" in document
-                    and "signature" in document
-                )
+                is_wrapped = "data" in document and "signature" in document
 
                 if not is_wrapped:
                     logger.info("Document is not wrapped, wrapping it...")
@@ -293,6 +314,17 @@ class Worker:
                     logger.info("Document is wrapped, unwrapping it to access business data...")
                     wrapped_document = document.copy()
                     document = self.unwrap_document(document, version)
+                    self.verify_document_signature(wrapped_document)
+                    # This is used to fix potential rare error when a stuck pending transaction
+                    # gets mined before a higher-priced one which causes a wrapped document to hang forever
+                    # in the unprocessed bucket because it's already issued
+                    logger.info("Checking issuance status")
+                    if self.is_issued_document(wrapped_document):
+                        logger.info("The document already issued, moving to issued bucket")
+                        self.verify_document_store_address(document, version)
+                        self.put_document(key, wrapped_document)
+                        return True
+                    logger.info('The document is not issued, continuing normally')
                 self.verify_document_store_address(document, version)
                 self.refresh_gas_price()
                 self.issue_document(wrapped_document)
