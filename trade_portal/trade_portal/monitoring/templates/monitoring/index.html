@@ -29,6 +29,29 @@
         </tbody>
       </table>
     </div>
+    <div class="col col-lg-6">
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th>Verifications, as file</th>
+            <td>{{ verifications_file }}</td>
+          </tr>
+          <tr>
+            <th>Verifications, QR</th>
+            <td>{{ verifications_qr }}</td>
+          </tr>
+          <tr>
+            <th>Verifications, Link</th>
+            <td>{{ verifications_link }}</td>
+          </tr>
+          <tr>
+            <th colspan="2" style="text-align: center">
+              <a href='/admin/monitoring/verificationattempt/' class="btn btn-sm btn-primary">See the full list</a>
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock content %}

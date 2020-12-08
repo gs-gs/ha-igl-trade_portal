@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import TemplateView
 
 from trade_portal.documents.models import Document, Party
+from trade_portal.monitoring.models import VerificationAttempt
 
 
 class MonitoringIndexView(UserPassesTestMixin, TemplateView):
@@ -21,5 +22,14 @@ class MonitoringIndexView(UserPassesTestMixin, TemplateView):
         ).count()
         c["total_parties"] = Party.objects.filter(
             country=settings.ICL_TRADE_PORTAL_COUNTRY
+        ).count()
+        c['verifications_file'] = VerificationAttempt.objects.filter(
+            type=VerificationAttempt.TYPE_FILE
+        ).count()
+        c['verifications_qr'] = VerificationAttempt.objects.filter(
+            type=VerificationAttempt.TYPE_QR
+        ).count()
+        c['verifications_link'] = VerificationAttempt.objects.filter(
+            type=VerificationAttempt.TYPE_LINK
         ).count()
         return c

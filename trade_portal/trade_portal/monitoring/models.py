@@ -19,7 +19,7 @@ class VerificationAttempt(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
-    type = models.CharField(max_length=10)
+    type = models.CharField(max_length=10, choices=TYPES)
     geo_info = JSONField(
         default=dict,
         blank=True,
