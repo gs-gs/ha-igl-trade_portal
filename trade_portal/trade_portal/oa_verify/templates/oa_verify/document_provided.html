@@ -78,7 +78,11 @@
                   {% if criteria.status|lower == "invalid" %}
                     <span class="badge badge-danger">Invalid</span>
                   {% else %}
-                    <span class="badge badge-default">{{ criteria.status }}</span>
+                    {% if criteria.status|lower == "error" %}
+                      <span class="badge badge-danger">Error</span>
+                    {% else %}
+                      <span class="badge badge-default">{{ criteria.status }}</span>
+                    {% endif %}
                   {% endif %}
                 {% endif %}
                 <br/>

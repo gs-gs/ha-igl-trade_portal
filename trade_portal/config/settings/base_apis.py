@@ -81,3 +81,6 @@ OA_VERIFY_API_URL = env("OA_VERIFY_API_URL")
 UA_BASE_HOST = env("UA_BASE_HOST")
 # Renderer we use by default; The host with protocol without trailing slash
 OA_RENDERER_HOST = env("OA_RENDERER_HOST")
+
+
+IPINFO_KEY = env("IPINFO_KEY", default=None) or None

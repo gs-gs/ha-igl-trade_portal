@@ -41,6 +41,22 @@ class OaVerificationService:
         * attachments - list of binary (or text) attached files like PDFs
         """
         result = {}
+
+        try:
+            json_content = json.loads(file_content)
+        except (ValueError, TypeError):
+            result = {
+                "status": "error",
+                "error_message": "The provided file is not a valid JSON thus not OA document",
+            }
+            return result
+        else:
+            # try to find the local document referring that file
+            doc_number = json_content.get("data", {}).get("certificateOfOrigin", {}).get("id", "")
+            if doc_number.count(":") >= 2:
+                # might be wrapped document number
+                doc_number = doc_number.split(":", maxsplit=2)[2]
+
         try:
             api_verify_resp = self._api_verify_file(file_content)
         except OaVerificationError as e:
@@ -54,10 +70,23 @@ class OaVerificationService:
             result["verify_result"] = api_verify_resp.copy()
             result["verify_result_rotated"] = {}
 
+            valid_subjects_count = 0
+
             for row in api_verify_resp:
                 if row["status"].lower() not in ("valid", "skipped"):
                     result["status"] = "invalid"
+                if row["status"].lower() == "valid":
+                    valid_subjects_count += 1
                 result["verify_result_rotated"][row.get("name")] = row
+
+            if valid_subjects_count < 2 and result["status"] == "valid":
+                # although we didn't find any invalid/error subjects
+                # there weren't enough valid ones, so most of them are skipped probably
+                result["status"] = "error"
+                result["error_message"] = (
+                    "The document doesn't have at least 2 valid subjects. "
+                    "Most likely it's just not an OA document"
+                )
         if result["status"] == "valid":
             # worth further parsing only if the file is valid
             try:
@@ -82,6 +111,7 @@ class OaVerificationService:
                 result["attachments"] = self._parse_attachments(
                     result["unwrapped_file"].get("data", {})
                 )
+        result["doc_number"] = doc_number
         return result
 
     def _api_verify_file(self, file_content):

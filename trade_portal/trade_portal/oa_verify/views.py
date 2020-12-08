@@ -8,11 +8,13 @@ import requests
 from django.contrib import messages
 from django.views.generic import TemplateView
 
+from trade_portal.documents.models import OaDetails, Document
 from trade_portal.documents.services.lodge import AESCipher
 from trade_portal.oa_verify.services import (
     OaVerificationService,
     OaVerificationError,
 )
+from trade_portal.monitoring.models import VerificationAttempt
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +92,15 @@ class OaVerificationView(TemplateView):
             the_file = self.request.FILES["oa_file"]
             value = the_file.read()
             verify_result = self._unpack_and_verify_cleartext(value)
+
+            att = VerificationAttempt.create_from_request(self.request, VerificationAttempt.TYPE_FILE)
+            if verify_result.get("doc_number"):
+                doc = Document.objects.filter(
+                    document_number=verify_result.get("doc_number")
+                ).first()
+                if doc:
+                    att.document = doc
+                    att.save()
         elif query:
             # ?q={...}
             try:
@@ -170,6 +181,21 @@ class OaVerificationView(TemplateView):
 
         # this will contain fields cipherText, iv, tag, type
         logger.info("Retrieving document %s having key %s", uri, key)
+
+        va = VerificationAttempt.create_from_request(
+            self.request,
+            VerificationAttempt.TYPE_LINK
+            if query
+            else VerificationAttempt.TYPE_QR
+        )
+        local_oa_details = OaDetails.objects.filter(
+            key=key
+        ).first()
+        if local_oa_details:
+            va.document = Document.objects.filter(
+                oa=local_oa_details
+            ).first()
+            va.save()
 
         try:
             document_info = requests.get(uri).json()["document"]

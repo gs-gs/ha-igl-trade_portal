@@ -70,3 +70,7 @@ django-templated-email==2.3.0
 
 # static pieces of text
 django-siteblocks==1.2.0
+
+
+# Geolocation
+ipinfo==4.0.0
