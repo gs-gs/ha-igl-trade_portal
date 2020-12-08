@@ -8,9 +8,33 @@
 
 {% block content %}
 <div class="content-box">
-  <a href="../" style="float: right"  class="btn btn-primary btn-sm">{% trans 'Go back to the document' %}</a>
 
-  <h1 class="page-title">{% trans 'Logs for' %} {% if object.is_incoming %}{% trans 'incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} #{{ object.document_number|default:object.short_id }}</h1>
+
+  <div class="row">
+    <div class="col col-lg-6">
+      <h1 class="page-title">{% trans 'Logs for' %} {% if object.is_incoming %}{% trans 'incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} #{{ object.document_number|default:object.short_id }}</h1>
+      <a href="../" class="btn btn-primary btn-sm">{% trans 'Go back to the document' %}</a>
+    </div>
+    <div class="col col-lg-6">
+
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th>Verifications, as file</th>
+            <td>{{ verifications_file }}</td>
+          </tr>
+          <tr>
+            <th>Verifications, QR</th>
+            <td>{{ verifications_qr }}</td>
+          </tr>
+          <tr>
+            <th>Verifications, Link</th>
+            <td>{{ verifications_link }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <div class="section-info section-info--no-border">
     <div class="subtitle section-info__title">{% trans 'Document status history' %}</div>

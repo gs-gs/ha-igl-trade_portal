@@ -24,6 +24,7 @@ from trade_portal.documents.models import Document, DocumentFile
 from trade_portal.documents.services.watermark import WatermarkService
 from trade_portal.documents.tables import DocumentsTable
 from trade_portal.documents.tasks import document_oa_verify
+from trade_portal.monitoring.models import VerificationAttempt
 from trade_portal.utils.monitoring import statsd_timer
 
 logger = logging.getLogger(__name__)
@@ -183,6 +184,23 @@ class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
 class DocumentLogsView(Login, DocumentQuerysetMixin, DetailView):
     template_name = "documents/logs.html"
     model = Document
+
+    def get_context_data(self, *args, **kwargs):
+        c = super().get_context_data(*args, **kwargs)
+        obj = self.get_object()
+        c['verifications_file'] = VerificationAttempt.objects.filter(
+            type=VerificationAttempt.TYPE_FILE,
+            document=obj
+        ).count()
+        c['verifications_qr'] = VerificationAttempt.objects.filter(
+            type=VerificationAttempt.TYPE_QR,
+            document=obj
+        ).count()
+        c['verifications_link'] = VerificationAttempt.objects.filter(
+            type=VerificationAttempt.TYPE_LINK,
+            document=obj
+        ).count()
+        return c
 
 
 class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
