@@ -160,6 +160,9 @@ class DocumentDetailView(Login, DocumentQuerysetMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
+        if not obj.issuer and obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
+            obj.workflow_status = Document.WORKFLOW_STATUS_DRAFT
+            obj.save()
         if obj.workflow_status == Document.WORKFLOW_STATUS_DRAFT:
             # this is draft statement, show user the step2 submission
             # page in all cases

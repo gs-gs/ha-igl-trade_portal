@@ -70,6 +70,10 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
         obj = self.get_object()
         if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
             return redirect("documents:detail", obj.pk)
+        if not obj.issuer:
+            # the previous step is not filled yet
+            messages.success(request, "Please fill the document details")
+            return redirect("documents:fill", obj.pk)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
@@ -123,6 +127,10 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
         obj = self.get_object()
         if obj.workflow_status != Document.WORKFLOW_STATUS_DRAFT:
             return redirect("documents:detail", obj.pk)
+        if not obj.issuer:
+            # the previous step is not filled yet
+            messages.success(request, "Please fill the document details")
+            return redirect("documents:fill", obj.pk)
         if "issue" in request.POST or "issue-without-qr-code" in request.POST:
             if "issue-without-qr-code" in request.POST:
                 att = obj.get_pdf_attachment()
