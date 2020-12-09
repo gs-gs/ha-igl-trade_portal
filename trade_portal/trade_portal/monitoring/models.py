@@ -45,3 +45,11 @@ class VerificationAttempt(models.Model):
             lambda: resolve_geoloc_ip.delay(c.pk, remote_ip)
         )
         return c
+
+
+class Metric(models.Model):
+    name = models.CharField(max_length=128, db_index=True)
+    value = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.name} = {self.value}"

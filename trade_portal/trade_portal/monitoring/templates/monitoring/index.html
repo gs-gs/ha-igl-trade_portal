@@ -15,7 +15,7 @@
       <table class="table table-bordered">
         <tbody>
           <tr>
-            <th>Total documents issued</th>
+            <th>Total documents (certificates) issued</th>
             <td>{{ total_documents_issued }}</td>
           </tr>
           <tr>
@@ -23,8 +23,32 @@
             <td>{{ total_documents_draft }}</td>
           </tr>
           <tr>
+            <th>Total documents failed</th>
+            <td>{{ total_documents_failed }}</td>
+          </tr>
+          <tr>
+            <th>Total documents validated</th>
+            <td>{{ total_documents_validated }}</td>
+          </tr>
+          <tr>
             <th>Total parties for our jurisdiction</th>
             <td>{{ total_parties }}</td>
+          </tr>
+          <tr>
+            <th>Users</th>
+            <td>{{ base_metrics.number_of_users }}</td>
+          </tr>
+          <tr>
+            <th>Organisations</th>
+            <td>{{ base_metrics.number_of_orgs }}</td>
+          </tr>
+          <tr>
+            <th>Logins</th>
+            <td>{{ base_metrics.logins_number_success }}</td>
+          </tr>
+          <tr>
+            <th>Failed logins</th>
+            <td>{{ base_metrics.logins_number_failed }}</td>
           </tr>
         </tbody>
       </table>
