@@ -1,5 +1,5 @@
 import base64
-import collections
+import collections.abc
 import logging
 
 import jsonschema
@@ -31,7 +31,7 @@ def dict_merge(dct, merge_dct):
         if (
             k in dct
             and isinstance(dct[k], dict)
-            and isinstance(merge_dct[k], collections.Mapping)
+            and isinstance(merge_dct[k], collections.abc.Mapping)
         ):
             dict_merge(dct[k], merge_dct[k])
         else:

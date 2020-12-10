@@ -2,6 +2,7 @@ import logging
 import time
 
 from django.conf import settings
+from PyPDF2.utils import PdfReadError
 
 from trade_portal.documents.models import (
     Document,
@@ -31,7 +32,38 @@ def lodge_document(document_id=None):
         document=doc, message="Starting the issue step..."
     )
 
-    WatermarkService().watermark_document(doc)
+    try:
+        WatermarkService().watermark_document(doc)
+    except PdfReadError as e:
+        # some PDF issue
+        if e.args[0] == "file has not been decrypted":
+            DocumentHistoryItem.objects.create(
+                is_error=True,
+                type="error",
+                document=doc,
+                message="Unable to issue the document: impossible to add the QR code to encrypted PDF",
+                object_body=str(e),
+            )
+        else:
+            # generic PDF issue
+            DocumentHistoryItem.objects.create(
+                is_error=True,
+                type="error",
+                document=doc,
+                message=(
+                    "Unable to issue the document: impossible to add the QR code "
+                    "because the PDF is invalid or can't be parsed"
+                ),
+                object_body=str(e),
+            )
+        logger.exception(e)
+        logger.info("Marking document %s as failed", doc)
+        doc.workflow_status = Document.WORKFLOW_STATUS_NOT_ISSUED
+        doc.status = Document.STATUS_FAILED
+        doc.verification_status = Document.V_STATUS_FAILED
+        doc.save()
+        doc.files.filter(is_watermarked=False).update(is_watermarked=None)  # so they are not "processing" anymore
+        return  # for any watermarking error we don't continue the process
 
     try:
         t0 = time.time()
