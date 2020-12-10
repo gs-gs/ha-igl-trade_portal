@@ -15,7 +15,7 @@ from django.views.generic import (
 from django_tables2 import SingleTableView
 from django.urls import reverse
 from django.utils.translation import gettext as _
-
+from PyPDF2.utils import PdfReadError
 
 from trade_portal.documents.forms import (
     ConsignmentSectionUpdateForm,
@@ -237,10 +237,24 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
                 the_file = document.file
 
             if self.request.GET.get("as_png"):
-                response = HttpResponse(
-                    WatermarkService().get_first_page_as_png(the_file),
-                    content_type="image/png",
-                )
+                try:
+                    response = HttpResponse(
+                        WatermarkService().get_first_page_as_png(the_file),
+                        content_type="image/png",
+                    )
+                except PdfReadError as e:
+                    # some PDF issue
+                    if e.args[0] == "file has not been decrypted":
+                        response = HttpResponse(
+                            open("trade_portal/static/images/pdf-error-can-be-decrypted.png", "rb").read(),
+                            content_type="image/png"
+                        )
+                    else:
+                        # generic PDF issue
+                        response = HttpResponse(
+                            open("trade_portal/static/images/pdf-error-format.png", "rb").read(),
+                            content_type="image/png"
+                        )
             else:
                 response = HttpResponse(the_file, content_type=content_type)
                 if not self.request.GET.get("inline"):
