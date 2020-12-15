@@ -28,6 +28,10 @@ class TransactionTimeoutException(Exception):
     pass
 
 
+class UnderpricedReplacementTransactionException(Exception):
+    pass
+
+
 class Worker:
 
     GAS_PRICE_INCREASE_FACTOR = 1.1
@@ -246,10 +250,18 @@ class Worker:
 
     def issue_document(self, wrapped_document):
         logger.debug('issue_document')
-        tx_hash = self.create_issue_document_transaction(wrapped_document)
-        receipt = self.wait_for_transaction_receipt(tx_hash)
-        if receipt.status != 1:
-            raise RuntimeError(json.dumps(Web3.toJSON(receipt)))
+        try:
+            tx_hash = self.create_issue_document_transaction(wrapped_document)
+            receipt = self.wait_for_transaction_receipt(tx_hash)
+            if receipt.status != 1:
+                raise RuntimeError(json.dumps(Web3.toJSON(receipt)))
+        except ValueError as e:
+            try:
+                if e.args[0]['message'] == 'replacement transaction underpriced':
+                    raise UnderpricedReplacementTransactionException() from e
+            except (IndexError, KeyError, TypeError):
+                pass
+            raise
 
     def load_unprocessed_document(self, event):
         logger.info("Loading unprocessed document %s...", event['s3']['object']['key'])
@@ -353,7 +365,11 @@ class Worker:
                 return True
             except TransactionTimeoutException:
                 # next transaction will replace this one using actual gas price because of the same nonce value
-                logger.warn('Transaction timed out, increasing gas price.')
+                logger.warn('Transaction timed out, increasing gas price')
+                self.increase_gas_price()
+                return False
+            except UnderpricedReplacementTransactionException:
+                logger.warn('Replacement transaction is underpriced, increasing gas price')
                 self.increase_gas_price()
                 return False
             except Exception as e:
