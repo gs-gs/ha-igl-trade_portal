@@ -1,10 +1,12 @@
 const _ = require('lodash');
+const Web3 = require('web3');
+const ethers = require('ethers');
 const express = require('express');
 const bodyParser = require('body-parser');
 const expressPino = require('express-pino-logger');
 const pino = require('pino');
 const multer = require('multer');
-const { verify, isValid } = require('@govtechsg/oa-verify');
+const { verificationBuilder, isValid, openAttestationVerifiers } = require('@govtechsg/oa-verify');
 
 function create(){
 
@@ -27,8 +29,12 @@ function create(){
   const app = express();
 
   const VERIFY_OPTIONS = {
-    network: (process.env.ETHEREUM_NETWORK || 'ropsten').toLowerCase()
+    provider:  new ethers.providers.Web3Provider(new Web3.providers.HttpProvider(process.env.BLOCKCHAIN_ENDPOINT))
   };
+
+  logger.info('Connected to blockchain endpoint "%s"', process.env.BLOCKCHAIN_ENDPOINT);
+
+  const verify = verificationBuilder(openAttestationVerifiers, VERIFY_OPTIONS);
 
   app.use(bodyParser.json({'limit': '50mb', 'strict': true}));
   app.use(expressPino({logger}));
@@ -53,7 +59,7 @@ function create(){
   app.post('/verify', upload.single('file'), async function (req, res, next){
     async function handler(){
       const document = getDocumentJSON(req);
-      const fragments = await verify(document, VERIFY_OPTIONS);
+      const fragments = await verify(document);
       const valid = isValid(fragments);
       res.status(200).send({valid});
     }
@@ -64,7 +70,7 @@ function create(){
   app.post('/verify/fragments', upload.single('file'), async function(req, res, next){
     async function handler(){
       const document = getDocumentJSON(req);
-      const fragments = await verify(document, VERIFY_OPTIONS);
+      const fragments = await verify(document);
       res.status(200).send(fragments);
     }
     handler().catch(next);

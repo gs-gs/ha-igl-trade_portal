@@ -3,7 +3,6 @@ const {promises:fs} = require('fs');
 const path = require('path');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const create = require('../src/app');
 const { isValid } = require('@govtechsg/oa-verify');
 
 chai.use(chaiHttp);
@@ -24,6 +23,9 @@ describe('API test', function(){
     }
   };
   before(async function(){
+    // this is OA developers default infura api key, we probably need to use our own
+    process.env.BLOCKCHAIN_ENDPOINT = "https://ropsten.infura.io/v3/bb46da3f80e040e8ab73c0a9ff365d18"
+    const create = require('../src/app');
     props.app = create();
     props.ropstenDocumentValid = JSON.parse(await fs.readFile(ROPSTEN_DOCUMENT_VALID_PATH));
     props.ropstenDocumentInvalid = JSON.parse(await fs.readFile(ROPSTEN_DOCUMENT_INVALID_PATH));
