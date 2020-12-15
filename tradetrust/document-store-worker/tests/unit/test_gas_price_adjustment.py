@@ -50,8 +50,12 @@ def test_initialization():
 
 
 @mock.patch('src.worker.Worker.connect_resources', connect_resources)
+@mock.patch('src.worker.Worker.generate_gas_price')
 @mock.patch('src.worker.Worker.load_unprocessed_document')
-def test_gas_price_update(load_unprocessed_document):
+def test_gas_price_update(load_unprocessed_document, generate_gas_price):
+
+    gas_price = 111
+    generate_gas_price.return_value = gas_price
 
     config = Config.from_environ()
     config['Blockchain']['GasPrice'] = 'fast'
@@ -69,19 +73,21 @@ def test_gas_price_update(load_unprocessed_document):
 
     worker.web3.eth.sendRawTransaction.return_value = b'transaction-hash'
     worker.web3.eth.waitForTransactionReceipt().status = 1
+    assert worker.gas_price == gas_price
 
-    # testing transaction timeout causing gas price update
-    worker.web3.reset_mock()
+    # testing transaction timeout causing gas price increase
+    generate_gas_price.reset_mock()
     worker.web3.eth.waitForTransactionReceipt.side_effect = TimeExhausted
     assert not worker.process_message(message)
-    worker.web3.eth.generateGasPrice.assert_called_once()
+    generate_gas_price.assert_not_called()
+    assert worker.gas_price == int(gas_price * 1.1)
 
     # testing gas price refresh
-    worker.web3.reset_mock()
+    generate_gas_price.reset_mock()
     worker.web3.eth.waitForTransactionReceipt.side_effect = None
     for i in range(config['Blockchain']['GasPriceRefreshRate']):
         assert worker.process_message(message)
-    worker.web3.eth.generateGasPrice.assert_called_once()
+    generate_gas_price.assert_called_once()
 
     # testing no refresh on static gas price
     config['Blockchain']['GasPrice'] = 20

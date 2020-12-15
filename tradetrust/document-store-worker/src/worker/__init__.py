@@ -30,6 +30,8 @@ class TransactionTimeoutException(Exception):
 
 class Worker:
 
+    GAS_PRICE_INCREASE_FACTOR = 1.1
+
     def __init__(self, config=None):
         self.config = config
 
@@ -63,10 +65,11 @@ class Worker:
         gas_price_config = self.config['Blockchain']['GasPrice']
 
         self.dynamic_gas_price_strategy = False
-
+        self.static_gas_price = None
         # static gas price strategy
         try:
-            self.gas_price = int(gas_price_config)
+            self.static_gas_price = int(gas_price_config)
+            self.gas_price = self.static_gas_price
             logger.info('gas price strategy=static, price=%s', self.gas_price)
             return
         except (ValueError, TypeError):
@@ -90,7 +93,11 @@ class Worker:
         logger.debug('update_gas_price')
         # update gas price only if gas price strategy is set
         if self.dynamic_gas_price_strategy:
-            self.gas_price = self.web3.eth.generateGasPrice()
+            logger.debug('dynamic_gas_price_strategy')
+            self.gas_price = self.generate_gas_price()
+        elif self.static_gas_price is not None:
+            logger.debug('static_gas_price')
+            self.gas_price = self.static_gas_price
         self.transactions_count = 1
         logger.info('gas price=%s', 'default' if self.gas_price is None else self.gas_price)
         logger.debug('transactions count reset')
@@ -100,6 +107,16 @@ class Worker:
         if self.transactions_count % self.config['Blockchain']['GasPriceRefreshRate'] == 0:
             self.update_gas_price()
             logger.debug('gas price refreshed')
+
+    def increase_gas_price(self):
+        logger.debug('increase_gas_price')
+        new_gas_price = int(self.gas_price * self.GAS_PRICE_INCREASE_FACTOR)
+        logger.info('Gas price increased. OLD: %s NEW: %s', self.gas_price, new_gas_price)
+        self.gas_price = new_gas_price
+
+    def generate_gas_price(self):
+        logger.debug('generate_gas_price')
+        return self.web3.eth.generateGasPrice()
 
     def connect_unprocessed_queue(self):
         logger.debug('connect_unprocessed_queue')
@@ -336,8 +353,8 @@ class Worker:
                 return True
             except TransactionTimeoutException:
                 # next transaction will replace this one using actual gas price because of the same nonce value
-                logger.warn('Transaction timed out, updating gas price.')
-                self.update_gas_price()
+                logger.warn('Transaction timed out, increasing gas price.')
+                self.increase_gas_price()
                 return False
             except Exception as e:
                 logger.exception(e)
