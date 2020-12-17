@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:14-alpine
 
 
 WORKDIR /document-store-contract
@@ -13,7 +13,7 @@ RUN git init \
   && git merge ${DOCUMENT_STORE_MASTER_COMMIT}
 
 # sha3 in package json is broken apparently, so I upgrade it manually.
-RUN npm install --save sha3 && npm install
+RUN npm ci
 
 RUN npm run truffle -- build
 

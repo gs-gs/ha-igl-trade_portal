@@ -74,7 +74,7 @@ services:
       context: "${dockerstagedir:-.}/document-store-contract"
       dockerfile: Dockerfile
       args:
-        DOCUMENT_STORE_MASTER_COMMIT: f51a29737c5ef31f753c765ea349603017867499
+        DOCUMENT_STORE_MASTER_COMMIT: 65092f8cfcc06622a75548e183b08e1c9a8fee21
     networks:
       - internal
     volumes:
@@ -124,12 +124,7 @@ services:
     environment:
       CONTAINER_MODE: server-development
       PORT: 9091
-      # cloudflare or infura
-      ETHEREUM_PROVIDER: infura
-      # cloudflare works only with mainnet
-      # this is OA developers default infura api key, we probably need to use our own
-      INFURA_API_KEY: bb46da3f80e040e8ab73c0a9ff365d18
-
+      BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
 
   document-store-worker:
     image: tradetrust/document-store-worker
