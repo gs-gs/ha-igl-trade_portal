@@ -5,4 +5,4 @@ set -o nounset
 
 
 rm -f './celerybeat.pid'
-celery -A config.celery_app beat -l INFO --pidfile=/tmp/pidfile --schedule=/tmp/schedule
+celery -A config.celery_app beat -l INFO --pidfile= --schedule=/tmp/schedule

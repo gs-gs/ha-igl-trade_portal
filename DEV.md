@@ -11,7 +11,7 @@ First, cd do the ``trade_portal/devops/localdocker`` folder and create local.env
     $ touch demo-au-local.env
     $ touch demo-sg-local.env
 
-To start it without intergov connection (just the UI, for doing markup):
+To start it without intergov connection (just the UI, for doing markup or working with OA but not IGL):
 
     $ COMPOSE_PROJECT_NAME=trau docker-compose up
 

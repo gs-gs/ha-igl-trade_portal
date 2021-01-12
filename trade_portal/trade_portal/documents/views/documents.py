@@ -255,6 +255,15 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
                             open("trade_portal/static/images/pdf-error-format.png", "rb").read(),
                             content_type="image/png"
                         )
+                except Exception as e:
+                    if "pdf2image." in str(e.__class__).lower():
+                        # corrupted PDF
+                        response = HttpResponse(
+                            open("trade_portal/static/images/pdf-error-format.png", "rb").read(),
+                            content_type="image/png"
+                        )
+                    else:
+                        raise
             else:
                 response = HttpResponse(the_file, content_type=content_type)
                 if not self.request.GET.get("inline"):

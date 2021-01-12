@@ -25,6 +25,7 @@ services:
       - internal
     env_file:
       - devops/localdocker/common.env
+      - devops/localdocker/local.env
       - devops/localdocker/demo-sg.env
       - devops/localdocker/demo-sg-local.env
 

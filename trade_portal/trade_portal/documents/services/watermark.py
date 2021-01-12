@@ -121,7 +121,32 @@ class WatermarkService:
         docfile.save()
         return
 
-    def get_first_page_as_png(self, source, page_number=0):
+    def get_first_page_as_png(self, *args, **kwargs):
+        return self.get_first_page_as_pdf2image(*args, **kwargs)
+
+    def get_first_page_as_pdf2image(self, source, page_number=0):
+        """
+        Uses opencv library and works better with encrypted/protected PDFs
+        """
+        import tempfile
+        import cv2
+        from pdf2image import convert_from_bytes
+
+        images = convert_from_bytes(source.read())
+
+        png_content = None
+        with tempfile.NamedTemporaryFile(suffix=".ppm") as incoming_ppm_image:
+            with tempfile.NamedTemporaryFile(suffix=".png") as tmp_png_file:
+                images[0].save(incoming_ppm_image.name)
+                cv2.imwrite(tmp_png_file.name, cv2.imread(incoming_ppm_image.name))
+                png_content = open(tmp_png_file.name, "rb").read()
+        return png_content
+
+    def get_first_page_as_png_wand(self, source, page_number=0):
+        """
+        Doesn't work well with encrypted PDFs, even if printing is allowed so
+        nothing stops us from rendering it to PNG
+        """
         import PyPDF2
         from wand.image import Image
 
