@@ -411,6 +411,9 @@ class NodeService(BaseIgService):
         return True
 
     def subscribe_to_new_messages(self) -> None:
+        if not settings.IGL_APIS.get("subscription"):
+            # do not subscribe because the subscription API is not configured
+            return
         result = self.ig_client.subscribe(
             predicate="message.*",
             callback=(

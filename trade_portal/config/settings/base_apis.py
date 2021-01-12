@@ -13,12 +13,12 @@ IGL_APIS = {
     # always in the simplified format
     'subscription': env(
         "IGL_SUBSCRAPI_ENDPOINT",
-        default='http://subscriptions_api:5000'
+        default=None
     ),
 }
 
 # legacy variable values
-if IGL_APIS["subscription"].endswith("/subscriptions"):
+if IGL_APIS["subscription"] and IGL_APIS["subscription"].endswith("/subscriptions"):
     IGL_APIS["subscription"] = IGL_APIS["subscription"][:-len("/subscriptions")]
 
 IGL_MESSAGEAPI_ENDPOINT = env("IGL_MESSAGEAPI_ENDPOINT", default=None)
