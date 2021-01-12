@@ -22,6 +22,7 @@ services:
       - internal
     env_file:
       - devops/localdocker/common.env
+      - devops/localdocker/local.env
       - devops/localdocker/demo-au.env
       - devops/localdocker/demo-au-local.env
     ports:
