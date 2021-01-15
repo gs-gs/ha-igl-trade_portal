@@ -188,8 +188,44 @@ def process_incoming_document_received(self, document_pk):
 )
 def textract_document(document_id=None):
     return
+    # TODO: when doing this mind slow processing and the fact that document file may change during it
     doc = Document.objects.get(pk=document_id)
     MetadataExtractService.extract(doc)
+
+
+@celery_app.task(
+    ignore_result=True,
+    max_retries=3,
+    interval_start=10,
+    interval_step=10,
+    interval_max=50,
+)
+def fill_document_metadata(document_id=None):
+    """
+    For document files uploaded
+    Tries to retrieve first PDF page width/height and save to "metadata" field
+    So QR code watermark UI functionality works fine for all possible QR code and page sizes
+    """
+    logger.info("Trying to determine PDF metadata for document %s", document_id)
+    doc = Document.objects.get(pk=document_id)
+    for docfile in doc.files.all():
+        if docfile.filename.lower().endswith(".pdf"):
+            # not determined yet and is PDF
+            t0 = time.time()
+            x, y = WatermarkService().get_document_filesize(docfile)
+            time_spent = round(time.time() - t0, 4)  # seconds
+            DocumentHistoryItem.objects.create(
+                is_error=False,
+                type="message",
+                document=doc,
+                message=f"PDF page size determined to {x}x{y}, spent {time_spent}s",
+                object_body=str(docfile),
+            )
+            docfile.refresh_from_db()
+            docfile.metadata["width_mm"] = x
+            docfile.metadata["height_mm"] = y
+            docfile.save()  # fields=("metadata",)
+    return
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=80)  # around 2 hours of retries

@@ -8,6 +8,7 @@ First - build the static files (UI):
 
 First, cd do the ``trade_portal/devops/localdocker`` folder and create local.env file (may be empty; for each country you want to start - au sg cn etc):
 
+    $ touch local.env
     $ touch demo-au-local.env
     $ touch demo-sg-local.env
 

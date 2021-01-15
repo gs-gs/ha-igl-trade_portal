@@ -1,10 +1,11 @@
 from django import forms
 from django.conf import settings
+from django.db import transaction
 
 from trade_portal.legi.abr import fetch_abn_info
 
 from .models import Party, Document, DocumentHistoryItem, DocumentFile, FTA
-from .tasks import textract_document
+from .tasks import textract_document, fill_document_metadata
 
 
 class DocumentCreateForm(forms.ModelForm):
@@ -52,8 +53,8 @@ class DocumentCreateForm(forms.ModelForm):
             message=f"The document has been created by {self.user}",
         )
 
-        textract_document.apply_async([result.pk], countdown=2)
-
+        transaction.on_commit(lambda: textract_document.delay(result.pk))
+        transaction.on_commit(lambda: fill_document_metadata.delay(result.pk))
         return result
 
 

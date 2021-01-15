@@ -1,6 +1,7 @@
 import json
 
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
@@ -21,7 +22,7 @@ from trade_portal.document_api.serializers import (
     ShortCertificateSerializer,
 )
 from trade_portal.documents.models import Document, DocumentFile
-from trade_portal.documents.tasks import textract_document, lodge_document
+from trade_portal.documents.tasks import textract_document, lodge_document, fill_document_metadata
 
 
 class PaginationBy10(PageNumberPagination):
@@ -226,7 +227,8 @@ class CertificateFileView(QsMixin, views.APIView):
         docfile.file.save(file_obj.name, file_obj, save=True)
         docfile.save()
 
-        textract_document.apply_async([doc.pk], countdown=2)
+        transaction.on_commit(lambda: textract_document.delay(doc.pk))
+        transaction.on_commit(lambda: fill_document_metadata.delay(doc.pk))
 
         return Response(metadata, status=status.HTTP_201_CREATED)
 
