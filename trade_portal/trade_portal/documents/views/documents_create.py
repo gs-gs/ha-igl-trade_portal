@@ -74,6 +74,7 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
             # the previous step is not filled yet
             messages.success(request, "Please fill the document details")
             return redirect("documents:fill", obj.pk)
+        self.obj = obj
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
@@ -96,6 +97,8 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
                 "qr_y_position"
             )
         c["QR_CODE_SIZE_MM"] = config.QR_CODE_SIZE_MM
+        c["FIRST_PAGE_PDF_WIDTH_MM"] = self.obj.get_pdf_attachment().metadata.get("width_mm") or 210
+        c["FIRST_PAGE_PDF_HEIGHT_MM"] = self.obj.get_pdf_attachment().metadata.get("height_mm") or 297
         return c
 
     def _get_data_warnings(self):

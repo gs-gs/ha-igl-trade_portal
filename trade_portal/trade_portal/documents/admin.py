@@ -1,6 +1,6 @@
 import random
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.shortcuts import redirect
 
 from .models import (
@@ -72,7 +72,7 @@ class DocumentAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "type")
     inlines = [DocumentHistoryItemInlineAdmin]
-    actions = ["reverify_document"]
+    actions = ["reverify_document", "extract_metadata"]
     raw_id_fields = ("oa", "issuer", "exporter", )
 
     def reverify_document(self, request, qs):
@@ -82,6 +82,14 @@ class DocumentAdmin(admin.ModelAdmin):
             document_oa_verify.apply_async(
                 args=[obj.pk], countdown=random.randint(2, 20)
             )
+        return redirect(request.path_info)
+
+    def extract_metadata(self, request, qs):
+        from .tasks import fill_document_metadata
+
+        for obj in qs.all():
+            fill_document_metadata.delay(obj.pk)
+        messages.success(request, "The metadata extraction for these document(s) started")
         return redirect(request.path_info)
 
 

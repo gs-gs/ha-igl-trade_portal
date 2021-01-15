@@ -44,6 +44,29 @@ class WatermarkService:
                 )
         return
 
+    def get_document_filesize(self, docfile: DocumentFile) -> (int, int):
+        # Note: works bad with encrypted PDFS, but we can't watermark them anyway.
+        from PyPDF2 import PdfFileReader
+        from reportlab.lib.units import mm
+
+        try:
+            # Read the original PDF first to detemine it's page size (the first page)
+            orig_doc = PdfFileReader(docfile.original_file or docfile.file)
+            orig_doc_first_page_size = orig_doc.getPage(0).mediaBox
+        except Exception as e:
+            logger.exception(e)
+            return 0, 0
+        return (
+            round(
+                float(orig_doc_first_page_size[2] - orig_doc_first_page_size[0]) / mm,
+                2
+            ),
+            round(
+                float(orig_doc_first_page_size[3] - orig_doc_first_page_size[1]) / mm,
+                2
+            )
+        )
+
     def add_watermark(self, docfile: DocumentFile, qrcode_image) -> None:
         """
         Draws given QR code over a PDF content in the top right cornder
@@ -55,18 +78,26 @@ class WatermarkService:
         from reportlab.pdfgen import canvas
         from reportlab.lib.utils import ImageReader
         from reportlab.lib.units import mm
-        from reportlab.lib.pagesizes import A4
         from PyPDF2 import PdfFileWriter, PdfFileReader
 
         logging.info("Adding a watermark for %s", docfile)
         qrcode_image = PIL.Image.open(io.BytesIO(qrcode_image))
 
+        # Read the original PDF first to detemine it's page size (the first page)
+        orig_doc = PdfFileReader(docfile.original_file or docfile.file)
+        orig_doc_first_page_size = orig_doc.getPage(0).mediaBox
+
+        orig_doc_pagesize = (
+            float(orig_doc_first_page_size[2] - orig_doc_first_page_size[0]),
+            float(orig_doc_first_page_size[3] - orig_doc_first_page_size[1]),
+        )
+
         # Prepare the PDF document containing only QR code
         qrcode_stream = io.BytesIO()
-        c = canvas.Canvas(qrcode_stream, pagesize=A4)
+        c = canvas.Canvas(qrcode_stream, pagesize=orig_doc_pagesize)
 
-        x_loc = float(docfile.doc.extra_data.get("qr_x_position") or 83) / 100
-        y_loc = 1 - float(docfile.doc.extra_data.get("qr_y_position") or 4) / 100
+        x_loc = float(docfile.doc.extra_data.get("qr_x_position") or 83) / 100.0
+        y_loc = 1 - float(docfile.doc.extra_data.get("qr_y_position") or 4) / 100.0
 
         if x_loc < 0:
             x_loc = 0
@@ -78,9 +109,8 @@ class WatermarkService:
             y_loc = 100
 
         image_width = config.QR_CODE_SIZE_MM * mm
-
-        image_x_loc = A4[0] * x_loc
-        image_y_loc = A4[1] * y_loc - image_width
+        image_x_loc = orig_doc_pagesize[0] * x_loc
+        image_y_loc = orig_doc_pagesize[1] * y_loc - image_width
 
         c.drawImage(
             ImageReader(qrcode_image),
@@ -94,7 +124,6 @@ class WatermarkService:
 
         qrcode_stream.seek(0)
         qrcode_doc = PdfFileReader(qrcode_stream)
-        orig_doc = PdfFileReader(docfile.original_file or docfile.file)
         output_file = PdfFileWriter()
 
         for page_number in range(orig_doc.getNumPages()):

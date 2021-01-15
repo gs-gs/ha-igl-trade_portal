@@ -106,7 +106,6 @@
     </form>
 
     <br/><br/>
-
     <div id="id_qr_code_area">
       {% if object.get_pdf_attachment.is_watermarked is False %}
         <img class="igl-doc-qrcode__image"
@@ -132,24 +131,24 @@
     dl dd, dl dt {
       text-align: top;
     }
-    /* 210 x 297 */
     div#id_qr_code_area {
-      width: 210mm;
-      height: 297mm;
+      width: {{ FIRST_PAGE_PDF_WIDTH_MM }}mm;
+      height: {{ FIRST_PAGE_PDF_HEIGHT_MM }}mm;
       border: 1px solid black;
       position: relative;
     }
 
     div#id_qr_code_area #id_qr_code {
       width: {{ QR_CODE_SIZE_MM }}mm;
+      height: {{ QR_CODE_SIZE_MM }}mm;
       position: absolute;
       z-index: 9;
       cursor: move;
     }
 
     div#id_qr_code_area #id_base_image {
-      width: 210mm;
-      height: 297mm;
+      width: {{ FIRST_PAGE_PDF_WIDTH_MM }}mm;
+      height: {{ FIRST_PAGE_PDF_HEIGHT_MM }}mm;
       border: 1px solid gray;
     }
   </style>
@@ -158,11 +157,11 @@
 {% block extra_script %}
   {% if object.get_pdf_attachment.is_watermarked is False %}
   <script>
-    // Make the DIV element draggable:
     var draggableParent = document.getElementById("id_base_image");
-    dragElement(document.getElementById("id_qr_code"));
+    draggableParent.onload = dragElement;
 
-    function dragElement(elmnt) {
+    function dragElement() {
+      let elmnt = document.getElementById("id_qr_code");;
       var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
       elmnt.onmousedown = dragMouseDown;
@@ -177,6 +176,16 @@
           parseInt(document.getElementById("id_qr_y").value) / 100
         )
       );
+
+      if (initialX < 0) { initialX = 0};
+      if (initialY < 0) { initialY = 0};
+
+      if (initialX > draggableParent.getBoundingClientRect().width) {
+        initialX = draggableParent.getBoundingClientRect().width - elmnt.getBoundingClientRect().width
+      };
+      if (initialY > draggableParent.getBoundingClientRect().height) {
+        initialY = draggableParent.getBoundingClientRect().height - elmnt.getBoundingClientRect().height
+      };
 
       elmnt.style.top = elmnt.offsetTop + initialY + "px";
       elmnt.style.left = elmnt.offsetLeft + initialX + "px";
