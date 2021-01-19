@@ -1,40 +1,27 @@
 import pino from 'pino';
-import {S3, SQS} from './aws';
+import {ComposeBatch} from './tasks';
+import {UnprocessedDocumentsQueue, UnprocessedDocuments, BatchDocuments} from './repos';
 
 
-class Worker{
+async function main(){
+  const unprocessedDocuments = new UnprocessedDocuments();
+  const batchDocuments = new BatchDocuments();
+  const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue();
 
-  logger: pino.Logger
-
-  constructor(name: string){
-    this.logger = pino({name, level: process.env.LOG_LEVEL || 'info', enabled: process.env.NOLOG === undefined});
-  }
-
-  async sleep(seconds: number){
-    return new Promise(resolve=>setTimeout(resolve, seconds * 1000))
-  }
-
-  async next(){}
-  async init(){}
-
-  async start(){
-    await this.init();
-    while(true){
-      await this.next();
-      await this.sleep(1);
-      this.logger.info('next');
-    }
-  }
+  const logger = pino({level: 'debug'});
+  const composeBatch = new ComposeBatch(
+    unprocessedDocuments,
+    batchDocuments,
+    unprocessedDocumentsQueue,
+    1024,
+    600,
+    20
+  );
+  const documentBody = JSON.stringify({
+    body: "Hello world"
+  });
+  await unprocessedDocuments.put({Key: 'hello-document', Body: documentBody});
+  composeBatch.start();
 }
 
-class BatchComposer extends Worker{
-
-}
-
-class BatchWrapper extends Worker{
-
-}
-
-class BatchIssuer extends Worker{
-
-}
+main();

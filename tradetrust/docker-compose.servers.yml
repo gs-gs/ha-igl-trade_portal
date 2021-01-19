@@ -88,72 +88,23 @@ services:
     depends_on:
       - ganache-cli
 
-
-  open-attestation-api:
-    image: tradetrust/open-attestation-api
-    container_name: tradetrust-open-attestation-api
+  document-store-worker:
+    image: tradetrust/ts-document-store-worker
+    container_name: document-store-worker
     build:
-      context: ${dockerstagedir:-.}/open-attestation-api
+      context: ${dockerstagedir:-.}/ts-document-store-worker
       dockerfile: Dockerfile
     networks:
       - internal
     volumes:
-      - /open-attestation-api/node_modules
-      - '${dockerstagedir:-.}/open-attestation-api:/open-attestation-api/'
+      - /ts-document-store-worker/node_modules
+      - '${dockerstagedir:-.}/ts-document-store-worker:/document-store-worker/'
+      - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
     ports:
       - '9090:9090'
     environment:
-      CONTAINER_MODE: server-development
-      PORT: 9090
-
-
-  open-attestation-verify-api:
-    image: tradetrust/open-attestation-verify-api
-    container_name: tradetrust-open-attestation-verify-api
-    build:
-      context: ${dockerstagedir:-.}/open-attestation-verify-api
-      dockerfile: Dockerfile
-    networks:
-      - internal
-    volumes:
-      - /open-attestation-verify-api/node_modules
-      - '${dockerstagedir:-.}/localstack:/aws'
-      - '${dockerstagedir:-.}/open-attestation-verify-api:/open-attestation-verify-api/'
-    ports:
-      - '9091:9091'
-    environment:
-      CONTAINER_MODE: server-development
-      PORT: 9091
-      BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
-
-  document-store-worker:
-    image: tradetrust/document-store-worker
-    container_name: tradetrust-document-store-worker
-    build:
-      context: ${dockerstagedir:-.}/document-store-worker
-      dockerfile: Dockerfile
-    networks:
-      - internal
-    volumes:
-      - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
-      - '${dockerstagedir:-.}/document-store-worker:/document-store-worker/'
-      - '${dockerstagedir:-.}/localstack:/aws'
-    depends_on:
-      - localstack
-    environment:
-
-      # SENTRY_DSN
-      # SENTRY_ENVIRONMENT
-      # SENTRY_RELEASE
-
       CONTAINER_MODE: container
-
-      WORKER_POLLING_INTERVAL_SECONDS: 5
-      WORKER_POLLING_MAX_NUMBER_OF_MESSAGES: 1
-      WORKER_POLLING_MESSAGE_WAIT_TIME_SECONDS: 0
-      WORKER_POLLING_VISIBILITY_TIMEOUT: 60
-
-      OPEN_ATTESTATION_ENDPOINT: http://open-attestation-api:9090
+      PORT: 9090
 
       BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
       BLOCKCHAIN_GAS_PRICE: fast
@@ -162,7 +113,7 @@ services:
       AWS_ENDPOINT_URL: http://tradetrust-localstack:10001
       AWS_ACCESS_KEY_ID: access
       AWS_SECRET_ACCESS_KEY: secretaccess
-      AWS_DEFAULT_REGION: us-east-1
+      AWS_REGION: us-east-1
 
       DOCUMENT_STORE_ABI: /document-store-contract/abi/DocumentStore.local.dev.json
       DOCUMENT_STORE_ADDRESS: /document-store-contract/addresses/DocumentStore.local.dev.address
@@ -172,3 +123,88 @@ services:
       UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
       UNPROCESSED_BUCKET_NAME: unprocessed
       ISSUED_BUCKET_NAME: issued
+      BATCH_BUCKET_NAME: batch
+
+  # open-attestation-api:
+  #   image: tradetrust/open-attestation-api
+  #   container_name: tradetrust-open-attestation-api
+  #   build:
+  #     context: ${dockerstagedir:-.}/open-attestation-api
+  #     dockerfile: Dockerfile
+  #   networks:
+  #     - internal
+  #   volumes:
+  #     - /open-attestation-api/node_modules
+  #     - '${dockerstagedir:-.}/open-attestation-api:/open-attestation-api/'
+  #   ports:
+  #     - '9090:9090'
+  #   environment:
+  #     CONTAINER_MODE: server-development
+  #     PORT: 9090
+  #
+  #
+  # open-attestation-verify-api:
+  #   image: tradetrust/open-attestation-verify-api
+  #   container_name: tradetrust-open-attestation-verify-api
+  #   build:
+  #     context: ${dockerstagedir:-.}/open-attestation-verify-api
+  #     dockerfile: Dockerfile
+  #   networks:
+  #     - internal
+  #   volumes:
+  #     - /open-attestation-verify-api/node_modules
+  #     - '${dockerstagedir:-.}/localstack:/aws'
+  #     - '${dockerstagedir:-.}/open-attestation-verify-api:/open-attestation-verify-api/'
+  #   ports:
+  #     - '9091:9091'
+  #   environment:
+  #     CONTAINER_MODE: server-development
+  #     PORT: 9091
+  #     BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
+  #
+  # document-store-worker:
+  #   image: tradetrust/document-store-worker
+  #   container_name: tradetrust-document-store-worker
+  #   build:
+  #     context: ${dockerstagedir:-.}/document-store-worker
+  #     dockerfile: Dockerfile
+  #   networks:
+  #     - internal
+  #   volumes:
+  #     - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
+  #     - '${dockerstagedir:-.}/document-store-worker:/document-store-worker/'
+  #     - '${dockerstagedir:-.}/localstack:/aws'
+  #   depends_on:
+  #     - localstack
+  #   environment:
+  #
+  #     # SENTRY_DSN
+  #     # SENTRY_ENVIRONMENT
+  #     # SENTRY_RELEASE
+  #
+  #     CONTAINER_MODE: container
+  #
+  #     WORKER_POLLING_INTERVAL_SECONDS: 5
+  #     WORKER_POLLING_MAX_NUMBER_OF_MESSAGES: 1
+  #     WORKER_POLLING_MESSAGE_WAIT_TIME_SECONDS: 0
+  #     WORKER_POLLING_VISIBILITY_TIMEOUT: 60
+  #
+  #     OPEN_ATTESTATION_ENDPOINT: http://open-attestation-api:9090
+  #
+  #     BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
+  #     BLOCKCHAIN_GAS_PRICE: fast
+  #     BLOCKCHAIN_GAS_PRICE_REFRESH_RATE: 10
+  #
+  #     AWS_ENDPOINT_URL: http://tradetrust-localstack:10001
+  #     AWS_ACCESS_KEY_ID: access
+  #     AWS_SECRET_ACCESS_KEY: secretaccess
+  #     AWS_DEFAULT_REGION: us-east-1
+  #
+  #     DOCUMENT_STORE_ABI: /document-store-contract/abi/DocumentStore.local.dev.json
+  #     DOCUMENT_STORE_ADDRESS: /document-store-contract/addresses/DocumentStore.local.dev.address
+  #     DOCUMENT_STORE_OWNER_PUBLIC_KEY: "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
+  #     DOCUMENT_STORE_OWNER_PRIVATE_KEY: "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
+  #
+  #     UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
+  #     UNPROCESSED_BUCKET_NAME: unprocessed
+  #     ISSUED_BUCKET_NAME: issued

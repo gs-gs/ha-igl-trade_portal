@@ -7,6 +7,7 @@ awslocal sqs create-queue --queue-name "unprocessed" --output text > /dev/null
 echo "Done"
 echo "Creating buckets..."
 awslocal s3api create-bucket --bucket "unprocessed"
+awslocal s3api create-bucket --bucket "batch"
 awslocal s3api create-bucket --bucket "issued"
 echo "Done"
 echo "Creating notifications..."
