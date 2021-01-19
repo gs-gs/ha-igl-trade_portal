@@ -100,12 +100,12 @@ class OaVerificationService:
                     "Unable to unwrap the OA file - it's structure may be invalid"
                 )
             else:
-                result["template_url"] = (
+                result["template_url"] = requests.get(
                     result["unwrapped_file"]
                     .get("data", {})
                     .get("$template", {})
                     .get("url")
-                )
+                ).url
                 if result["template_url"] and not result["template_url"].startswith("http"):
                     result["template_url"] = "https://" + result["template_url"]
                 result["attachments"] = self._parse_attachments(
