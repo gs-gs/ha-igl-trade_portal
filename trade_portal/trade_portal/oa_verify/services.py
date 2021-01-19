@@ -112,6 +112,7 @@ class OaVerificationService:
                     result["unwrapped_file"].get("data", {})
                 )
         result["doc_number"] = doc_number
+        logger.info(result)
         return result
 
     def _api_verify_file(self, file_content):
