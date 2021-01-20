@@ -3,12 +3,16 @@ import {connect} from '@govtechsg/document-store';
 import config from './config';
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 
-async function connectDocumentStore(): Promise<DocumentStore>{
+function connectWallet(): Wallet{
   const provider = new ethers.providers.JsonRpcProvider(config.BLOCKCHAIN_ENDPOINT)
-  const signer = new Wallet(config.DOCUMENT_STORE_OWNER_PRIVATE_KEY, provider);
-  return await connect(config.DOCUMENT_STORE_ADDRESS, signer);
+  return new Wallet(config.DOCUMENT_STORE_OWNER_PRIVATE_KEY, provider);
+}
+
+async function connectDocumentStore(wallet: Wallet): Promise<DocumentStore>{
+  return await connect(config.DOCUMENT_STORE_ADDRESS, wallet);
 }
 
 export {
-  connectDocumentStore
+  connectDocumentStore,
+  connectWallet
 }

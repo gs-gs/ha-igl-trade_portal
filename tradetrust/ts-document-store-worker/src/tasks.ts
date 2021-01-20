@@ -1,14 +1,18 @@
 import pino from 'pino';
-import {validateSchema, verifySignature, wrapDocuments, wrapDocument, SchemaId} from '@govtechsg/open-attestation';
+import { Wallet } from 'ethers';
+import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
+import { validateSchema, verifySignature, wrapDocuments, wrapDocument, SchemaId } from '@govtechsg/open-attestation';
 import {
   connectDocumentStore
 } from './document-store';
 import {
   UnprocessedDocuments,
   BatchDocuments,
+  IssuedDocuments,
   UnprocessedDocumentsQueue
 } from './repos';
 import constants from './constants';
+import { utils } from 'ethers';
 
 
 
@@ -28,18 +32,18 @@ interface UnwrappedDocument{
 class Batch{
   creationTimestampMs: number = 0;
   unwrappedDocuments: Map<string, UnwrappedDocument>;
-  wrappedDocuments: Array<any>;
+  wrappedDocuments: Map<string, any>;
   merkleRoot: string = '';
 
   constructor(){
     this.creationTimestampMs = Date.now();
     this.unwrappedDocuments = new Map<string, UnwrappedDocument>();
-    this.wrappedDocuments = [];
+    this.wrappedDocuments = new Map<string, any>();
   }
 
-  size(){
+  size(): number{
     let size = 0;
-    for(let [, document] of this.unwrappedDocuments){size += document.size}
+    this.unwrappedDocuments.forEach(document=>{size += document.size});
     return size;
   }
 
@@ -47,33 +51,20 @@ class Batch{
 
 class ComposeBatch implements Task<Promise<Batch>>{
 
-  private unprocessedDocuments: UnprocessedDocuments;
-  private batchDocuments: BatchDocuments;
-  private unprocessedDocumentsQueue: UnprocessedDocumentsQueue;
-  private batch!: Batch;
-  private maxBatchSizeBytes: number;
   private maxBatchTimeMs: number;
-  private messageWaitTime: number;
-  private documentStoreAddress: string;
+  private batch!: Batch;
 
   constructor(
-    unprocessedDocuments: UnprocessedDocuments,
-    batchDocuments: BatchDocuments,
-    unprocessedDocumentsQueue: UnprocessedDocumentsQueue,
-    maxBatchSizeBytes: number,
+    private unprocessedDocuments: UnprocessedDocuments,
+    private batchDocuments: BatchDocuments,
+    private unprocessedDocumentsQueue: UnprocessedDocumentsQueue,
     maxBatchTimeSeconds: number,
-    messageWaitTime: number,
-    documentStoreAddress: string
+    private maxBatchSizeBytes: number,
+    private messageWaitTime: number,
+    private documentStoreAddress: string,
   ){
-    this.unprocessedDocuments = unprocessedDocuments;
-    this.batchDocuments = batchDocuments;
-    this.unprocessedDocumentsQueue = unprocessedDocumentsQueue;
-    this.maxBatchSizeBytes = maxBatchSizeBytes;
     this.maxBatchTimeMs = maxBatchTimeSeconds * 1000;
-    this.documentStoreAddress = documentStoreAddress;
-    if(1 <= messageWaitTime && messageWaitTime <= 20){
-      this.messageWaitTime = messageWaitTime;
-    }else{
+    if(1 > messageWaitTime || messageWaitTime > 20){
       throw Error('messageWaitTime must be >= 1 <=20');
     }
   }
@@ -196,38 +187,128 @@ class ComposeBatch implements Task<Promise<Batch>>{
 
 
 class WrapBatch implements Task<void>{
-  async start(){
+  constructor(private batch: Batch){}
 
+  prepareBatchUnwrappedDocumentsData(){
+    const keys:Array<string> = new Array<string>(this.batch.unwrappedDocuments.size);
+    const bodies: Array<any> = new Array<any>(this.batch.unwrappedDocuments.size);
+    let documentIndex = 0;
+    for(let [key, entry] of this.batch.unwrappedDocuments){
+      keys[documentIndex] = key;
+      bodies[documentIndex] = entry.body;
+      documentIndex++;
+    }
+    return {keys, bodies};
   }
-  async next(){
 
+  next(){
+    let {keys, bodies} = this.prepareBatchUnwrappedDocumentsData();
+    bodies = wrapDocuments(bodies);
+    keys.forEach((key, index)=>{this.batch.wrappedDocuments.set(key, bodies[index])});
+    this.batch.merkleRoot = bodies[0].signature.merkleRoot;
+  }
+
+  start(){
+    this.next();
   }
 }
 
-
+// TODO: add gas price updates
+// TODO: add stuck transaction handling
 class IssueBatch implements Task<void>{
+
+  constructor(
+    private wallet: Wallet,
+    private documentStore: DocumentStore,
+    private batch: Batch
+  ){}
+
+  async next(): Promise<boolean>{
+    const gasLimit = 1000000;
+    const gasPrice = await this.wallet.getGasPrice();
+    const nonce = await this.wallet.getTransactionCount('latest');
+    const merkleRoot = '0x'+this.batch.merkleRoot;
+
+    const transaction = await this.documentStore.populateTransaction.issue(merkleRoot, {nonce, gasPrice, gasLimit});
+    const transactionResponse = await this.wallet.sendTransaction(transaction);
+    const transactionReceipt = await transactionResponse.wait();
+    return true;
+  }
+
   async start(){
-
+    while(!await this.next()){
+      // update gas price code goes here
+    }
   }
+}
+
+class SaveIssuedBatch implements Task<void>{
+  constructor(
+    private issuedDocuments: IssuedDocuments,
+    private batchDocuments: BatchDocuments,
+    private batch: Batch
+  ){}
   async next(){
-
+    for(let [key, document] of this.batch.wrappedDocuments){
+      const documentBodyString = JSON.stringify(document);
+      await this.issuedDocuments.put({Key:key, Body: documentBodyString});
+      await this.batchDocuments.delete({Key:key})
+    }
   }
+
+  async start(){
+    await this.next();
+  }
+
 }
 
 
 class ProcessDocuments implements Task<void>{
+  constructor(
+    private unprocessedDocuments: UnprocessedDocuments,
+    private batchDocuments: BatchDocuments,
+    private issuedDocuments: IssuedDocuments,
+    private unprocessedDocumentsQueue: UnprocessedDocumentsQueue,
+    private wallet: Wallet,
+    private documentStore: DocumentStore,
+    private messageWaitTime: number,
+    private maxBatchSizeBytes: number,
+    private maxBatchTimeSeconds: number
+  ){}
 
   async start(){
-
+    while(true){
+      await this.next();
+    }
   }
 
   async next(){
-
+    const batch = await new ComposeBatch(
+      this.unprocessedDocuments,
+      this.batchDocuments,
+      this.unprocessedDocumentsQueue,
+      this.maxBatchSizeBytes,
+      this.maxBatchTimeSeconds,
+      this.messageWaitTime,
+      this.documentStore.address
+    ).start()
+    new WrapBatch(batch).start()
+    await new IssueBatch(
+      this.wallet,
+      this.documentStore,
+      batch
+    ).start()
+    await new SaveIssuedBatch(
+      this.issuedDocuments,
+      this.batchDocuments,
+      batch
+    ).start()
   }
 }
 
 
 export {
+  Batch,
   ComposeBatch,
   WrapBatch,
   IssueBatch,
