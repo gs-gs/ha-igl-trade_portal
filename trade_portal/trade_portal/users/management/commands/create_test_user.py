@@ -53,8 +53,7 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Org membership reset\n")
 
-        email_address, created = EmailAddress.objects.get_or_create(email=user.email)
-        email_address.user = user
+        email_address, created = EmailAddress.objects.get_or_create(email=user.email, user=user)
         email_address.verified = True
         email_address.primary = True
         email_address.save()
