@@ -30,6 +30,11 @@ def build(no_cache=True):
 
 
 @task
+def build_node():
+    Docker().run('node', options=['-it', f'-v {ROOT_DIR}:/trade_portal'], cmd_and_args='bash -c "cd /trade_portal; npm install; npm run build"')
+
+
+@task
 def start(background=False):
     DOCKER_COMPOSE.cmd('up', options=['-d' if background else '', 'django'])
 # COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml -f demo-au.yml up
@@ -44,6 +49,11 @@ def stop():
 def restart(background=False):
     stop()
     start(background)
+
+
+@task
+def destroy():
+    DOCKER_COMPOSE.cmd('down', options=['-v', '--rmi local'])
 
 
 @task
