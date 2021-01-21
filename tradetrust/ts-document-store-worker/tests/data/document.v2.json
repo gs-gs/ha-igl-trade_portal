@@ -19,7 +19,6 @@
   "recipient": {
     "name": "Recipient Name"
   },
-  "unknownKey": "unknownValue",
   "attachments": [
     {
       "filename": "sample.pdf",
