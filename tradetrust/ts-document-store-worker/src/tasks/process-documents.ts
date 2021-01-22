@@ -6,6 +6,7 @@ import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue
 } from "src/repos";
+import { logger } from 'src/logger';
 import ComposeBatch from "./compose-batch";
 import { Task } from "./interfaces";
 import IssueBatch from "./issue-batch";
@@ -33,21 +34,30 @@ class ProcessDocuments implements Task<void>{
   }
 
   async next(){
+    logger.debug('next');
+    logger.debug('ComposeBatch');
     const batch = await new ComposeBatch(
       this.unprocessedDocuments,
       this.batchDocuments,
       this.unprocessedDocumentsQueue,
-      this.maxBatchSizeBytes,
       this.maxBatchTimeSeconds,
+      this.maxBatchSizeBytes,
       this.messageWaitTime,
       this.documentStore.address
     ).start()
+    logger.debug('batch.isEmpty')
+    if(batch.isEmpty()){
+      return;
+    }
+    logger.debug('WrapBatch');
     new WrapBatch(batch).start()
+    logger.debug('IssueBatch');
     await new IssueBatch(
       this.wallet,
       this.documentStore,
       batch
     ).start()
+    logger.debug('SaveIssuedBatch');
     await new SaveIssuedBatch(
       this.issuedDocuments,
       this.batchDocuments,

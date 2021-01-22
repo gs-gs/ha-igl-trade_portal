@@ -18,6 +18,10 @@ class Batch{
     this.unwrappedDocuments.forEach(document=>{size += document.size});
     return size;
   }
+
+  isEmpty(){
+    return this.unwrappedDocuments.size == 0;
+  }
 }
 
 

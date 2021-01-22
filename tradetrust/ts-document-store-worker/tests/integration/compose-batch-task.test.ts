@@ -1,19 +1,18 @@
-import config from '../src/config';
-import { ComposeBatch } from '../src/tasks';
+import config from 'src/config';
+import { ComposeBatch } from 'src/tasks';
 import {
   UnprocessedDocuments,
   BatchDocuments,
   UnprocessedDocumentsQueue
-} from '../src/repos';
+} from 'src/repos';
 import {
   clearQueue,
   clearBucket,
   documentV2,
-} from './utils';
-
-jest.setTimeout(1000 * 60);
+} from 'tests/utils';
 
 describe('ComposeBatch Task', ()=>{
+  jest.setTimeout(1000 * 60);
   beforeEach(async ()=>{
     await clearQueue(config.UNPROCESSED_QUEUE_URL);
     await clearBucket(config.UNPROCESSED_BUCKET_NAME);

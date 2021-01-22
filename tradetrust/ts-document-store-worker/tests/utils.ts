@@ -35,7 +35,19 @@ function documentV2(overrides: object): any{
 }
 
 
+function generateDocumentsMap(documentsCount: number): Map<string, any>{
+  const documents = new Map<string, any>();
+  for(let documentIndex = 0; documentIndex < documentsCount; documentIndex++){
+    const key = `document-key-${documentIndex}`
+    const body = `document-body-${documentIndex}`
+    documents.set(key, documentV2({body}));
+  }
+  return documents;
+}
+
+
 export {
+  generateDocumentsMap,
   documentV2,
   clearQueue,
   clearBucket
