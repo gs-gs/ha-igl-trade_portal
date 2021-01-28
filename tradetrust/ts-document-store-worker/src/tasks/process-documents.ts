@@ -9,6 +9,7 @@ import {
 } from "src/repos";
 import { logger } from 'src/logger';
 import ComposeBatch from "./compose-batch";
+import { Batch } from './data';
 import { Task } from "./interfaces";
 import IssueBatch from "./issue-batch";
 import SaveIssuedBatch from "./save-issued-batch";
@@ -24,6 +25,7 @@ class ProcessDocuments implements Task<void>{
     private wallet: Wallet,
     private documentStore: DocumentStore,
     private messageWaitTime: number,
+    private messageVisibilityTimeout: number,
     private maxBatchSizeBytes: number,
     private maxBatchTimeSeconds: number,
     private transactionTimeoutSeconds: number,
@@ -40,14 +42,17 @@ class ProcessDocuments implements Task<void>{
   async next(){
     logger.debug('next');
     logger.debug('ComposeBatch');
-    const batch = await new ComposeBatch(
+    const batch = new Batch();
+    await new ComposeBatch(
       this.unprocessedDocuments,
       this.batchDocuments,
       this.unprocessedDocumentsQueue,
       this.maxBatchTimeSeconds,
       this.maxBatchSizeBytes,
       this.messageWaitTime,
-      this.documentStore.address
+      this.messageVisibilityTimeout,
+      this.documentStore.address,
+      batch
     ).start()
     logger.debug('batch.isEmpty')
     if(batch.isEmpty()){

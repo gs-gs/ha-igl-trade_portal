@@ -8,6 +8,11 @@ run:
 run-on-servers:
 	@ docker-compose -f docker-compose.servers.yml up --build --remove-orphans --renew-anon-volumes
 
+.PHONY: run-ts-worker
+.ONESHELL:
+run-ts-worker:
+	@ docker-compose -f docker-compose.ts-worker.yml up --build --remove-orphans --renew-anon-volumes
+
 .PHONY: run-testnet-test
 .ONESHELL:
 run-testnet-test:

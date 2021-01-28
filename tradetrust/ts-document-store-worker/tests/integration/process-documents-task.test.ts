@@ -57,6 +57,7 @@ describe('Test', ()=>{
       wallet,
       documentStore,
       1,
+      60,
       maxBatchSizeBytes,
       60,
       10,

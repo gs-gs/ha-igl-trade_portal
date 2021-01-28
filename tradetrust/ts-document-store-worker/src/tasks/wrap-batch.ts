@@ -23,17 +23,20 @@ class WrapBatch implements Task<void>{
   next(){
     logger.debug('next');
     let {keys, bodies} = this.prepareBatchUnwrappedDocumentsData();
-    logger.debug('wrapDocuments');
     bodies = wrapDocuments(bodies);
-    logger.debug('batch.wrappedDocuments.set')
     keys.forEach((key, index)=>{this.batch.wrappedDocuments.set(key, bodies[index])});
-    logger.debug('batch.merkleRoot = %s', bodies[0].signature.merkleRoot);
     this.batch.merkleRoot = bodies[0].signature.merkleRoot;
   }
 
   start(){
     logger.debug('start');
+    logger.info('Started documents wrapping...')
     this.next();
+    logger.info(
+      'Completed documents wrapping. Documents count = %s, merkleRoot = %s',
+      this.batch.wrappedDocuments.size,
+      this.batch.merkleRoot
+    );
   }
 }
 

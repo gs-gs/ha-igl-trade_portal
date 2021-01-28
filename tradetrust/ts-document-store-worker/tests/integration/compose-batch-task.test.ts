@@ -1,5 +1,5 @@
 import config from 'src/config';
-import { ComposeBatch } from 'src/tasks';
+import { Batch, ComposeBatch } from 'src/tasks';
 import {
   UnprocessedDocuments,
   BatchDocuments,
@@ -38,6 +38,7 @@ describe('ComposeBatch Task', ()=>{
       }
       documentIndex++;
     }
+    const batch = new Batch();
     const composeBatch = new ComposeBatch(
       unprocessedDocuments,
       batchDocuments,
@@ -45,9 +46,11 @@ describe('ComposeBatch Task', ()=>{
       5,
       1024 * 1024 * 1024,
       1,
-      config.DOCUMENT_STORE_ADDRESS
+      60,
+      config.DOCUMENT_STORE_ADDRESS,
+      batch
     );
-    const batch = await composeBatch.start();
+    await composeBatch.start();
 
     expect(documents.size).toEqual(batch.unwrappedDocuments.size);
     for(let [key, document] of documents){
@@ -59,6 +62,7 @@ describe('ComposeBatch Task', ()=>{
 
   test('batch backup', async ()=>{
     const documents = generateDocumentsMap(10);
+    const batch = new Batch();
     const composeBatch = new ComposeBatch(
       unprocessedDocuments,
       batchDocuments,
@@ -66,12 +70,14 @@ describe('ComposeBatch Task', ()=>{
       5,
       1024 * 1024 * 1024,
       1,
-      config.DOCUMENT_STORE_ADDRESS
+      60,
+      config.DOCUMENT_STORE_ADDRESS,
+      batch
     );
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
     }
-    const batch = await composeBatch.start();
+    await composeBatch.start();
     for(let [key, document] of documents){
       expect(document).toEqual(batch.unwrappedDocuments.get(key)?.body);
       const s3Object = await batchDocuments.get({Key: key});
@@ -103,6 +109,7 @@ describe('ComposeBatch Task', ()=>{
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
     }
     await unprocessedDocuments.delete({Key: 'deleted-document'});
+    const batch = new Batch();
     const composeBatch = new ComposeBatch(
       unprocessedDocuments,
       batchDocuments,
@@ -110,9 +117,11 @@ describe('ComposeBatch Task', ()=>{
       5,
       1024 * 1024 * 1024,
       1,
-      config.DOCUMENT_STORE_ADDRESS
+      60,
+      config.DOCUMENT_STORE_ADDRESS,
+      batch
     );
-    const batch = await composeBatch.start();
+    await composeBatch.start();
     expect(batch.unwrappedDocuments.get('non-json-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('deleted-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('invalid-document')).toBeFalsy();
@@ -126,7 +135,7 @@ describe('ComposeBatch Task', ()=>{
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
     }
-
+    const batch = new Batch();
     const composeBatch = new ComposeBatch(
       unprocessedDocuments,
       batchDocuments,
@@ -134,10 +143,12 @@ describe('ComposeBatch Task', ()=>{
       5,
       1024 * 1024 * 1024,
       1,
-      config.DOCUMENT_STORE_ADDRESS
+      60,
+      config.DOCUMENT_STORE_ADDRESS,
+      batch
     )
 
-    const batch = await composeBatch.start();
+    await composeBatch.start();
 
     const expectedBatchDocuments = Array.from<any>(documents.values());
     const resultingBatchDocuments = Array.from<any>(batch.unwrappedDocuments.values()).map(entry=>entry.body);
@@ -160,7 +171,7 @@ describe('ComposeBatch Task', ()=>{
       }
       documentIndex++;
     }
-
+    const batch = new Batch();
     const composeBatch = new ComposeBatch(
       unprocessedDocuments,
       batchDocuments,
@@ -168,9 +179,11 @@ describe('ComposeBatch Task', ()=>{
       10,
       maxBatchSizeBytes,
       1,
-      config.DOCUMENT_STORE_ADDRESS
+      60,
+      config.DOCUMENT_STORE_ADDRESS,
+      batch
     )
-    const batch = await composeBatch.start();
+    await composeBatch.start();
 
     const expectedBatchDocuments = Array.from<any>(documents.values()).slice(0, expectedBatchDocumentsCount);
     const resultingBatchDocuments = Array.from<any>(batch.unwrappedDocuments.values()).map(entry=>entry.body);

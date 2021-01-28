@@ -2,13 +2,11 @@ import { UnwrappedDocument } from './interfaces';
 
 class Batch{
 
-  public creationTimestampMs: number = 0
   public unwrappedDocuments: Map<string, UnwrappedDocument>;
   public wrappedDocuments: Map<string, any>;
   public merkleRoot: string = '';
 
   constructor(){
-    this.creationTimestampMs = Date.now();
     this.unwrappedDocuments = new Map<string, UnwrappedDocument>();
     this.wrappedDocuments = new Map<string, any>();
   }
