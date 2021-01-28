@@ -1,6 +1,7 @@
 import _ from 'lodash';
-import config from '../src/config';
-import {SQS, S3} from '../src/aws';
+import { logger } from 'src/logger';
+import config from 'src/config';
+import {SQS, S3} from 'src/aws';
 import DOCUMENT_V2_JSON from './data/document.v2.json';
 
 
@@ -9,6 +10,7 @@ const SQSService = SQS();
 
 
 async function clearBucket(Bucket: string){
+  logger.debug('tests.utils.clearBucket "%s"', Bucket);
   let response: any = {};
   do{
     response = await S3Service.listObjectsV2({
@@ -24,14 +26,15 @@ async function clearBucket(Bucket: string){
 }
 
 async function clearQueue(QueueUrl: string){
+  logger.debug('tests.utils.clearQueue "%s"', QueueUrl);
   await SQSService.purgeQueue({QueueUrl}).promise();
 }
 
 
 function documentV2(overrides: object): any{
-  const document = Object.assign(_.cloneDeep(DOCUMENT_V2_JSON), overrides);
+  const document = _.cloneDeep(DOCUMENT_V2_JSON);
   document.issuers[0].documentStore = config.DOCUMENT_STORE_ADDRESS;
-  return document;
+  return Object.assign(document, overrides);
 }
 
 

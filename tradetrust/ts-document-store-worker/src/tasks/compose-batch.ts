@@ -83,8 +83,7 @@ class ComposeBatch implements Task<Promise<Batch>>{
       wrapDocument(document);
     }catch(e){
       if(!!e.validationErrors){
-        logger.debug(e.validationErrors);
-        logger.debug('unknown document schema');
+        logger.debug('unknown document schema %O', e.validationErrors);
         return false;
       }
       throw e;
@@ -106,10 +105,19 @@ class ComposeBatch implements Task<Promise<Batch>>{
     return version!==null && documentStoreAddress === this.documentStoreAddress
   }
 
+
   async getDocumentDataFromEvent(event: any){
     logger.debug('getDocumentDataFromEvent');
     const s3Object = event.Body.Records[0].s3.object;
-    const documentObject = await this.unprocessedDocuments.get({Key: s3Object.key});
+    let documentObject;
+    try{
+      documentObject = await this.unprocessedDocuments.get({Key: s3Object.key});
+    }catch(e){
+      if(e.code === 'NoSuchKey'){
+        return undefined;
+      }
+      throw e;
+    }
     const documentStringBody = documentObject.Body!.toString();
     const documentJSONBody = JSON.parse(documentStringBody);
     return {
@@ -123,7 +131,7 @@ class ComposeBatch implements Task<Promise<Batch>>{
   }
 
   async addDocumentToBatch(document: any){
-    logger.debug('addDocumentToBatch');
+    logger.debug('addDocumentToBatch %s', document.key);
     // backing up batch files
     await this.batchDocuments.put({Key: document.key, Body: document.body.string});
     await this.unprocessedDocuments.delete({Key: document.key});
@@ -142,24 +150,61 @@ class ComposeBatch implements Task<Promise<Batch>>{
       return;
     }
     logger.debug('event found')
+    logger.info('Document PUT event found, trying to add the document to batch...');
     const document = await this.getDocumentDataFromEvent(event);
-
-    if(this.verifyDocumentData(document.body.json)){
-      await this.addDocumentToBatch(document);
+    if(document !== undefined){
+      logger.debug('document found');
+      logger.info('The document data downloaded succesfully, document key: %s', document?.key)
+      if(this.verifyDocumentData(document.body.json)){
+        logger.info('The document verified succesfully, adding data to the batch');
+        await this.addDocumentToBatch(document);
+      }else{
+        logger.info('The document schema is invalid, skipping further operations');
+      }
+    }else{
+      logger.warn('Document not found by the provided key, skipping further operations');
+      logger.debug('document not found');
     }
     // deleting the event after it processed
     await this.unprocessedDocumentsQueue.delete({ReceiptHandle: event.ReceiptHandle});
-    logger.debug('event deleted')
+    logger.info('The document event processed succesfully, deleting it');
+    logger.debug('event deleted');
+  }
+
+  async restoreUnfinishedBatch(batch: Batch){
+    // using tryToCompleteBatch is required to prevent erros if batch parameters were changed
+    // after the last batch failed
+    let ContinuationToken: string|undefined;
+    do{
+      for(let s3Object of (await this.batchDocuments.list({ContinuationToken})).Contents??[]){
+        const documentObject = await this.batchDocuments.get({Key: s3Object!.Key!})
+        const documentJSONBody = JSON.parse(documentObject.Body!.toString());
+        batch.unwrappedDocuments.set(s3Object.Key!, {body: documentJSONBody, size: s3Object.Size!});
+      }
+    }while(ContinuationToken && !this.tryToCompleteBatch(batch));
   }
 
   async start(): Promise<Batch>{
     logger.debug('start');
+    logger.info(
+      'Starting batch composition. Constraints SIZE: %s bytes, TIME: %s ms',
+      this.maxBatchSizeBytes, this.maxBatchTimeMs
+    );
+
     // create new batch object
     this.batch = new Batch();
+    logger.info('Checking batch backup bucket...');
+    if(!await this.batchDocuments.isEmpty()){
+      logger.info('Batch backup bucket is not empty, restoring previous batch');
+      this.restoreUnfinishedBatch(this.batch);
+    }else{
+      logger.info('Batch backup bucket is empty, continuing normally');
+    }
     // check should this batch be sent for wrapping or not
     while(!this.tryToCompleteBatch(this.batch)){
       await this.next();
     }
+    logger.info('Batch is complete');
     return this.batch;
   }
 }

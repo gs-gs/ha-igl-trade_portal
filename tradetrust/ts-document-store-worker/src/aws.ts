@@ -7,7 +7,7 @@ function S3(conf?: AWS.S3.ClientConfiguration): AWS.S3{
   const defaultConfig = {
     endpoint: config.AWS_ENDPOINT_URL,
     s3ForcePathStyle: config.AWS_ENDPOINT_URL!==undefined
-  }
+  };
   return new AWS.S3({...defaultConfig, ...conf});
 }
 
@@ -15,10 +15,18 @@ function SQS(conf?: AWS.SQS.ClientConfiguration): AWS.SQS{
   conf = conf || {};
   const defaultConfig = {
     endpoint: config.AWS_ENDPOINT_URL
-  }
+  };
   return new AWS.SQS({...defaultConfig, ...conf});
 }
 
-export {SQS, S3};
+function KMS(conf: AWS.KMS.ClientConfiguration): AWS.KMS{
+  conf = conf || {};
+  const defaultConfig = {
+    endpoint: config.AWS_ENDPOINT_URL
+  };
+  return new AWS.KMS({...defaultConfig, ...conf});
+}
+
+export {SQS, S3, KMS};
 
 export default AWS;

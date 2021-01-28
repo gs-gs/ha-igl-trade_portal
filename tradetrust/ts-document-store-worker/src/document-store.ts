@@ -1,11 +1,13 @@
 import { ethers, Wallet} from 'ethers';
-import {connect} from '@govtechsg/document-store';
 import config from './config';
+import { Keys } from './repos';
+import {connect} from '@govtechsg/document-store';
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 
-function connectWallet(): Wallet{
+async function connectWallet(): Promise<Wallet>{
+  const privateKey = await Keys.getStringOrB64KMS(config.DOCUMENT_STORE_OWNER_PRIVATE_KEY);
   const provider = new ethers.providers.JsonRpcProvider(config.BLOCKCHAIN_ENDPOINT)
-  return new Wallet(config.DOCUMENT_STORE_OWNER_PRIVATE_KEY, provider);
+  return new Wallet(privateKey, provider);
 }
 
 async function connectDocumentStore(wallet: Wallet): Promise<DocumentStore>{

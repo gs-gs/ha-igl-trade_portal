@@ -1,3 +1,4 @@
+import { Wallet } from 'ethers';
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { getData } from '@govtechsg/open-attestation';
 import {
@@ -13,7 +14,7 @@ import { clearQueue, clearBucket, generateDocumentsMap } from 'tests/utils';
 
 describe('Test', ()=>{
 
-  jest.setTimeout(1000 * 60);
+  jest.setTimeout(1000 * 100);
 
   const documentsCount = 20;
   const documents = generateDocumentsMap(documentsCount);
@@ -23,16 +24,18 @@ describe('Test', ()=>{
   const issuedDocuments = new IssuedDocuments();
   const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue();
 
-  const wallet = connectWallet();
+  let wallet: Wallet;
   let documentStore: DocumentStore;
 
-  beforeEach(async ()=>{
+  beforeEach(async (done)=>{
     await clearQueue(config.UNPROCESSED_QUEUE_URL);
     await clearBucket(config.UNPROCESSED_BUCKET_NAME);
     await clearBucket(config.BATCH_BUCKET_NAME);
     await clearBucket(config.ISSUED_BUCKET_NAME);
+    wallet = await connectWallet();
     documentStore = await connectDocumentStore(wallet);
-  })
+    done();
+  }, 1000 * 60);
 
   test('test complete by size', async ()=>{
 
@@ -55,7 +58,10 @@ describe('Test', ()=>{
       documentStore,
       1,
       maxBatchSizeBytes,
-      60
+      60,
+      10,
+      1,
+      1.2
     );
 
     await processDocuments.next();

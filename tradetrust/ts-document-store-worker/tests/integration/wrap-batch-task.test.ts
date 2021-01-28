@@ -4,6 +4,9 @@ import { documentV2 } from 'tests/utils';
 
 
 describe('WrapBatch Task', ()=>{
+
+  jest.setTimeout(1000 * 100);
+
   test('wrap batch', ()=>{
     const batch = new Batch();
     for(let documentIndex = 0; documentIndex < 10; documentIndex++){

@@ -6,12 +6,13 @@ import { clearBucket, documentV2 } from "tests/utils";
 
 describe('SaveIssuedBatch Task', ()=>{
 
-  jest.setTimeout(1000 *  60);
+  jest.setTimeout(1000 * 100);
 
-  beforeEach(async ()=>{
-    clearBucket(config.BATCH_BUCKET_NAME);
-    clearBucket(config.ISSUED_BUCKET_NAME);
-  })
+  beforeEach(async (done)=>{
+    await clearBucket(config.BATCH_BUCKET_NAME);
+    await clearBucket(config.ISSUED_BUCKET_NAME);
+    done();
+  }, 1000 * 60);
 
   const issuedDocuments = new IssuedDocuments();
   const batchDocuments = new BatchDocuments();

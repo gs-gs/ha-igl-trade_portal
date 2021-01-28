@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc; node out/index.js | pino-pretty",
-    "test": "jest --detectOpenHandles | pino-pretty"
+    "test": "jest --detectOpenHandles -i | pino-pretty"
   },
   "author": "",
   "license": "ISC",

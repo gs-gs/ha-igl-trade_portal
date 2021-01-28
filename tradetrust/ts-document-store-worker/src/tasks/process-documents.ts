@@ -1,6 +1,7 @@
 import { DocumentStore } from "@govtechsg/document-store/src/contracts/DocumentStore";
 import { Wallet } from "ethers";
 import {
+  Keys,
   BatchDocuments,
   IssuedDocuments,
   UnprocessedDocuments,
@@ -24,7 +25,10 @@ class ProcessDocuments implements Task<void>{
     private documentStore: DocumentStore,
     private messageWaitTime: number,
     private maxBatchSizeBytes: number,
-    private maxBatchTimeSeconds: number
+    private maxBatchTimeSeconds: number,
+    private transactionTimeoutSeconds: number,
+    private transactionConfirmationThreshold: number,
+    private gasPriceMultiplier: number
   ){}
 
   async start(){
@@ -55,7 +59,10 @@ class ProcessDocuments implements Task<void>{
     await new IssueBatch(
       this.wallet,
       this.documentStore,
-      batch
+      batch,
+      this.gasPriceMultiplier,
+      this.transactionConfirmationThreshold,
+      this.transactionTimeoutSeconds
     ).start()
     logger.debug('SaveIssuedBatch');
     await new SaveIssuedBatch(
