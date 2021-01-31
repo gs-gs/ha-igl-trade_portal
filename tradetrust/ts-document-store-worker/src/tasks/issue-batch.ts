@@ -1,5 +1,5 @@
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
-import { Wallet } from 'ethers';
+import { Wallet, utils, BigNumber} from 'ethers';
 import { logger } from '../logger';
 import { Batch } from './data';
 import { Task } from './interfaces';
@@ -28,6 +28,11 @@ class IssueBatch implements Task<void>{
     return e.message.includes('Only hashes that have not been issued can be issued');
   }
 
+  async calculateGasPrice(): Promise<BigNumber>{
+    const gasPriceWei = await this.wallet.getGasPrice();
+    const gasPriceEtherMultiplied = parseFloat(utils.formatEther(gasPriceWei)) * this.currentGasPriceMultiplier;
+    return utils.parseEther(gasPriceEtherMultiplied.toFixed(18));
+  }
 
   async waitForTransaction(hash: string): Promise<boolean>{
     logger.debug('waitForTransaction');
@@ -49,7 +54,7 @@ class IssueBatch implements Task<void>{
   async createIssueDocumentTransaction(merkleRoot: string){
     const transaction = await this.documentStore.populateTransaction.issue(merkleRoot);
     transaction.gasLimit = await this.wallet.estimateGas(transaction);
-    transaction.gasPrice = (await this.wallet.getGasPrice()).mul(this.currentGasPriceMultiplier);
+    transaction.gasPrice = await this.calculateGasPrice();
     transaction.nonce = await this.wallet.getTransactionCount('latest');
     return transaction;
   }
@@ -95,6 +100,7 @@ class IssueBatch implements Task<void>{
       this.currentGasPriceMultiplier *= this.gasPriceMultiplier;
       logger.info('Current gasPriceMultiplier = %s', this.currentGasPriceMultiplier);
     }
+    logger.info('The batch issued successfully');
   }
 }
 

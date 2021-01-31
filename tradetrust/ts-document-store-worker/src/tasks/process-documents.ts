@@ -1,7 +1,6 @@
 import { DocumentStore } from "@govtechsg/document-store/src/contracts/DocumentStore";
 import { Wallet } from "ethers";
 import {
-  Keys,
   BatchDocuments,
   IssuedDocuments,
   UnprocessedDocuments,
@@ -34,6 +33,7 @@ class ProcessDocuments implements Task<void>{
   ){}
 
   async start(){
+    logger.debug('start')
     while(true){
       await this.next();
     }
@@ -41,8 +41,9 @@ class ProcessDocuments implements Task<void>{
 
   async next(){
     logger.debug('next');
-    logger.debug('ComposeBatch');
     const batch = new Batch();
+    logger.info('A new batch created');
+    logger.info('ComposeBatch task started');
     await new ComposeBatch(
       this.unprocessedDocuments,
       this.batchDocuments,
@@ -56,11 +57,12 @@ class ProcessDocuments implements Task<void>{
     ).start()
     logger.debug('batch.isEmpty')
     if(batch.isEmpty()){
+      logger.info('The batch is empty, skipping further steps');
       return;
     }
-    logger.debug('WrapBatch');
+    logger.info('WrapBatch task started');
     new WrapBatch(batch).start()
-    logger.debug('IssueBatch');
+    logger.info('IssueBatch task started');
     await new IssueBatch(
       this.wallet,
       this.documentStore,
@@ -69,7 +71,7 @@ class ProcessDocuments implements Task<void>{
       this.transactionConfirmationThreshold,
       this.transactionTimeoutSeconds
     ).start()
-    logger.debug('SaveIssuedBatch');
+    logger.info('SaveIssuedBatch task started');
     await new SaveIssuedBatch(
       this.issuedDocuments,
       this.batchDocuments,
