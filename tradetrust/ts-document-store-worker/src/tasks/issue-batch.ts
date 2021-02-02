@@ -8,6 +8,9 @@ class IssueBatch implements Task<void>{
 
   private pendingTransaction: any;
   private gasPriceLimit: BigNumber;
+  private currentGasPriceMutiplier!: number;
+  private currentGasPrice!: BigNumber;
+  private lastGasPrice!: BigNumber;
 
   constructor(
     private wallet: Wallet,
@@ -25,12 +28,17 @@ class IssueBatch implements Task<void>{
 
   isTransactionTimeoutError(e: any){
     logger.debug('isTransactionTimeoutError');
-    return e.message.startsWith('timeout exceeded');
+    return e.message.includes('timeout exceeded');
   }
 
   isHashDuplicationError(e: any){
     logger.debug('isHashDuplicationError');
     return e.message.includes('Only hashes that have not been issued can be issued');
+  }
+
+  isUnderpricedTransactionError(e: any){
+    logger.debug('isUnderpricedTransactionError');
+    return e.message.includes('replacement transaction underpriced');
   }
 
   async calculateGasPrice(gasPriceMultiplier: number): Promise<BigNumber>{
@@ -42,6 +50,12 @@ class IssueBatch implements Task<void>{
 
   async waitForTransaction(hash: string): Promise<boolean>{
     logger.debug('waitForTransaction');
+    logger.info(
+      'Waiting for transaction to complete, hash:"%s", confirmations: %s, timeout: %s',
+      hash,
+      this.transactionConfirmationThreshold,
+      this.transactionTimeoutSeconds
+    )
     try{
       const transactionReceipt = await this.wallet.provider.waitForTransaction(
         hash,
@@ -87,16 +101,14 @@ class IssueBatch implements Task<void>{
       // before we consider it successful
       if(this.isHashDuplicationError(e)){
         logger.info('Previos transaction completed succesfully, can not create a new one');
-      }else{
+      } else if(this.isUnderpricedTransactionError(e)){
+        logger.info('Underpriced transaction error received, ignoring the transaction');
+        return false;
+      }
+      else{
         throw e;
       }
     }
-    logger.info(
-      'Waiting for transaction to complete, hash:"%s", confirmations: %s, timeout: %s',
-      this.pendingTransaction.hash,
-      this.transactionConfirmationThreshold,
-      this.transactionTimeoutSeconds
-    )
     return await this.waitForTransaction(this.pendingTransaction.hash);
   }
 
@@ -104,40 +116,55 @@ class IssueBatch implements Task<void>{
 
   async tryToIssueWithGasPriceAdjustment(){
     logger.debug('tryToIssueWithGasPriceAdjustment');
-    let currentGasPriceMutiplier = 1;
-    let currentGasPrice = await this.calculateGasPrice(currentGasPriceMutiplier);
+    // these values are in the state to restore after a critical failure
+    this.currentGasPriceMutiplier = this.currentGasPriceMutiplier??1;
+    this.currentGasPrice = this.currentGasPrice??(await this.calculateGasPrice(this.currentGasPriceMutiplier));
+    this.lastGasPrice = this.lastGasPrice??this.currentGasPrice;
+    logger.info('Current gas price multiplier %s', this.currentGasPriceMutiplier);
+    logger.info('Current gas price %s gwei', utils.formatUnits(this.currentGasPrice, 'gwei'));
+    logger.info('Last gas price %s gwei', utils.formatUnits(this.lastGasPrice, 'gwei'));
     while(true){
       let issued = false;
-      if(currentGasPrice.gte(this.gasPriceLimit)){
+      if(this.currentGasPrice.gte(this.gasPriceLimit)){
         logger.info(
           'Current gas price[%s gwei] >= gasLimit[%s gwei]',
-          utils.formatUnits(currentGasPrice, 'gwei'),
+          utils.formatUnits(this.currentGasPrice, 'gwei'),
           utils.formatUnits(this.gasPriceLimit, 'gwei')
         );
         // sending transaction without a sufficiently higher gas price will cause an error
-        if(!this.pendingTransaction){
-          logger.info('No transaction is sent yet, sending the first one');
+        if(!this.pendingTransaction || this.lastGasPrice.lt(this.gasPriceLimit)){
+          logger.info(
+            'No transaction is sent yet, or last gas price[%s gwei] < gas price limit[%s gwei]',
+            utils.formatUnits(this.lastGasPrice, 'gwei'),
+            utils.formatUnits(this.gasPriceLimit, 'gwei')
+          );
           issued = await this.tryIssueAndWait(this.gasPriceLimit);
+          // to prevent further occurences of UnderpricedTransactionError
+          this.lastGasPrice = this.gasPriceLimit;
         }else{
-          logger.info('Waiting for previos transaction to complete');
-          issued = await this.waitForTransaction(this.pendingTransaction);
+          issued = await this.waitForTransaction(this.pendingTransaction.hash);
         }
       }else{
-        logger.info('Sending transaction. Gas price: %s gwei', utils.formatUnits(currentGasPrice, 'gwei'));
-        issued = await this.tryIssueAndWait(currentGasPrice);
+        logger.info('Sending transaction. Gas price: %s gwei', utils.formatUnits(this.currentGasPrice, 'gwei'));
+        issued = await this.tryIssueAndWait(this.currentGasPrice);
       }
       if(issued){
         logger.info('Transaction confirmed');
         return true;
       }
       logger.info('Transaction time out');
-      if(currentGasPrice.lt(this.gasPriceLimit)){
-        currentGasPriceMutiplier *= this.gasPriceMultiplier;
-        logger.info('Increasing gas price multiplier: %s', currentGasPriceMutiplier);
-        currentGasPrice = await this.calculateGasPrice(currentGasPriceMutiplier);
-        logger.info('Calculating new gas price: %s gwei', utils.formatUnits(currentGasPrice, 'gwei'));
+      if(this.currentGasPrice.lt(this.gasPriceLimit)){
+        this.lastGasPrice = this.currentGasPrice;
+        this.currentGasPriceMutiplier *= this.gasPriceMultiplier;
+        logger.info('Increasing gas price multiplier: %s', this.currentGasPriceMutiplier);
+        this.currentGasPrice = await this.calculateGasPrice(this.currentGasPriceMutiplier);
+        logger.info('Calculating new gas price: %s gwei', utils.formatUnits(this.currentGasPrice, 'gwei'));
       }else{
-        logger.info('Gas price already reached the maximum allowed value[%s gwei], skipping gas price increase');
+        logger.info(
+          'Gas price already reached the maximum allowed value[%s/%s gwei], skipping gas price increase',
+          utils.formatUnits(this.currentGasPrice, 'gwei'),
+          utils.formatUnits(this.gasPriceLimit, 'gwei')
+        );
       }
     }
   }
@@ -145,28 +172,29 @@ class IssueBatch implements Task<void>{
 
   async tryToIssueRepeatedlyWithGasPriceAdjustment(){
     logger.debug('tryToIssueRepeatedlyWithGasPriceAdjustment');
-      let attempt = 0;
-      while(true){
-        try{
-          logger.info('Trying to issue the batch, attempt %s/%s', attempt + 1, this.maxAttempts);
-          await this.tryToIssueWithGasPriceAdjustment();
-          logger.info('The batch issued succesfully');
-          this.batch.issued = true;
+    let attempt = 0;
+    while(true){
+      try{
+        logger.info('Trying to issue the batch, attempt %s/%s', attempt + 1, this.maxAttempts);
+        await this.tryToIssueWithGasPriceAdjustment();
+        logger.info('The batch issued succesfully');
+        this.batch.issued = true;
+        return;
+      }catch(e){
+        // if process fails during gas price increase it can still pick up using this.pendingTransaction property
+        logger.error('An unexpected error occured');
+        logger.error(e);
+        attempt+=1;
+        if(attempt < this.maxAttempts){
+          logger.info('Waiting %s seconds', this.attemptsIntervalSeconds);
+          await new Promise(resolve=>setTimeout(resolve, this.attemptsIntervalSeconds * 1000));
+        }else{
+          logger.error('Ran out of attempts, issuing failed');
+          this.batch.issued = false;
           return;
-        }catch(e){
-          logger.error('An unexpected error occured');
-          logger.error(e);
-          if(attempt < this.maxAttempts){
-            attempt+=1;
-            logger.info('Waiting %s seconds', this.attemptsIntervalSeconds);
-            await new Promise(resolve=>setTimeout(resolve, this.attemptsIntervalSeconds * 1000));
-          }else{
-            logger.error('Ran out of attempts, issuing failed');
-            this.batch.issued = false;
-            return;
-          }
         }
       }
+    }
   }
 
   async next(){
