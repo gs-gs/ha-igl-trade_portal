@@ -16,7 +16,7 @@ import { logger } from '../logger';
 import { Batch } from './data';
 import { Task } from './interfaces';
 
-class ComposeBatch implements Task<Promise<Batch>>{
+class ComposeBatch implements Task<void>{
 
   private maxBatchTimeMs: number;
   private startTimeMs!: number;
@@ -59,57 +59,6 @@ class ComposeBatch implements Task<Promise<Batch>>{
     return event;
   }
 
-  getDocumentStoreAddress(document: any, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
-    logger.debug('getDocumentStoreAddress');
-    if(version === SchemaId.v2){
-      return document?.issuers?.[0]?.documentStore;
-    }else if(version === SchemaId.v3){
-      return document?.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.proof.value: undefined;
-    }
-  }
-
-  getDocumentVersion(document: any): SchemaId.v2|SchemaId.v3|undefined{
-    logger.debug('getDocumentVersion');
-    switch(document.version){
-      case SchemaId.v2:
-      case OPEN_ATTESTATION_VERSION_ID_V2_SHORT:
-        return SchemaId.v2;
-      case SchemaId.v3:
-      case OPEN_ATTESTATION_VERSION_ID_V3_SHORT:
-        return SchemaId.v3;
-    }
-  }
-
-  verifyDocumentData(document: any): boolean{
-    logger.debug('verifyDocumentData');
-    try{
-      wrapDocument(document);
-    }catch(e){
-      if(!!e.validationErrors){
-        logger.warn('Unknown document schema', );
-        logger.warn(e.validationErrors);
-        return false;
-      }
-      throw e;
-    }
-    const version = this.getDocumentVersion(document);
-    const documentStoreAddress = this.getDocumentStoreAddress(document, version);
-    if(!version){
-      logger.warn('Unknown document version');
-    }
-    if(!documentStoreAddress){
-      logger.warn('Document store address not found');
-    }
-    if(documentStoreAddress!==this.documentStoreAddress){
-      logger.warn(
-          'Unexpected document store address, got: "%s" expected: %s',
-          documentStoreAddress, this.documentStoreAddress
-      );
-    }
-    return version!==null && documentStoreAddress === this.documentStoreAddress
-  }
-
-
   async getDocumentDataFromEvent(event: any){
     logger.debug('getDocumentDataFromEvent');
     const s3Object = event.Body.Records[0].s3.object;
@@ -135,6 +84,59 @@ class ComposeBatch implements Task<Promise<Batch>>{
     };
   }
 
+  verifyDocumentData(document: any): boolean{
+    logger.debug('verifyDocumentData');
+    try{
+      wrapDocument(document);
+    }catch(e){
+      if(!!e.validationErrors){
+        logger.warn('Unknown document schema', );
+        logger.warn(e.validationErrors);
+        return false;
+      }
+      throw e;
+    }
+    const version = this.getDocumentVersion(document);
+    const documentStoreAddress = this.getDocumentStoreAddress(document, version);
+    /* istanbul ignore next */
+    if(!version){
+      logger.warn('Unknown document version');
+    }
+    /* istanbul ignore next */
+    if(!documentStoreAddress){
+      logger.warn('Document store address not found');
+    }
+    /* istanbul ignore next */
+    if(documentStoreAddress!==this.documentStoreAddress){
+      logger.warn(
+          'Unexpected document store address, got: "%s" expected: %s',
+          documentStoreAddress, this.documentStoreAddress
+      );
+    }
+    return version!==null && documentStoreAddress === this.documentStoreAddress
+  }
+
+  getDocumentStoreAddress(document: any, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
+    logger.debug('getDocumentStoreAddress');
+    if(version === SchemaId.v2){
+      return document?.issuers?.[0]?.documentStore;
+    }else if(version === SchemaId.v3){
+      return document?.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.proof.value: undefined;
+    }
+  }
+
+  getDocumentVersion(document: any): SchemaId.v2|SchemaId.v3|undefined{
+    logger.debug('getDocumentVersion');
+    switch(document.version){
+      case SchemaId.v2:
+      case OPEN_ATTESTATION_VERSION_ID_V2_SHORT:
+        return SchemaId.v2;
+      case SchemaId.v3:
+      case OPEN_ATTESTATION_VERSION_ID_V3_SHORT:
+        return SchemaId.v3;
+    }
+  }
+
   async addDocumentToBatch(document: any){
     logger.debug('addDocumentToBatch')
     await this.batchDocuments.put({Key: document.key, Body: document.body.string});
@@ -145,14 +147,7 @@ class ComposeBatch implements Task<Promise<Batch>>{
     });
   }
 
-  async next(){
-    logger.debug('next');
-    // get the ObjectCreated:Put event from the unprocessed bucket
-    const event = await this.getNextDocumentPutEvent();
-    if(!event){
-      return;
-    }
-    logger.info('Document PUT event found, trying to add the document to batch...');
+  async processDocumentPutEvent(event: any){
     const document = await this.getDocumentDataFromEvent(event);
     if(document !== undefined){
       logger.info('The document data downloaded succesfully, document key: %s', document?.key)
@@ -165,10 +160,8 @@ class ComposeBatch implements Task<Promise<Batch>>{
     }else{
       logger.warn('Document not found by the provided key, skipping further operations');
     }
-    // deleting the event after it processed
-    await this.unprocessedDocumentsQueue.delete({ReceiptHandle: event.ReceiptHandle});
-    logger.info('The document event processed succesfully, deleting it');
   }
+
 
   async restoreUnfinishedBatch(batch: Batch){
     logger.debug('restoreUnfinishedBatch');
@@ -184,8 +177,20 @@ class ComposeBatch implements Task<Promise<Batch>>{
     }while(ContinuationToken && !this.tryToCompleteBatch(batch));
   }
 
-  async start(): Promise<Batch>{
-    logger.debug('start');
+
+  async tryToRestoreUnfinishedBatch(){
+    logger.debug('tryToRestoreUnfinishedBatch');
+    logger.info('Checking a batch backup bucket...');
+    if(!await this.batchDocuments.isEmpty()){
+      logger.info('The batch backup bucket is not empty, restoring previous batch');
+      this.restoreUnfinishedBatch(this.batch);
+    }else{
+      logger.info('The batch backup bucket is empty, continuing normally');
+    }
+  }
+
+  async tryToPrepareBatchForComposition(){
+    logger.debug('tryToPrepareBatchForComposition');
     if(!this.batch.isEmpty()){
       throw new Error('Can not use non empty batches in compose task!');
     }
@@ -194,19 +199,69 @@ class ComposeBatch implements Task<Promise<Batch>>{
       this.maxBatchSizeBytes, this.maxBatchTimeMs
     );
     this.startTimeMs = Date.now();
+    this.batch.composed = false;
+    this.batch.wrapped = false;
+    this.batch.issued = false;
+    this.batch.saved = false;
     logger.info('Start time %s', new Date(this.startTimeMs));
-    logger.info('Checking a batch backup bucket...');
-    if(!await this.batchDocuments.isEmpty()){
-      logger.info('The batch backup bucket is not empty, restoring previous batch');
-      this.restoreUnfinishedBatch(this.batch);
-    }else{
-      logger.info('The batch backup bucket is empty, continuing normally');
+  }
+
+  async next(){
+    logger.debug('next');
+    // get the ObjectCreated:Put event from the unprocessed bucket
+    let event: any| undefined;
+    try{
+      event = await this.getNextDocumentPutEvent();
+    }catch(e){
+      logger.error('An unexpected error happened during an attemp to get and parse Document PUT event');
+      logger.error(e);
+      return;
     }
+    if(!event){
+      return;
+    }
+    logger.info('Document PUT event found, trying to add the document to batch...');
+    // if any unexpected error will happen during this stage, the event will no be deleted
+    // and another attempt to add a document to the batch will be made until the document is not in a batch
+    // or until the event is not put into a dead letters queue
+    try{
+      await this.processDocumentPutEvent(event);
+    }catch(e){
+      logger.error('An unexpected error happened during Document PUT event processing, event will not be deleted');
+      logger.error(e);
+      return;
+    }
+    // if everything is processed correctly, the event will point to a non-existent document, which will cause a KeyError
+    // that will be handled gracefully
+    try{
+      await this.unprocessedDocumentsQueue.delete({ReceiptHandle: event.ReceiptHandle});
+      logger.info('The document event processed succesfully, deleting it');
+    }catch(e){
+      logger.error('An unexpected error happend during an attempt to delete processed event');
+      logger.error(e);
+    }
+  }
+
+  async start(){
+    logger.debug('start');
+
+    await this.tryToPrepareBatchForComposition();
+
+    try{
+      await this.tryToRestoreUnfinishedBatch();
+    }catch(e){
+      logger.error('An unexpected error happened during batch restoration,  administrative actions required');
+      logger.error(e);
+      return;
+    }
+
     while(!this.tryToCompleteBatch(this.batch)){
       await this.next();
     }
-    logger.info('The batch is complete');
-    return this.batch;
+
+    logger.info('The batch is composed');
+    this.batch.composed = true;
+    return;
   }
 }
 

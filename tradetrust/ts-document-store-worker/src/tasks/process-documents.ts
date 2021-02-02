@@ -32,6 +32,7 @@ class ProcessDocuments implements Task<void>{
     private gasPriceMultiplier: number
   ){}
 
+  /* istanbul ignore next */
   async start(){
     logger.debug('start')
     while(true){
@@ -56,12 +57,24 @@ class ProcessDocuments implements Task<void>{
       batch
     ).start()
     logger.debug('batch.isEmpty')
+    if(!batch.composed){
+      logger.error('ComposeBatch task failed');
+      return;
+    }
     if(batch.isEmpty()){
       logger.info('The batch is empty, skipping further steps');
       return;
     }
+
+
     logger.info('WrapBatch task started');
     new WrapBatch(batch).start()
+    if(!batch.wrapped){
+      logger.error('WrapBatch task failed');
+      return;
+    }
+
+
     logger.info('IssueBatch task started');
     await new IssueBatch(
       this.wallet,
@@ -71,12 +84,22 @@ class ProcessDocuments implements Task<void>{
       this.transactionConfirmationThreshold,
       this.transactionTimeoutSeconds
     ).start()
+    if(!batch.issued){
+      logger.error('WrapBatch task failed');
+      return;
+    }
+
+
     logger.info('SaveIssuedBatch task started');
     await new SaveIssuedBatch(
       this.issuedDocuments,
       this.batchDocuments,
       batch
     ).start()
+    if(!batch.saved){
+      logger.error('SaveIssuedBatch task failed');
+      return;
+    }
   }
 }
 

@@ -5,6 +5,10 @@ class Batch{
   public unwrappedDocuments: Map<string, UnwrappedDocument>;
   public wrappedDocuments: Map<string, any>;
   public merkleRoot: string = '';
+  public composed: boolean = false;
+  public wrapped: boolean = false;
+  public issued: boolean = false;
+  public saved: boolean = false;
 
   constructor(){
     this.unwrappedDocuments = new Map<string, UnwrappedDocument>();
