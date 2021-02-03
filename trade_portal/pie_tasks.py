@@ -6,7 +6,7 @@ from pie_docker_compose import *
 
 
 ROOT_DIR = Path('.').absolute()
-DOCKER_COMPOSE = DockerCompose(ROOT_DIR/'docker-compose.yml')
+DOCKER_COMPOSE = DockerCompose([ROOT_DIR/'docker-compose.yml',ROOT_DIR/'demo-au.yml'])
 
 
 @task
@@ -36,7 +36,7 @@ def build_node():
 
 @task
 def start(background=False):
-    DOCKER_COMPOSE.cmd('up', options=['-d' if background else '', 'django'])
+    DOCKER_COMPOSE.cmd('up', options=['-d' if background else '', 'django celerybeat celeryworker'])
 # COMPOSE_PROJECT_NAME=trau docker-compose -f docker-compose.yml -f demo-au.yml up
 
 
