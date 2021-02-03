@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --build tsconfig.prod.json",
     "start": "tsc --build tsconfig.prod.json && node dist/src/index.js | pino-pretty",
-    "test": "jest --detectOpenHandles -i | pino-pretty"
+    "test": "jest --detectOpenHandles -i --collect-coverage | pino-pretty"
   },
   "author": "",
   "license": "ISC",
