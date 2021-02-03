@@ -1,5 +1,5 @@
-import { logger } from 'src/logger';
-import { BatchDocuments, IssuedDocuments } from "src/repos";
+import { logger } from '../logger';
+import { BatchDocuments, IssuedDocuments } from "../repos";
 import { Batch } from './data';
 import { Task } from './interfaces';
 

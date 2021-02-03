@@ -118,13 +118,25 @@ services:
       ISSUED_BUCKET_NAME: issued
       BATCH_BUCKET_NAME: batch
 
+      # integer value >= 1 and <= 20
+      # 20 is an upper limit that aws sdk has
       MESSAGE_WAIT_TIME: 10
       MESSAGE_VISIBILITY_TIMEOUT: 60
       TRANSACTION_TIMEOUT_SECONDS: 600
       TRANSACTION_CONFIRMATION_THRESHOLD: 1
 
+      # integer only value
+      GAS_PRICE_LIMIT_GWEI: 200
+      # positive float value >= 1.1
       GAS_PRICE_MULTIPLIER: 1.2
       # 100 MB
-      MAX_BATCH_SIZE_BYTES: 104857600
+      BATCH_SIZE_BYTES: 104857600
       # 10 minutes
-      MAX_BATCH_TIME_SECONDS: 600
+      BATCH_TIME_SECONDS: 600
+
+      # number of attempts and interval between them in case of an unexpected error in SaveIssuedBatch task
+      SAVE_ATTEMPTS: 10
+      SAVE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in IssueBatch task
+      ISSUE_ATTEMPTS: 10
+      ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60

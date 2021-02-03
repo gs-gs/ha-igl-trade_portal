@@ -5,8 +5,8 @@ import {
   IssuedDocuments,
   UnprocessedDocuments,
   UnprocessedDocumentsQueue
-} from "src/repos";
-import { logger } from 'src/logger';
+} from "../repos";
+import { logger } from '../logger';
 import ComposeBatch from "./compose-batch";
 import { Batch } from './data';
 import { Task } from "./interfaces";
@@ -32,7 +32,7 @@ interface IProcessDocumentsSettings{
   issueAttempts: number
   issueAttemptsIntervalSeconds: number,
   saveAttempts: number,
-  saveAttemptsInterval: number
+  saveAttemptsIntervalSeconds: number
 }
 
 
@@ -105,7 +105,7 @@ class ProcessDocuments implements Task<void>{
       issuedDocuments: this.settings.issuedDocuments,
       batchDocuments: this.settings.batchDocuments,
       attempts: this.settings.saveAttempts,
-      attemptsIntervalSeconds: this.settings.saveAttemptsInterval,
+      attemptsIntervalSeconds: this.settings.saveAttemptsIntervalSeconds,
       batch
     }).start()
     if(!batch.saved){

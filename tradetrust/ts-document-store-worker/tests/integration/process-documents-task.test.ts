@@ -67,7 +67,7 @@ describe('Test', ()=>{
       issueAttempts: 1,
       issueAttemptsIntervalSeconds: 1,
       saveAttempts: 1,
-      saveAttemptsInterval: 1
+      saveAttemptsIntervalSeconds: 1
     });
 
     await processDocuments.next();
@@ -113,7 +113,7 @@ describe('Test', ()=>{
       issueAttempts: 1,
       issueAttemptsIntervalSeconds: 1,
       saveAttempts: 1,
-      saveAttemptsInterval: 1
+      saveAttemptsIntervalSeconds: 1
     });
 
     await processDocuments.next();

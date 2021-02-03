@@ -1,34 +1,39 @@
-import { logger } from 'src/logger';
-import config from 'src/config';
+import { logger } from './logger';
+import config from './config';
 import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue,
   BatchDocuments,
   IssuedDocuments
-} from 'src/repos';
+} from './repos';
 import {
   connectWallet,
   connectDocumentStore,
-} from 'src/document-store';
-import { ProcessDocuments } from 'src/tasks';
+} from './document-store';
+import { ProcessDocuments } from './tasks';
 
 async function main(){
   const wallet = await connectWallet();
-  await new ProcessDocuments(
-    new UnprocessedDocuments(),
-    new BatchDocuments(),
-    new IssuedDocuments(),
-    new UnprocessedDocumentsQueue(),
-    wallet,
-    await connectDocumentStore(wallet),
-    config.MESSAGE_WAIT_TIME,
-    config.MESSAGE_VISIBILITY_TIMEOUT,
-    config.MAX_BATCH_SIZE_BYTES,
-    config.MAX_BATCH_TIME_SECONDS,
-    config.TRANSACTION_TIMEOUT_SECONDS,
-    config.TRANSACTION_CONFIRMATION_THRESHOLD,
-    config.GAS_PRICE_MULTIPLIER
-  ).start();
+  await new ProcessDocuments({
+    unprocessedDocuments: new UnprocessedDocuments(),
+    batchDocuments: new BatchDocuments(),
+    issuedDocuments: new IssuedDocuments(),
+    unprocessedDocumentsQueue: new UnprocessedDocumentsQueue(),
+    wallet: wallet,
+    documentStore: await connectDocumentStore(wallet),
+    messageWaitTime: config.MESSAGE_WAIT_TIME,
+    messageVisibilityTimeout: config.MESSAGE_VISIBILITY_TIMEOUT,
+    batchSizeBytes: config.BATCH_SIZE_BYTES,
+    batchTimeSeconds: config.BATCH_TIME_SECONDS,
+    transactionTimeoutSeconds: config.TRANSACTION_TIMEOUT_SECONDS,
+    transactionConfirmationThreshold: config.TRANSACTION_CONFIRMATION_THRESHOLD,
+    gasPriceMultiplier: config.GAS_PRICE_MULTIPLIER,
+    gasPriceLimitGwei: config.GAS_PRICE_LIMIT_GWEI,
+    issueAttempts: config.ISSUE_ATTEMPTS,
+    issueAttemptsIntervalSeconds: config.ISSUE_ATTEMPTS_INTERVAL_SECONDS,
+    saveAttempts: config.SAVE_ATTEMPTS,
+    saveAttemptsIntervalSeconds: config.SAVE_ATTEMPTS_INTERVAL_SECONDS
+  }).start();
 }
 
 main().catch(logger.error);

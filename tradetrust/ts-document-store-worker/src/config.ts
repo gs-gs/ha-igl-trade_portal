@@ -30,9 +30,16 @@ interface ConfigInterface{
   readonly TRANSACTION_CONFIRMATION_THRESHOLD: number,
 
   readonly GAS_PRICE_MULTIPLIER: number,
+  readonly GAS_PRICE_LIMIT_GWEI: number,
 
-  readonly MAX_BATCH_SIZE_BYTES: number,
-  readonly MAX_BATCH_TIME_SECONDS: number
+  readonly BATCH_SIZE_BYTES: number,
+  readonly BATCH_TIME_SECONDS: number,
+
+  readonly ISSUE_ATTEMPTS: number,
+  readonly ISSUE_ATTEMPTS_INTERVAL_SECONDS: number,
+
+  readonly SAVE_ATTEMPTS: number,
+  readonly SAVE_ATTEMPTS_INTERVAL_SECONDS: number
 }
 
 
@@ -54,10 +61,17 @@ const config:ConfigInterface = {
   TRANSACTION_CONFIRMATION_THRESHOLD: parseInt(process.env.TRANSACTION_CONFIRMATION_THRESHOLD??'12'),
   // 1.2
   GAS_PRICE_MULTIPLIER: parseFloat(process.env.GAS_PRICE_MULTIPLIER??'1.2'),
+  GAS_PRICE_LIMIT_GWEI: parseInt(process.env.GAS_PRICE_LIMIT_GWEI??'200'),
   // default 100 MB
-  MAX_BATCH_SIZE_BYTES: parseInt(process.env.MAX_BATCH_SIZE_BYTES??'104857600'),
+  BATCH_SIZE_BYTES: parseInt(process.env.MAX_BATCH_SIZE_BYTES??'104857600'),
   // 10 minutes
-  MAX_BATCH_TIME_SECONDS: parseInt(process.env.MAX_BATCH_TIME_SECONDS??'600'),
+  BATCH_TIME_SECONDS: parseInt(process.env.MAX_BATCH_TIME_SECONDS??'600'),
+
+  SAVE_ATTEMPTS: parseInt(process.env.SAVE_ATTEMPTS??'10'),
+  SAVE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.SAVE_ATTEMPTS_INTERVAL_SECONDS??'60'),
+
+  ISSUE_ATTEMPTS: parseInt(process.env.ISSUE_ATTEMPTS??'10'),
+  ISSUE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.ISSUE_ATTEMPTS_INTERVAL_SECONDS??'60')
 }
 
 export default config;
