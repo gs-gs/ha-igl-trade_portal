@@ -5,7 +5,14 @@ import { Task } from './interfaces';
 
 
 class WrapBatch implements Task<void>{
-  constructor(private batch: Batch){}
+  private batch: Batch;
+  constructor({
+    batch
+  }:{
+    batch: Batch
+  }){
+    this.batch = batch;
+  }
 
   prepareBatchUnwrappedDocumentsData(){
     logger.debug('prepareBatchUnwrappedDocumentsData');

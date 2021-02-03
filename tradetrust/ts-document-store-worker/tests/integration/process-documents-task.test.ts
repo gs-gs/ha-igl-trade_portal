@@ -49,21 +49,26 @@ describe('Test', ()=>{
       maxBatchSizeBytes += documentS3Object.ContentLength!;
     }
 
-    const processDocuments = new ProcessDocuments(
+    const processDocuments = new ProcessDocuments({
       unprocessedDocuments,
       batchDocuments,
       issuedDocuments,
       unprocessedDocumentsQueue,
       wallet,
       documentStore,
-      1,
-      60,
-      maxBatchSizeBytes,
-      60,
-      10,
-      1,
-      1.2
-    );
+      gasPriceLimitGwei: 200,
+      gasPriceMultiplier: 1.2,
+      batchSizeBytes: maxBatchSizeBytes,
+      batchTimeSeconds: 10,
+      messageWaitTime: 1,
+      messageVisibilityTimeout: 60,
+      transactionTimeoutSeconds: 180,
+      transactionConfirmationThreshold: 1,
+      issueAttempts: 1,
+      issueAttemptsIntervalSeconds: 1,
+      saveAttempts: 1,
+      saveAttemptsInterval: 1
+    });
 
     await processDocuments.next();
 
@@ -90,21 +95,26 @@ describe('Test', ()=>{
       maxBatchSizeBytes += documentS3Object.ContentLength!;
     }
 
-    const processDocuments = new ProcessDocuments(
+    const processDocuments = new ProcessDocuments({
       unprocessedDocuments,
       batchDocuments,
       issuedDocuments,
       unprocessedDocumentsQueue,
       wallet,
       documentStore,
-      1,
-      60,
-      maxBatchSizeBytes * 2,
-      10,
-      10,
-      1,
-      1.2
-    );
+      gasPriceLimitGwei: 200,
+      gasPriceMultiplier: 1.2,
+      batchSizeBytes: maxBatchSizeBytes * 2,
+      batchTimeSeconds: 5,
+      messageWaitTime: 1,
+      messageVisibilityTimeout: 60,
+      transactionTimeoutSeconds: 180,
+      transactionConfirmationThreshold: 1,
+      issueAttempts: 1,
+      issueAttemptsIntervalSeconds: 1,
+      saveAttempts: 1,
+      saveAttemptsInterval: 1
+    });
 
     await processDocuments.next();
 

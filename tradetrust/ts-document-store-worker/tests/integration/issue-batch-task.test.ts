@@ -20,7 +20,17 @@ describe('IssueBatch Task', ()=>{
     const document = wrapDocument(documentV2({body: 'random document'}));
     const batch = new Batch();
     batch.merkleRoot = document.signature.merkleRoot;
-    const issueBatch = new IssueBatch(wallet, documentStore, batch, 1.2, 1, 10);
+    const issueBatch = new IssueBatch({
+      wallet,
+      documentStore,
+      batch,
+      gasPriceLimitGwei: 200,
+      gasPriceMultiplier: 1.2,
+      transactionConfirmationThreshold: 1,
+      transactionTimeoutSeconds: 180,
+      attempts: 1,
+      attemptsIntervalSeconds: 1
+    });
     await issueBatch.start();
     const isIssued = await documentStore.isIssued('0x'+batch.merkleRoot);
     expect(isIssued).toBe(true);

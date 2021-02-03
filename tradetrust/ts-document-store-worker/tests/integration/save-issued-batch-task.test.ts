@@ -33,7 +33,13 @@ describe('SaveIssuedBatch Task', ()=>{
     for(let documentIndex = 0; documentIndex < wrappedDocumentsKeys.length; documentIndex++){
       batch.wrappedDocuments.set(wrappedDocumentsKeys[documentIndex], wrappedDocuments[documentIndex]);
     }
-    const saveIssuedBatch = new SaveIssuedBatch(issuedDocuments, batchDocuments, batch);
+    const saveIssuedBatch = new SaveIssuedBatch({
+      issuedDocuments,
+      batchDocuments,
+      batch,
+      attempts: 1,
+      attemptsIntervalSeconds: 1
+    });
     await saveIssuedBatch.start();
     for(let [key, body] of batch.wrappedDocuments){
         const issuedDocumentS3Object = await issuedDocuments.get({Key: key});

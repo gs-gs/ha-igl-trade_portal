@@ -57,7 +57,11 @@ describe('IssueBatch tast unit tests', ()=>{
 
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new IssueBatch(<Wallet><unknown>wallet, <DocumentStore><unknown>documentStore, batch);
+    const issueBatch = new IssueBatch({
+      wallet: <Wallet><unknown>wallet,
+      documentStore: <DocumentStore><unknown>documentStore,
+      batch
+    });
     await issueBatch.start();
     // first time transaction times out, second time is successful
     // second attempt to create a new transaction fails because
@@ -90,7 +94,11 @@ describe('IssueBatch tast unit tests', ()=>{
 
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new IssueBatch(<Wallet><unknown>wallet, <DocumentStore><unknown>documentStore, batch);
+    const issueBatch = new IssueBatch({
+      wallet: <Wallet><unknown>wallet,
+      documentStore: <DocumentStore><unknown>documentStore,
+      batch
+    });
     await issueBatch.start();
     // first time transaction times out, second time is successful
     expect(wallet.provider.waitForTransaction.mock.calls.length).toBe(2);
@@ -117,12 +125,13 @@ describe('IssueBatch tast unit tests', ()=>{
     )
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new IssueBatch(
-      <Wallet><unknown>wallet,
-      <DocumentStore><unknown>documentStore,
+    const issueBatch = new IssueBatch({
+      wallet: <Wallet><unknown>wallet,
+      documentStore: <DocumentStore><unknown>documentStore,
       batch,
-      GAS_PRICE_MULTIPLIER
-    );
+      gasPriceMultiplier: GAS_PRICE_MULTIPLIER
+    });
+
     await issueBatch.start();
     // only fourth transaction passes, gas price multiplier = 1.2 ^ 3
     expect(wallet.provider.waitForTransaction.mock.calls.length).toBe(4);
@@ -156,17 +165,17 @@ describe('IssueBatch tast unit tests', ()=>{
     batch.merkleRoot = '0000000000000000000000000000000';
     const gasPriceMultiplier = 1.3;
     const gasPriceLimit = 40;
-    const issueBatch = new IssueBatch(
-      <Wallet><unknown>wallet,
-      <DocumentStore><unknown>documentStore,
+    const issueBatch = new IssueBatch({
+      wallet: <Wallet><unknown>wallet,
+      documentStore: <DocumentStore><unknown>documentStore,
+      gasPriceLimitGwei: gasPriceLimit,
+      gasPriceMultiplier: gasPriceMultiplier,
+      transactionConfirmationThreshold: 10,
+      transactionTimeoutSeconds: 180,
+      attempts: 10,
+      attemptsIntervalSeconds: 60,
       batch,
-      gasPriceMultiplier,
-      10,
-      180,
-      10,
-      60,
-      gasPriceLimit
-    );
+    });
     await issueBatch.start();
 
     function compareGasPrices(index: number){
@@ -218,17 +227,17 @@ describe('IssueBatch tast unit tests', ()=>{
     batch.merkleRoot = '0000000000000000000000000000000';
     const gasPriceMultiplier = 1.5;
     const gasPriceLimit = 40;
-    const issueBatch = new IssueBatch(
-      <Wallet><unknown>wallet,
-      <DocumentStore><unknown>documentStore,
+    const issueBatch = new IssueBatch({
+      wallet: <Wallet><unknown>wallet,
+      documentStore: <DocumentStore><unknown>documentStore,
+      gasPriceLimitGwei: gasPriceLimit,
+      gasPriceMultiplier: gasPriceMultiplier,
+      transactionConfirmationThreshold: 10,
+      transactionTimeoutSeconds: 180,
+      attempts: 10,
+      attemptsIntervalSeconds: 60,
       batch,
-      gasPriceMultiplier,
-      10,
-      180,
-      10,
-      60,
-      gasPriceLimit
-    );
+    });
     await issueBatch.start();
 
     function compareGasPrices(index: number){
@@ -279,17 +288,17 @@ describe('IssueBatch tast unit tests', ()=>{
     const gasPriceLimit = 40;
     const attempts = 10;
     const attemptsIntervalSeconds = 1;
-    const issueBatch = new IssueBatch(
-      <Wallet><unknown>wallet,
-      <DocumentStore><unknown>documentStore,
+    const issueBatch = new IssueBatch({
+      wallet: <Wallet><unknown>wallet,
+      documentStore: <DocumentStore><unknown>documentStore,
+      gasPriceLimitGwei: gasPriceLimit,
+      gasPriceMultiplier: gasPriceMultiplier,
+      transactionConfirmationThreshold: 10,
+      transactionTimeoutSeconds: 180,
+      attempts: attempts,
+      attemptsIntervalSeconds: attemptsIntervalSeconds,
       batch,
-      gasPriceMultiplier,
-      10,
-      180,
-      attempts,
-      attemptsIntervalSeconds,
-      gasPriceLimit
-    );
+    });
     await issueBatch.start();
     expect(wallet.sendTransaction.mock.calls.length).toBe(attempts);
     expect(wallet.provider.waitForTransaction.mock.calls.length).toBe(0);
@@ -317,17 +326,17 @@ describe('IssueBatch tast unit tests', ()=>{
     const gasPriceLimit = 40;
     const attempts = 10;
     const attemptsIntervalSeconds = 1;
-    const issueBatch = new IssueBatch(
-      <Wallet><unknown>wallet,
-      <DocumentStore><unknown>documentStore,
+    const issueBatch = new IssueBatch({
+      wallet: <Wallet><unknown>wallet,
+      documentStore: <DocumentStore><unknown>documentStore,
+      gasPriceLimitGwei: gasPriceLimit,
+      gasPriceMultiplier: gasPriceMultiplier,
+      transactionConfirmationThreshold: 10,
+      transactionTimeoutSeconds: 180,
+      attempts: attempts,
+      attemptsIntervalSeconds: attemptsIntervalSeconds,
       batch,
-      gasPriceMultiplier,
-      10,
-      180,
-      attempts,
-      attemptsIntervalSeconds,
-      gasPriceLimit
-    );
+    });
     await issueBatch.start();
     expect(wallet.sendTransaction.mock.calls.length).toBe(4);
     expect(wallet.provider.waitForTransaction.mock.calls.length).toBe(3);

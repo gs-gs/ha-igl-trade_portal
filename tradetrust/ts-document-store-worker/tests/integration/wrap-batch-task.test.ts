@@ -18,7 +18,7 @@ describe('WrapBatch Task', ()=>{
       }
       batch.unwrappedDocuments.set(key, entry);
     }
-    const wrapBatch = new WrapBatch(batch);
+    const wrapBatch = new WrapBatch({batch});
     wrapBatch.start();
     expect(Array.from<string>(batch.wrappedDocuments.keys())).toEqual(Array.from<string>(batch.unwrappedDocuments.keys()))
     for(let [key, wrappedDocument] of batch.wrappedDocuments){

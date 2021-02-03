@@ -39,17 +39,17 @@ describe('ComposeBatch Task', ()=>{
       documentIndex++;
     }
     const batch = new Batch();
-    const composeBatch = new ComposeBatch(
+    const composeBatch = new ComposeBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
-      5,
-      1024 * 1024 * 1024,
-      1,
-      60,
-      config.DOCUMENT_STORE_ADDRESS,
+      batchTimeSeconds: 5,
+      batchSizeBytes: 1024 * 1024 * 1024,
+      messageWaitTime: 1,
+      messageVisibilityTimeout: 60,
+      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
       batch
-    );
+    });
     await composeBatch.start();
 
     expect(documents.size).toEqual(batch.unwrappedDocuments.size);
@@ -63,17 +63,17 @@ describe('ComposeBatch Task', ()=>{
   test('batch backup', async ()=>{
     const documents = generateDocumentsMap(10);
     const batch = new Batch();
-    const composeBatch = new ComposeBatch(
+    const composeBatch = new ComposeBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
-      5,
-      1024 * 1024 * 1024,
-      1,
-      60,
-      config.DOCUMENT_STORE_ADDRESS,
+      batchTimeSeconds: 5,
+      batchSizeBytes: 1024 * 1024 * 1024,
+      messageWaitTime: 1,
+      messageVisibilityTimeout: 60,
+      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
       batch
-    );
+    });
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
     }
@@ -110,17 +110,17 @@ describe('ComposeBatch Task', ()=>{
     }
     await unprocessedDocuments.delete({Key: 'deleted-document'});
     const batch = new Batch();
-    const composeBatch = new ComposeBatch(
+    const composeBatch = new ComposeBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
-      5,
-      1024 * 1024 * 1024,
-      1,
-      60,
-      config.DOCUMENT_STORE_ADDRESS,
+      batchTimeSeconds: 5,
+      batchSizeBytes: 1024 * 1024 * 1024,
+      messageWaitTime: 1,
+      messageVisibilityTimeout: 60,
+      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
       batch
-    );
+    });
     await composeBatch.start();
     expect(batch.unwrappedDocuments.get('non-json-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('deleted-document')).toBeFalsy();
@@ -136,17 +136,17 @@ describe('ComposeBatch Task', ()=>{
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
     }
     const batch = new Batch();
-    const composeBatch = new ComposeBatch(
+    const composeBatch = new ComposeBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
-      5,
-      1024 * 1024 * 1024,
-      1,
-      60,
-      config.DOCUMENT_STORE_ADDRESS,
+      batchTimeSeconds: 5,
+      batchSizeBytes: 1024 * 1024 * 1024,
+      messageWaitTime: 1,
+      messageVisibilityTimeout: 60,
+      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
       batch
-    )
+    });
 
     await composeBatch.start();
 
@@ -172,17 +172,17 @@ describe('ComposeBatch Task', ()=>{
       documentIndex++;
     }
     const batch = new Batch();
-    const composeBatch = new ComposeBatch(
+    const composeBatch = new ComposeBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
-      10,
-      maxBatchSizeBytes,
-      1,
-      60,
-      config.DOCUMENT_STORE_ADDRESS,
+      batchTimeSeconds: 10,
+      batchSizeBytes: maxBatchSizeBytes,
+      messageWaitTime: 1,
+      messageVisibilityTimeout: 60,
+      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
       batch
-    )
+    });
     await composeBatch.start();
 
     const expectedBatchDocuments = Array.from<any>(documents.values()).slice(0, expectedBatchDocumentsCount);

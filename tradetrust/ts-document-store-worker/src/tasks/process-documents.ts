@@ -14,23 +14,30 @@ import IssueBatch from "./issue-batch";
 import SaveIssuedBatch from "./save-issued-batch";
 import WrapBatch from "./wrap-batch";
 
+interface IProcessDocumentsSettings{
+  unprocessedDocuments: UnprocessedDocuments,
+  batchDocuments: BatchDocuments,
+  issuedDocuments: IssuedDocuments,
+  unprocessedDocumentsQueue: UnprocessedDocumentsQueue,
+  wallet: Wallet,
+  documentStore: DocumentStore,
+  messageWaitTime: number,
+  messageVisibilityTimeout: number,
+  batchSizeBytes: number,
+  batchTimeSeconds: number,
+  transactionTimeoutSeconds: number,
+  transactionConfirmationThreshold: number,
+  gasPriceMultiplier: number
+  gasPriceLimitGwei: number,
+  issueAttempts: number
+  issueAttemptsIntervalSeconds: number,
+  saveAttempts: number,
+  saveAttemptsInterval: number
+}
+
 
 class ProcessDocuments implements Task<void>{
-  constructor(
-    private unprocessedDocuments: UnprocessedDocuments,
-    private batchDocuments: BatchDocuments,
-    private issuedDocuments: IssuedDocuments,
-    private unprocessedDocumentsQueue: UnprocessedDocumentsQueue,
-    private wallet: Wallet,
-    private documentStore: DocumentStore,
-    private messageWaitTime: number,
-    private messageVisibilityTimeout: number,
-    private maxBatchSizeBytes: number,
-    private maxBatchTimeSeconds: number,
-    private transactionTimeoutSeconds: number,
-    private transactionConfirmationThreshold: number,
-    private gasPriceMultiplier: number
-  ){}
+  constructor(private settings: IProcessDocumentsSettings){}
 
   /* istanbul ignore next */
   async start(){
@@ -45,17 +52,17 @@ class ProcessDocuments implements Task<void>{
     const batch = new Batch();
     logger.info('A new batch created');
     logger.info('ComposeBatch task started');
-    await new ComposeBatch(
-      this.unprocessedDocuments,
-      this.batchDocuments,
-      this.unprocessedDocumentsQueue,
-      this.maxBatchTimeSeconds,
-      this.maxBatchSizeBytes,
-      this.messageWaitTime,
-      this.messageVisibilityTimeout,
-      this.documentStore.address,
+    await new ComposeBatch({
+      unprocessedDocuments: this.settings.unprocessedDocuments,
+      batchDocuments: this.settings.batchDocuments,
+      unprocessedDocumentsQueue: this.settings.unprocessedDocumentsQueue,
+      batchSizeBytes: this.settings.batchSizeBytes,
+      batchTimeSeconds: this.settings.batchTimeSeconds,
+      messageWaitTime: this.settings.messageWaitTime,
+      messageVisibilityTimeout: this.settings.messageVisibilityTimeout,
+      documentStoreAddress: this.settings.documentStore.address,
       batch
-    ).start()
+    }).start()
     logger.debug('batch.isEmpty')
     if(!batch.composed){
       logger.error('ComposeBatch task failed');
@@ -68,7 +75,7 @@ class ProcessDocuments implements Task<void>{
 
 
     logger.info('WrapBatch task started');
-    new WrapBatch(batch).start()
+    new WrapBatch({batch}).start()
     if(!batch.wrapped){
       logger.error('WrapBatch task failed');
       return;
@@ -76,14 +83,17 @@ class ProcessDocuments implements Task<void>{
 
 
     logger.info('IssueBatch task started');
-    await new IssueBatch(
-      this.wallet,
-      this.documentStore,
-      batch,
-      this.gasPriceMultiplier,
-      this.transactionConfirmationThreshold,
-      this.transactionTimeoutSeconds
-    ).start()
+    await new IssueBatch({
+      wallet: this.settings.wallet,
+      documentStore: this.settings.documentStore,
+      gasPriceLimitGwei: this.settings.gasPriceLimitGwei,
+      gasPriceMultiplier: this.settings.gasPriceMultiplier,
+      transactionTimeoutSeconds: this.settings.transactionTimeoutSeconds,
+      transactionConfirmationThreshold: this.settings.transactionConfirmationThreshold,
+      attempts: this.settings.issueAttempts,
+      attemptsIntervalSeconds: this.settings.issueAttemptsIntervalSeconds,
+      batch
+    }).start()
     if(!batch.issued){
       logger.error('WrapBatch task failed');
       return;
@@ -91,11 +101,13 @@ class ProcessDocuments implements Task<void>{
 
 
     logger.info('SaveIssuedBatch task started');
-    await new SaveIssuedBatch(
-      this.issuedDocuments,
-      this.batchDocuments,
+    await new SaveIssuedBatch({
+      issuedDocuments: this.settings.issuedDocuments,
+      batchDocuments: this.settings.batchDocuments,
+      attempts: this.settings.saveAttempts,
+      attemptsIntervalSeconds: this.settings.saveAttemptsInterval,
       batch
-    ).start()
+    }).start()
     if(!batch.saved){
       logger.error('SaveIssuedBatch task failed');
       return;

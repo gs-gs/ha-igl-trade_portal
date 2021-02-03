@@ -11,18 +11,44 @@ class IssueBatch implements Task<void>{
   private currentGasPriceMutiplier!: number;
   private currentGasPrice!: BigNumber;
   private lastGasPrice!: BigNumber;
+  private wallet: Wallet;
+  private documentStore: DocumentStore;
+  private batch: Batch;
+  private transactionConfirmationThreshold: number;
+  private transactionTimeoutSeconds: number;
+  private attempts: any;
+  private attemptsIntervalSeconds: number;
+  private gasPriceMultiplier: number;
 
-  constructor(
-    private wallet: Wallet,
-    private documentStore: DocumentStore,
-    private batch: Batch,
-    private gasPriceMultiplier: number = 1.2,
-    private transactionConfirmationThreshold: number = 12,
-    private transactionTimeoutSeconds: number = 180,
-    private maxAttempts: number = 10,
-    private attemptsIntervalSeconds: number = 60,
-    gasPriceLimitGwei: number = 200
-  ){
+  constructor({
+    wallet,
+    documentStore,
+    batch,
+    gasPriceMultiplier = 1.2,
+    gasPriceLimitGwei = 200,
+    transactionConfirmationThreshold = 12,
+    transactionTimeoutSeconds = 180,
+    attempts = 10,
+    attemptsIntervalSeconds = 60,
+  }:{
+    wallet: Wallet,
+    documentStore: DocumentStore,
+    batch: Batch
+    gasPriceMultiplier?: number,
+    gasPriceLimitGwei?: number,
+    transactionConfirmationThreshold?: number,
+    transactionTimeoutSeconds?: number,
+    attempts?: number,
+    attemptsIntervalSeconds?: number,
+  }){
+    this.wallet = wallet;
+    this.documentStore = documentStore;
+    this.batch = batch;
+    this.gasPriceMultiplier = gasPriceMultiplier;
+    this.transactionConfirmationThreshold = transactionConfirmationThreshold;
+    this.transactionTimeoutSeconds = transactionTimeoutSeconds;
+    this.attempts = attempts;
+    this.attemptsIntervalSeconds = attemptsIntervalSeconds;
     this.gasPriceLimit = utils.parseUnits(gasPriceLimitGwei.toString(), 'gwei');
   }
 
@@ -175,7 +201,7 @@ class IssueBatch implements Task<void>{
     let attempt = 0;
     while(true){
       try{
-        logger.info('Trying to issue the batch, attempt %s/%s', attempt + 1, this.maxAttempts);
+        logger.info('Trying to issue the batch, attempt %s/%s', attempt + 1, this.attempts);
         await this.tryToIssueWithGasPriceAdjustment();
         logger.info('The batch issued succesfully');
         this.batch.issued = true;
@@ -185,7 +211,7 @@ class IssueBatch implements Task<void>{
         logger.error('An unexpected error occured');
         logger.error(e);
         attempt+=1;
-        if(attempt < this.maxAttempts){
+        if(attempt < this.attempts){
           logger.info('Waiting %s seconds', this.attemptsIntervalSeconds);
           await new Promise(resolve=>setTimeout(resolve, this.attemptsIntervalSeconds * 1000));
         }else{

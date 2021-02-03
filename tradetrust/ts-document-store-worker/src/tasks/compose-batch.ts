@@ -18,22 +18,48 @@ import { Task } from './interfaces';
 
 class ComposeBatch implements Task<void>{
 
-  private maxBatchTimeMs: number;
   private startTimeMs!: number;
+  private batchTimeMs: number;
+  private batchSizeBytes: number;
+  private unprocessedDocuments: UnprocessedDocuments;
+  private batchDocuments: BatchDocuments;
+  private unprocessedDocumentsQueue: UnprocessedDocumentsQueue;
+  private messageWaitTime: number;
+  private messageVisibilityTimeout: number;
+  private documentStoreAddress: string;
+  private batch: Batch;
 
 
-  constructor(
-    private unprocessedDocuments: UnprocessedDocuments,
-    private batchDocuments: BatchDocuments,
-    private unprocessedDocumentsQueue: UnprocessedDocumentsQueue,
-    maxBatchTimeSeconds: number,
-    private maxBatchSizeBytes: number,
-    private messageWaitTime: number,
-    private messageVisibilityTimeout: number,
-    private documentStoreAddress: string,
-    private batch: Batch
-  ){
-    this.maxBatchTimeMs = maxBatchTimeSeconds * 1000;
+  constructor({
+    unprocessedDocuments,
+    batchDocuments,
+    unprocessedDocumentsQueue,
+    batchTimeSeconds,
+    batchSizeBytes,
+    messageWaitTime,
+    messageVisibilityTimeout,
+    documentStoreAddress,
+    batch
+  }:{
+    unprocessedDocuments: UnprocessedDocuments,
+    batchDocuments: BatchDocuments,
+    unprocessedDocumentsQueue: UnprocessedDocumentsQueue,
+    batchTimeSeconds: number,
+    batchSizeBytes: number,
+    messageWaitTime: number,
+    messageVisibilityTimeout: number,
+    documentStoreAddress: string,
+    batch: Batch
+  }){
+    this.unprocessedDocuments = unprocessedDocuments;
+    this.batchDocuments = batchDocuments;
+    this.unprocessedDocumentsQueue = unprocessedDocumentsQueue;
+    this.batchTimeMs = batchTimeSeconds * 1000;
+    this.batchSizeBytes = batchSizeBytes;
+    this.messageWaitTime = messageWaitTime;
+    this.messageVisibilityTimeout = messageVisibilityTimeout;
+    this.documentStoreAddress = documentStoreAddress;
+    this.batch = batch;
     if(1 > messageWaitTime || messageWaitTime > 20){
       throw Error('messageWaitTime must be >= 1 <=20');
     }
@@ -41,8 +67,8 @@ class ComposeBatch implements Task<void>{
 
   tryToCompleteBatch(batch: Batch){
     logger.debug('tryToCompleteBatch');
-    const timeComplete = (Date.now() - this.startTimeMs) >= this.maxBatchTimeMs;
-    const sizeComplete = batch.size() >= this.maxBatchSizeBytes;
+    const timeComplete = (Date.now() - this.startTimeMs) >= this.batchTimeMs;
+    const sizeComplete = batch.size() >= this.batchSizeBytes;
     return timeComplete || sizeComplete;
   }
 
@@ -196,7 +222,7 @@ class ComposeBatch implements Task<void>{
     }
     logger.info(
       'Starting composing a new batch. Constraints SIZE: %s bytes, TIME: %s ms',
-      this.maxBatchSizeBytes, this.maxBatchTimeMs
+      this.batchSizeBytes, this.batchTimeMs
     );
     this.startTimeMs = Date.now();
     this.batch.composed = false;

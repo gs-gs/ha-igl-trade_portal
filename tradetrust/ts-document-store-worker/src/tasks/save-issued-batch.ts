@@ -5,13 +5,30 @@ import { Task } from './interfaces';
 
 
 class SaveIssuedBatch implements Task<void>{
-  constructor(
-    private issuedDocuments: IssuedDocuments,
-    private batchDocuments: BatchDocuments,
-    private batch: Batch,
-    private maxAttempts: number = 10,
-    private attemptsIntervalSeconds: number = 60
-  ){}
+  private issuedDocuments: IssuedDocuments;
+  private batchDocuments: BatchDocuments;
+  private batch: Batch;
+  private attempts: number;
+  private attemptsIntervalSeconds: number;
+  constructor({
+    issuedDocuments,
+    batchDocuments,
+    batch,
+    attempts = 10,
+    attemptsIntervalSeconds = 60
+  }:{
+    issuedDocuments: IssuedDocuments,
+    batchDocuments: BatchDocuments,
+    batch: Batch,
+    attempts: number,
+    attemptsIntervalSeconds: number
+  }){
+    this.issuedDocuments = issuedDocuments;
+    this.batchDocuments = batchDocuments;
+    this.batch = batch;
+    this.attempts = attempts;
+    this.attemptsIntervalSeconds = attemptsIntervalSeconds;
+  }
   async next(){
     for(let [key, document] of this.batch.wrappedDocuments){
       logger.info('Saving document "%s"...', key);
@@ -34,9 +51,9 @@ class SaveIssuedBatch implements Task<void>{
   async start(){
     logger.info('Started saving issued batch documents...')
     this.batch.saved = false;
-    for(let attempt = 0; attempt < this.maxAttempts; attempt++){
+    for(let attempt = 0; attempt < this.attempts; attempt++){
       try{
-        logger.info('Attempt %s/%s', attempt, this.maxAttempts);
+        logger.info('Attempt %s/%s', attempt, this.attempts);
         await this.next();
         this.batch.saved = true;
         logger.info('Issued batch documents saved');
