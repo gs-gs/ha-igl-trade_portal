@@ -33,6 +33,11 @@
   <body class="d-flex flex-column {% block body_class %}{% endblock %}{% if request.user.is_authenticated %} authenticated{% endif %}">
     <header class="header {% block header_class %}{% endblock %}">
       <div class="header__container">
+        <div class="header__main-menu">
+          <button class="header__menu-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="icon icon-menu"></span> <span class="header__menu-toggler-text">Menu</span>
+          </button>
+        </div>
         <a class="header__logo" href="/">
           {% if ICL_APP_COUNTRY == "AU" %}
             <img src="{% static 'images/logoAU.svg' %}" alt="{% trans 'Trade Portal' %}" class="header__logo-image header__logo-image--default" />
@@ -57,12 +62,9 @@
                 {% endif %}
               </div>
             {% else %}
-              <a href="/accounts/signup/" class="btn btn-primary header__nav-btn">{% trans 'Sign up' %}</a>
-              {# <a href="/accounts/login/" class="btn header__nav-btn header__nav-btn--mygovid">MyGovID</a> #}
+              <a href="/accounts/signup/" class="btn btn-primary header__nav-btn header__nav-btn--register">{% trans 'Register' %}</a>
+              <a href="/accounts/login/" class="btn btn-primary header__nav-btn header__nav-btn--login">{% trans 'Login' %}</a>
             {% endif %}
-            <button class="header__menu-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="icon icon-menu"></span>
-            </button>
           </div>
           <div class="site-nav__overlay"></div>
           <div class="collapse site-nav" id="mainMenu">
@@ -81,6 +83,9 @@
               {% if not request.user.is_authenticated %}
                 <li class="site-nav__item">
                   <a class="site-nav__item-link" href="/accounts/login/">{% trans 'Login' %}</a>
+                </li>
+                <li class="site-nav__item">
+                  <a class="site-nav__item-link" href="/accounts/signup/">{% trans 'Register' %}</a>
                 </li>
               {% else %}
                 <li class="site-nav__item">

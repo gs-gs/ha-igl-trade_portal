@@ -3,21 +3,11 @@
 {% load i18n %}
 
 {% block body_class %}homepage{% endblock %}
-{% block header_class %}header--dark{% endblock %}
+{% block header_class %}{% endblock %}
 {% block main-container %}main-container{% endblock %}
 
 {% block content %}
 <div class="home-content">
-  <div class="hero-box home-content__hero">
-    <h1 class="hero-box__title">{% trans BRANDING_TITLE %}</h1>
-    <p class="hero-box__description">{% blocktrans %}The Intergovernmental Ledger (IGL) is a verifiable credentials platform that supports the digitisation of cross-border trade. Trade documents such as Certificate of Origin and others that are currently paper-based can be digitised and digitally verified for its authenticity.{% endblocktrans %}</p>
-    {% if not request.user.is_authenticated %}
-      <a href="/accounts/signup/" class="btn btn-light hero-box__action">{% trans 'Register' %}</a>
-    {% else %}
-      <a href="{% url 'documents:list' %}" class="btn btn-light hero-box__action">{% trans 'My Documents' %}</a>
-    {% endif %}
-    <a href="/v/" class="btn btn-light hero-box__action">{% trans 'Verify a Document' %}</a>
-  </div>
   <div class="news home-content__news">
     <div class="news-item">
       <div class="news-item__title"><a href="{% url 'documents:list' %}" class="news-item__title-link"><span class="news-item__title-text">{% trans 'Start using the portal' %}</span></a></div>
@@ -27,6 +17,14 @@
       <div class="news-item__title"><a href="/help/api/" class="news-item__title-link"><span class="news-item__title-text">{% trans 'Australia - Singapore Live-beta trial.' %}</span></a></div>
       <div class="news-item__description">{% blocktrans %}From 23 November to 11 December, ABF is collaborating with Singapore Customs and Infocomm Media Development Authority to trial the IGL platform using Certificates of Origin. The trial will test IGL’s digital verification capability, and whether the Singapore Government and its financial sector would trust IGL-authenticated e-certificates.{% endblocktrans %}</div>
     </div>
+  </div>
+  <div class="hero-box home-content__hero">
+    <h1 class="hero-box__title">{% trans BRANDING_TITLE %}</h1>
+    <p class="hero-box__description">{% blocktrans %}The Intergovernmental Ledger (IGL) is a verifiable credentials platform that supports the digitisation of cross-border trade. Trade documents such as Certificate of Origin and others that are currently paper-based can be digitised and digitally verified for its authenticity.{% endblocktrans %}</p>
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'documents:list' %}" class="btn btn-light hero-box__action">{% trans 'My Documents' %}</a>
+    {% endif %}
+    <a href="/v/" class="btn btn-light hero-box__action">{% trans 'Verify a Document' %}</a>
   </div>
 </div>
 <div class="usp-box">

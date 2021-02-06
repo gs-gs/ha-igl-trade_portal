@@ -16,7 +16,7 @@
 {% block content %}
 <div class="authorise__col authorise-form">
   <div class="authorise-form__container">
-    <h1>{% trans "Sign in to your account" %}</h1>
+    <h1>{% trans "Login to your account" %}</h1>
     <form class="login" method="POST" action="{% url 'account_login' %}">
       {% csrf_token %}
       {{ form|crispy }}
@@ -27,8 +27,8 @@
         <a class="button secondaryAction forgot-password__link" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
       </div>
       <div class="form-actions">
-        <button class="primaryAction btn btn-primary" type="submit">{% trans "Sign In" %}</button>
-        {# <a href="{% url 'oidc_authentication_init' %}" class="btn btn-dark btn-signin-mygovid">{% trans "Sign in with MyGovId" %}</a> #}
+        <button class="primaryAction btn btn-primary" type="submit">{% trans "Login" %}</button>
+        {# <a href="{% url 'oidc_authentication_init' %}" class="btn btn-dark btn-signin-mygovid">{% trans "Login with MyGovId" %}</a> #}
       </div>
     </form>
   </div>

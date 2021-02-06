@@ -1,12 +1,9 @@
 .header {
   width: 100%;
-  padding: 0 $mobile-padding;
+  padding: 0;
+  background: $light-grey-color;
 
-  @include media-breakpoint-up(md) {
-    padding: 24px $mobile-padding;
-  }
-
-  .authenticated &{
+  .authenticated & {
     background: $white-color;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
     border: 1px solid $grey-color;
@@ -26,17 +23,26 @@
     }
   }
 
-  &__container{
+  &__container {
     @include flexbox();
     @include justify-content(space-between);
     @include align-items(center);
     @include flex-wrap(wrap);
-    max-width: $site-max-width;
+    //max-width: $site-max-width;
     padding: 0;
     margin: 0 auto;
+    height: 90px;
 
-    .authenticated &{
+    @include media-breakpoint-down(md) {
+      @include justify-content(center);
+      padding-left: 157px;
+    }
 
+    @include media-breakpoint-down(sm) {
+      padding-left: 129px;
+    }
+
+    .authenticated & {
       @include media-breakpoint-down(md) {
         height: 90px;
       }
@@ -47,7 +53,7 @@
     @include flexbox();
     @include align-items(center);
 
-    &:hover{
+    &:hover {
       text-decoration: none;
     }
 
@@ -58,20 +64,23 @@
         max-height: 61px;
       }
 
-      &--white{
+      &--white {
         display: none;
 
-        .header--dark &{
+        .header--dark & {
           display: block;
         }
+
         .authenticated & {
           display: none;
         }
       }
-      &--default{
-        .header--dark &{
+
+      &--default {
+        .header--dark & {
           display: none;
         }
+
         .authenticated & {
           display: block;
         }
@@ -92,7 +101,7 @@
         text-shadow: 1px 0 2px $white-color;
         font-size: 17px;
 
-        .header--dark &{
+        .header--dark & {
           border-color: rgba($white-color, 0.2);
           color: $white-color;
           text-shadow: 1px 0 2px $blue-color;
@@ -106,20 +115,38 @@
     }
   }
 
+  &__main-menu,
   &__nav {
+    @include media-breakpoint-up(xl) {
+      min-width: 300px;
+    }
+  }
+
+  &__main-menu {
+    @include media-breakpoint-down(md) {
+      width: 150px;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+
+  &__nav {
+
     &-actions {
       @include flexbox();
       @include align-items(center);
+      @include justify-content(flex-end);
+
+      @include media-breakpoint-down(md) {
+        display: none;
+      }
     }
 
     &-btn {
       display: none;
       background-color: $dark-blue-color;
       color: $white-color;
-
-      &:hover{
-
-      }
 
       @include media-breakpoint-up(md) {
         display: block;
@@ -131,46 +158,50 @@
         height: 48px;
       }
 
-      &--mygovid{
+      &--mygovid {
         background-image: url("../images/mygovid-logo.svg");
         background-repeat: no-repeat;
         background-position: 50% 50%;
         background-size: 77px 27px;
         text-indent: -99999px;
       }
-    }
 
+      &--register {
+        .authorise-signup & {
+          display: none;
+        }
+      }
+
+      &--register {
+        .authorise-login & {
+          display: none;
+        }
+      }
+    }
   }
 
   &__menu {
     &-toggler {
-      height: 36px;
       font-size: 23px;
-      line-height: 36px;
       border: 0;
       margin: 0 -9px 0 0;
-      background: none;
-      padding: 5px 9px 0 9px;
+      background: #ececec;
+      padding: 4px 9px 0 9px;
+      height: 90px;
+      color: $primary-color;
 
       @include media-breakpoint-up(md) {
-        height: 48px;
         font-size: 30px;
-        line-height: 48px;
-        padding: 5px 9px 0 9px;
+        padding: 24px $mobile-padding - 3 24px $mobile-padding;
       }
 
       @include media-breakpoint-down(md) {
-        .header--dark & {
-          color: $white-color;
-        }
-        .authenticated & {
-          color: $primary-color;
-        }
+        min-width: 129px;
       }
     }
   }
 
-  &__account-nav{
+  &__account-nav {
     width: 100%;
     border-top: 1px solid $grey-color;
     margin: 25px auto 0 auto;
@@ -183,13 +214,13 @@
     }
   }
 
-  &__user{
+  &__user {
     text-align: right;
     padding: 2px 1rem 0 0;
     font-size: 0.875rem;
     line-height: 16px;
 
-    &-name{
+    &-name {
       font-weight: $font-weight-bold;
     }
   }
@@ -197,11 +228,11 @@
 
 .site-nav {
   position: fixed;
-  right: 0;
+  left: 0;
   top: 0;
   background: $white-color;
   z-index: 100;
-  transform: translate(100%, 0);
+  transform: translate(-100%, 0);
   transition: transform .3s ease, opacity .3s ease;
   width: 100%;
   height: 100vh;
@@ -266,32 +297,32 @@
     }
   }
 
-  &__org{
+  &__org {
     padding: $mobile-padding;
   }
 }
 
-.account-nav{
-  &__container{
+.account-nav {
+  &__container {
     @include flexbox();
     @include justify-content(space-between);
   }
 
-  &__list{
+  &__list {
     @include flexbox();
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
-  &__item{
+  &__item {
     margin: 0 0 0 40px;
 
-    &:first-child{
+    &:first-child {
       margin-left: 0;
     }
 
-    &-link{
+    &-link {
       color: $black-color;
       font-size: 14px;
       line-height: 22px;
@@ -299,13 +330,11 @@
       padding: 14px 10px 22px 10px;
       border-bottom: 4px solid transparent;
 
-      &.active{
+      &.active {
         font-weight: $font-weight-bold;
         color: $dark-blue-color;
         border-color: $dark-blue-color;
       }
     }
   }
-
-
 }

@@ -22,17 +22,6 @@ $home-max-width: 1280px;
     }
   }
 
-  @include media-breakpoint-up(lg) {
-    .header__menu-toggler {
-      color: $white-color;
-    }
-  }
-
-  .header__nav-btn {
-    background-color: $white-color;
-    color: $dark-blue-color;
-  }
-
   .header__nav-btn--mygovid {
     background-color: $white-color;
     background-image: url("../images/mygovid-logo-dark.svg");
