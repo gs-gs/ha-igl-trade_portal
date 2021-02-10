@@ -1,17 +1,16 @@
 $home-max-width: 1280px;
 
 .homepage {
-  background: url("../images/bg/homepage-mobile.png") no-repeat 50% 0;
+  background: url("../images/bg/homepage-mobile.png") no-repeat 0 0;
 
   @include media-breakpoint-up(md) {
     background-position: 0 0;
   }
 
   @include media-breakpoint-up(lg) {
-    background: url("../images/bg/homepage.png") no-repeat 0 0;
+    background: url("../images/bg/homepage.png") no-repeat 100% 0;
     background-size: 60% auto;
   }
-
 }
 
 .home-content {
@@ -27,6 +26,20 @@ $home-max-width: 1280px;
     padding: 22px 15px 92px 15px;
   }
 
+  @include media-breakpoint-down(md) {
+    @include flexbox();
+    @include flex-direction(column);
+
+    .hero-box {
+      order: 1;
+      padding-top: 50px;
+    }
+
+    .news {
+      order: 2;
+    }
+  }
+
   @include media-breakpoint-up(xl) {
     padding-top: 126px;
 
@@ -39,7 +52,7 @@ $home-max-width: 1280px;
     max-width: 450px;
 
     @include media-breakpoint-down(md) {
-      min-height: 500px;
+      min-height: 520px;
     }
   }
 
@@ -63,11 +76,11 @@ $home-max-width: 1280px;
     margin: 0 0 24px 0;
     padding: 0;
 
-    @include media-breakpoint-down(sm){
+    @include media-breakpoint-down(sm) {
       margin-bottom: 14px;
     }
 
-    @include media-breakpoint-up(sm){
+    @include media-breakpoint-up(sm) {
       font-size: 37px;
       line-height: 50px;
     }
@@ -124,12 +137,15 @@ $home-max-width: 1280px;
   &.usp-verification {
     border-top-color: $verification-color;
   }
+
   &.usp-transfer {
     border-top-color: $transfer-color;
   }
+
   &.usp-logistics {
     border-top-color: $logistics-color;
   }
+
   &.usp-regulators {
     border-top-color: $regulators-color;
   }
@@ -152,12 +168,15 @@ $home-max-width: 1280px;
       .usp-verification & {
         color: $verification-color;
       }
+
       .usp-transfer & {
         color: $transfer-color;
       }
+
       .usp-logistics & {
         color: $logistics-color;
       }
+
       .usp-regulators & {
         color: $regulators-color;
       }
@@ -169,12 +188,15 @@ $home-max-width: 1280px;
         .usp-verification & {
           background-color: $verification-color;
         }
+
         .usp-transfer & {
           background-color: $transfer-color;
         }
+
         .usp-logistics & {
           background-color: $logistics-color;
         }
+
         .usp-regulators & {
           background-color: $regulators-color;
         }

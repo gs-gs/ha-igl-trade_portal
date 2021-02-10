@@ -19,7 +19,7 @@
 {% block content %}
 <div class="authorise__col authorise-form">
   <div class="authorise-form__container">
-    <h1 class="authorise-form__title">{% trans "Sign up" %}</h1>
+    <h1 class="authorise-form__title">{% trans "Register" %}</h1>
     <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
       {% csrf_token %}
 
@@ -38,8 +38,8 @@
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
       {% endif %}
       <div class="form-actions">
-        <button class="btn btn-primary" type="submit">{% trans "Sign Up" %}</button>
-        {# <a href="{% url 'oidc_authentication_init' %}" class="btn btn-dark btn-signin-mygovid">{% trans "Sign Up" %}</a> #}
+        <button class="btn btn-primary" type="submit">{% trans "Register" %}</button>
+        {# <a href="{% url 'oidc_authentication_init' %}" class="btn btn-dark btn-signin-mygovid">{% trans "Register" %}</a> #}
       </div>
     </form>
   </div>
@@ -48,7 +48,7 @@
 <div class="authorise__col authorise-text">
   <div class="authorise-text__container">
     <h2 class="authorise-text__title">{% trans "Already have an account?" %}</h2>
-    <a href="{{ login_url }}" class="btn btn-lg btn-white authorise-text__btn">{% trans "Sign in" %}</a>
+    <a href="{{ login_url }}" class="btn btn-lg btn-white authorise-text__btn">{% trans "Login" %}</a>
   </div>
 </div>
 {% endblock %}
