@@ -35,6 +35,12 @@ interface ConfigInterface{
   readonly BATCH_SIZE_BYTES: number,
   readonly BATCH_TIME_SECONDS: number,
 
+  readonly RESTORE_ATTEMPTS: number,
+  readonly RESTORE_ATTEMPTS_INTERVAL_SECONDS: number,
+
+  readonly COMPOSE_ATTEMPTS: number,
+  readonly COMPOSE_ATTEMPTS_INTERVAL_SECONDS: number,
+
   readonly ISSUE_ATTEMPTS: number,
   readonly ISSUE_ATTEMPTS_INTERVAL_SECONDS: number,
 
@@ -66,6 +72,12 @@ const config:ConfigInterface = {
   BATCH_SIZE_BYTES: parseInt(process.env.MAX_BATCH_SIZE_BYTES??'104857600'),
   // 10 minutes
   BATCH_TIME_SECONDS: parseInt(process.env.MAX_BATCH_TIME_SECONDS??'600'),
+
+  RESTORE_ATTEMPTS: parseInt(process.env.RESTORE_ATTEMPTS??'10'),
+  RESTORE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.RESTORE_ATTEMPTS_INTERVAL_SECONDS??'60'),
+
+  COMPOSE_ATTEMPTS: parseInt(process.env.COMPOSE_ATTEMPTS??'10'),
+  COMPOSE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.RESTORE_ATTEMPTS_INTERVAL_SECONDS??'60'),
 
   SAVE_ATTEMPTS: parseInt(process.env.SAVE_ATTEMPTS??'10'),
   SAVE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.SAVE_ATTEMPTS_INTERVAL_SECONDS??'60'),

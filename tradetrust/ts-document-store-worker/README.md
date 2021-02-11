@@ -64,7 +64,16 @@ So, overall after all of these stages successfully passed, documents from an unp
   # integer 0 < BATCH_TIME_SECONDS
   # 10 minutes
   BATCH_TIME_SECONDS: 600
-
+  # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
+  # integer 1 <= RESTORE_ATTEMPTS
+  RESTORE_ATTEMPTS: 10
+  # integer 1 <= RESTORE_ATTEMPTS_INTERVAL_SECONDS
+  RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
+  # number of attempts and interval between them in case of an unexpected error in ComposeBatch task
+  # integer 1 <= COMPOSE_ATTEMPTS
+  COMPOSE_ATTEMPTS: 10
+  # integer 1 <= COMPOSE_ATTEMPTS_INTERVAL_SECONDS
+  COMPOSE_ATTEMPTS_INTERVAL_SECONDS: 60
   # number of attempts and interval between them in case of an unexpected error in SaveIssuedBatch task
   # integer 1 <= SAVE_ATTEMPTS
   SAVE_ATTEMPTS: 10

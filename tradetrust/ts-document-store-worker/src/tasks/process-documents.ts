@@ -30,6 +30,10 @@ interface IProcessDocumentsProps{
   transactionConfirmationThreshold: number,
   gasPriceMultiplier: number
   gasPriceLimitGwei: number,
+  restoreAttempts: number,
+  restoreAttemptsIntervalSeconds: number,
+  composeAttempts: number,
+  composeAttemptsIntervalSeconds: number,
   issueAttempts: number
   issueAttemptsIntervalSeconds: number,
   saveAttempts: number,
@@ -63,6 +67,8 @@ class ProcessDocuments implements Task<void>{
       batchDocuments: this.props.batchDocuments,
       batchTimeSeconds: this.props.batchTimeSeconds,
       batchSizeBytes: this.props.batchSizeBytes,
+      attempts: this.props.restoreAttempts,
+      attemptsIntervalSeconds: this.props.restoreAttemptsIntervalSeconds,
       batch
     }).start();
 
@@ -77,6 +83,8 @@ class ProcessDocuments implements Task<void>{
       messageWaitTime: this.props.messageWaitTime,
       messageVisibilityTimeout: this.props.messageVisibilityTimeout,
       documentStoreAddress: this.props.documentStore.address,
+      attempts: this.props.composeAttempts,
+      attemptsIntervalSeconds: this.props.composeAttemptsIntervalSeconds,
       batch
     }).start()
     logger.debug('batch.isEmpty')
