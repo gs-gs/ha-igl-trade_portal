@@ -7,6 +7,7 @@ import {
   UnprocessedDocumentsQueue
 } from "../repos";
 import { logger } from '../logger';
+import RestoreBatch from "./restore-batch";
 import ComposeBatch from "./compose-batch";
 import { Batch } from './data';
 import { Task } from "./interfaces";
@@ -14,7 +15,7 @@ import IssueBatch from "./issue-batch";
 import SaveIssuedBatch from "./save-issued-batch";
 import WrapBatch from "./wrap-batch";
 
-interface IProcessDocumentsSettings{
+interface IProcessDocumentsProps{
   unprocessedDocuments: UnprocessedDocuments,
   batchDocuments: BatchDocuments,
   issuedDocuments: IssuedDocuments,
@@ -37,7 +38,11 @@ interface IProcessDocumentsSettings{
 
 
 class ProcessDocuments implements Task<void>{
-  constructor(private settings: IProcessDocumentsSettings){}
+  private props: IProcessDocumentsProps;
+
+  constructor(props: IProcessDocumentsProps){
+    this.props = props;
+  }
 
   /* istanbul ignore next */
   async start(){
@@ -51,16 +56,27 @@ class ProcessDocuments implements Task<void>{
     logger.debug('next');
     const batch = new Batch();
     logger.info('A new batch created');
+
+
+    logger.info('RestoreBatch task started');
+    await new RestoreBatch({
+      batchDocuments: this.props.batchDocuments,
+      batchTimeSeconds: this.props.batchTimeSeconds,
+      batchSizeBytes: this.props.batchSizeBytes,
+      batch
+    }).start();
+
+
     logger.info('ComposeBatch task started');
     await new ComposeBatch({
-      unprocessedDocuments: this.settings.unprocessedDocuments,
-      batchDocuments: this.settings.batchDocuments,
-      unprocessedDocumentsQueue: this.settings.unprocessedDocumentsQueue,
-      batchSizeBytes: this.settings.batchSizeBytes,
-      batchTimeSeconds: this.settings.batchTimeSeconds,
-      messageWaitTime: this.settings.messageWaitTime,
-      messageVisibilityTimeout: this.settings.messageVisibilityTimeout,
-      documentStoreAddress: this.settings.documentStore.address,
+      unprocessedDocuments: this.props.unprocessedDocuments,
+      batchDocuments: this.props.batchDocuments,
+      unprocessedDocumentsQueue: this.props.unprocessedDocumentsQueue,
+      batchSizeBytes: this.props.batchSizeBytes,
+      batchTimeSeconds: this.props.batchTimeSeconds,
+      messageWaitTime: this.props.messageWaitTime,
+      messageVisibilityTimeout: this.props.messageVisibilityTimeout,
+      documentStoreAddress: this.props.documentStore.address,
       batch
     }).start()
     logger.debug('batch.isEmpty')
@@ -84,14 +100,14 @@ class ProcessDocuments implements Task<void>{
 
     logger.info('IssueBatch task started');
     await new IssueBatch({
-      wallet: this.settings.wallet,
-      documentStore: this.settings.documentStore,
-      gasPriceLimitGwei: this.settings.gasPriceLimitGwei,
-      gasPriceMultiplier: this.settings.gasPriceMultiplier,
-      transactionTimeoutSeconds: this.settings.transactionTimeoutSeconds,
-      transactionConfirmationThreshold: this.settings.transactionConfirmationThreshold,
-      attempts: this.settings.issueAttempts,
-      attemptsIntervalSeconds: this.settings.issueAttemptsIntervalSeconds,
+      wallet: this.props.wallet,
+      documentStore: this.props.documentStore,
+      gasPriceLimitGwei: this.props.gasPriceLimitGwei,
+      gasPriceMultiplier: this.props.gasPriceMultiplier,
+      transactionTimeoutSeconds: this.props.transactionTimeoutSeconds,
+      transactionConfirmationThreshold: this.props.transactionConfirmationThreshold,
+      attempts: this.props.issueAttempts,
+      attemptsIntervalSeconds: this.props.issueAttemptsIntervalSeconds,
       batch
     }).start()
     if(!batch.issued){
@@ -102,10 +118,10 @@ class ProcessDocuments implements Task<void>{
 
     logger.info('SaveIssuedBatch task started');
     await new SaveIssuedBatch({
-      issuedDocuments: this.settings.issuedDocuments,
-      batchDocuments: this.settings.batchDocuments,
-      attempts: this.settings.saveAttempts,
-      attemptsIntervalSeconds: this.settings.saveAttemptsIntervalSeconds,
+      issuedDocuments: this.props.issuedDocuments,
+      batchDocuments: this.props.batchDocuments,
+      attempts: this.props.saveAttempts,
+      attemptsIntervalSeconds: this.props.saveAttemptsIntervalSeconds,
       batch
     }).start()
     if(!batch.saved){

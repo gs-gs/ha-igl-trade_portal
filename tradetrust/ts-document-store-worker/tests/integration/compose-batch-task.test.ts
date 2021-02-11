@@ -25,43 +25,14 @@ describe('ComposeBatch Task', ()=>{
   const batchDocuments = new BatchDocuments();
   const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue();
 
-  test('restore batch', async ()=>{
-    const documentsCount = 20;
-    const failedBatchDocumentsCount = 10;
-    const documents = generateDocumentsMap(documentsCount);
-    let documentIndex = 0;
-    for(let [key, document] of documents){
-      if(documentIndex < failedBatchDocumentsCount){
-        await batchDocuments.put({Key: key, Body: JSON.stringify(document)});
-      }else{
-        await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
-      }
-      documentIndex++;
-    }
-    const batch = new Batch();
-    const composeBatch = new ComposeBatch({
-      unprocessedDocuments,
-      batchDocuments,
-      unprocessedDocumentsQueue,
-      batchTimeSeconds: 5,
-      batchSizeBytes: 1024 * 1024 * 1024,
-      messageWaitTime: 1,
-      messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
-      batch
-    });
-    await composeBatch.start();
-
-    expect(documents.size).toEqual(batch.unwrappedDocuments.size);
-    for(let [key, document] of documents){
-      expect(document).toEqual(batch.unwrappedDocuments.get(key)?.body);
-    }
-
-  });
-
 
   test('batch backup', async ()=>{
     const documents = generateDocumentsMap(10);
+    for(let [key, document] of documents){
+      await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
+    }
+
+
     const batch = new Batch();
     const composeBatch = new ComposeBatch({
       unprocessedDocuments,
@@ -72,12 +43,12 @@ describe('ComposeBatch Task', ()=>{
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
       documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      attempts: 1,
+      attemptsIntervalSeconds: 1,
       batch
     });
-    for(let [key, document] of documents){
-      await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
-    }
     await composeBatch.start();
+
     for(let [key, document] of documents){
       expect(document).toEqual(batch.unwrappedDocuments.get(key)?.body);
       const s3Object = await batchDocuments.get({Key: key});

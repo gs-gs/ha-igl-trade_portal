@@ -105,7 +105,7 @@ describe('Test', ()=>{
       gasPriceLimitGwei: 200,
       gasPriceMultiplier: 1.2,
       batchSizeBytes: maxBatchSizeBytes * 2,
-      batchTimeSeconds: 5,
+      batchTimeSeconds: 10,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
       transactionTimeoutSeconds: 180,
