@@ -50,7 +50,7 @@ class RestoreBatch implements Task<Promise<void>>{
             await new Promise(r=>setTimeout(r, this.props.attemptsIntervalSeconds! * 1000));
           }else{
             logger.error('Ran out of attempts');
-            throw e;
+            throw e.source;
           }
         }else{
           throw e;
@@ -74,7 +74,9 @@ class RestoreBatch implements Task<Promise<void>>{
     this.props.batch.compositionStartTimestamp = Date.now();
     logger.info('Composition start timestamp = %s', this.props.batch.compositionStartTimestamp);
     do{
-      for(let s3Object of (await this.listBatchBackupDocuments(ContinuationToken)).Contents??[]){
+      const listObjectsResponse = await this.listBatchBackupDocuments(ContinuationToken);
+      ContinuationToken = listObjectsResponse.ContinuationToken;
+      for(let s3Object of listObjectsResponse.Contents??[]){
         if(!this.props.batch.unwrappedDocuments.has(s3Object.Key!)){
 
           let documentObject;
@@ -82,7 +84,7 @@ class RestoreBatch implements Task<Promise<void>>{
              documentObject = await this.props.batchDocuments.get({Key: s3Object.Key!});
           }catch(e){
             if(e.code == 'NoSuchKey'){
-              logger.error('Document "%s" got deleted before it was added into the batch during restoration.');
+              logger.error('Document "%s" got deleted before it was added into the batch during restoration.', s3Object.Key);
               continue;
             }else{
               throw new RetryError(e);
@@ -93,7 +95,7 @@ class RestoreBatch implements Task<Promise<void>>{
           try{
             documentJSONBody = JSON.parse(documentObject.Body!.toString());
           }catch(e){
-            logger.error('Document "%s" is not a valid JSON');
+            logger.error('Document "%s" is not a valid JSON', s3Object.Key);
             continue;
           }
 

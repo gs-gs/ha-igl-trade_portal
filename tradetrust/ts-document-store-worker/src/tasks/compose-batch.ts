@@ -160,7 +160,7 @@ class ComposeBatch implements Task<void>{
       wrapDocument(document)
     }catch(e){
       if(!!e.validationErrors){
-        throw new InvalidDocumentError(`Invalid document schema: ${e.validationErrors}`);
+        throw new InvalidDocumentError(`Invalid document schema: ${JSON.stringify(e.validationErrors, null, 4)}`);
       }else{
         throw e;
       }
