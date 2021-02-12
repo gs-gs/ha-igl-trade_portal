@@ -92,7 +92,7 @@ class ComposeBatch implements Task<void>{
 
   async deleteEvent(event: any){
     try{
-      this.props.unprocessedDocumentsQueue.delete({ReceiptHandle: event.ReceiptHandle})
+      await this.props.unprocessedDocumentsQueue.delete({ReceiptHandle: event.ReceiptHandle})
     }catch(e){
       throw new RetryError(e);
     }
@@ -116,14 +116,16 @@ class ComposeBatch implements Task<void>{
     // the only potential error here is invalid JSON string
     try{
       const documentJSONBody = JSON.parse(documentStringBody);
-      return {
+      documentObject = {
         key: s3Object.key,
-        size: s3Object.size,
+        size: documentObject.ContentLength,
         body: {
           string: documentStringBody,
           json: documentJSONBody
         }
       }
+      logger.info('Downloaded');
+      return documentObject;
     }catch(e){
       throw new InvalidDocumentError('Document body is not a valid JSON');
     }
@@ -178,8 +180,12 @@ class ComposeBatch implements Task<void>{
   async addDocumentToBatch(document: any){
     logger.debug('addDocumentToBatch')
     try{
+      logger.info('Adding document "%s" to backup', document.key);
       await this.props.batchDocuments.put({Key: document.key, Body: document.body.string});
+      logger.info('Added');
+      logger.info('Deleting document "%s" from unprocessed', document.key);
       await this.props.unprocessedDocuments.delete({Key: document.key});
+      logger.info('Deleted');
     }catch(e){
       throw new RetryError(e);
     }
@@ -191,6 +197,7 @@ class ComposeBatch implements Task<void>{
 
 
   async start(){
+    logger.info('Starting batch composition');
     // if batch didn't get any documents from RestoreBatch task
     // batch.compositionStartTimestamp will be reset and time spent on RestoreBatch task will be skipped
     if(!this.props.batch.restored){
@@ -238,6 +245,7 @@ class ComposeBatch implements Task<void>{
         logger.error(e);
         logger.info('Deleting the invalid event');
         await this.deleteEvent(event);
+        logger.info('Deleted');
         return;
       }else{
         throw e;
@@ -254,11 +262,13 @@ class ComposeBatch implements Task<void>{
         logger.info('Document succesfully added, deleting event');
       }
       await this.deleteEvent(event);
+      logger.info('Deleted');
     }catch(e){
       if(e instanceof InvalidDocumentError){
         logger.error(e);
         logger.info('Deleting the invalid document event');
         await this.deleteEvent(event);
+        logger.info('Deleted');
       }else{
         throw e;
       }
