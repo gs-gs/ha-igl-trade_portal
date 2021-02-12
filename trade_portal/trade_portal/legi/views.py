@@ -4,13 +4,18 @@ from django.views.generic import View
 from django.http import JsonResponse
 from django.utils.html import escape
 
-from trade_portal.legi.abr import fetch_abn_info
+from trade_portal.legi.abr import fetch_abn_info, search_entities_by_name
 
 
 logger = logging.getLogger(__name__)
 
 
-class AbnLookupView(View):
+class RateLimitMixin:
+    # TODO: implement it
+    pass
+
+
+class AbnLookupView(View, RateLimitMixin):
     def get(self, request, *args, **kwargs):
         abn = request.GET.get("abn")
         try:
@@ -38,6 +43,14 @@ class AbnLookupView(View):
                 }
             )
         else:
+            if abn_info is None:
+                return JsonResponse(
+                    {
+                        "status": "fail",
+                        "snippet": "The provided value has invalid format (not an ABN)",
+                        "abn": abn,
+                    }
+                )
             try:
                 abn_info.pop("BusinessName", None)
             except Exception as e:
@@ -51,3 +64,31 @@ class AbnLookupView(View):
             resp = abn_info.copy()
             resp.update({"snippet": snippet, "status": status})
             return JsonResponse(resp)
+
+
+class NameLookupView(View, RateLimitMixin):
+    def get(self, request, *args, **kwargs):
+        search_term = request.GET.get("search_term", "").strip()
+
+        if not search_term or len(search_term) < 2:
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "msg": "The search string is too short",
+                }
+            )
+
+        try:
+            orgs_resp = search_entities_by_name(search_term)
+        except Exception as e:
+            logger.exception(e)
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Unable to retrieve search results due to internal error; please try again later",
+                }
+            )
+        else:
+            return JsonResponse(
+                orgs_resp
+            )
