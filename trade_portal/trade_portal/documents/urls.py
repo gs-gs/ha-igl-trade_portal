@@ -13,7 +13,7 @@ from trade_portal.documents.views.documents import (
     DocumentHistoryFileDownloadView,
     ConsignmentUpdateView,
 )
-from trade_portal.legi.views import AbnLookupView
+from trade_portal.legi.views import AbnLookupView, NameLookupView
 
 app_name = "documents"
 
@@ -57,4 +57,5 @@ urlpatterns = [
     ),
     # misc
     path("api/abn-lookup/", AbnLookupView.as_view(), name="abn-lookup"),
+    path("api/name-lookup/", NameLookupView.as_view(), name="name-lookup"),
 ]

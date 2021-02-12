@@ -11,6 +11,9 @@
     textarea {
       max-height: 100px;
     }
+    #hint_id_exporter_name strong {
+      cursor: pointer;
+    }
   </style>
 {% endblock %}
 
@@ -80,7 +83,6 @@
           <div class="subtitle form-section__title">{% trans 'Document Metadata' %}</div>
 
           <div class="form-section__container">
-
             <div class="form-group" id="div_id_document_number">
               <label for="id_document_number">
                 {% trans 'Document Number' %}
@@ -106,15 +108,19 @@
               </label>
               {{ form.importing_country|as_crispy_field }}
             </div>
+          </div>
 
-            <div class="form-group">
+          <div class="row form-group form-section__container" style="max-width: 1024px">
+            <div class="col-lg-6 col-mg-6 col-sm-12">
               <label for="consignmentDocIssuer">
-                {% trans 'Exporter or Manufacturer' %} {{ BID_NAME }}*
+                {% trans 'Exporter or Manufacturer' %} {{ BID_NAME }}
                 <span class="help-icon" data-toggle="tooltip" title="{% siteblock 'doccreate_exporter_field' %}"><i class="icon icon-info"></i></span>
               </label>
+
               {% if form.exporter.errors %}
                 <div style="color: red">{{ form.exporter.errors }}</div>
               {% endif %}
+
               <div class="input-group">
                 {{ form.exporter }}
                 <div class="input-group-append">
@@ -137,7 +143,28 @@
               </div>
               <span id="hint_id_exporter"></span>
             </div>
+            <div class="col-lg-6 col-mg-6 col-sm-12">
+              <label for="consignmentDocIssuerName">
+                {% trans 'or business name' %}
+              </label>
 
+              <div class="input-group">
+                <input type="text" maxlength="128" class="form-control" id="id_exporter_name">
+                <div class="input-group-append">
+                  <a class="btn btn-md btn-link btn-advance-filter" type="button" role="button"
+                    id="id-company-name-search-button"
+                    style="font-weight: bold; font-size: 120%"
+                    >
+                    {% trans 'Find Company' %}
+                  </a>
+                </div>
+              </div>
+
+              <span id="hint_id_exporter_name" title="Click the ABN to use it"></span>
+            </div>
+          </div>
+
+          <div class="form-section__container">
             <div class="form-group" id="div_id_importer_name">
               <label for="id_importer_name">
                 {% trans 'Importer Name (if known)' %}
@@ -145,7 +172,6 @@
               </label>
               {{ form.importer_name|as_crispy_field }}
             </div>
-
             <div class="form-group">
               <label for="id_consignment_ref_doc_number">
                 {% trans 'Consignment Reference Number' %}
@@ -155,7 +181,6 @@
                 {{ form.consignment_ref_doc_number }}
               </div>
             </div>
-
           </div>
         </fieldset>
 
@@ -181,6 +206,16 @@
 {% block extra_script %}
   <script>
     {% if BID_NAME == "ABN" %}
+      function formattedABN(value) {
+        // 41 824 753 556
+        let result = value.replace(/\s/g, "");
+        if (result.length != 11) {
+          return value
+        }
+        result = result.slice(0, 2) + " " + result.slice(2, 5) + " " + result.slice(5, 8) + " " + result.slice(8, 11);
+        console.log(value, result);
+        return result;
+      }
       $("#id_exporter").keyup(function() {
         let val = $("#id_exporter").val().replace(/\s/g, "");
         if (val.length == 11) {
@@ -195,19 +230,52 @@
             success: function(resp) {
               if (resp.EntityName) {
                 hint.html(
-                  '<br/><div class="form-group">' +
-                  '<label>Exporter/manufacturer name</label>' +
-                  '<div>' +
-                  '<input type="text" class="textinput textInput form-control" readonly value="' + resp.EntityName + '" />' +
-                  '</div>' +
-                  '</div>'
+                  'Exporter/manufacturer name found: ' + resp.EntityName
                 );
+                document.getElementById("id_exporter_name").value = resp.EntityName;
               } else {
                 hint.html(resp.snippet);
               }
             }
           });
         }
+      });
+      $("#id-company-name-search-button").click(function(){
+        let searchTerm = document.getElementById("id_exporter_name").value;
+        let searchBtn = this;
+        let hintContainer = document.getElementById("hint_id_exporter_name");
+        searchBtn.innerHTML += "...";
+        $.ajax({
+          dataType: "json",
+          url: '/documents/api/name-lookup/?search_term=' + searchTerm,
+          data: null,
+          success: function(resp) {
+            searchBtn.innerHTML = searchBtn.innerHTML.replace(/\.+$/, "");  // strip the dots
+            if (resp.status == "success") {
+              if (resp.names.length == 0) {
+                hintContainer.innerHTML = "No results were found; please update the search query";
+              }
+              else {
+                hintContainer.innerHTML = "";
+                resp.names.forEach((el) => {
+                  hintContainer.innerHTML += `<span><strong>${formattedABN(el.Abn)}</strong>: ${el.Name} (${el.NameType}, ${el.State} ${el.Postcode})</span><br/>\n`;
+                });
+                if (resp.names.length == 20) {
+                  hintContainer.innerHTML += "<small>(only first 20 items are shown; use more specific search term for better results)</small>";
+                }
+              }
+            } else {
+              hintContainer = resp.message;
+            }
+          }
+        });
+      })
+      $("#hint_id_exporter_name").click(function(e) {
+        let src = e.target;
+        let clickedABN = src.closest("span").getElementsByTagName("strong")[0].innerHTML;
+        document.getElementById("hint_id_exporter_name").innerHTML = "";
+        document.getElementById("id_exporter").value = clickedABN;
+        $("#id_exporter").keyup();
       });
     {% endif %}
 
