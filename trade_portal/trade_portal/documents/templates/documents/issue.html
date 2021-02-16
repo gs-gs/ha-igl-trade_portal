@@ -80,10 +80,10 @@
 
   {% if object.get_pdf_attachment %}
     <p>The data specified above must match the information in the PDF document below - click "Back" to edit if not.<br/>
-    {% if object.get_pdf_attachment.is_watermarked is False %}
+    {% if SHOW_QR_CODE_ATTACHMENT %}
       Drag the QR code to a clear position on the document - the position will be remembered for this document type.
     {% else %}
-      This file doesn't require adding a QR code manually.
+      This file doesn't require adding a QR code manually or it's impossible.
     {% endif %}
     </p>
 
@@ -97,9 +97,20 @@
         <a href="{% url 'documents:fill' object.pk %}" class="btn btn-secondary">Back</a>
       {% endif %}
       <button type="submit" name="issue-without-qr-code" class="btn btn-secondary">Issue without QR code</button>
-      <button type="submit" name="issue" class="btn btn-primary">Issue</button>
 
-      {% if object.get_pdf_attachment.is_watermarked is False %}
+      {% if not IS_PDF_ENCRYPTED and not IS_PDF_UNPARSEABLE %}
+        <button type="submit" name="issue" class="btn btn-primary">Issue</button>
+      {% else %}
+        <br/><br/>
+        {% if IS_PDF_ENCRYPTED %}
+          <div class="alert alert-warning">This PDF is encrypted and can't be updated; you still can issue it but without the QR code</div>
+        {% endif %}
+        {% if IS_PDF_UNPARSEABLE %}
+          <div class="alert alert-warning">This PDF cannot be parsed; you still can issue it but the receiving party may not be able to show the document</div>
+        {% endif %}
+      {% endif %}
+
+      {% if SHOW_QR_CODE_ATTACHMENT %}
         <input type="hidden" name="qr_x" id="id_qr_x" value="{{ initial_qr_x_value|default:'2' }}" />
         <input type="hidden" name="qr_y" id="id_qr_y" value="{{ initial_qr_y_value|default:'3' }}" />
       {% endif %}
@@ -107,7 +118,7 @@
 
     <br/><br/>
     <div id="id_qr_code_area">
-      {% if object.get_pdf_attachment.is_watermarked is False %}
+      {% if SHOW_QR_CODE_ATTACHMENT %}
         <img class="igl-doc-qrcode__image"
           src="data:image/png;base64,{{ object.oa.get_qr_image_base64 }}" alt="{{ object.oa.url_repr }}" id="id_qr_code" />
       {% endif %}
@@ -155,7 +166,7 @@
 {% endblock %}
 
 {% block extra_script %}
-  {% if object.get_pdf_attachment.is_watermarked is False %}
+  {% if SHOW_QR_CODE_ATTACHMENT %}
   <script>
     var draggableParent = document.getElementById("id_base_image");
     draggableParent.onload = dragElement;

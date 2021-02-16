@@ -45,7 +45,11 @@ class WatermarkService:
         return
 
     def get_document_filesize(self, docfile: DocumentFile) -> (int, int):
-        # Note: works bad with encrypted PDFS, but we can't watermark them anyway.
+        """
+        Return x, y tuple meaning the original page size (mm)
+        Or -1, -1 if the document is encrypted (which doesn't mean it can't be read, but can't be updated)
+        Or 0, 0 if the document can't be parsed (not a PDF or some internal format issue)
+        """
         from PyPDF2 import PdfFileReader
         from reportlab.lib.units import mm
 
@@ -54,8 +58,11 @@ class WatermarkService:
             orig_doc = PdfFileReader(docfile.original_file or docfile.file)
             orig_doc_first_page_size = orig_doc.getPage(0).mediaBox
         except Exception as e:
-            logger.exception(e)
-            return 0, 0
+            if "file has not been decrypted" in str(e):
+                return -1, -1
+            else:
+                logger.exception(e)
+                return 0, 0
         return (
             round(
                 float(orig_doc_first_page_size[2] - orig_doc_first_page_size[0]) / mm,

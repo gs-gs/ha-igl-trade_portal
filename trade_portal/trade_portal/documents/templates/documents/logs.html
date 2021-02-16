@@ -50,12 +50,12 @@
         <tbody>
           {% for history_item in object.history.all %}
             <tr {% if history_item.is_error %}style="background-color: #faa"{% endif %}>
-              <td style='max-width: 200px'>{{ history_item.message }}<br/>{{ history_item.created_at }}</td>
-              <td>
-                {% if history_item.object_body %}
+              <td style='max-width: 200px' {% if not history_item.object_body %}colspan="2"{% endif %}>{{ history_item.message }}<br/>{{ history_item.created_at }}</td>
+              {% if history_item.object_body %}
+                <td>
                   <textarea style="font-size: 7pt; min-width: 300px; height: 100px;" readonly>{{ history_item.object_body|json_render }}</textarea>
-                {% endif %}
-              </td>
+                </td>
+              {% endif %}
               <td>
                 {% if history_item.related_file %}
                   <a href="{% url 'documents:history-file-download' object.id history_item.id %}" target="_new">{% trans 'Download' %}</a>
