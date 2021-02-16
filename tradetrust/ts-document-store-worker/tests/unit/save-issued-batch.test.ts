@@ -2,6 +2,17 @@ import { IssuedDocuments, BatchDocuments } from 'src/repos';
 import { SaveIssuedBatch, Batch } from 'src/tasks';
 
 
+class UnexpectedError extends Error{
+  constructor(){
+    super('Unexpected Error')
+  }
+}
+
+class NoSuchKey extends Error{
+  public code: string = 'NoSuchKey'
+}
+
+
 describe.only('SaveIssuedBatch task unit tests', ()=>{
 
   const createIssuedDocumentsRepoMock = ()=>{
@@ -16,40 +27,31 @@ describe.only('SaveIssuedBatch task unit tests', ()=>{
     }
   }
 
-  test('test errors', async ()=>{
+  test('test retry errors', async ()=>{
     const issuedDocuments = createIssuedDocumentsRepoMock();
     const batchDocuments = createBatchDocumentsRepoMock();
-    class NoSuchKey extends Error{
-      public code: string = 'NoSuchKey'
-    }
 
-    batchDocuments.delete.mockReset();
-    (
-      batchDocuments.delete
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(true)
-      .mockRejectedValueOnce('batchDocuments.delete unexpected error')
-      .mockResolvedValueOnce(true)
-      .mockRejectedValueOnce(new NoSuchKey())
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(true)
-    )
-    issuedDocuments.put.mockReset();
-    (
-      issuedDocuments.put
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(true)
-      .mockRejectedValueOnce(new Error('issuedDocuments.put unexpected error'))
-      .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(true)
-    )
     const batch = new Batch();
-    for(let i = 0; i < 5; i++){
-      const key = `document-key-${i}`
-      const body = { body: `document-body-${i}` }
-      batch.wrappedDocuments.set(key, body);
-    }
+
+    batch.wrappedDocuments.set('document-1', {body: 'document-1-body'});
+    batch.wrappedDocuments.set('document-2', {body: 'document-2-body'});
+
+
+    issuedDocuments.put.mockReset();
+    batchDocuments.delete.mockReset();
+
+    // I=1 key=document-1
+    issuedDocuments.put.mockRejectedValueOnce(new UnexpectedError());
+    // I=2 key=document-1
+    issuedDocuments.put.mockResolvedValueOnce(true);
+    batchDocuments.delete.mockRejectedValueOnce(new UnexpectedError());
+    // I=3 key=document-1
+    issuedDocuments.put.mockResolvedValueOnce(true);
+    batchDocuments.delete.mockResolvedValueOnce(true);
+    // I=4 key=document-2
+    issuedDocuments.put.mockResolvedValueOnce(true)
+    batchDocuments.delete.mockRejectedValueOnce(new NoSuchKey());
+
     const saveIssuedBatch = new SaveIssuedBatch({
       issuedDocuments: <IssuedDocuments><unknown>issuedDocuments,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
@@ -58,32 +60,50 @@ describe.only('SaveIssuedBatch task unit tests', ()=>{
       attemptsIntervalSeconds: 1
     });
     await saveIssuedBatch.start();
-    // each document saved/deleted only once, calls.length = 5 documents + 1 unexpected error
-    // NoSuchKey error treated as succesful deletion but with a warning message
-    expect(batchDocuments.delete.mock.calls.length).toBe(6);
-    expect(issuedDocuments.put.mock.calls.length).toBe(6);
-    // workflow check
-    expect(issuedDocuments.put.mock.calls[0][0].Key).toEqual('document-key-0');
-    expect(batchDocuments.delete.mock.calls[0][0]).toEqual({Key: 'document-key-0'});
-
-    expect(issuedDocuments.put.mock.calls[1][0].Key).toEqual('document-key-1');
-    expect(batchDocuments.delete.mock.calls[1][0]).toEqual({Key: 'document-key-1'});
-
-    // unexpected delete error
-    expect(issuedDocuments.put.mock.calls[2][0].Key).toEqual('document-key-2');
-    expect(batchDocuments.delete.mock.calls[2][0]).toEqual({Key: 'document-key-2'});
-
-    // repeat previos failed operation
-    expect(batchDocuments.delete.mock.calls[3][0]).toEqual({Key: 'document-key-2'});
-
-    // unexpeced saving error, delete not called
-    expect(issuedDocuments.put.mock.calls[3][0].Key).toEqual('document-key-3');
-
-    // repeat previos failed operation
-    expect(issuedDocuments.put.mock.calls[4][0].Key).toEqual('document-key-3');
-    expect(batchDocuments.delete.mock.calls[4][0]).toEqual({Key: 'document-key-3'});
-
-    expect(issuedDocuments.put.mock.calls[5][0].Key).toEqual('document-key-4');
-    expect(batchDocuments.delete.mock.calls[5][0]).toEqual({Key: 'document-key-4'});
+    expect(issuedDocuments.put.mock.calls.length).toBe(3);
+    expect(batchDocuments.delete.mock.calls.length).toBe(3);
+    // I=1
+    expect(issuedDocuments.put.mock.calls[0][0].Key).toBe('document-1');
+    // I=2
+    expect(issuedDocuments.put.mock.calls[1][0].Key).toBe('document-1');
+    expect(batchDocuments.delete.mock.calls[0][0].Key).toBe('document-1');
+    // I=3
+    expect(batchDocuments.delete.mock.calls[1][0].Key).toBe('document-1');
+    // I=4
+    expect(issuedDocuments.put.mock.calls[2][0].Key).toBe('document-2');
+    expect(batchDocuments.delete.mock.calls[2][0].Key).toBe('document-2');
   });
+
+  test('test ran out of attempts', async ()=>{
+    const attempts = 5;
+    const issuedDocuments = createIssuedDocumentsRepoMock();
+    const batchDocuments = createBatchDocumentsRepoMock();
+
+    const batch = new Batch();
+
+    batch.wrappedDocuments.set('document-1', {body: 'document-1-body'});
+    batch.wrappedDocuments.set('document-2', {body: 'document-2-body'});
+
+
+    issuedDocuments.put.mockReset();
+    batchDocuments.delete.mockReset();
+    issuedDocuments.put.mockRejectedValue(new UnexpectedError());
+
+    const saveIssuedBatch = new SaveIssuedBatch({
+      issuedDocuments: <IssuedDocuments><unknown>issuedDocuments,
+      batchDocuments: <BatchDocuments><unknown>batchDocuments,
+      batch,
+      attempts,
+      attemptsIntervalSeconds: 1
+    });
+    try{
+      await saveIssuedBatch.start();
+    }catch(e){
+      expect(e instanceof UnexpectedError).toBe(true);
+      expect(issuedDocuments.put.mock.calls.length).toBe(attempts);
+      expect(batchDocuments.delete.mock.calls.length).toBe(0);
+    }
+
+  });
+
 })
