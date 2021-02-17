@@ -4,37 +4,13 @@
 {% load crispy_forms_tags %}
 {% load our_utils %}
 
-{% block title %}{% trans 'Logs for' %} {% if object.is_incoming %}{% trans 'incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} #{{ object.document_number|default:object.short_id }}{% endblock %}
+{% block title %}{% trans 'Logs and history' %} {% if object.is_incoming %}{% trans 'incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} #{{ object.document_number|default:object.short_id }}{% endblock %}
 
 {% block content %}
 <div class="content-box">
-
-
-  <div class="row">
-    <div class="col col-lg-6">
-      <h1 class="page-title">{% trans 'Logs for' %} {% if object.is_incoming %}{% trans 'incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} #{{ object.document_number|default:object.short_id }}</h1>
-      <a href="../" class="btn btn-primary btn-sm">{% trans 'Go back to the document' %}</a>
-    </div>
-    <div class="col col-lg-6">
-
-      <table class="table table-bordered">
-        <tbody>
-          <tr>
-            <th>Verifications, as file</th>
-            <td>{{ verifications_file }}</td>
-          </tr>
-          <tr>
-            <th>Verifications, QR</th>
-            <td>{{ verifications_qr }}</td>
-          </tr>
-          <tr>
-            <th>Verifications, Link</th>
-            <td>{{ verifications_link }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <a href="../" class="btn btn-primary btn-sm" style="float: right">{% trans 'Go back to the document' %}</a>
+  <h1 class="page-title" style="margin-bottom: 0px">{% trans 'Logs and history' %}</h1>
+  <a href="../"><h2 class="subtitle">{% if object.is_incoming %}{% trans 'incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} {{ object.document_number|default:object.short_id }}</h2></a>
 
   <div class="section-info section-info--no-border">
     <div class="subtitle section-info__title">{% trans 'Document status history' %}</div>
@@ -69,13 +45,33 @@
     </div>
   </div>
 
+  <div class="section-info section-info--no-border">
+    <div class="subtitle section-info__title">{% trans 'Verifications statistics' %}</div>
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <th>Verifications, as file</th>
+          <td>{{ verifications_file }}</td>
+        </tr>
+        <tr>
+          <th>Verifications, QR</th>
+          <td>{{ verifications_qr }}</td>
+        </tr>
+        <tr>
+          <th>Verifications, Link</th>
+          <td>{{ verifications_link }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 
   {% with object.get_rendered_edi3_document as rendered_document %}
     {# some documents (like incoming but not downloaded) can't be rendered #}
     {% if rendered_document %}
       <div class="section-info">
-      <h3 class="subtitle section-info__title">{% trans 'Document' %}</h3>
-      <textarea style="width: 100%; border: 0; height: 300px; font-size: 8pt" disabled>{{ rendered_document|json_render }}</textarea>
+      <h3 class="subtitle section-info__title">{% trans 'Generated or downloaded document' %}</h3>
+      <textarea style="width: 100%; height: 300px; font-size: 8pt" disabled>{{ rendered_document|json_render }}</textarea>
       </div>
     {% endif %}
   {% endwith %}

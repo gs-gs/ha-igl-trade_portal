@@ -8,7 +8,8 @@
 
 {% block content %}
 <div class="content-box">
-  <h1 class="page-title">{% if object.is_incoming %}{% trans 'Incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} #{{ object.document_number|default:object.short_id }}</h1>
+  <a href="logs/" class="btn btn-primary btn-sm" style="float: right; min-width: 150px">Logs</a>
+  <h1 class="page-title">{% if object.is_incoming %}{% trans 'Incoming' %}{% endif %} {{ object.get_type_display|default:"document" }} {{ object.document_number|default:object.short_id }}</h1>
 
   <div class="row" style="background-color: whitesmoke; padding: 10px">
     <div class="col">
@@ -57,8 +58,8 @@
         </form>
       {% endif %}
     </div>
+    {% if IS_CONNECTED_TO_IGL %}
     <div class="col">
-      {% if IS_CONNECTED_TO_IGL %}
         <strong>Inter-Government Message</strong><br/>
 
         {% if object.status == object.STATUS_FAILED %}
@@ -78,9 +79,8 @@
         {% blocktrans %}
         <p>The ABF has established direct government-to-government channels with some other government for some document types. Where such a channel exists, your document will also be sent directly to the importing government. This can help to facilitate / streamline import clearance processes</p>
         {% endblocktrans %}
-      {% endif %}
-      <a href="logs/" class="btn btn-primary btn-sm" style="width: 150px">Logs</a><br/>
     </div>
+    {% endif %}
   </div>
 
   <br/><br/>

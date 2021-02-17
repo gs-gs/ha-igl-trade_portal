@@ -224,10 +224,7 @@ def fill_document_metadata(document_id=None):
                     is_error=False,
                     type="message",
                     document=doc,
-                    message=(
-                        f"The PDF has been marked as readonly (can't be parsed),"
-                        f" spent {time_spent}s"
-                    )
+                    message=f"The PDF is readonly (can't be parsed), spent {time_spent}s"
                 )
             elif x == -1 and y == -1:
                 docfile.metadata["encrypted_pdf"] = True
@@ -235,10 +232,7 @@ def fill_document_metadata(document_id=None):
                     is_error=False,
                     type="message",
                     document=doc,
-                    message=(
-                        f"The PDF has been marked as readonly (protected from updates),"
-                        f" spent {time_spent}s"
-                    )
+                    message=f"The PDF is readonly (protected from updates), spent {time_spent}s",
                 )
             else:
                 DocumentHistoryItem.objects.create(
