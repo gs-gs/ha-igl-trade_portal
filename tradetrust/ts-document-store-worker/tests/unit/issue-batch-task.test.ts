@@ -180,10 +180,6 @@ describe('IssueBatch tast unit tests', ()=>{
 
     function compareGasPrices(index: number){
       const expectedGasPrice = mulGasPrice(GAS_PRICE, Math.pow(gasPriceMultiplier, index));
-      console.log({
-        expectedGasPrice: utils.formatUnits(expectedGasPrice, 'gwei'),
-        gasPrice: utils.formatUnits(wallet.sendTransaction.mock.calls[index][0].gasPrice, 'gwei')
-      })
       expect(<BigNumber>wallet.sendTransaction.mock.calls[index][0].gasPrice.eq(expectedGasPrice)).toBe(true);
     }
 
@@ -299,7 +295,11 @@ describe('IssueBatch tast unit tests', ()=>{
       attemptsIntervalSeconds: attemptsIntervalSeconds,
       batch,
     });
-    await issueBatch.start();
+    try{
+      await issueBatch.start();
+    }catch(e){
+      expect(e.message).toBe('Totally unexpected error');
+    }
     expect(wallet.sendTransaction.mock.calls.length).toBe(attempts);
     expect(wallet.provider.waitForTransaction.mock.calls.length).toBe(0);
   });
