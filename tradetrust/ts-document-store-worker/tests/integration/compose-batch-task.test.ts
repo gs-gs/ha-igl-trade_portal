@@ -76,6 +76,14 @@ describe('ComposeBatch Task', ()=>{
         }
       ]
     }));
+    // adding the document and modifying its event to set invalid etag
+    await unprocessedDocuments.put({Key: 'invalid-etag-document', Body: JSON.stringify(documentV2({body: 'invalid-etag-body-1'}))});
+    const invalidETagDocumentPutEvent: any = await unprocessedDocumentsQueue.get();
+    invalidETagDocumentPutEvent.Body = JSON.parse(invalidETagDocumentPutEvent.Body);
+    invalidETagDocumentPutEvent.Body.Records[0].s3.object.eTag = 'invalid-etag';
+    await unprocessedDocumentsQueue.delete({ReceiptHandle: invalidETagDocumentPutEvent.ReceiptHandle});
+    await unprocessedDocumentsQueue.post({MessageBody: JSON.stringify(invalidETagDocumentPutEvent.Body)});
+
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
     }
@@ -97,6 +105,7 @@ describe('ComposeBatch Task', ()=>{
     expect(batch.unwrappedDocuments.get('deleted-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('invalid-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('invalid-document-store-document')).toBeFalsy();
+    expect(batch.unwrappedDocuments.get('invalid-etag-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('regular-document')).toBeTruthy();
   });
 

@@ -104,10 +104,15 @@ class ComposeBatch implements Task<void>{
     const s3Object = event.Body.Records[0].s3.object;
     let documentObject;
     try{
-      logger.info('Trying do download the document. Key "%s"', s3Object.key);
-      documentObject = await this.props.unprocessedDocuments.get({Key: s3Object.key});
+      logger.info('Trying do download the document. Key "%s", eTag "%s"', s3Object.key, s3Object.eTag);
+      documentObject = await this.props.unprocessedDocuments.get({Key: s3Object.key, IfMatch: s3Object.eTag});
     }catch(e){
+      // these conditions are separate just for verbosity
       if(e.code === 'NoSuchKey'){
+        logger.warn('Document not found');
+        return undefined;
+      }else if(e.code === 'PreconditionFailed'){
+        logger.warn('Document with a matching eTag not found');
         return undefined;
       }
       throw new RetryError(e);

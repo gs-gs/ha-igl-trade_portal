@@ -12,7 +12,8 @@ interface BucketPutRequest{
 }
 
 interface BucketGetRequest{
-  Key: string
+  Key: string,
+  IfMatch?: string
 }
 
 interface BucketDeleteRequest{
@@ -80,12 +81,21 @@ interface QueueDeleteRequest{
   ReceiptHandle: string
 }
 
+interface QueuePostRequest{
+  MessageBody: string,
+  DelaySeconds?: number
+}
+
 class Queue{
   queue_url: string;
   constructor(queue_url: string = ''){
     this.queue_url = queue_url;
   }
-  async get(params?: QueueGetRequest): Promise<any|null>{
+
+  async post(params: QueuePostRequest): Promise<any>{
+    return await SQSService.sendMessage({QueueUrl: this.queue_url, ...params}).promise();
+  }
+  async get(params?: QueueGetRequest): Promise<AWS.SQS.Message|null>{
     const r = await SQSService.receiveMessage({QueueUrl: this.queue_url, MaxNumberOfMessages: 1, ...params}).promise();
     return r.Messages?r.Messages[0]:null;
   }
