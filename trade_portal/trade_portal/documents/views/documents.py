@@ -15,6 +15,7 @@ from django.views.generic import (
 from django_tables2 import SingleTableView
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.utils.text import slugify
 from PyPDF2.utils import PdfReadError
 
 from trade_portal.documents.forms import (
@@ -204,7 +205,23 @@ class DocumentLogsView(Login, DocumentQuerysetMixin, DetailView):
 
 
 class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
+    """
+    TODO: unittest for that view
+    """
     doc_type = "file"
+
+    def _get_filename_to_return(self):
+        c = self.get_queryset().get(pk=self.kwargs["pk"])
+        first_pdf = c.files.filter(filename__endswith=".pdf").first()
+        if not first_pdf:
+            first_pdf = c.files.all().first()
+        if first_pdf:
+            if "." not in first_pdf.filename:
+                return slugify(first_pdf.filename)
+            else:
+                return slugify(first_pdf.filename.rsplit(".", maxsplit=1)[0])
+        else:
+            return "document"
 
     def get_object(self):
         try:
@@ -275,7 +292,7 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
         elif self.doc_type == "oa":
             # OA document from the OA details object
             response = HttpResponse(document, content_type="application/json")
-            response["Content-Disposition"] = "attachment; filename=OA.json"
+            response["Content-Disposition"] = f'attachment; filename="{self._get_filename_to_return()}.json"'
         else:
             raise Exception("Unkown document type")
         return response
