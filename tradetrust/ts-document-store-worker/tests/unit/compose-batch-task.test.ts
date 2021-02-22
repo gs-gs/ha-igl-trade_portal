@@ -5,7 +5,7 @@ import {
   BatchDocuments
 } from 'src/repos';
 import { ComposeBatch, Batch } from 'src/tasks';
-import config from 'src/config';
+import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import {
   documentV2
 } from 'tests/utils';
@@ -46,6 +46,7 @@ function S3ObjectResponse(s3Object: any){
 
 describe('ComposeBatch task unit tests', ()=>{
   jest.setTimeout(100 * 1000);
+  const config = getBatchedDocumentStoreTaskEnvConfig();
   const createUnprocessedDocumentsQueueMock = ()=>{
     return {
       get: jest.fn(),

@@ -1,5 +1,5 @@
 import { IssuedDocuments, BatchDocuments } from 'src/repos';
-import { SaveIssuedBatch, Batch } from 'src/tasks';
+import { SaveBatch, Batch } from 'src/tasks';
 
 
 class UnexpectedError extends Error{
@@ -52,7 +52,7 @@ describe.only('SaveIssuedBatch task unit tests', ()=>{
     issuedDocuments.put.mockResolvedValueOnce(true)
     batchDocuments.delete.mockRejectedValueOnce(new NoSuchKey());
 
-    const saveIssuedBatch = new SaveIssuedBatch({
+    const saveIssuedBatch = new SaveBatch({
       issuedDocuments: <IssuedDocuments><unknown>issuedDocuments,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
       batch,
@@ -89,7 +89,7 @@ describe.only('SaveIssuedBatch task unit tests', ()=>{
     batchDocuments.delete.mockReset();
     issuedDocuments.put.mockRejectedValue(new UnexpectedError());
 
-    const saveIssuedBatch = new SaveIssuedBatch({
+    const saveIssuedBatch = new SaveBatch({
       issuedDocuments: <IssuedDocuments><unknown>issuedDocuments,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
       batch,

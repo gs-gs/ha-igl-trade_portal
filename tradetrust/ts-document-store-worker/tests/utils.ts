@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import { logger } from 'src/logger';
-import config from 'src/config';
+import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import {SQS, S3} from 'src/aws';
 import DOCUMENT_V2_JSON from './data/document.v2.json';
 
+const config = getBatchedDocumentStoreTaskEnvConfig();
 
 const S3Service = S3();
 const SQSService = SQS();

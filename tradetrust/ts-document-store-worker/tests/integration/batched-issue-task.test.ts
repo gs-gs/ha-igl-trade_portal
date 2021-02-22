@@ -7,22 +7,24 @@ import {
   IssuedDocuments,
   UnprocessedDocumentsQueue
 } from 'src/repos';
-import config from 'src/config';
+import { getBatchedIssueEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
-import { ProcessDocuments } from 'src/tasks';
+import { BatchedIssue } from 'src/tasks';
 import { clearQueue, clearBucket, generateDocumentsMap } from 'tests/utils';
 
 describe('Test', ()=>{
 
   jest.setTimeout(1000 * 100);
 
+
+  const config = getBatchedIssueEnvConfig();
   const documentsCount = 20;
   const documents = generateDocumentsMap(documentsCount);
 
-  const unprocessedDocuments = new UnprocessedDocuments();
-  const batchDocuments = new BatchDocuments();
-  const issuedDocuments = new IssuedDocuments();
-  const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue();
+  const unprocessedDocuments = new UnprocessedDocuments(config);
+  const batchDocuments = new BatchDocuments(config);
+  const issuedDocuments = new IssuedDocuments(config);
+  const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue(config);
 
   let wallet: Wallet;
   let documentStore: DocumentStore;
@@ -32,8 +34,8 @@ describe('Test', ()=>{
     await clearBucket(config.UNPROCESSED_BUCKET_NAME);
     await clearBucket(config.BATCH_BUCKET_NAME);
     await clearBucket(config.ISSUED_BUCKET_NAME);
-    wallet = await connectWallet();
-    documentStore = await connectDocumentStore(wallet);
+    wallet = await connectWallet(config);
+    documentStore = await connectDocumentStore(config, wallet);
     done();
   }, 1000 * 60);
 
@@ -49,7 +51,7 @@ describe('Test', ()=>{
       maxBatchSizeBytes += documentS3Object.ContentLength!;
     }
 
-    const processDocuments = new ProcessDocuments({
+    const processDocuments = new BatchedIssue({
       unprocessedDocuments,
       batchDocuments,
       issuedDocuments,
@@ -99,7 +101,7 @@ describe('Test', ()=>{
       maxBatchSizeBytes += documentS3Object.ContentLength!;
     }
 
-    const processDocuments = new ProcessDocuments({
+    const processDocuments = new BatchedIssue({
       unprocessedDocuments,
       batchDocuments,
       issuedDocuments,

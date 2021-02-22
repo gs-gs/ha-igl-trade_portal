@@ -11,9 +11,11 @@ function get_env_or_file_value(envVarName: string):string{
 }
 
 
-interface ConfigInterface{
+interface IAWSConfig{
   readonly AWS_ENDPOINT_URL?: string
+}
 
+interface IBatchedDocumentStoreTaskConfig extends IAWSConfig{
   readonly BLOCKCHAIN_ENDPOINT: string
 
   readonly DOCUMENT_STORE_OWNER_PRIVATE_KEY: string
@@ -21,16 +23,16 @@ interface ConfigInterface{
 
   readonly UNPROCESSED_QUEUE_URL: string
   readonly UNPROCESSED_BUCKET_NAME: string
-  readonly ISSUED_BUCKET_NAME: string
   readonly BATCH_BUCKET_NAME: string
 
   readonly MESSAGE_WAIT_TIME: number,
   readonly MESSAGE_VISIBILITY_TIMEOUT: number,
-  readonly TRANSACTION_TIMEOUT_SECONDS: number,
-  readonly TRANSACTION_CONFIRMATION_THRESHOLD: number,
 
   readonly GAS_PRICE_MULTIPLIER: number,
   readonly GAS_PRICE_LIMIT_GWEI: number,
+
+  readonly TRANSACTION_TIMEOUT_SECONDS: number,
+  readonly TRANSACTION_CONFIRMATION_THRESHOLD: number,
 
   readonly BATCH_SIZE_BYTES: number,
   readonly BATCH_TIME_SECONDS: number,
@@ -41,20 +43,27 @@ interface ConfigInterface{
   readonly COMPOSE_ATTEMPTS: number,
   readonly COMPOSE_ATTEMPTS_INTERVAL_SECONDS: number,
 
-  readonly ISSUE_ATTEMPTS: number,
-  readonly ISSUE_ATTEMPTS_INTERVAL_SECONDS: number,
-
   readonly SAVE_ATTEMPTS: number,
   readonly SAVE_ATTEMPTS_INTERVAL_SECONDS: number
 }
 
 
-const config:ConfigInterface = {
+interface IBatchedIssueConfig extends IBatchedDocumentStoreTaskConfig{
+  readonly ISSUED_BUCKET_NAME: string
+
+  readonly ISSUE_ATTEMPTS: number,
+  readonly ISSUE_ATTEMPTS_INTERVAL_SECONDS: number,
+}
+
+const getAWSEnvConfig = (): IAWSConfig => ({
   AWS_ENDPOINT_URL: process.env.AWS_ENDPOINT_URL,
+})
+
+const getBatchedDocumentStoreTaskEnvConfig = (): IBatchedDocumentStoreTaskConfig => ({
+  ...getAWSEnvConfig(),
   UNPROCESSED_QUEUE_URL: process.env.UNPROCESSED_QUEUE_URL??'',
   UNPROCESSED_BUCKET_NAME: process.env.UNPROCESSED_BUCKET_NAME??'',
   BATCH_BUCKET_NAME: process.env.BATCH_BUCKET_NAME??'',
-  ISSUED_BUCKET_NAME: process.env.ISSUED_BUCKET_NAME??'',
 
   BLOCKCHAIN_ENDPOINT: process.env.BLOCKCHAIN_ENDPOINT??'',
 
@@ -80,10 +89,22 @@ const config:ConfigInterface = {
   COMPOSE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.RESTORE_ATTEMPTS_INTERVAL_SECONDS??'60'),
 
   SAVE_ATTEMPTS: parseInt(process.env.SAVE_ATTEMPTS??'10'),
-  SAVE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.SAVE_ATTEMPTS_INTERVAL_SECONDS??'60'),
+  SAVE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.SAVE_ATTEMPTS_INTERVAL_SECONDS??'60')
+})
 
+
+const getBatchedIssueEnvConfig = (): IBatchedIssueConfig => ({
+  ...getBatchedDocumentStoreTaskEnvConfig(),
+  ISSUED_BUCKET_NAME: process.env.ISSUED_BUCKET_NAME??'',
   ISSUE_ATTEMPTS: parseInt(process.env.ISSUE_ATTEMPTS??'10'),
   ISSUE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.ISSUE_ATTEMPTS_INTERVAL_SECONDS??'60')
-}
+})
 
-export default config;
+export {
+  IAWSConfig,
+  IBatchedIssueConfig,
+  IBatchedDocumentStoreTaskConfig,
+  getAWSEnvConfig,
+  getBatchedIssueEnvConfig,
+  getBatchedDocumentStoreTaskEnvConfig
+};

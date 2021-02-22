@@ -1,4 +1,4 @@
-import config from 'src/config';
+import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import { Batch, RestoreBatch } from 'src/tasks';
 import {
   BatchDocuments,
@@ -11,13 +11,14 @@ import {
 
 describe('RestoreBatch task integration tests', ()=>{
   jest.setTimeout(1000 * 100);
+  const config = getBatchedDocumentStoreTaskEnvConfig();
 
   beforeEach(async (done)=>{
     await clearBucket(config.BATCH_BUCKET_NAME);
     done();
   }, 1000 * 60);
 
-  const batchDocuments = new BatchDocuments();
+  const batchDocuments = new BatchDocuments(config);
 
   test('restore batch, batch.restored=true, batch.composed=true', async ()=>{
     const documentsCount = 10;

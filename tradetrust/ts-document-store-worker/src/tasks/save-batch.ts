@@ -1,13 +1,13 @@
 import { logger } from '../logger';
-import { BatchDocuments, IssuedDocuments } from "../repos";
+import { Bucket } from "../repos";
 import { Batch } from './data';
 import { Task } from './interfaces';
 import { RetryError } from './errors';
 
 
 interface ISaveIssuedBatchProps{
-  issuedDocuments: IssuedDocuments,
-  batchDocuments: BatchDocuments,
+  issuedDocuments: Bucket,
+  batchDocuments: Bucket,
   batch: Batch,
   attempts?: number,
   attemptsIntervalSeconds?: number
@@ -20,7 +20,7 @@ interface ISaveIssuedBatchState{
 }
 
 
-class SaveIssuedBatch implements Task<void>{
+class SaveBatch implements Task<void>{
 
   private props: ISaveIssuedBatchProps;
   private state: ISaveIssuedBatchState;
@@ -41,7 +41,7 @@ class SaveIssuedBatch implements Task<void>{
       logger.debug('"%s" already saved', key);
       return;
     }
-    logger.info('Saving "%s" to issued batch documents', key);
+    logger.info('Saving "%s" to processed batch documents', key);
     const documentBodyString = JSON.stringify(body);
     try{
       await this.props.issuedDocuments.put({Key:key, Body: documentBodyString});
@@ -81,7 +81,7 @@ class SaveIssuedBatch implements Task<void>{
   }
 
   async start(){
-    logger.info('Started saving issued batch documents...')
+    logger.info('Started saving processed batch documents...')
     this.props.batch.saved = false;
     // saving keys of already saved & deleted documents to restore state after a critical unexpected error
     this.state.savedDocuments = new Array<string>();
@@ -91,7 +91,7 @@ class SaveIssuedBatch implements Task<void>{
         logger.info('Attempt %s/%s', this.state.attempt + 1, this.props.attempts);
         await this.next();
         this.props.batch.saved = true;
-        logger.info('Issued batch documents saved');
+        logger.info('Processed batch documents saved');
         return;
       }catch(e){
         if(e instanceof RetryError){
@@ -115,4 +115,4 @@ class SaveIssuedBatch implements Task<void>{
 
 }
 
-export default SaveIssuedBatch;
+export default SaveBatch;

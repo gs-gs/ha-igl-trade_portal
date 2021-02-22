@@ -1,9 +1,10 @@
 import AWS from 'aws-sdk';
-import config from './config';
+import { getAWSEnvConfig } from './config';
 
 
 function S3(conf?: AWS.S3.ClientConfiguration): AWS.S3{
   conf = conf || {};
+  const config = getAWSEnvConfig();
   const defaultConfig = {
     endpoint: config.AWS_ENDPOINT_URL,
     s3ForcePathStyle: config.AWS_ENDPOINT_URL!==undefined
@@ -13,6 +14,7 @@ function S3(conf?: AWS.S3.ClientConfiguration): AWS.S3{
 
 function SQS(conf?: AWS.SQS.ClientConfiguration): AWS.SQS{
   conf = conf || {};
+  const config = getAWSEnvConfig();
   const defaultConfig = {
     endpoint: config.AWS_ENDPOINT_URL
   };
@@ -21,6 +23,7 @@ function SQS(conf?: AWS.SQS.ClientConfiguration): AWS.SQS{
 
 function KMS(conf: AWS.KMS.ClientConfiguration): AWS.KMS{
   conf = conf || {};
+  const config = getAWSEnvConfig();
   const defaultConfig = {
     endpoint: config.AWS_ENDPOINT_URL
   };

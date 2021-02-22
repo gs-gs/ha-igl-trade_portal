@@ -1,5 +1,5 @@
 import {
-  BatchDocuments,
+  Bucket,
 } from '../repos';
 import { logger } from '../logger';
 import { Batch } from './data';
@@ -8,7 +8,7 @@ import { RetryError } from './errors';
 
 
 interface IRestoreBatchProps{
-  batchDocuments: BatchDocuments,
+  batchDocuments: Bucket,
   batch: Batch,
   batchSizeBytes: number,
   batchTimeSeconds: number,
@@ -69,7 +69,7 @@ class RestoreBatch implements Task<Promise<void>>{
 
   async next(){
     logger.info('Starting batch restoration process');
-    logger.info('Attempt %s', this.state.attempt);
+    logger.info('Attempt %s/%s', this.state.attempt + 1, this.props.attempts);
     let ContinuationToken: string|undefined;
     this.props.batch.compositionStartTimestamp = Date.now();
     logger.info('Composition start timestamp = %s', this.props.batch.compositionStartTimestamp);

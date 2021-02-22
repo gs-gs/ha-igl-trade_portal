@@ -15,7 +15,8 @@ So, overall after all of these stages successfully passed, documents from an unp
 ## HOW TO RUN
 1. ```make run-ts-worker```
 1. ```make shell-document-store-worker```
-    1. ```npm run start``` - to compile and start
+    1. ```npm run start-batched-issue-worker``` - to compile and start
+    1. ```npm run start-batched-revoke-worker``` - to compile and start
     1. ```npm run test``` - to test and collect coverage
 
 ## SETTINGS(ENV):

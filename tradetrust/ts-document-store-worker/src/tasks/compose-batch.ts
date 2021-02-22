@@ -3,9 +3,8 @@ import {
   wrapDocument
 } from '@govtechsg/open-attestation';
 import {
-  UnprocessedDocuments,
-  BatchDocuments,
-  UnprocessedDocumentsQueue
+  Bucket,
+  Queue
 } from '../repos';
 import {
   OPEN_ATTESTATION_VERSION_ID_V2_SHORT,
@@ -25,9 +24,9 @@ class InvalidDocumentError extends Error{}
 
 
 interface IComposeBatchProps{
-  unprocessedDocuments: UnprocessedDocuments,
-  batchDocuments: BatchDocuments,
-  unprocessedDocumentsQueue: UnprocessedDocumentsQueue,
+  unprocessedDocuments: Bucket,
+  batchDocuments: Bucket,
+  unprocessedDocumentsQueue: Queue,
   batchTimeSeconds: number,
   batchSizeBytes: number,
   messageWaitTime: number,

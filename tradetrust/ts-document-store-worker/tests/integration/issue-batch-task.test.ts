@@ -1,6 +1,5 @@
-import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { wrapDocument } from '@govtechsg/open-attestation';
-import { Wallet } from 'ethers';
+import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import { documentV2 } from 'tests/utils';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
 import { IssueBatch, Batch } from 'src/tasks';
@@ -8,15 +7,10 @@ import { IssueBatch, Batch } from 'src/tasks';
 
 describe('IssueBatch Task', ()=>{
   jest.setTimeout(1000 * 100);
-  let wallet: Wallet;
-  let documentStore: DocumentStore;
-  beforeAll(async (done)=>{
-    wallet = await connectWallet();
-    documentStore = await connectDocumentStore(wallet);
-    done();
-  }, 1000 * 60);
-
+  const config = getBatchedDocumentStoreTaskEnvConfig();
   test('issue test', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
     const document = wrapDocument(documentV2({body: 'random document'}));
     const batch = new Batch();
     batch.merkleRoot = document.signature.merkleRoot;

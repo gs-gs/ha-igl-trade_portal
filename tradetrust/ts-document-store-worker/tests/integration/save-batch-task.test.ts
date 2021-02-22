@@ -1,21 +1,21 @@
-import config from 'src/config';
+import { getBatchedIssueEnvConfig } from 'src/config';
 import { IssuedDocuments, BatchDocuments } from 'src/repos';
-import { SaveIssuedBatch, Batch } from 'src/tasks';
+import { SaveBatch, Batch } from 'src/tasks';
 import { wrapDocuments } from '@govtechsg/open-attestation';
 import { clearBucket, documentV2 } from "tests/utils";
 
-describe('SaveIssuedBatch Task', ()=>{
+describe('SaveBatch Task', ()=>{
 
   jest.setTimeout(1000 * 100);
-
+  const config = getBatchedIssueEnvConfig();
   beforeEach(async (done)=>{
     await clearBucket(config.BATCH_BUCKET_NAME);
     await clearBucket(config.ISSUED_BUCKET_NAME);
     done();
   }, 1000 * 60);
 
-  const issuedDocuments = new IssuedDocuments();
-  const batchDocuments = new BatchDocuments();
+  const issuedDocuments = new IssuedDocuments(config);
+  const batchDocuments = new BatchDocuments(config);
 
   test('save batch documents', async ()=>{
     const batch = new Batch();
@@ -33,7 +33,7 @@ describe('SaveIssuedBatch Task', ()=>{
     for(let documentIndex = 0; documentIndex < wrappedDocumentsKeys.length; documentIndex++){
       batch.wrappedDocuments.set(wrappedDocumentsKeys[documentIndex], wrappedDocuments[documentIndex]);
     }
-    const saveIssuedBatch = new SaveIssuedBatch({
+    const saveIssuedBatch = new SaveBatch({
       issuedDocuments,
       batchDocuments,
       batch,

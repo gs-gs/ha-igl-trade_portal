@@ -1,6 +1,8 @@
 import AWS, {S3, SQS, KMS} from './aws';
-import config from './config';
-
+import {
+  IBatchedIssueConfig,
+  IBatchedDocumentStoreTaskConfig,
+} from './config';
 
 const S3Service = S3({});
 const SQSService = SQS({});
@@ -106,25 +108,25 @@ class Queue{
 
 
 class UnprocessedDocuments extends Bucket{
-  constructor(){
+  constructor(config: IBatchedDocumentStoreTaskConfig){
     super(config.UNPROCESSED_BUCKET_NAME);
   }
 }
 
 class BatchDocuments extends Bucket{
-  constructor(){
+  constructor(config: IBatchedDocumentStoreTaskConfig){
     super(config.BATCH_BUCKET_NAME);
   }
 }
 
 class IssuedDocuments extends Bucket{
-  constructor(){
+  constructor(config: IBatchedIssueConfig){
     super(config.ISSUED_BUCKET_NAME);
   }
 }
 
 class UnprocessedDocumentsQueue extends Queue{
-  constructor(){
+  constructor(config: IBatchedDocumentStoreTaskConfig){
     super(config.UNPROCESSED_QUEUE_URL);
   }
 }

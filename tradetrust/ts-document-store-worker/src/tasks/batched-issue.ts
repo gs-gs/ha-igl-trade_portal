@@ -12,7 +12,7 @@ import ComposeBatch from "./compose-batch";
 import { Batch } from './data';
 import { Task } from "./interfaces";
 import IssueBatch from "./issue-batch";
-import SaveIssuedBatch from "./save-issued-batch";
+import SaveBatch from "./save-batch";
 import WrapBatch from "./wrap-batch";
 
 interface IProcessDocumentsProps{
@@ -41,7 +41,7 @@ interface IProcessDocumentsProps{
 }
 
 
-class ProcessDocuments implements Task<void>{
+class BatchedIssue implements Task<void>{
   private props: IProcessDocumentsProps;
 
   constructor(props: IProcessDocumentsProps){
@@ -125,7 +125,7 @@ class ProcessDocuments implements Task<void>{
 
 
     logger.info('SaveIssuedBatch task started');
-    await new SaveIssuedBatch({
+    await new SaveBatch({
       issuedDocuments: this.props.issuedDocuments,
       batchDocuments: this.props.batchDocuments,
       attempts: this.props.saveAttempts,
@@ -139,4 +139,4 @@ class ProcessDocuments implements Task<void>{
   }
 }
 
-export default ProcessDocuments;
+export default BatchedIssue;

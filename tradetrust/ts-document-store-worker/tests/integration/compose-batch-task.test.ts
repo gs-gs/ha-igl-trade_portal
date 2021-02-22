@@ -1,4 +1,4 @@
-import config from 'src/config';
+import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import { Batch, ComposeBatch } from 'src/tasks';
 import {
   UnprocessedDocuments,
@@ -14,6 +14,7 @@ import {
 
 describe('ComposeBatch Task', ()=>{
   jest.setTimeout(1000 * 100);
+  const config = getBatchedDocumentStoreTaskEnvConfig();
   beforeEach(async (done)=>{
     await clearQueue(config.UNPROCESSED_QUEUE_URL);
     await clearBucket(config.UNPROCESSED_BUCKET_NAME);
@@ -21,9 +22,9 @@ describe('ComposeBatch Task', ()=>{
     done();
   }, 1000 * 60);
 
-  const unprocessedDocuments = new UnprocessedDocuments();
-  const batchDocuments = new BatchDocuments();
-  const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue();
+  const unprocessedDocuments = new UnprocessedDocuments(config);
+  const batchDocuments = new BatchDocuments(config);
+  const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue(config);
 
 
   test('batch backup', async ()=>{
