@@ -228,16 +228,17 @@ class PdfVerificationService:
         """
         qr_texts_found = set()
 
-        input1 = PyPDF2.PdfFileReader(self._pdf_binary)
+        reader = PyPDF2.PdfFileReader(self._pdf_binary)
 
-        page0 = input1.getPage(0)  # only first page for performance reasons
+        for page_num in range(0, reader.numPages):
+            page = reader.getPage(page_num)
 
-        if '/XObject' in page0['/Resources']:
-            xObject = page0['/Resources']['/XObject'].getObject()
-            qr_texts_found = qr_texts_found.union(self._parse_xobject(xObject))
-        else:
-            # nothing to parse - no xobjects
-            pass
+            if '/XObject' in page['/Resources']:
+                xObject = page['/Resources']['/XObject'].getObject()
+                qr_texts_found = qr_texts_found.union(self._parse_xobject(xObject))
+            else:
+                # nothing to parse - no xobjects
+                pass
 
         # now qr_texts_found contains all texts of any format from the first page of that PDF
         # first - we filter out all which are not supported

@@ -66,3 +66,16 @@ def test_pdf_parse_service():
         """ad2-adaf-4704-834c-fe2b26db5a63/%22%2C%20%22key%22%3A%20%22BCE7AC1B7BAFA6D2FB18775F63D"""
         """770A293757D19E5A58A013478F4A73712A09B%22%7D%7D"""
     ]
+
+    scanned = open(os.path.join(ASSETS_PATH, "2-different-qrcodes-duplicates-rasterized.pdf"), "rb")
+    s = PdfVerificationService(scanned)
+    assert sorted(s.get_valid_qrcodes()) == sorted([
+        """https://trade.c1.devnet.trustbridge.io/v/?q=%7B%22type%22%3A%20%22DOCUMENT%22%2C%20%22"""
+        """payload%22%3A%20%7B%22uri%22%3A%20%22https%3A//trade.c1.devnet.trustbridge.io/oa/1f4ab"""
+        """ad2-adaf-4704-834c-fe2b26db5a63/%22%2C%20%22key%22%3A%20%22BCE7AC1B7BAFA6D2FB18775F63D"""
+        """770A293757D19E5A58A013478F4A73712A09B%22%7D%7D""",
+        """https://trade.c1.devnet.trustbridge.io/v/?q=%7B%22type%22%3A%20%22DOCUMENT%22%2C%20%22"""
+        """payload%22%3A%20%7B%22uri%22%3A%20%22https%3A//trade.c1.devnet.trustbridge.io/oa/819c9"""
+        """52d-2455-4277-aa59-74654d235cc8/%22%2C%20%22key%22%3A%20%22DDBF2CD26963F8538563947560F"""
+        """878A36B44E93EBF72C09AC98B6B65BF6FA7EB%22%7D%7D"""
+    ])
