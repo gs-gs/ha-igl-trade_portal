@@ -31,7 +31,7 @@ describe('SaveBatch Task', ()=>{
     const wrappedDocuments = wrapDocuments(Array.from<any>(documents.values()));
     const wrappedDocumentsKeys = Array.from<string>(documents.keys());
     for(let documentIndex = 0; documentIndex < wrappedDocumentsKeys.length; documentIndex++){
-      batch.wrappedDocuments.set(wrappedDocumentsKeys[documentIndex], wrappedDocuments[documentIndex]);
+      batch.wrappedDocuments.set(wrappedDocumentsKeys[documentIndex], { body: wrappedDocuments[documentIndex], size: 0});
     }
     const saveIssuedBatch = new SaveBatch({
       issuedDocuments,
@@ -41,10 +41,10 @@ describe('SaveBatch Task', ()=>{
       attemptsIntervalSeconds: 1
     });
     await saveIssuedBatch.start();
-    for(let [key, body] of batch.wrappedDocuments){
+    for(let [key, document] of batch.wrappedDocuments){
         const issuedDocumentS3Object = await issuedDocuments.get({Key: key});
         const issuedDocument = JSON.parse(issuedDocumentS3Object!.Body!.toString());
-        expect(issuedDocument).toEqual(body);
+        expect(issuedDocument).toEqual(document.body);
         try{
           await batchDocuments.get({Key:key})
         }catch(e){

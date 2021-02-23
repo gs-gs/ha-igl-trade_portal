@@ -1,6 +1,5 @@
 import {
-  SchemaId,
-  wrapDocument
+  SchemaId
 } from '@govtechsg/open-attestation';
 import {
   Bucket,
@@ -42,11 +41,20 @@ interface IComposeBatchState{
   attempt: number
 }
 
+interface Document{
+  key: string,
+  size: number,
+  body: {
+    string: string,
+    json: any
+  }
+}
 
-class ComposeBatch implements Task<void>{
 
-  private props: IComposeBatchProps;
-  private state: IComposeBatchState;
+abstract class ComposeBatch implements Task<void>{
+
+  protected props: IComposeBatchProps;
+  protected state: IComposeBatchState;
 
   constructor(props:IComposeBatchProps){
     this.props = Object.assign(props);
@@ -98,7 +106,7 @@ class ComposeBatch implements Task<void>{
   }
 
 
-  async getDocumentDataFromEvent(event: any){
+  async getDocumentDataFromEvent(event: any): Promise<Document|undefined>{
     logger.debug('getDocumentDataFromEvent');
     const s3Object = event.Body.Records[0].s3.object;
     let documentObject;
@@ -122,7 +130,7 @@ class ComposeBatch implements Task<void>{
       const documentJSONBody = JSON.parse(documentStringBody);
       documentObject = {
         key: s3Object.key,
-        size: documentObject.ContentLength,
+        size: s3Object.size,
         body: {
           string: documentStringBody,
           json: documentJSONBody
@@ -136,20 +144,20 @@ class ComposeBatch implements Task<void>{
   }
 
 
-  getDocumentStoreAddress(document: any, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
+  getDocumentStoreAddress(document: Document, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
     logger.debug('getDocumentStoreAddress');
     if(version === SchemaId.v2){
-      return document?.issuers?.[0]?.documentStore;
+      return document.body.json.issuers?.[0]?.documentStore;
     }else if(version === SchemaId.v3){
-      return document?.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.proof.value: undefined;
+      return document.body.json.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.body.json.proof.value: undefined;
     }
     return undefined;
   }
 
 
-  getDocumentVersion(document: any): SchemaId.v2|SchemaId.v3|undefined{
+  getDocumentVersion(document: Document): SchemaId.v2|SchemaId.v3|undefined{
     logger.debug('getDocumentVersion');
-    switch(document.version){
+    switch(document.body.json.version){
       case SchemaId.v2:
       case OPEN_ATTESTATION_VERSION_ID_V2_SHORT:
         return SchemaId.v2;
@@ -160,45 +168,47 @@ class ComposeBatch implements Task<void>{
   }
 
 
-  verifyDocumentData(document: any){
-    // logger.info(document);
-    try{
-      wrapDocument(document)
-    }catch(e){
-      if(!!e.validationErrors){
-        throw new InvalidDocumentError(`Invalid document schema: ${JSON.stringify(e.validationErrors, null, 4)}`);
-      }else{
-        throw e;
-      }
-    }
-    const version = this.getDocumentVersion(document);
-    const documentStoreAddress = this.getDocumentStoreAddress(document, version);
-    if(documentStoreAddress != this.props.documentStoreAddress){
-      throw new InvalidDocumentError(
-        `Expected document store address to be "${this.props.documentStoreAddress}", got "${documentStoreAddress}"`
-      )
-    }
-  }
-
-
-  async addDocumentToBatch(document: any){
-    logger.debug('addDocumentToBatch')
+  async putDocumentToBatchBackup(document: Document){
+    logger.debug('putDocumentToBatchBackup');
     try{
       logger.info('Adding document "%s" to backup', document.key);
       await this.props.batchDocuments.put({Key: document.key, Body: document.body.string});
       logger.info('Added');
+    }catch(e){
+      throw new RetryError(e);
+    }
+  }
+
+  async removeDocumentFromUnprocessed(document: Document){
+    logger.debug('removeDocumentFromUnprocessed');
+    try{
       logger.info('Deleting document "%s" from unprocessed', document.key);
       await this.props.unprocessedDocuments.delete({Key: document.key});
       logger.info('Deleted');
     }catch(e){
       throw new RetryError(e);
     }
+  }
+
+  async addUnwrappedDocumentToBatch(document: Document){
+    logger.debug('addDocumentToBatch')
+    await this.putDocumentToBatchBackup(document);
+    await this.removeDocumentFromUnprocessed(document);
     this.props.batch.unwrappedDocuments.set(document.key, {
       size: document.size,
       body: document.body.json
     });
   }
 
+  async addWrappedDocumentToBatch(document: Document){
+    logger.debug('addDocumentToBatch')
+    await this.putDocumentToBatchBackup(document);
+    await this.removeDocumentFromUnprocessed(document);
+    this.props.batch.unwrappedDocuments.set(document.key, {
+      size: document.size,
+      body: document.body.json
+    });
+  }
 
   async start(){
     logger.info('Starting batch composition');
@@ -234,7 +244,6 @@ class ComposeBatch implements Task<void>{
     }
   }
 
-
   async next(){
     // Getting the next event and reacting on all potential errors
     let event = await this.getRawDocumentPutEvent();
@@ -261,7 +270,7 @@ class ComposeBatch implements Task<void>{
       if(!document){
         logger.warn('Document not found, deleting event');
       }else{
-        this.verifyDocumentData(document!.body.json);
+        await this.verifyDocument(document);
         await this.addDocumentToBatch(document);
         logger.info('Document succesfully added, deleting event');
       }
@@ -279,7 +288,18 @@ class ComposeBatch implements Task<void>{
     }
   }
 
+  abstract verifyDocument(document: Document): Promise<void>;
+  abstract addDocumentToBatch(document: Document): Promise<void>;
+
 }
 
+export {
+  ComposeBatch,
+  IComposeBatchProps,
+  IComposeBatchState,
+  InvalidEventError,
+  InvalidDocumentError,
+  Document
+}
 
 export default ComposeBatch;

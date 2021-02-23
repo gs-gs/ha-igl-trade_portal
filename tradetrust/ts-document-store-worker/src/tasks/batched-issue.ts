@@ -8,7 +8,7 @@ import {
 } from "../repos";
 import { logger } from '../logger';
 import RestoreBatch from "./restore-batch";
-import ComposeBatch from "./compose-batch";
+import ComposeIssueBatch from "./compose-issue-batch";
 import { Batch } from './data';
 import { Task } from "./interfaces";
 import IssueBatch from "./issue-batch";
@@ -74,7 +74,7 @@ class BatchedIssue implements Task<void>{
 
 
     logger.info('ComposeBatch task started');
-    await new ComposeBatch({
+    await new ComposeIssueBatch({
       unprocessedDocuments: this.props.unprocessedDocuments,
       batchDocuments: this.props.batchDocuments,
       unprocessedDocumentsQueue: this.props.unprocessedDocumentsQueue,

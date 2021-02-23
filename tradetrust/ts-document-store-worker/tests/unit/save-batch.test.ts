@@ -33,8 +33,8 @@ describe.only('SaveIssuedBatch task unit tests', ()=>{
 
     const batch = new Batch();
 
-    batch.wrappedDocuments.set('document-1', {body: 'document-1-body'});
-    batch.wrappedDocuments.set('document-2', {body: 'document-2-body'});
+    batch.wrappedDocuments.set('document-1', {body: 'document-1-body', size: 0});
+    batch.wrappedDocuments.set('document-2', {body: 'document-2-body', size: 0});
 
 
     issuedDocuments.put.mockReset();
@@ -81,8 +81,8 @@ describe.only('SaveIssuedBatch task unit tests', ()=>{
 
     const batch = new Batch();
 
-    batch.wrappedDocuments.set('document-1', {body: 'document-1-body'});
-    batch.wrappedDocuments.set('document-2', {body: 'document-2-body'});
+    batch.wrappedDocuments.set('document-1', {body: 'document-1-body', size: 0});
+    batch.wrappedDocuments.set('document-2', {body: 'document-2-body', size: 0});
 
 
     issuedDocuments.put.mockReset();

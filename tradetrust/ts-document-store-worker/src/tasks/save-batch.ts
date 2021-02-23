@@ -75,7 +75,7 @@ class SaveBatch implements Task<void>{
   async next(){
     for(let [key, document] of this.props.batch.wrappedDocuments){
       // only reason to fail is unexpected error that will prevent deletion without saving
-      await this.saveDocument(key, document);
+      await this.saveDocument(key, document.body);
       await this.deleteDocument(key);
     }
   }

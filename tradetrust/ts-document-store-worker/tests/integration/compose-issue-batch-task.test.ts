@@ -1,5 +1,5 @@
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
-import { Batch, ComposeBatch } from 'src/tasks';
+import { Batch, ComposeIssueBatch } from 'src/tasks';
 import {
   UnprocessedDocuments,
   BatchDocuments,
@@ -35,7 +35,7 @@ describe('ComposeBatch Task', ()=>{
 
 
     const batch = new Batch();
-    const composeBatch = new ComposeBatch({
+    const composeBatch = new ComposeIssueBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
@@ -90,7 +90,7 @@ describe('ComposeBatch Task', ()=>{
     }
     await unprocessedDocuments.delete({Key: 'deleted-document'});
     const batch = new Batch();
-    const composeBatch = new ComposeBatch({
+    const composeBatch = new ComposeIssueBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
@@ -117,7 +117,7 @@ describe('ComposeBatch Task', ()=>{
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
     }
     const batch = new Batch();
-    const composeBatch = new ComposeBatch({
+    const composeBatch = new ComposeIssueBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
@@ -153,7 +153,7 @@ describe('ComposeBatch Task', ()=>{
       documentIndex++;
     }
     const batch = new Batch();
-    const composeBatch = new ComposeBatch({
+    const composeBatch = new ComposeIssueBatch({
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,

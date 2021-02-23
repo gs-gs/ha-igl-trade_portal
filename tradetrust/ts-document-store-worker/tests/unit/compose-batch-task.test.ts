@@ -4,7 +4,8 @@ import {
   UnprocessedDocumentsQueue,
   BatchDocuments
 } from 'src/repos';
-import { ComposeBatch, Batch } from 'src/tasks';
+// using ComposeIssueBatch because it's a child of ComposeBatch task
+import { ComposeIssueBatch, Batch } from 'src/tasks';
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import {
   documentV2
@@ -70,7 +71,7 @@ describe('ComposeBatch task unit tests', ()=>{
     unprocessedDocumentsQueue.get.mockRejectedValue(new Error('Unexpected Error'));
 
     const batch = new Batch();
-    const composeBatch = new ComposeBatch({
+    const composeBatch = new ComposeIssueBatch({
       unprocessedDocuments: <UnprocessedDocuments><unknown>unprocessedDocuments,
       unprocessedDocumentsQueue: <UnprocessedDocumentsQueue><unknown>unprocessedDocumentsQueue,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
@@ -224,7 +225,7 @@ describe('ComposeBatch task unit tests', ()=>{
 
 
     const batch = new Batch();
-    const composeBatch = new ComposeBatch({
+    const composeBatch = new ComposeIssueBatch({
       unprocessedDocuments: <UnprocessedDocuments><unknown>unprocessedDocuments,
       unprocessedDocumentsQueue: <UnprocessedDocumentsQueue><unknown>unprocessedDocumentsQueue,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,

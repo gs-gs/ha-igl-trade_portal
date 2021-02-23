@@ -1,18 +1,11 @@
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { BigNumber, Wallet, utils } from 'ethers';
-import { SendDocumentStoreBatchTransaction, Batch } from 'src/tasks';
+// using IssueBatch task because it's a child of SendDocumentStoreBatchTransaction
+import { IssueBatch, Batch } from 'src/tasks';
 
 const GAS_PRICE = utils.parseUnits('20', 'gwei');
 const GAS = BigNumber.from(100000);
 const GAS_PRICE_MULTIPLIER = 1.2;
-
-
-class TestSendDocumentStoreBatchTransaction extends SendDocumentStoreBatchTransaction{
-  async populateTransaction(){
-    const merkleRoot = '0x'+this.props.batch.merkleRoot;
-    return this.props.documentStore.populateTransaction.issue(merkleRoot);
-  }
-}
 
 
 describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
@@ -59,7 +52,7 @@ describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
 
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new TestSendDocumentStoreBatchTransaction({
+    const issueBatch = new IssueBatch({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       batch
@@ -90,7 +83,7 @@ describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
 
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new TestSendDocumentStoreBatchTransaction({
+    const issueBatch = new IssueBatch({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       batch
@@ -117,7 +110,7 @@ describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
     .mockResolvedValueOnce({hash: '0x0003'});
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new TestSendDocumentStoreBatchTransaction({
+    const issueBatch = new IssueBatch({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       batch,
@@ -154,7 +147,7 @@ describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
     batch.merkleRoot = '0000000000000000000000000000000';
     const gasPriceMultiplier = 1.3;
     const gasPriceLimit = 40;
-    const issueBatch = new TestSendDocumentStoreBatchTransaction({
+    const issueBatch = new IssueBatch({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       gasPriceLimitGwei: gasPriceLimit,
@@ -208,7 +201,7 @@ describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
     batch.merkleRoot = '0000000000000000000000000000000';
     const gasPriceMultiplier = 1.5;
     const gasPriceLimit = 40;
-    const issueBatch = new TestSendDocumentStoreBatchTransaction({
+    const issueBatch = new IssueBatch({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       gasPriceLimitGwei: gasPriceLimit,
@@ -267,7 +260,7 @@ describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
     const gasPriceLimit = 40;
     const attempts = 10;
     const attemptsIntervalSeconds = 1;
-    const issueBatch = new TestSendDocumentStoreBatchTransaction({
+    const issueBatch = new IssueBatch({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       gasPriceLimitGwei: gasPriceLimit,
@@ -306,7 +299,7 @@ describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
     const gasPriceLimit = 40;
     const attempts = 10;
     const attemptsIntervalSeconds = 1;
-    const issueBatch = new TestSendDocumentStoreBatchTransaction({
+    const issueBatch = new IssueBatch({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       gasPriceLimitGwei: gasPriceLimit,

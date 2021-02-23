@@ -1,9 +1,3 @@
-interface UnwrappedDocument{
-  size: number,
-  body: any
-}
-
-
 interface Task<T>{
   start(): T;
   next(): void
@@ -11,6 +5,5 @@ interface Task<T>{
 
 
 export {
-  Task,
-  UnwrappedDocument
+  Task
 }

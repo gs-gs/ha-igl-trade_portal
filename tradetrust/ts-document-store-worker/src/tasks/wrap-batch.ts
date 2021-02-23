@@ -32,7 +32,8 @@ class WrapBatch implements Task<void>{
     let {keys, bodies} = this.prepareBatchUnwrappedDocumentsData();
     bodies = wrapDocuments(bodies);
     this.batch.wrappedDocuments.clear();
-    keys.forEach((key, index)=>{this.batch.wrappedDocuments.set(key, bodies[index])});
+    // size here is irrelevant therefore we're not computing it
+    keys.forEach((key, index)=>{this.batch.wrappedDocuments.set(key, {body: bodies[index], size: 0})});
     this.batch.merkleRoot = bodies[0].signature.merkleRoot;
     this.batch.wrapped = true;
   }

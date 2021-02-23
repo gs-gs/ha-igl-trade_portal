@@ -22,8 +22,8 @@ describe('WrapBatch Task', ()=>{
     wrapBatch.start();
     expect(Array.from<string>(batch.wrappedDocuments.keys())).toEqual(Array.from<string>(batch.unwrappedDocuments.keys()))
     for(let [key, wrappedDocument] of batch.wrappedDocuments){
-      expect(getData(wrappedDocument)).toEqual(batch.unwrappedDocuments.get(key)?.body);
-      expect(wrappedDocument.signature.merkleRoot).toEqual(batch.merkleRoot);
+      expect(getData(wrappedDocument.body)).toEqual(batch.unwrappedDocuments.get(key)?.body);
+      expect(wrappedDocument.body.signature.merkleRoot).toEqual(batch.merkleRoot);
     }
   })
 });
