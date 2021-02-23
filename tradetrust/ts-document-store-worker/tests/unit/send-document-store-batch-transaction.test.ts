@@ -1,13 +1,21 @@
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { BigNumber, Wallet, utils } from 'ethers';
-import { IssueBatch, Batch } from 'src/tasks';
+import { SendDocumentStoreBatchTransaction, Batch } from 'src/tasks';
 
 const GAS_PRICE = utils.parseUnits('20', 'gwei');
 const GAS = BigNumber.from(100000);
 const GAS_PRICE_MULTIPLIER = 1.2;
 
 
-describe('IssueBatch tast unit tests', ()=>{
+class TestSendDocumentStoreBatchTransaction extends SendDocumentStoreBatchTransaction{
+  async populateTransaction(){
+    const merkleRoot = '0x'+this.props.batch.merkleRoot;
+    return this.props.documentStore.populateTransaction.issue(merkleRoot);
+  }
+}
+
+
+describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
   jest.setTimeout(1000 * 60);
 
   function mulGasPrice(gasPriceWei: BigNumber, gasPriceMultiplier: number){
@@ -37,27 +45,21 @@ describe('IssueBatch tast unit tests', ()=>{
 
   test('timeout and hash duplication errors', async ()=>{
     wallet.provider.waitForTransaction.mockReset();
-    (
-      wallet.provider.waitForTransaction
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockResolvedValueOnce({blockHash:'transaction hash'})
-    )
+    wallet.provider.waitForTransaction
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockResolvedValueOnce({blockHash:'transaction hash'});
     wallet.sendTransaction.mockReset();
-    (
-      wallet.sendTransaction
-      .mockResolvedValueOnce({hash: '0x0000'})
-      .mockResolvedValueOnce({hash: '0x0001'})
-    )
+    wallet.sendTransaction
+    .mockResolvedValueOnce({hash: '0x0000'})
+    .mockResolvedValueOnce({hash: '0x0001'});
     documentStore.populateTransaction.issue.mockReset();
-    (
-      documentStore.populateTransaction.issue
-      .mockResolvedValueOnce({data:'documentIssueData'})
-      .mockRejectedValueOnce(new Error('Only hashes that have not been issued can be issued'))
-    )
+    documentStore.populateTransaction.issue
+    .mockResolvedValueOnce({data:'documentIssueData'})
+    .mockRejectedValueOnce(new Error('Only hashes that have not been issued can be issued'));
 
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new IssueBatch({
+    const issueBatch = new TestSendDocumentStoreBatchTransaction({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       batch
@@ -75,26 +77,20 @@ describe('IssueBatch tast unit tests', ()=>{
 
   test('timeout error', async ()=>{
     wallet.provider.waitForTransaction.mockReset();
-    (
-      wallet.provider.waitForTransaction
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockResolvedValueOnce({blockHash:'transaction hash'})
-    )
+    wallet.provider.waitForTransaction
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockResolvedValueOnce({blockHash:'transaction hash'});
     wallet.sendTransaction.mockReset();
-    (
-      wallet.sendTransaction
-      .mockResolvedValueOnce({hash: '0x0000'})
-      .mockResolvedValueOnce({hash: '0x0001'})
-    )
+    wallet.sendTransaction
+    .mockResolvedValueOnce({hash: '0x0000'})
+    .mockResolvedValueOnce({hash: '0x0001'});
     documentStore.populateTransaction.issue.mockReset();
-    (
-      documentStore.populateTransaction.issue
-      .mockResolvedValue({data:'documentIssueData'})
-    )
+    documentStore.populateTransaction.issue
+    .mockResolvedValue({data:'documentIssueData'});
 
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new IssueBatch({
+    const issueBatch = new TestSendDocumentStoreBatchTransaction({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       batch
@@ -108,24 +104,20 @@ describe('IssueBatch tast unit tests', ()=>{
 
   test('gas price increase', async ()=>{
     wallet.provider.waitForTransaction.mockReset();
-    (
-      wallet.provider.waitForTransaction
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockResolvedValueOnce({blockHash:'transaction hash'})
-    )
+    wallet.provider.waitForTransaction
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockResolvedValueOnce({blockHash:'transaction hash'});
     wallet.sendTransaction.mockReset();
-    (
-      wallet.sendTransaction
-      .mockResolvedValueOnce({hash: '0x0000'})
-      .mockResolvedValueOnce({hash: '0x0001'})
-      .mockResolvedValueOnce({hash: '0x0002'})
-      .mockResolvedValueOnce({hash: '0x0003'})
-    )
+    wallet.sendTransaction
+    .mockResolvedValueOnce({hash: '0x0000'})
+    .mockResolvedValueOnce({hash: '0x0001'})
+    .mockResolvedValueOnce({hash: '0x0002'})
+    .mockResolvedValueOnce({hash: '0x0003'});
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
-    const issueBatch = new IssueBatch({
+    const issueBatch = new TestSendDocumentStoreBatchTransaction({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       batch,
@@ -146,26 +138,23 @@ describe('IssueBatch tast unit tests', ()=>{
 
   test('gas price limit reached', async ()=>{
     wallet.provider.waitForTransaction.mockReset();
-    (
-      wallet.provider.waitForTransaction
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockResolvedValueOnce({blockHash:'transaction hash'})
-    )
+    wallet.provider.waitForTransaction
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockResolvedValueOnce({blockHash:'transaction hash'});
     wallet.sendTransaction.mockReset();
-    (
-      wallet.sendTransaction
-      .mockResolvedValueOnce({hash: '0x0000'})
-      .mockResolvedValueOnce({hash: '0x0001'})
-      .mockResolvedValueOnce({hash: '0x0002'})
-      .mockResolvedValueOnce({hash: '0x0003'})
-    )
+    wallet.sendTransaction
+    .mockResolvedValueOnce({hash: '0x0000'})
+    .mockResolvedValueOnce({hash: '0x0001'})
+    .mockResolvedValueOnce({hash: '0x0002'})
+    .mockResolvedValueOnce({hash: '0x0003'});
+
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
     const gasPriceMultiplier = 1.3;
     const gasPriceLimit = 40;
-    const issueBatch = new IssueBatch({
+    const issueBatch = new TestSendDocumentStoreBatchTransaction({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       gasPriceLimitGwei: gasPriceLimit,
@@ -202,28 +191,24 @@ describe('IssueBatch tast unit tests', ()=>{
 
   test('gas price limit reached, gas limit is underpaid', async ()=>{
     wallet.provider.waitForTransaction.mockReset();
-    (
-      wallet.provider.waitForTransaction
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockResolvedValueOnce({blockHash:'transaction hash'})
-    )
+    wallet.provider.waitForTransaction
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockResolvedValueOnce({blockHash:'transaction hash'});
     wallet.sendTransaction.mockReset();
-    (
-      wallet.sendTransaction
-      .mockResolvedValueOnce({hash: '0x0000'})
-      .mockResolvedValueOnce({hash: '0x0001'})
-      .mockRejectedValueOnce(new Error('replacement transaction underpriced'))
-      .mockResolvedValueOnce({hash: '0x0002'})
-      .mockResolvedValueOnce({hash: '0x0003'})
-    )
+    wallet.sendTransaction
+    .mockResolvedValueOnce({hash: '0x0000'})
+    .mockResolvedValueOnce({hash: '0x0001'})
+    .mockRejectedValueOnce(new Error('replacement transaction underpriced'))
+    .mockResolvedValueOnce({hash: '0x0002'})
+    .mockResolvedValueOnce({hash: '0x0003'});
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
     const gasPriceMultiplier = 1.5;
     const gasPriceLimit = 40;
-    const issueBatch = new IssueBatch({
+    const issueBatch = new TestSendDocumentStoreBatchTransaction({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       gasPriceLimitGwei: gasPriceLimit,
@@ -267,24 +252,22 @@ describe('IssueBatch tast unit tests', ()=>{
 
   test('max attempts reached', async ()=>{
     wallet.provider.waitForTransaction.mockReset();
-    (
-      wallet.provider.waitForTransaction
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockResolvedValueOnce({blockHash:'transaction hash'})
-    )
+    wallet.provider.waitForTransaction
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockResolvedValueOnce({blockHash:'transaction hash'});
+
     wallet.sendTransaction.mockReset();
-    (
-      wallet.sendTransaction.mockRejectedValue(new Error('Totally unexpected error'))
-    )
+    wallet.sendTransaction.mockRejectedValue(new Error('Totally unexpected error'));
+
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
     const gasPriceMultiplier = 1.3;
     const gasPriceLimit = 40;
     const attempts = 10;
     const attemptsIntervalSeconds = 1;
-    const issueBatch = new IssueBatch({
+    const issueBatch = new TestSendDocumentStoreBatchTransaction({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       gasPriceLimitGwei: gasPriceLimit,
@@ -306,27 +289,24 @@ describe('IssueBatch tast unit tests', ()=>{
 
   test('state restoration after a failed attempt', async ()=>{
     wallet.provider.waitForTransaction.mockReset();
-    (
-      wallet.provider.waitForTransaction
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockRejectedValueOnce(new Error('timeout exceeded'))
-      .mockResolvedValueOnce({blockHash:'transaction hash'})
-    )
+    wallet.provider.waitForTransaction
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockRejectedValueOnce(new Error('timeout exceeded'))
+    .mockResolvedValueOnce({blockHash:'transaction hash'})
     wallet.sendTransaction.mockReset();
-    (
-      wallet.sendTransaction
-      .mockResolvedValueOnce({hash: '0x0000'})
-      .mockResolvedValueOnce({hash: '0x0001'})
-      .mockRejectedValueOnce(new Error('Totally unexpected error'))
-      .mockResolvedValueOnce({hash: '0x0002'})
-    )
+    wallet.sendTransaction
+    .mockResolvedValueOnce({hash: '0x0000'})
+    .mockResolvedValueOnce({hash: '0x0001'})
+    .mockRejectedValueOnce(new Error('Totally unexpected error'))
+    .mockResolvedValueOnce({hash: '0x0002'})
+
     const batch = new Batch();
     batch.merkleRoot = '0000000000000000000000000000000';
     const gasPriceMultiplier = 1.3;
     const gasPriceLimit = 40;
     const attempts = 10;
     const attemptsIntervalSeconds = 1;
-    const issueBatch = new IssueBatch({
+    const issueBatch = new TestSendDocumentStoreBatchTransaction({
       wallet: <Wallet><unknown>wallet,
       documentStore: <DocumentStore><unknown>documentStore,
       gasPriceLimitGwei: gasPriceLimit,

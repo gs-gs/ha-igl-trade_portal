@@ -1,3 +1,4 @@
+import SendDocumentStoreBatchTransaction from './send-document-store-batch-transaction';
 import RestoreBatch from './restore-batch';
 import ComposeBatch from './compose-batch';
 import WrapBatch from './wrap-batch';
@@ -14,5 +15,6 @@ export {
   WrapBatch,
   IssueBatch,
   SaveBatch,
-  BatchedIssue
+  BatchedIssue,
+  SendDocumentStoreBatchTransaction
 }
