@@ -1,0 +1,147 @@
+version: '3.5'
+
+networks:
+  internal:
+    name: tradetrust-document-store-internal
+
+services:
+
+  localstack:
+    image: localstack/localstack
+    container_name: tradetrust-localstack
+    environment:
+
+      EDGE_PORT: 10001
+      PORT_WEB_UI: 9999
+      HOSTNAME_EXTERNAL: tradetrust-localstack
+      LOCALSTACK_HOSTNAME: tradetrust-localstack
+      SERVICES: sqs,s3,iam,cloudwatch
+      DEFAULT_REGION: us-east-1
+
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: access
+      AWS_SECRET_ACCESS_KEY: secretaccess
+
+    networks:
+      - internal
+    volumes:
+      - '${dockerstagedir:-.}/localstack:/docker-entrypoint-initaws.d'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+
+
+  ganache-cli:
+    image: trufflesuite/ganache-cli
+    container_name: tradetrust-ganache-cli
+    networks:
+      - internal
+    command: >
+        ganache-cli
+        --hostname 0.0.0.0
+        --port 8585
+        --networkId 15
+        --hardfork petersburg
+        --blockTime 0
+        --accounts 5
+        --unlock "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
+        --deterministic
+        --mnemonic "myth like bonus scare over problem client lizard pioneer submit female collect"
+
+
+  monitoring:
+    image: tradetrust/monitoring
+    container_name: tradetrust-monitoring
+    build:
+      context: "${dockerstagedir:-.}/monitoring"
+      dockerfile: Dockerfile
+    networks:
+      - internal
+    volumes:
+      - "/monitoring/node_modules"
+      - "${dockerstagedir:-.}/monitoring:/monitoring"
+    environment:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: access
+      AWS_SECRET_ACCESS_KEY: secretaccess
+      AWS_ENDPOINT_URL: http://tradetrust-localstack:10001
+
+      HTTP_BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
+      ACCOUNT_ADDRESS: "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
+
+  document-store-contract:
+    image: tradetrust/document-store-contract
+    container_name: tradetrust-document-store-contract
+    build:
+      context: "${dockerstagedir:-.}/document-store-contract"
+      dockerfile: Dockerfile
+      args:
+        DOCUMENT_STORE_MASTER_COMMIT: 65092f8cfcc06622a75548e183b08e1c9a8fee21
+    networks:
+      - internal
+    volumes:
+      - "${dockerstagedir:-.}/document-store-contract/scripts/truffle-config.js:/document-store-contract/truffle-config.js"
+      - "${dockerstagedir:-.}/document-store-contract/scripts/deploy-contracts.js:/document-store-contract/deploy-contracts.js"
+      - "${dockerstagedir:-.}/document-store-contract/addresses:/document-store-contract/addresses"
+      - "${dockerstagedir:-.}/document-store-contract/abi:/document-store-contract/abi"
+    environment:
+      DOCUMENT_STORE_NAME: Development
+      ADDRESSES_DIR: /document-store-contract/addresses
+    depends_on:
+      - ganache-cli
+
+  document-store-worker:
+    image: tradetrust/ts-document-store-worker
+    container_name: document-store-worker
+    build:
+      context: ${dockerstagedir:-.}/ts-document-store-worker
+      dockerfile: Dockerfile
+    networks:
+      - internal
+    volumes:
+      - /document-store-worker/node_modules
+      - '${dockerstagedir:-.}/ts-document-store-worker:/document-store-worker/'
+      - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
+    environment:
+      CONTAINER_MODE: container
+
+      BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
+
+      AWS_ENDPOINT_URL: http://tradetrust-localstack:10001
+      AWS_ACCESS_KEY_ID: access
+      AWS_SECRET_ACCESS_KEY: secretaccess
+      AWS_REGION: us-east-1
+
+      DOCUMENT_STORE_ADDRESS: /document-store-contract/addresses/DocumentStore.local.dev.address
+      DOCUMENT_STORE_OWNER_PRIVATE_KEY: "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
+
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
+      UNPROCESSED_BUCKET_NAME: unprocessed
+      ISSUED_BUCKET_NAME: issued
+      BATCH_BUCKET_NAME: batch
+
+      # integer value >= 1 and <= 20
+      # 20 is an upper limit that aws sdk has
+      MESSAGE_WAIT_TIME: 10
+      MESSAGE_VISIBILITY_TIMEOUT: 60
+      TRANSACTION_TIMEOUT_SECONDS: 600
+      TRANSACTION_CONFIRMATION_THRESHOLD: 1
+
+      # integer only value
+      GAS_PRICE_LIMIT_GWEI: 200
+      # positive float value >= 1.1
+      GAS_PRICE_MULTIPLIER: 1.2
+      # 100 MB
+      BATCH_SIZE_BYTES: 104857600
+      # 10 minutes
+      BATCH_TIME_SECONDS: 600
+      # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
+      RESTORE_ATTEMPTS: 10
+      RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in ComposeBatch task
+      COMPOSE_ATTEMPTS: 10
+      COMPOSE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in SaveIssuedBatch task
+      SAVE_ATTEMPTS: 10
+      SAVE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in IssueBatch task
+      ISSUE_ATTEMPTS: 10
+      ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60
