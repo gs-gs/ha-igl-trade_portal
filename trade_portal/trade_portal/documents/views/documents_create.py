@@ -99,6 +99,13 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
         c["QR_CODE_SIZE_MM"] = config.QR_CODE_SIZE_MM
         c["FIRST_PAGE_PDF_WIDTH_MM"] = self.obj.get_pdf_attachment().metadata.get("width_mm") or 210
         c["FIRST_PAGE_PDF_HEIGHT_MM"] = self.obj.get_pdf_attachment().metadata.get("height_mm") or 297
+        c["IS_PDF_ENCRYPTED"] = self.obj.get_pdf_attachment().metadata.get("encrypted_pdf") is True
+        c["IS_PDF_UNPARSEABLE"] = self.obj.get_pdf_attachment().metadata.get("unparseable_pdf") is True
+        c["SHOW_QR_CODE_ATTACHMENT"] = (
+            self.obj.get_pdf_attachment().is_watermarked is False
+            and not c["IS_PDF_UNPARSEABLE"]
+            and not c["IS_PDF_ENCRYPTED"]
+        )
         return c
 
     def _get_data_warnings(self):

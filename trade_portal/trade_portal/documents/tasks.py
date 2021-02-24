@@ -205,6 +205,8 @@ def fill_document_metadata(document_id=None):
     For document files uploaded
     Tries to retrieve first PDF page width/height and save to "metadata" field
     So QR code watermark UI functionality works fine for all possible QR code and page sizes
+    And also saves flag for encrypted PDFs which we can't update
+    Or invalid PDFs which we can't parse at all
     """
     logger.info("Trying to determine PDF metadata for document %s", document_id)
     doc = Document.objects.get(pk=document_id)
@@ -214,16 +216,33 @@ def fill_document_metadata(document_id=None):
             t0 = time.time()
             x, y = WatermarkService().get_document_filesize(docfile)
             time_spent = round(time.time() - t0, 4)  # seconds
-            DocumentHistoryItem.objects.create(
-                is_error=False,
-                type="message",
-                document=doc,
-                message=f"PDF page size determined to {x}x{y}, spent {time_spent}s",
-                object_body=str(docfile),
-            )
+
             docfile.refresh_from_db()
-            docfile.metadata["width_mm"] = x
-            docfile.metadata["height_mm"] = y
+            if x == 0 and y == 0:
+                docfile.metadata["unparseable_pdf"] = True
+                DocumentHistoryItem.objects.create(
+                    is_error=False,
+                    type="message",
+                    document=doc,
+                    message=f"The PDF is readonly (can't be parsed), spent {time_spent}s"
+                )
+            elif x == -1 and y == -1:
+                docfile.metadata["encrypted_pdf"] = True
+                DocumentHistoryItem.objects.create(
+                    is_error=False,
+                    type="message",
+                    document=doc,
+                    message=f"The PDF is readonly (protected from updates), spent {time_spent}s",
+                )
+            else:
+                DocumentHistoryItem.objects.create(
+                    is_error=False,
+                    type="message",
+                    document=doc,
+                    message=f"PDF page size determined to {x}x{y}, spent {time_spent}s",
+                )
+                docfile.metadata["width_mm"] = x
+                docfile.metadata["height_mm"] = y
             docfile.save()  # fields=("metadata",)
     return
 

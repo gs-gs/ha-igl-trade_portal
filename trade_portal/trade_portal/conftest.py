@@ -41,6 +41,12 @@ def staff_user(db):
 
 
 @pytest.fixture
+def ftas(db):
+    from trade_portal.documents.models import FTA
+    FTA.objects.get_or_create(name="Test FTA", country=["SG", "AU", "CN", "GB"])
+
+
+@pytest.fixture
 def docapi_env(scope="session"):
     from trade_portal.documents.models import FTA
     from trade_portal.users.models import (
