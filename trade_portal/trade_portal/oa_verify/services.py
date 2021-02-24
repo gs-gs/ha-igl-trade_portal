@@ -228,17 +228,27 @@ class PdfVerificationService:
         """
         qr_texts_found = set()
 
-        reader = PyPDF2.PdfFileReader(self._pdf_binary)
+        try:
+            reader = PyPDF2.PdfFileReader(self._pdf_binary)
+            pages_count = reader.numPages
+        except Exception as e:
+            logger.exception(e)
+            # try another library to rasterize that PDF and read QRs from images
+            qr_texts_found = self._try_rasterisation()
+        else:
+            # PDF can be parsed
+            for page_num in range(0, pages_count):
+                page = reader.getPage(page_num)
 
-        for page_num in range(0, reader.numPages):
-            page = reader.getPage(page_num)
-
-            if '/XObject' in page['/Resources']:
-                xObject = page['/Resources']['/XObject'].getObject()
-                qr_texts_found = qr_texts_found.union(self._parse_xobject(xObject))
-            else:
-                # nothing to parse - no xobjects
-                pass
+                if '/XObject' in page['/Resources']:
+                    xObject = page['/Resources']['/XObject'].getObject()
+                    qr_texts_found = qr_texts_found.union(self._parse_xobject(xObject))
+                else:
+                    # nothing to parse - no xobjects
+                    pass
+            if not qr_texts_found:
+                # try rasterisation in that case as well
+                qr_texts_found = self._try_rasterisation()
 
         # now qr_texts_found contains all texts of any format from the first page of that PDF
         # first - we filter out all which are not supported
@@ -339,3 +349,18 @@ class PdfVerificationService:
             else:
                 return True  # http format
         return False
+
+    def _try_rasterisation(self):
+        """
+        Convert all pages to images and feeds them to QR code finder
+        This is used as last resort when usual PDF parsing wasn't able to find any codes
+        """
+        from pdf2image import convert_from_bytes
+        qrcodes = set()
+        self._pdf_binary.seek(0)
+        images = convert_from_bytes(self._pdf_binary.read())
+        for image in images:
+            this_page_codes = self.parse_qr_code(image)
+            if this_page_codes:
+                qrcodes = qrcodes.union(this_page_codes)
+        return qrcodes

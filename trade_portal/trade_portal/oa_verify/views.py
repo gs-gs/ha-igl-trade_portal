@@ -173,7 +173,7 @@ class OaVerificationView(TemplateView):
             return {
                 "status": "error",
                 "error_message": (
-                    "No QR codes were found on the first page of that PDF file; "
+                    "No QR codes were found in the PDF file; "
                     "Please try to use 'Read QR code using camera' directly"
                 ),
             }

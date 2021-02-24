@@ -79,3 +79,15 @@ def test_pdf_parse_service():
         """52d-2455-4277-aa59-74654d235cc8/%22%2C%20%22key%22%3A%20%22DDBF2CD26963F8538563947560F"""
         """878A36B44E93EBF72C09AC98B6B65BF6FA7EB%22%7D%7D"""
     ])
+
+    # readonly password protected from update with QR code in it
+    scanned = open(os.path.join(ASSETS_PATH, "protected-from-update-with-qr.pdf"), "rb")
+    s = PdfVerificationService(scanned)
+    assert s.get_valid_qrcodes() == [
+        """tradetrust://{"uri":"https://trade.c1.devnet.trustbridge.io/oa/b429b963-9701-4395-8e83"""
+        """-7459c2e3010c/#EB7DE6F92EA972205420AC23D6279BF4B8ADB5B4E0435E1CAC358293BBDAACB4"}"""
+    ]
+
+    scanned = open(os.path.join(ASSETS_PATH, "protected_printing_allowed-no-qr.pdf"), "rb")
+    s = PdfVerificationService(scanned)
+    assert s.get_valid_qrcodes() is None
