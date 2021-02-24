@@ -50,19 +50,22 @@ class BatchedIssue implements Task<void>{
 
   /* istanbul ignore next */
   async start(){
-    logger.debug('start')
+    logger.info('BatchedIssue task started');
     while(true){
-      await this.next();
+      try{
+        await this.next();
+      }catch(e){
+        logger.error('An unexpeded error occured');
+        logger.error(e);
+        // to not hang on endless cycle
+        await new Promise(r=>setTimeout(r, 1000));
+      }
     }
   }
 
   async next(){
-    logger.debug('next');
     const batch = new Batch();
-    logger.info('A new batch created');
 
-
-    logger.info('RestoreBatch task started');
     await new RestoreBatch({
       batchDocuments: this.props.batchDocuments,
       batchTimeSeconds: this.props.batchTimeSeconds,
@@ -72,8 +75,6 @@ class BatchedIssue implements Task<void>{
       batch
     }).start();
 
-
-    logger.info('ComposeBatch task started');
     await new ComposeIssueBatch({
       unprocessedDocuments: this.props.unprocessedDocuments,
       batchDocuments: this.props.batchDocuments,
@@ -87,26 +88,13 @@ class BatchedIssue implements Task<void>{
       attemptsIntervalSeconds: this.props.composeAttemptsIntervalSeconds,
       batch
     }).start()
-    logger.debug('batch.isEmpty')
-    if(!batch.composed){
-      logger.error('ComposeBatch task failed');
-      return;
-    }
     if(batch.isEmpty()){
       logger.info('The batch is empty, skipping further steps');
       return;
     }
 
-
-    logger.info('WrapBatch task started');
     new WrapBatch({batch}).start()
-    if(!batch.wrapped){
-      logger.error('WrapBatch task failed');
-      return;
-    }
 
-
-    logger.info('IssueBatch task started');
     await new IssueBatch({
       wallet: this.props.wallet,
       documentStore: this.props.documentStore,
@@ -118,24 +106,14 @@ class BatchedIssue implements Task<void>{
       attemptsIntervalSeconds: this.props.issueAttemptsIntervalSeconds,
       batch
     }).start()
-    if(!batch.issued){
-      logger.error('WrapBatch task failed');
-      return;
-    }
 
-
-    logger.info('SaveIssuedBatch task started');
     await new SaveBatch({
-      issuedDocuments: this.props.issuedDocuments,
+      processedDocuments: this.props.issuedDocuments,
       batchDocuments: this.props.batchDocuments,
       attempts: this.props.saveAttempts,
       attemptsIntervalSeconds: this.props.saveAttemptsIntervalSeconds,
       batch
     }).start()
-    if(!batch.saved){
-      logger.error('SaveIssuedBatch task failed');
-      return;
-    }
   }
 }
 

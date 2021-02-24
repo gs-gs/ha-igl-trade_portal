@@ -34,7 +34,7 @@ describe('SaveBatch Task', ()=>{
       batch.wrappedDocuments.set(wrappedDocumentsKeys[documentIndex], { body: wrappedDocuments[documentIndex], size: 0});
     }
     const saveIssuedBatch = new SaveBatch({
-      issuedDocuments,
+      processedDocuments: issuedDocuments,
       batchDocuments,
       batch,
       attempts: 1,

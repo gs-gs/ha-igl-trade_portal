@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc --build tsconfig.prod.json",
     "start-batched-issue-worker": "tsc --build tsconfig.prod.json && node dist/src/entrypoint-batched-issue.js | pino-pretty",
+    "start-batched-revoke-worker": "tsc --build tsconfig.prod.json && node dist/src/entrypoint-batched-revoke.js | pino-pretty",
     "test": "jest --detectOpenHandles -i --collect-coverage | pino-pretty"
   },
   "author": "",

@@ -1,3 +1,4 @@
+import { logger } from '../logger';
 import { wrapDocument } from '@govtechsg/open-attestation';
 import {
   ComposeBatch,
@@ -17,8 +18,8 @@ class ComposeIssueBatch extends ComposeBatch{
         throw e;
       }
     }
-    const version = this.getDocumentVersion(document);
-    const documentStoreAddress = this.getDocumentStoreAddress(document, version);
+    const version = this.getDocumentVersion(document.body.json);
+    const documentStoreAddress = this.getDocumentStoreAddress(document.body.json, version);
     if(documentStoreAddress != this.props.documentStoreAddress){
       throw new InvalidDocumentError(
         `Expected document store address to be "${this.props.documentStoreAddress}", got "${documentStoreAddress}"`
@@ -29,6 +30,11 @@ class ComposeIssueBatch extends ComposeBatch{
     await this.putDocumentToBatchBackup(document);
     await this.removeDocumentFromUnprocessed(document);
     this.props.batch.unwrappedDocuments.set(document.key, {body: document.body.json, size: document.size});
+  }
+
+  async start(){
+    logger.info('ComposeIssueBatch task started');
+    return super.start();
   }
 }
 

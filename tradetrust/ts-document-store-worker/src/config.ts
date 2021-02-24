@@ -55,6 +55,13 @@ interface IBatchedIssueConfig extends IBatchedDocumentStoreTaskConfig{
   readonly ISSUE_ATTEMPTS_INTERVAL_SECONDS: number,
 }
 
+interface IBatchedRevokeConfig extends IBatchedDocumentStoreTaskConfig{
+  readonly REVOKED_BUCKET_NAME: string
+
+  readonly REVOKE_ATTEMPTS: number,
+  readonly REVOKE_ATTEMPTS_INTERVAL_SECONDS: number,
+}
+
 const getAWSEnvConfig = (): IAWSConfig => ({
   AWS_ENDPOINT_URL: process.env.AWS_ENDPOINT_URL,
 })
@@ -100,11 +107,20 @@ const getBatchedIssueEnvConfig = (): IBatchedIssueConfig => ({
   ISSUE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.ISSUE_ATTEMPTS_INTERVAL_SECONDS??'60')
 })
 
+const getBatchedRevokeEnvConfig = (): IBatchedRevokeConfig => ({
+  ...getBatchedDocumentStoreTaskEnvConfig(),
+  REVOKED_BUCKET_NAME: process.env.ISSUED_BUCKET_NAME??'',
+  REVOKE_ATTEMPTS: parseInt(process.env.ISSUE_ATTEMPTS??'10'),
+  REVOKE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.ISSUE_ATTEMPTS_INTERVAL_SECONDS??'60')
+});
+
 export {
   IAWSConfig,
   IBatchedIssueConfig,
+  IBatchedRevokeConfig,
   IBatchedDocumentStoreTaskConfig,
   getAWSEnvConfig,
   getBatchedIssueEnvConfig,
+  getBatchedRevokeEnvConfig,
   getBatchedDocumentStoreTaskEnvConfig
 };

@@ -36,9 +36,10 @@ class RestoreBatch implements Task<Promise<void>>{
   }
 
   async start(){
+    logger.info('RestoreBatch started');
     while(true){
       try{
-        await this.next();
+        await this.restoreBatch();
         break;
       }catch(e){
         // increasing attempt index
@@ -67,8 +68,7 @@ class RestoreBatch implements Task<Promise<void>>{
     }
   }
 
-  async next(){
-    logger.info('Starting batch restoration process');
+  async restoreBatch(){
     logger.info('Attempt %s/%s', this.state.attempt + 1, this.props.attempts);
     let ContinuationToken: string|undefined;
     this.props.batch.compositionStartTimestamp = Date.now();

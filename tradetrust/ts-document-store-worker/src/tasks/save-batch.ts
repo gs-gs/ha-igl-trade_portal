@@ -5,15 +5,15 @@ import { Task } from './interfaces';
 import { RetryError } from './errors';
 
 
-interface ISaveIssuedBatchProps{
-  issuedDocuments: Bucket,
+interface ISaveBatchProps{
+  processedDocuments: Bucket,
   batchDocuments: Bucket,
   batch: Batch,
   attempts?: number,
   attemptsIntervalSeconds?: number
 }
 
-interface ISaveIssuedBatchState{
+interface ISaveBatchState{
   attempt: number,
   savedDocuments: Array<string>
   deletedDocuments: Array<string>
@@ -22,10 +22,10 @@ interface ISaveIssuedBatchState{
 
 class SaveBatch implements Task<void>{
 
-  private props: ISaveIssuedBatchProps;
-  private state: ISaveIssuedBatchState;
+  private props: ISaveBatchProps;
+  private state: ISaveBatchState;
 
-  constructor(props: ISaveIssuedBatchProps){
+  constructor(props: ISaveBatchProps){
     this.props = Object.assign(props);
     this.props.attempts = this.props.attempts??10;
     this.props.attemptsIntervalSeconds = this.props.attemptsIntervalSeconds??60;
@@ -44,7 +44,7 @@ class SaveBatch implements Task<void>{
     logger.info('Saving "%s" to processed batch documents', key);
     const documentBodyString = JSON.stringify(body);
     try{
-      await this.props.issuedDocuments.put({Key:key, Body: documentBodyString});
+      await this.props.processedDocuments.put({Key:key, Body: documentBodyString});
     }catch(e){
       throw new RetryError(e);
     }
@@ -72,7 +72,7 @@ class SaveBatch implements Task<void>{
     }
   }
 
-  async next(){
+  async saveBatch(){
     for(let [key, document] of this.props.batch.wrappedDocuments){
       // only reason to fail is unexpected error that will prevent deletion without saving
       await this.saveDocument(key, document.body);
@@ -81,16 +81,14 @@ class SaveBatch implements Task<void>{
   }
 
   async start(){
-    logger.info('Started saving processed batch documents...')
-    this.props.batch.saved = false;
+    logger.info('SaveBatch task started');
     // saving keys of already saved & deleted documents to restore state after a critical unexpected error
     this.state.savedDocuments = new Array<string>();
     this.state.deletedDocuments = new Array<string>();
     while(true){
       try{
         logger.info('Attempt %s/%s', this.state.attempt + 1, this.props.attempts);
-        await this.next();
-        this.props.batch.saved = true;
+        await this.saveBatch();
         logger.info('Processed batch documents saved');
         return;
       }catch(e){

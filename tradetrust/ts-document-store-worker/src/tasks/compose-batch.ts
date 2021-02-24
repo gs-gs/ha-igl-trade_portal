@@ -107,7 +107,6 @@ abstract class ComposeBatch implements Task<void>{
 
 
   async getDocumentDataFromEvent(event: any): Promise<Document|undefined>{
-    logger.debug('getDocumentDataFromEvent');
     const s3Object = event.Body.Records[0].s3.object;
     let documentObject;
     try{
@@ -144,20 +143,18 @@ abstract class ComposeBatch implements Task<void>{
   }
 
 
-  getDocumentStoreAddress(document: Document, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
-    logger.debug('getDocumentStoreAddress');
+  getDocumentStoreAddress(document: any, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
     if(version === SchemaId.v2){
-      return document.body.json.issuers?.[0]?.documentStore;
+      return document.issuers?.[0]?.documentStore;
     }else if(version === SchemaId.v3){
-      return document.body.json.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.body.json.proof.value: undefined;
+      return document.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.proof.value: undefined;
     }
     return undefined;
   }
 
 
-  getDocumentVersion(document: Document): SchemaId.v2|SchemaId.v3|undefined{
-    logger.debug('getDocumentVersion');
-    switch(document.body.json.version){
+  getDocumentVersion(document: any): SchemaId.v2|SchemaId.v3|undefined{
+    switch(document.version){
       case SchemaId.v2:
       case OPEN_ATTESTATION_VERSION_ID_V2_SHORT:
         return SchemaId.v2;
@@ -169,7 +166,6 @@ abstract class ComposeBatch implements Task<void>{
 
 
   async putDocumentToBatchBackup(document: Document){
-    logger.debug('putDocumentToBatchBackup');
     try{
       logger.info('Adding document "%s" to backup', document.key);
       await this.props.batchDocuments.put({Key: document.key, Body: document.body.string});
@@ -180,7 +176,6 @@ abstract class ComposeBatch implements Task<void>{
   }
 
   async removeDocumentFromUnprocessed(document: Document){
-    logger.debug('removeDocumentFromUnprocessed');
     try{
       logger.info('Deleting document "%s" from unprocessed', document.key);
       await this.props.unprocessedDocuments.delete({Key: document.key});
@@ -191,7 +186,6 @@ abstract class ComposeBatch implements Task<void>{
   }
 
   async addUnwrappedDocumentToBatch(document: Document){
-    logger.debug('addDocumentToBatch')
     await this.putDocumentToBatchBackup(document);
     await this.removeDocumentFromUnprocessed(document);
     this.props.batch.unwrappedDocuments.set(document.key, {
@@ -201,7 +195,6 @@ abstract class ComposeBatch implements Task<void>{
   }
 
   async addWrappedDocumentToBatch(document: Document){
-    logger.debug('addDocumentToBatch')
     await this.putDocumentToBatchBackup(document);
     await this.removeDocumentFromUnprocessed(document);
     this.props.batch.unwrappedDocuments.set(document.key, {
@@ -211,7 +204,6 @@ abstract class ComposeBatch implements Task<void>{
   }
 
   async start(){
-    logger.info('Starting batch composition');
     // if batch didn't get any documents from RestoreBatch task
     // batch.compositionStartTimestamp will be reset and time spent on RestoreBatch task will be skipped
     if(!this.props.batch.restored){

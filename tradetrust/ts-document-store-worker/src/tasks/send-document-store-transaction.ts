@@ -1,7 +1,6 @@
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { Wallet, utils, BigNumber, PopulatedTransaction} from 'ethers';
 import { logger } from '../logger';
-import { Batch } from './data';
 import { Task } from './interfaces';
 import { RetryError } from './errors';
 
@@ -38,10 +37,9 @@ class HashDuplicationError extends EthereumError{
   }
 }
 
-interface ISendDocumentStoreBatchTransactionProps{
+interface ISendDocumentStoreTransactionProps{
   wallet: Wallet,
   documentStore: DocumentStore,
-  batch: Batch
   gasPriceMultiplier?: number,
   gasPriceLimitGwei?: number,
   transactionConfirmationThreshold?: number,
@@ -50,7 +48,7 @@ interface ISendDocumentStoreBatchTransactionProps{
   attemptsIntervalSeconds?: number
 }
 
-interface ISendDocumentStoreBatchTransactionState{
+interface ISendDocumentStoreTransactionState{
   attempt: number,
   pendingTransaction?: any,
   gasPriceMutiplier?: number,
@@ -60,12 +58,12 @@ interface ISendDocumentStoreBatchTransactionState{
 }
 
 
-abstract class SendDocumentStoreBatchTransaction implements Task<void>{
+abstract class SendDocumentStoreTransaction implements Task<void>{
 
-  protected state: ISendDocumentStoreBatchTransactionState;
-  protected props: ISendDocumentStoreBatchTransactionProps;
+  protected state: ISendDocumentStoreTransactionState;
+  protected props: ISendDocumentStoreTransactionProps;
 
-  constructor(props: ISendDocumentStoreBatchTransactionProps){
+  constructor(props: ISendDocumentStoreTransactionProps){
     this.props = Object.assign({}, props);
 
     this.props.gasPriceMultiplier = this.props.gasPriceMultiplier??1.2;
@@ -106,12 +104,8 @@ abstract class SendDocumentStoreBatchTransaction implements Task<void>{
     }
   }
 
-  abstract populateTransaction(): Promise<PopulatedTransaction>;
-
   async sendTransaction(gasPrice: BigNumber){
     logger.debug('sendTransactionAndWait');
-    const merkleRoot = '0x'+this.props.batch.merkleRoot;
-    logger.info('Creating transaction for DocumentStore(%s).issue("%s")', this.props.documentStore.address, merkleRoot)
     try{
       const transaction = await this.populateTransaction();
       transaction.gasLimit = await this.props.wallet.estimateGas(transaction);
@@ -216,7 +210,7 @@ abstract class SendDocumentStoreBatchTransaction implements Task<void>{
         logger.info('Issuing the batch, attempt %s/%s', this.state.attempt + 1, this.props.attempts);
         await this.sendTransactionWithGasPriceAdjustment();
         logger.info('The batch issued succesfully');
-        this.props.batch.issued = true;
+        await this.onComplete();
         return;
       }catch(e){
         // if process fails during gas price increase it can still pick up using this.state property
@@ -229,7 +223,7 @@ abstract class SendDocumentStoreBatchTransaction implements Task<void>{
             await new Promise(resolve=>setTimeout(resolve, this.props.attemptsIntervalSeconds! * 1000));
           }else{
             logger.error('Ran out of attempts, issuing failed');
-            this.props.batch.issued = false;
+            await this.onRanOutOfAttemps();
             throw e.source;
           }
         }else{
@@ -239,22 +233,22 @@ abstract class SendDocumentStoreBatchTransaction implements Task<void>{
     }
   }
 
-  async next(){
-    logger.debug('next');
-    return this.sendTransactionRepeatedlyWithGasPriceAdjustment();
-  }
-
   async start(){
     logger.debug('start');
-    return this.next();
+    await this.sendTransactionRepeatedlyWithGasPriceAdjustment();
   }
+
+  abstract populateTransaction(): Promise<PopulatedTransaction>;
+  abstract onComplete(): Promise<void>;
+  abstract onRanOutOfAttemps(): Promise<void>;
+
 }
 
 
 export {
-  SendDocumentStoreBatchTransaction,
-  ISendDocumentStoreBatchTransactionProps,
-  ISendDocumentStoreBatchTransactionState
+  SendDocumentStoreTransaction,
+  ISendDocumentStoreTransactionProps,
+  ISendDocumentStoreTransactionState
 };
 
-export default SendDocumentStoreBatchTransaction;
+export default SendDocumentStoreTransaction;

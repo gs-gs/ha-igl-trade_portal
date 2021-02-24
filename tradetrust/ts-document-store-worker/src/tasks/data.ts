@@ -14,9 +14,6 @@ class Batch{
 
   public restored: boolean = false;
   public composed: boolean = false;
-  public wrapped: boolean = false;
-  public issued: boolean = false;
-  public saved: boolean = false;
 
   constructor(){
     this.unwrappedDocuments = new Map<string, Document>();

@@ -1,11 +1,13 @@
-import SendDocumentStoreBatchTransaction from './send-document-store-batch-transaction';
+import SendDocumentStoreTransaction from './send-document-store-transaction';
 import RestoreBatch from './restore-batch';
 import ComposeBatch from './compose-batch';
 import ComposeIssueBatch from './compose-issue-batch';
+import ComposeRevokeBatch from './compose-revoke-batch';
 import WrapBatch from './wrap-batch';
 import IssueBatch from './issue-batch';
 import SaveBatch from './save-batch';
 import BatchedIssue from './batched-issue';
+import BatchedRevoke from './batched-revoke';
 import { Batch } from './data';
 
 
@@ -14,9 +16,11 @@ export {
   RestoreBatch,
   ComposeBatch,
   ComposeIssueBatch,
+  ComposeRevokeBatch,
   WrapBatch,
   IssueBatch,
   SaveBatch,
   BatchedIssue,
-  SendDocumentStoreBatchTransaction
+  BatchedRevoke,
+  SendDocumentStoreTransaction
 }

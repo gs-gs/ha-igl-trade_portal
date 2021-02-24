@@ -2,6 +2,7 @@ import AWS, {S3, SQS, KMS} from './aws';
 import {
   IBatchedIssueConfig,
   IBatchedDocumentStoreTaskConfig,
+  IBatchedRevokeConfig,
 } from './config';
 
 const S3Service = S3({});
@@ -125,6 +126,12 @@ class IssuedDocuments extends Bucket{
   }
 }
 
+class RevokedDocuments extends Bucket{
+  constructor(config: IBatchedRevokeConfig){
+    super(config.REVOKED_BUCKET_NAME);
+  }
+}
+
 class UnprocessedDocumentsQueue extends Queue{
   constructor(config: IBatchedDocumentStoreTaskConfig){
     super(config.UNPROCESSED_QUEUE_URL);
@@ -139,5 +146,6 @@ export {
   UnprocessedDocuments,
   BatchDocuments,
   IssuedDocuments,
+  RevokedDocuments,
   UnprocessedDocumentsQueue
 }
