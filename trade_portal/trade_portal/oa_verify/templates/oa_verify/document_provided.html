@@ -2,7 +2,12 @@
 
 {# First part - coloured badge #}
 <div class="col">
-  <a href="./" class="btn btn-primary btn-sm" style="float: right;">Validate another</a>
+  <div style="float: right; text-align: right;">
+    {% if verification_result.status == "valid" %}
+      <button type="button" role="button" class="btn btn-primary btn-sm" onClick="window.openAttestation.print()">Print</button>
+    {% endif %}
+    <a href="./" class="btn btn-primary btn-sm" >Validate another</a>
+  </div>
 
   {% if verification_result.status == "valid" %}
     <h2><span class="badge badge-success">Valid</span></h2>
