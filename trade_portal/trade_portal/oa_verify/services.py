@@ -1,8 +1,14 @@
 import base64
 import json
 import logging
+import urllib
+from io import BytesIO
 
+import PyPDF2
 import requests
+from PIL import Image
+from pyzbar.pyzbar import decode as pyzbar_decode
+
 
 from django.conf import settings
 
@@ -197,3 +203,164 @@ class OaVerificationService:
                 }
             )
         return attachments
+
+
+class PdfVerificationService:
+    """
+    Service to extract supported QR codes from provided PDF
+
+    https://github.com/gs-gs/ha-igl-project/issues/54
+    """
+
+    def __init__(self, pdf_file: bytes):
+        self._pdf_binary = pdf_file
+
+    def get_valid_qrcodes(self):
+        """
+        For the PDF with which this service has been initialized
+        Tries to parse it
+        Retrieving all images and parsing them as QR codes
+        And if parsed - verify QR code format to be one of supported ones
+        And return the text from all the supported QR codes
+
+        Seems to handle scanned PDFs well, but real usage will give us a lot of complex PDFs which
+        are not supported - so just need to be considered as well
+        """
+        qr_texts_found = set()
+
+        try:
+            reader = PyPDF2.PdfFileReader(self._pdf_binary)
+            pages_count = reader.numPages
+        except Exception as e:
+            logger.exception(e)
+            # try another library to rasterize that PDF and read QRs from images
+            qr_texts_found = self._try_rasterisation()
+        else:
+            # PDF can be parsed
+            for page_num in range(0, pages_count):
+                page = reader.getPage(page_num)
+
+                if '/XObject' in page['/Resources']:
+                    xObject = page['/Resources']['/XObject'].getObject()
+                    qr_texts_found = qr_texts_found.union(self._parse_xobject(xObject))
+                else:
+                    # nothing to parse - no xobjects
+                    pass
+            if not qr_texts_found:
+                # try rasterisation in that case as well
+                qr_texts_found = self._try_rasterisation()
+
+        # now qr_texts_found contains all texts of any format from the first page of that PDF
+        # first - we filter out all which are not supported
+        supported_qr_codes = []
+        for qr_code in qr_texts_found:
+            if self.is_qr_of_supported_format(qr_code):
+                supported_qr_codes.append(qr_code)
+        return supported_qr_codes or None
+
+    def _parse_xobject(self, xObject):
+        """
+        For given xObject
+        Tries to parse it as Image or, in case of Form, parses it recursively
+        """
+        qrtexts_in_that_xobject = set()
+        for obj in xObject:
+            try:
+                if xObject[obj]['/Subtype'] == '/Form':
+                    if '/XObject' in xObject[obj]['/Resources']:
+                        qrtexts_in_that_xobject = qrtexts_in_that_xobject.union(
+                            self._parse_xobject(xObject[obj]['/Resources']['/XObject'].getObject())
+                        )
+                elif xObject[obj]['/Subtype'] == '/Image':
+                    size = (xObject[obj]['/Width'], xObject[obj]['/Height'])
+                    data = xObject[obj].getData()  # already unfiltered
+                    if xObject[obj]['/ColorSpace'] == '/DeviceRGB':
+                        mode = "RGB"
+                    else:
+                        mode = "P"
+
+                    if '/Filter' in xObject[obj]:
+                        filters = xObject[obj]['/Filter']
+
+                        # we are interested only in last filter because PyPDF2 does all unpacking for us
+                        if isinstance(filters, list):
+                            the_filter = filters[-1]
+                        else:
+                            the_filter = filters
+
+                        # now we parse the image, assuming all filters were unfiltered
+                        if the_filter == '/FlateDecode':
+                            img = Image.frombytes(mode, size, data)
+                        elif the_filter == '/DCTDecode':
+                            # data is already JPEG
+                            img = Image.open(BytesIO(data))
+                        elif the_filter == '/JPXDecode':
+                            # data is already jp2 format
+                            img = Image.open(BytesIO(data))
+                        elif the_filter == '/CCITTFaxDecode':
+                            # data is already tiff format
+                            img = Image.open(BytesIO(data))
+                        else:
+                            # unsupported something, ignore that file
+                            logger.warning("Unsupported PDF image filter %s", the_filter)
+                            img = None
+                    else:
+                        img = Image.frombytes(mode, size, data)
+
+                    if img:
+                        qr_texts_in_this_image = self.parse_qr_code(img)
+                        if qr_texts_in_this_image:
+                            qrtexts_in_that_xobject = qrtexts_in_that_xobject.union(qr_texts_in_this_image)
+            except Exception as e:
+                # some parsing issue, just skip to the next xObject
+                # we won't read images from that block but at least there is a chance that we don't need it anyway
+                logger.exception(e)
+        return qrtexts_in_that_xobject
+
+    def parse_qr_code(self, img: Image):
+        decoded_texts = set()
+        for decoded in pyzbar_decode(img):
+            if decoded.type == "QRCODE":
+                decoded_texts.add(decoded.data.decode("utf-8"))
+        return decoded_texts or None
+
+    def is_qr_of_supported_format(self, text: str) -> bool:
+        if text.startswith("tradetrust://{") and text.endswith("}"):
+            json_body = text[len("tradetrust://"):]
+            try:
+                json.loads(json_body)
+            except Exception:
+                pass
+            else:
+                return True  # tradetrust format, JSON with prefix
+        if text.startswith("http://") or text.startswith("https://"):
+            # possibly a link format
+            try:
+                components = urllib.parse.urlparse(text)
+                params = urllib.parse.parse_qs(components.query)
+                req = json.loads(params["q"][0])
+                if req["type"].upper() == "DOCUMENT":
+                    req["payload"]["uri"]
+                    req["payload"]["key"]  # it's always AES
+                else:
+                    raise KeyError("Not a DOCUMENT type")
+            except KeyError:
+                pass  # not our case
+            else:
+                return True  # http format
+        return False
+
+    def _try_rasterisation(self):
+        """
+        Convert all pages to images and feeds them to QR code finder
+        This is used as last resort when usual PDF parsing wasn't able to find any codes
+        """
+        from pdf2image import convert_from_bytes
+        qrcodes = set()
+        self._pdf_binary.seek(0)
+        images = convert_from_bytes(self._pdf_binary.read())
+        for image in images:
+            this_page_codes = self.parse_qr_code(image)
+            if this_page_codes:
+                qrcodes = qrcodes.union(this_page_codes)
+        return qrcodes

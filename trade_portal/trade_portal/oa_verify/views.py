@@ -13,6 +13,7 @@ from trade_portal.documents.services.lodge import AESCipher
 from trade_portal.oa_verify.services import (
     OaVerificationService,
     OaVerificationError,
+    PdfVerificationService,
 )
 from trade_portal.monitoring.models import VerificationAttempt
 
@@ -21,9 +22,6 @@ logger = logging.getLogger(__name__)
 
 class OaVerificationView(TemplateView):
     template_name = "oa_verify/verification.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         c = super().get_context_data(*args, **kwargs)
@@ -89,10 +87,20 @@ class OaVerificationView(TemplateView):
         but error means that the file is not OA file or API returns 500 errors
         """
         if self.request.POST.get("type") == "file":
-            the_file = self.request.FILES["oa_file"]
-            value = the_file.read()
-            verify_result = self._unpack_and_verify_cleartext(value)
+            the_file = self.request.FILES.get("file-to-verify")
+            if not the_file:
+                messages.warning(self.request, "The file is not provided")
+                return None
 
+            if the_file.name.lower().endswith(".pdf"):
+                # PDF workflow
+                verify_result = self._verify_pdf_file(the_file)
+            else:
+                # OA workflow - any other extension is considered to be OA (like .json or .tt)
+                value = the_file.read()
+                verify_result = self._unpack_and_verify_cleartext(value)
+
+            # logging part
             att = VerificationAttempt.create_from_request(self.request, VerificationAttempt.TYPE_FILE)
             if verify_result.get("doc_number"):
                 doc = Document.objects.filter(
@@ -134,6 +142,50 @@ class OaVerificationView(TemplateView):
 
     def _unpack_and_verify_cleartext(self, cleartext):
         return OaVerificationService().verify_file(cleartext)
+
+    def _verify_pdf_file(self, the_file):
+        """
+        Accepting UploadedFile as input (can be read)
+        It tries to parse that PDF file and retrieve a valid QR code from it
+        Verifying that QR code after that
+        https://github.com/gs-gs/ha-igl-project/issues/54
+        """
+        try:
+            valid_qrcodes = PdfVerificationService(the_file).get_valid_qrcodes()
+        except Exception as e:
+            if "file has not been decrypted" in str(e):
+                return {
+                    "status": "error",
+                    "error_message": (
+                        "Verification of encrypted PDF files directly is not supported; "
+                        "please use QR code reader and your camera."
+                    ),
+                }
+            else:
+                logger.exception(e)
+                return {
+                    "status": "error",
+                    "error_message": (
+                        "Unable to parse the PDF file"
+                    ),
+                }
+        if not valid_qrcodes:
+            return {
+                "status": "error",
+                "error_message": (
+                    "No QR codes were found in the PDF file; "
+                    "Please try to use 'Read QR code using camera' directly"
+                ),
+            }
+        elif len(valid_qrcodes) > 1:
+            return {
+                "status": "error",
+                "error_message": (
+                    "There are multiple valid QR codes in that document; "
+                    "please scan the desired one manually"
+                ),
+            }
+        return self._parse_and_verify_qrcode(code=valid_qrcodes[0])
 
     def _parse_and_verify_qrcode(self, code: str = None, query: dict = None):
         """
