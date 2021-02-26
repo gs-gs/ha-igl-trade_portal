@@ -89,7 +89,7 @@ class OaVerificationView(TemplateView):
         if self.request.POST.get("type") == "file":
             the_file = self.request.FILES.get("file-to-verify")
             if not the_file:
-                messages.warning(self.request, "The file is not provided")
+                messages.warning(self.request, "No file provided, please upload one")
                 return None
 
             if the_file.name.lower().endswith(".pdf"):
