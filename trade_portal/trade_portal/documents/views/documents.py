@@ -205,9 +205,6 @@ class DocumentLogsView(Login, DocumentQuerysetMixin, DetailView):
 
 
 class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
-    """
-    TODO: unittest for that view
-    """
     doc_type = "file"
 
     def _get_filename_to_return(self):

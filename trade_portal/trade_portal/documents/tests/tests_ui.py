@@ -83,3 +83,38 @@ def test_document_issue(normal_user, ftas):
         assert nr.status_code == 302
         assert nr.url == reverse("documents:detail", kwargs={"pk": doc.pk})
         assert mock_task.call_count == 1
+
+
+@pytest.mark.django_db
+def test_document_file_download_view(normal_user, ftas):
+    nr = normal_user.web_client.get(reverse('documents:create', args={"dtype": "non_pref_coo"}))
+    # is it valid redirect?
+    assert nr.status_code == 302
+    create_url = nr.url
+    with open('/app/trade_portal/documents/tests/assets/A5.pdf', 'rb') as fp:
+        nr = normal_user.web_client.post(
+            create_url,
+            {'file': fp}
+        )
+    assert nr.status_code == 302
+
+    doc = Document.objects.first()
+    docfile = DocumentFile.objects.first()
+
+    # The document rendered as PNG
+    nr = normal_user.web_client.get(
+        reverse("documents:file-download", args=[doc.pk, docfile.pk]) + "?as_png=1"
+    )
+    assert nr.status_code == 200
+    assert nr["Content-Type"] == "image/png"
+    assert int(nr["Content-Length"]) > 50000   # it's 62238 now but may change in the future, any large value is fine
+
+    # The document rendered as PNG
+    nr = normal_user.web_client.get(
+        reverse("documents:pdf-download", args=[doc.pk])
+    )
+    assert nr.status_code == 200
+    assert nr["Content-Type"] == "application/pdf"
+    with open('/app/trade_portal/documents/tests/assets/A5.pdf', 'rb') as fp:
+        # exactly the same file it returns
+        assert fp.read() == nr.content
