@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.db import transaction
+from django.utils.html import mark_safe, escape
 
 from trade_portal.legi.abr import fetch_abn_info
 
@@ -129,6 +130,33 @@ class DraftDocumentUpdateForm(forms.ModelForm):
         if self.instance.exporter:
             self.initial["exporter"] = self.instance.exporter.business_id
             self.fields["exporter"].initial = self.instance.exporter.business_id
+
+    def clean_document_number(self):
+        """
+        Don't allow to save that form with duplicated document number
+        https://github.com/gs-gs/ha-igl-project/issues/159
+        """
+        value = self.cleaned_data["document_number"].strip()
+        another_document = Document.objects.filter(
+            created_by_org=self.instance.created_by_org,
+            document_number=value,
+            verification_status__in=(
+                Document.V_STATUS_PENDING,
+                Document.V_STATUS_VALID,
+            )
+        )
+        if self.instance.pk:
+            another_document = another_document.exclude(pk=self.instance.pk)
+        another_document = another_document.first()
+        if another_document is not None:
+            msg = mark_safe(
+                f"There is another document "
+                f"(<a href='{another_document.get_absolute_url()}'>{escape(another_document)}</a>)"
+                f" with the same number; it must be unique."
+            )
+            raise forms.ValidationError(msg)
+
+        return value
 
     def clean_exporter(self):
         value = self.cleaned_data.get("exporter").strip().replace(" ", "")
