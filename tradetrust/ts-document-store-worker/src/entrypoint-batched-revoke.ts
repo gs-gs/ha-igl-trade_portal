@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { logger } from './logger';
 import { getBatchedRevokeEnvConfig } from './config';
 import {

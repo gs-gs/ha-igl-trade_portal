@@ -14,6 +14,8 @@ import { logger } from '../logger';
 import { Batch } from './data';
 import { Task } from './interfaces';
 import { RetryError } from './errors';
+import { Wallet } from 'ethers';
+import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 
 
 class InvalidEventError extends Error{}
@@ -30,7 +32,8 @@ interface IComposeBatchProps{
   batchSizeBytes: number,
   messageWaitTime: number,
   messageVisibilityTimeout: number,
-  documentStoreAddress: string,
+  wallet: Wallet,
+  documentStore: DocumentStore,
   batch: Batch,
   attempts?: number,
   attemptsIntervalSeconds?: number
@@ -234,6 +237,7 @@ abstract class ComposeBatch implements Task<void>{
       }
       this.props.batch.composed = this.props.batch.isComposed(this.props.batchSizeBytes, this.props.batchTimeSeconds)
     }
+    logger.info('Batch composed');
   }
 
   async next(){

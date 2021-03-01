@@ -20,9 +20,9 @@ class ComposeIssueBatch extends ComposeBatch{
     }
     const version = this.getDocumentVersion(document.body.json);
     const documentStoreAddress = this.getDocumentStoreAddress(document.body.json, version);
-    if(documentStoreAddress != this.props.documentStoreAddress){
+    if(documentStoreAddress != this.props.documentStore.address){
       throw new InvalidDocumentError(
-        `Expected document store address to be "${this.props.documentStoreAddress}", got "${documentStoreAddress}"`
+        `Expected document store address to be "${this.props.documentStore.address}", got "${documentStoreAddress}"`
       )
     }
   }

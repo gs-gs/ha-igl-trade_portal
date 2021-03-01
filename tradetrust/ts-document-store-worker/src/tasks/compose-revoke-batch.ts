@@ -19,10 +19,15 @@ class ComposeRevokeBatch extends ComposeBatch{
     const unwrappedDocumentData = getData(document.body.json);
     const version = this.getDocumentVersion(unwrappedDocumentData);
     const documentStoreAddress = this.getDocumentStoreAddress(unwrappedDocumentData, version);
-    if(documentStoreAddress != this.props.documentStoreAddress){
+    if(documentStoreAddress != this.props.documentStore.address){
       throw new InvalidDocumentError(
-        `Expected document store address to be "${this.props.documentStoreAddress}", got "${documentStoreAddress}"`
+        `Expected document store address to be "${this.props.documentStore.address}", got "${documentStoreAddress}"`
       )
+    }
+    // A document must not be revoked previosly, attempts to revoke revoked documents cause an error
+    const targetHash = `0x${document.body.json.signature.targetHash}`;
+    if(await this.props.documentStore.isRevoked(targetHash)){
+      throw new InvalidDocumentError(`Document ${targetHash} already revoked`);
     }
   }
 

@@ -1,4 +1,5 @@
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
+import { connectWallet, connectDocumentStore } from 'src/document-store';
 import { Batch, ComposeIssueBatch } from 'src/tasks';
 import {
   UnprocessedDocuments,
@@ -28,6 +29,8 @@ describe('ComposeBatch Task', ()=>{
 
 
   test('batch backup', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
     const documents = generateDocumentsMap(10);
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
@@ -43,7 +46,8 @@ describe('ComposeBatch Task', ()=>{
       batchSizeBytes: 1024 * 1024 * 1024,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      wallet: wallet,
+      documentStore: documentStore,
       attempts: 1,
       attemptsIntervalSeconds: 1,
       batch
@@ -59,6 +63,9 @@ describe('ComposeBatch Task', ()=>{
 
 
   test('invalid documents handling', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
+
     const documents = new Map<string, any>();
     documents.set('non-json-document', 'non-json-document-body');
     documents.set('deleted-document', documentV2({body: 'deleted-document-body'}));
@@ -98,10 +105,12 @@ describe('ComposeBatch Task', ()=>{
       batchSizeBytes: 1024 * 1024 * 1024,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      wallet: wallet,
+      documentStore: documentStore,
       batch
     });
     await composeBatch.start();
+    expect(batch.wrappedDocuments.size).toBe(0);
     expect(batch.unwrappedDocuments.get('non-json-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('deleted-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('invalid-document')).toBeFalsy();
@@ -111,6 +120,8 @@ describe('ComposeBatch Task', ()=>{
   });
 
   test('complete by time', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
 
     const documents = generateDocumentsMap(10);
     for(let [key, document] of documents){
@@ -125,7 +136,8 @@ describe('ComposeBatch Task', ()=>{
       batchSizeBytes: 1024 * 1024 * 1024,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      wallet: wallet,
+      documentStore: documentStore,
       batch
     });
 
@@ -138,6 +150,8 @@ describe('ComposeBatch Task', ()=>{
   });
 
   test('complete by size', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
 
     const documentsCount = 20;
     const expectedBatchDocumentsCount = 10;
@@ -161,7 +175,8 @@ describe('ComposeBatch Task', ()=>{
       batchSizeBytes: maxBatchSizeBytes,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      wallet: wallet,
+      documentStore: documentStore,
       batch
     });
     await composeBatch.start();

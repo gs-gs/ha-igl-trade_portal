@@ -83,7 +83,8 @@ class BatchedIssue implements Task<void>{
       batchTimeSeconds: this.props.batchTimeSeconds,
       messageWaitTime: this.props.messageWaitTime,
       messageVisibilityTimeout: this.props.messageVisibilityTimeout,
-      documentStoreAddress: this.props.documentStore.address,
+      wallet: this.props.wallet,
+      documentStore: this.props.documentStore,
       attempts: this.props.composeAttempts,
       attemptsIntervalSeconds: this.props.composeAttemptsIntervalSeconds,
       batch

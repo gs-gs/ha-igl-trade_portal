@@ -19,12 +19,12 @@ class RevokeBatch extends SendDocumentStoreTransaction{
   }
 
   async populateTransaction(){
-    const targetHashes = new Array<string>(this.props.batch.wrappedDocuments.size);
+    const targetHashes = new Array<string>();
+    logger.info('Revoking documents batch');
     for(let document of this.props.batch.wrappedDocuments.values()){
+      logger.info('Target hash %s', `0x${document.body.signature.targetHash}`);
       targetHashes.push(`0x${document.body.signature.targetHash}`);
     }
-    logger.info('Revoking documents batch');
-    logger.info(targetHashes);
     return await this.props.documentStore.populateTransaction.bulkRevoke(targetHashes);
   }
   async onComplete(){

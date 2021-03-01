@@ -73,7 +73,8 @@ class BatchedRevoke implements Task<Promise<void>>{
       attemptsIntervalSeconds: this.props.revokeAttemptsIntervalSeconds,
       batchSizeBytes: this.props.batchSizeBytes,
       batchTimeSeconds: this.props.batchTimeSeconds,
-      documentStoreAddress: this.props.documentStore.address,
+      wallet: this.props.wallet,
+      documentStore: this.props.documentStore
     }).start()
 
     if(batch.isEmpty()){

@@ -207,7 +207,7 @@ abstract class SendDocumentStoreTransaction implements Task<void>{
     this.state.attempt = 0;
     while(true){
       try{
-        logger.info('Issuing the batch, attempt %s/%s', this.state.attempt + 1, this.props.attempts);
+        logger.info('Attempt %s/%s', this.state.attempt + 1, this.props.attempts);
         await this.sendTransactionWithGasPriceAdjustment();
         logger.info('The batch issued succesfully');
         await this.onComplete();

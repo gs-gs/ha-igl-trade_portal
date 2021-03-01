@@ -35,7 +35,7 @@ class Batch{
   }
 
   isEmpty(){
-    return this.unwrappedDocuments.size == 0;
+    return this.unwrappedDocuments.size == 0 && this.wrappedDocuments.size == 0;
   }
 
   isComposed(maxSizeBytes: number, maxTimeSeconds: number){

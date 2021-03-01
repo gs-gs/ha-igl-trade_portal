@@ -5,6 +5,7 @@ import ComposeIssueBatch from './compose-issue-batch';
 import ComposeRevokeBatch from './compose-revoke-batch';
 import WrapBatch from './wrap-batch';
 import IssueBatch from './issue-batch';
+import RevokeBatch from './revoke-batch';
 import SaveBatch from './save-batch';
 import BatchedIssue from './batched-issue';
 import BatchedRevoke from './batched-revoke';
@@ -19,6 +20,7 @@ export {
   ComposeRevokeBatch,
   WrapBatch,
   IssueBatch,
+  RevokeBatch,
   SaveBatch,
   BatchedIssue,
   BatchedRevoke,
