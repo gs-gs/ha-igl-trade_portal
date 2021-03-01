@@ -8,8 +8,8 @@ from django.views.generic import (
     UpdateView,
 )
 from django.urls import reverse
+from django.utils.html import mark_safe, escape
 from django.utils.translation import gettext as _
-
 
 from trade_portal.documents.forms import (
     DocumentCreateForm,
@@ -113,24 +113,47 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
         Validates the data entered by the user vs parsed PDF content and returns warnings
         if any
         """
-        obj = self.get_object()
-        raw_text = obj.extra_data.get("metadata", {}).get("raw_text")
-        if not raw_text:
-            # no metadata extracted
-            return {}
         warnings = {}
-        if obj.document_number not in raw_text:
-            warnings[
-                "Document Number"
-            ] = "The value hasn't been found in the statement file"
-        if obj.exporter:
-            if (
-                obj.exporter.name not in raw_text
-                and obj.exporter.business_id not in raw_text
-            ):
+        obj = self.get_object()
+
+        # warnings based on object fields
+        another_document = Document.objects.filter(
+            created_by_org=obj.created_by_org,
+            document_number=obj.document_number,
+            workflow_status__in=(
+                Document.WORKFLOW_STATUS_DRAFT,
+                Document.WORKFLOW_STATUS_ISSUED,
+            )
+        ).exclude(
+            pk=obj.pk
+        ).exclude(
+            verification_status__in=(
+                Document.V_STATUS_ERROR,
+                Document.V_STATUS_FAILED,
+            )
+        ).first()
+        if another_document:
+            warnings["Document Number"] = mark_safe(
+                f"There is another document "
+                f"(<a href='{another_document.get_absolute_url()}'>{escape(another_document)}</a>)"
+                f" with the same document number, please be careful not to issue it twice"
+            )
+
+        # warnings based on the text extraction
+        raw_text = obj.extra_data.get("metadata", {}).get("raw_text")
+        if raw_text:
+            if obj.document_number not in raw_text:
                 warnings[
-                    "Exporter"
+                    "Document Number"
                 ] = "The value hasn't been found in the statement file"
+            if obj.exporter:
+                if (
+                    obj.exporter.name not in raw_text
+                    and obj.exporter.business_id not in raw_text
+                ):
+                    warnings[
+                        "Exporter"
+                    ] = "The value hasn't been found in the statement file"
         return warnings
 
     def post(self, request, *args, **kwargs):
