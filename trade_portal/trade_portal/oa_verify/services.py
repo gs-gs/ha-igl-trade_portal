@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import time
 import urllib
 from io import BytesIO
 
@@ -63,14 +64,17 @@ class OaVerificationService:
                 # might be wrapped document number
                 doc_number = doc_number.split(":", maxsplit=2)[2]
 
+        t0 = time.time()
         try:
             api_verify_resp = self._api_verify_file(file_content)
         except OaVerificationError as e:
+            logger.info("Document verification (api call), failed in %ss", round(time.time() - t0, 4))
             result = {
                 "status": "error",
                 "error_message": str(e),
             }
         else:
+            logger.info("Document verification (api call), success in %ss", round(time.time() - t0, 4))
             # the file has been verified and either valid or invalid, calculate the final status
             result["status"] = "valid"
             result["verify_result"] = api_verify_resp.copy()

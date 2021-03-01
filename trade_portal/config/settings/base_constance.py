@@ -33,6 +33,10 @@ CONSTANCE_CONFIG = {
     "QR_CODE_SIZE_MM": (
         26,
         "The size (millimeters) of QR code to watermark over PDFs we generate"
+    ),
+    "VERIFIER_SHOW_DOWNLOAD_TAB": (
+        True,
+        "Uncheck that if we don't need to display 'Download PDF' and 'Download OA' buttons for the verifier"
     )
 }
 

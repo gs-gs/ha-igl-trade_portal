@@ -78,6 +78,9 @@
                 <a class="site-nav__item-link" href="/">{% trans 'Home' %}</a>
               </li>
               <li class="site-nav__item">
+                <a class="site-nav__item-link" href="/v/">{% trans 'Verify a Document' %}</a>
+              </li>
+              <li class="site-nav__item">
                 <a class="site-nav__item-link" href="/help/">{% trans 'Help' %}</a>
               </li>
               {% if not request.user.is_authenticated %}

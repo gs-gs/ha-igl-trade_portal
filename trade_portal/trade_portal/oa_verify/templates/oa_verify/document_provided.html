@@ -42,9 +42,11 @@
       <li class="nav-item">
         <a class="nav-link active" id="id-verify-tab" data-toggle="tab" href="#id-verify-tab-content" role="tab" aria-controls="id-verify-tab-content" aria-selected="true">Verify</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" id="id-pdf-tab" data-toggle="tab" href="#id-pdf-tab-content" role="tab" aria-controls="id-pdf-tab-content" aria-selected="false">Downloads</a>
-      </li>
+      {% if VERIFIER_SHOW_DOWNLOAD_TAB %}
+        <li class="nav-item">
+          <a class="nav-link" id="id-pdf-tab" data-toggle="tab" href="#id-pdf-tab-content" role="tab" aria-controls="id-pdf-tab-content" aria-selected="false">Downloads</a>
+        </li>
+      {% endif %}
       <li class="nav-item">
         <a class="nav-link" id="id-status-tab" data-toggle="tab" href="#id-status-tab-content" role="tab" aria-controls="id-status-tab-content" aria-selected="true">Logs</a>
       </li>
@@ -57,16 +59,18 @@
           We display such details only for valid documents.
         {% endif %}
       </div>
-      <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
-        {% if verification_result.status == "valid" %}
-          {% for attach in verification_result.attachments %}
-            <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary" download>{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
-          {% endfor %}
-          <a href="data:application/json;base64,{{ verification_result.oa_base64 }}" class="btn btn-primary" download>OA file</a><br/><br/>
-        {% else %}
-          We display attachments only for valid documents.
-        {% endif %}
-      </div>
+      {% if VERIFIER_SHOW_DOWNLOAD_TAB %}
+        <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
+          {% if verification_result.status == "valid" %}
+            {% for attach in verification_result.attachments %}
+              <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary" download>{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
+            {% endfor %}
+            <a href="data:application/json;base64,{{ verification_result.oa_base64 }}" class="btn btn-primary" download>OA file</a><br/><br/>
+          {% else %}
+            We display attachments only for valid documents.
+          {% endif %}
+        </div>
+      {% endif %}
 
       <div class="tab-pane fade" id="id-status-tab-content" role="tabpanel" aria-labelledby="id-status-tab">
         <table class="table">

@@ -5,6 +5,7 @@ import urllib
 
 import requests
 
+from constance import config
 from django.contrib import messages
 from django.views.generic import TemplateView
 
@@ -25,6 +26,7 @@ class OaVerificationView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         c = super().get_context_data(*args, **kwargs)
+        c["VERIFIER_SHOW_DOWNLOAD_TAB"] = config.VERIFIER_SHOW_DOWNLOAD_TAB
 
         if self.request.POST:
             c["verification_result"] = self.perform_verification()
