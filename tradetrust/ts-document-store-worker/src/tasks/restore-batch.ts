@@ -8,6 +8,7 @@ import { RetryError } from './errors';
 
 
 interface IRestoreBatchProps{
+  wrapped: boolean,
   batchDocuments: Bucket,
   batch: Batch,
   batchSizeBytes: number,
@@ -72,12 +73,21 @@ class RestoreBatch implements Task<Promise<void>>{
     logger.info('Attempt %s/%s', this.state.attempt + 1, this.props.attempts);
     let ContinuationToken: string|undefined;
     this.props.batch.compositionStartTimestamp = Date.now();
+    let restoredDocuments = null;
+    if(this.props.wrapped){
+      logger.info('Restoring wrapped documents');
+      restoredDocuments = this.props.batch.wrappedDocuments;
+    }else{
+      logger.info('Restoring unwrapped documents');
+      restoredDocuments = this.props.batch.unwrappedDocuments;
+    }
+
     logger.info('Composition start timestamp = %s', this.props.batch.compositionStartTimestamp);
     do{
       const listObjectsResponse = await this.listBatchBackupDocuments(ContinuationToken);
       ContinuationToken = listObjectsResponse.ContinuationToken;
       for(let s3Object of listObjectsResponse.Contents??[]){
-        if(!this.props.batch.unwrappedDocuments.has(s3Object.Key!)){
+        if(!restoredDocuments.has(s3Object.Key!)){
 
           let documentObject;
           try{
@@ -99,7 +109,7 @@ class RestoreBatch implements Task<Promise<void>>{
             continue;
           }
 
-          this.props.batch.unwrappedDocuments.set(s3Object.Key!, {body: documentJSONBody, size: s3Object.Size!});
+          restoredDocuments.set(s3Object.Key!, {body: documentJSONBody, size: s3Object.Size!});
           logger.info('Document "%s" added to the batch', s3Object.Key);
         }else{
           logger.info('Document "%s" already added', s3Object.Key);
@@ -115,7 +125,7 @@ class RestoreBatch implements Task<Promise<void>>{
       }
     }while(ContinuationToken && !this.props.batch.composed);
 
-    this.props.batch.restored = this.props.batch.unwrappedDocuments.size > 0;
+    this.props.batch.restored = restoredDocuments.size > 0;
     logger.info(
       'The batch restoration process is completed. The batch final state %o',
       {restored: this.props.batch.restored, composed: this.props.batch.composed}

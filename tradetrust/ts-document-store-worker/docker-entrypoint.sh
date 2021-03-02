@@ -8,6 +8,9 @@ case "${CONTAINER_MODE,,}" in
   batched-issue-worker)
     npm run start-batched-issue-worker
     ;;
+  batched-revoke-worker)
+    npm run start-batched-revoke-worker
+    ;;
   container)
     echo "Container started"
     tail -f /dev/null
