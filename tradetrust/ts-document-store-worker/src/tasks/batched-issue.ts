@@ -1,6 +1,7 @@
 import { DocumentStore } from "@govtechsg/document-store/src/contracts/DocumentStore";
 import { Wallet } from "ethers";
 import {
+  InvalidDocuments,
   BatchDocuments,
   IssuedDocuments,
   UnprocessedDocuments,
@@ -16,6 +17,7 @@ import SaveBatch from "./save-batch";
 import WrapBatch from "./wrap-batch";
 
 interface IProcessDocumentsProps{
+  invalidDocuments: InvalidDocuments,
   unprocessedDocuments: UnprocessedDocuments,
   batchDocuments: BatchDocuments,
   issuedDocuments: IssuedDocuments,
@@ -77,6 +79,7 @@ class BatchedIssue implements Task<void>{
     }).start();
 
     await new ComposeIssueBatch({
+      invalidDocuments: this.props.invalidDocuments,
       unprocessedDocuments: this.props.unprocessedDocuments,
       batchDocuments: this.props.batchDocuments,
       unprocessedDocumentsQueue: this.props.unprocessedDocumentsQueue,

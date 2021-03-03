@@ -22,6 +22,7 @@ interface IBatchedDocumentStoreTaskConfig extends IAWSConfig{
   readonly DOCUMENT_STORE_ADDRESS: string
 
   readonly UNPROCESSED_QUEUE_URL: string
+  readonly INVALID_BUCKET_NAME: string
   readonly UNPROCESSED_BUCKET_NAME: string
   readonly BATCH_BUCKET_NAME: string
 
@@ -69,6 +70,7 @@ const getAWSEnvConfig = (): IAWSConfig => ({
 const getBatchedDocumentStoreTaskEnvConfig = (): IBatchedDocumentStoreTaskConfig => ({
   ...getAWSEnvConfig(),
   UNPROCESSED_QUEUE_URL: process.env.UNPROCESSED_QUEUE_URL??'',
+  INVALID_BUCKET_NAME: process.env.INVALID_BUCKET_NAME??'',
   UNPROCESSED_BUCKET_NAME: process.env.UNPROCESSED_BUCKET_NAME??'',
   BATCH_BUCKET_NAME: process.env.BATCH_BUCKET_NAME??'',
 

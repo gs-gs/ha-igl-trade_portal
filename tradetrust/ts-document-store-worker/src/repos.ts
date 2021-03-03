@@ -107,6 +107,11 @@ class Queue{
   }
 }
 
+class InvalidDocuments extends Bucket{
+  constructor(config: IBatchedDocumentStoreTaskConfig){
+    super(config.INVALID_BUCKET_NAME);
+  }
+}
 
 class UnprocessedDocuments extends Bucket{
   constructor(config: IBatchedDocumentStoreTaskConfig){
@@ -143,6 +148,7 @@ export {
   Keys,
   Bucket,
   Queue,
+  InvalidDocuments,
   UnprocessedDocuments,
   BatchDocuments,
   IssuedDocuments,

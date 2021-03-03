@@ -13,7 +13,7 @@ class ComposeIssueBatch extends ComposeBatch{
       wrapDocument(document.body.json)
     }catch(e){
       if(!!e.validationErrors){
-        throw new InvalidDocumentError(`Invalid document schema: ${JSON.stringify(e.validationErrors, null, 4)}`);
+        throw new InvalidDocumentError('Invalid document schema', document);
       }else{
         throw e;
       }
@@ -22,7 +22,8 @@ class ComposeIssueBatch extends ComposeBatch{
     const documentStoreAddress = this.getDocumentStoreAddress(document.body.json, version);
     if(documentStoreAddress != this.props.documentStore.address){
       throw new InvalidDocumentError(
-        `Expected document store address to be "${this.props.documentStore.address}", got "${documentStoreAddress}"`
+        `Expected document store address to be "${this.props.documentStore.address}", got "${documentStoreAddress}"`,
+        document
       )
     }
   }

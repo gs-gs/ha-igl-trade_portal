@@ -1,5 +1,6 @@
 import { wrapDocument } from '@govtechsg/open-attestation';
 import {
+  InvalidDocuments,
   UnprocessedDocuments,
   BatchDocuments,
   RevokedDocuments,
@@ -17,16 +18,17 @@ describe('Test', ()=>{
 
   const config = getBatchedRevokeEnvConfig();
   const documentsCount = 5;
-  const unwrappeDocuments = generateDocumentsMap(documentsCount);
+  const unwrappedDocuments = generateDocumentsMap(documentsCount);
 
   const generateWrappedDocuments = (unwrappedDocuments: Map<string, any>)=>{
     const wrappedDocuments = new Map<string,any>();
-    for( let [key, document] of unwrappeDocuments){
+    for( let [key, document] of unwrappedDocuments){
       wrappedDocuments.set(key, wrapDocument(document));
     }
     return wrappedDocuments;
   }
 
+  const invalidDocuments = new InvalidDocuments(config);
   const unprocessedDocuments = new UnprocessedDocuments(config);
   const batchDocuments = new BatchDocuments(config);
   const revokedDocuments = new RevokedDocuments(config);
@@ -41,7 +43,7 @@ describe('Test', ()=>{
   }, 1000 * 60);
 
   test('test complete by size', async ()=>{
-    const wrappedDocuments = generateWrappedDocuments(unwrappeDocuments);
+    const wrappedDocuments = generateWrappedDocuments(unwrappedDocuments);
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
 
@@ -53,6 +55,7 @@ describe('Test', ()=>{
     }
 
     const processDocuments = new BatchedRevoke({
+      invalidDocuments,
       unprocessedDocuments,
       batchDocuments,
       revokedDocuments,
@@ -90,7 +93,7 @@ describe('Test', ()=>{
   });
 
   test('test complete by size', async ()=>{
-    const wrappedDocuments = generateWrappedDocuments(unwrappeDocuments);
+    const wrappedDocuments = generateWrappedDocuments(unwrappedDocuments);
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
 
@@ -102,6 +105,7 @@ describe('Test', ()=>{
     }
 
     const processDocuments = new BatchedRevoke({
+      invalidDocuments,
       unprocessedDocuments,
       batchDocuments,
       revokedDocuments,

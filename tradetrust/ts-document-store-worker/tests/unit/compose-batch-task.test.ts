@@ -4,7 +4,8 @@ import _ from 'lodash';
 import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue,
-  BatchDocuments
+  BatchDocuments,
+  InvalidDocuments
 } from 'src/repos';
 // using ComposeIssueBatch because it's a child of ComposeBatch task
 import { ComposeIssueBatch, Batch } from 'src/tasks';
@@ -65,6 +66,12 @@ describe('ComposeBatch task unit tests', ()=>{
     }
   }
 
+  const createInvalidDocumentsMock = ()=>{
+    return {
+      put: jest.fn()
+    }
+  }
+
   const createDocumentStoreMock = ()=>{
     return {
       address: config.DOCUMENT_STORE_ADDRESS
@@ -81,12 +88,14 @@ describe('ComposeBatch task unit tests', ()=>{
     const unprocessedDocuments = createDocumentsRepoMock();
     const batchDocuments = createDocumentsRepoMock();
     const unprocessedDocumentsQueue = createUnprocessedDocumentsQueueMock();
+    const invalidDocuments = createInvalidDocumentsMock();
     const attempts = 4;
 
     unprocessedDocumentsQueue.get.mockRejectedValue(new Error('Unexpected Error'));
 
     const batch = new Batch();
     const composeBatch = new ComposeIssueBatch({
+      invalidDocuments: <InvalidDocuments><unknown>invalidDocuments,
       unprocessedDocuments: <UnprocessedDocuments><unknown>unprocessedDocuments,
       unprocessedDocumentsQueue: <UnprocessedDocumentsQueue><unknown>unprocessedDocumentsQueue,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
@@ -116,6 +125,7 @@ describe('ComposeBatch task unit tests', ()=>{
     const unprocessedDocuments = createDocumentsRepoMock();
     const batchDocuments = createDocumentsRepoMock();
     const unprocessedDocumentsQueue = createUnprocessedDocumentsQueueMock();
+    const invalidDocuments = createInvalidDocumentsMock();
     const attempts = 10;
 
 
@@ -244,6 +254,7 @@ describe('ComposeBatch task unit tests', ()=>{
 
     const batch = new Batch();
     const composeBatch = new ComposeIssueBatch({
+      invalidDocuments: <InvalidDocuments><unknown>invalidDocuments,
       unprocessedDocuments: <UnprocessedDocuments><unknown>unprocessedDocuments,
       unprocessedDocumentsQueue: <UnprocessedDocumentsQueue><unknown>unprocessedDocumentsQueue,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,

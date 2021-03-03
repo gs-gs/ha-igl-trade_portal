@@ -2,6 +2,7 @@ import { Wallet } from 'ethers';
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { getData } from '@govtechsg/open-attestation';
 import {
+  InvalidDocuments,
   UnprocessedDocuments,
   BatchDocuments,
   IssuedDocuments,
@@ -23,6 +24,7 @@ describe('BatchedIssue task test', ()=>{
   const batchDocuments = new BatchDocuments(config);
   const issuedDocuments = new IssuedDocuments(config);
   const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue(config);
+  const invalidDocuments = new InvalidDocuments(config);
 
   beforeEach(async (done)=>{
     await clearQueue(config.UNPROCESSED_QUEUE_URL);
@@ -50,6 +52,7 @@ describe('BatchedIssue task test', ()=>{
     }
 
     const processDocuments = new BatchedIssue({
+      invalidDocuments,
       unprocessedDocuments,
       batchDocuments,
       issuedDocuments,
@@ -111,6 +114,7 @@ describe('BatchedIssue task test', ()=>{
     }
 
     const processDocuments = new BatchedIssue({
+      invalidDocuments,
       unprocessedDocuments,
       batchDocuments,
       issuedDocuments,

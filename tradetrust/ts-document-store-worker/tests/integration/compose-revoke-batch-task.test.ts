@@ -3,6 +3,7 @@ import { getBatchedRevokeEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
 import { Batch, ComposeRevokeBatch } from 'src/tasks';
 import {
+  InvalidDocuments,
   UnprocessedDocuments,
   BatchDocuments,
   UnprocessedDocumentsQueue
@@ -23,6 +24,7 @@ describe('ComposeRevokeBatch integration test', ()=>{
   const unprocessedDocuments = new UnprocessedDocuments(config);
   const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue(config);
   const batchDocuments = new BatchDocuments(config);
+  const invalidDocuments = new InvalidDocuments(config);
 
   beforeEach(async (done)=>{
     await clearQueue(config.UNPROCESSED_QUEUE_URL);
@@ -49,6 +51,7 @@ describe('ComposeRevokeBatch integration test', ()=>{
       batchDocuments,
       unprocessedDocuments,
       unprocessedDocumentsQueue,
+      invalidDocuments,
       messageWaitTime: 10,
       messageVisibilityTimeout: 10,
       batchSizeBytes: 1,
@@ -64,10 +67,15 @@ describe('ComposeRevokeBatch integration test', ()=>{
   test('invalid documents handling', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
+    const invalidDocumentStoreAddress = '0x0000000000000000000000000000000000000000';
+    const invalidDocumentSignature = '0x0000000000000000000000000000000000000000';
 
     const documents = new Map<string, any>();
+    const invalidSignatureDocument = wrapDocument(documentV2({body: 'invalid-signature'}))
+    invalidSignatureDocument.signature.merkleRoot = invalidDocumentSignature;
     const revokedDocument = wrapDocument(documentV2({body:'revoked-document'}));
     await documentStore.revoke(`0x${revokedDocument.signature.targetHash}`);
+    documents.set('invalid-signature-document', invalidSignatureDocument);
     documents.set('revoked-document', revokedDocument);
     documents.set('non-json-document', 'non-json-document-body');
     documents.set('deleted-document', documentV2({body: 'deleted-document-body'}));
@@ -78,7 +86,7 @@ describe('ComposeRevokeBatch integration test', ()=>{
       issuers:[
         {
           name: 'DEMO STORE',
-          documentStore: '0x0000000000000000000000000000000000000000',
+          documentStore: invalidDocumentStoreAddress,
           identityProof: {
             type: 'DNS-TXT',
             location: 'tradetrust.io'
@@ -89,7 +97,10 @@ describe('ComposeRevokeBatch integration test', ()=>{
     documents.set('wrapped-document', wrapDocument(documentV2({body: 'wrapped-document-body'})));
 
     for(let [key, document] of documents){
-      await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
+      if(typeof document !== 'string'){
+        document = JSON.stringify(document);
+      }
+      await unprocessedDocuments.put({Key: key, Body: document});
     }
     await unprocessedDocuments.delete({Key: 'deleted-document'});
 
@@ -100,6 +111,7 @@ describe('ComposeRevokeBatch integration test', ()=>{
       batchDocuments,
       unprocessedDocuments,
       unprocessedDocumentsQueue,
+      invalidDocuments,
       messageWaitTime: 10,
       messageVisibilityTimeout: 10,
       batchSizeBytes: 1,
@@ -109,13 +121,51 @@ describe('ComposeRevokeBatch integration test', ()=>{
       batch
     });
     await composeRevokeBatch.start();
+
+    const checkInvalidDocument = async (key: string, reason: string)=>{
+      expect(batch.wrappedDocuments.get(key)).toBeFalsy();
+      const invalidDocumentReasonBody = JSON.parse((await invalidDocuments.get({Key: `${key}.reason.json`})).Body?.toString()??'{}');
+      const expectedDocumentBody = documents.get(key);
+      if(typeof expectedDocumentBody === 'string'){
+        const invalidDocumentBody = (await invalidDocuments.get({Key: key})).Body?.toString();
+        expect(invalidDocumentBody).toMatch(documents.get(key));
+      }else{
+        const invalidDocumentBody = JSON.parse((await invalidDocuments.get({Key: key})).Body?.toString()??'{}');
+        expect(invalidDocumentBody).toEqual(documents.get(key));
+      }
+      expect(invalidDocumentReasonBody).toEqual({
+        reason: reason
+      })
+    }
+
+
     expect(batch.unwrappedDocuments.size).toBe(0);
-    expect(batch.wrappedDocuments.get('revoked-document')).toBeFalsy();
-    expect(batch.wrappedDocuments.get('non-json-document')).toBeFalsy();
+    expect(batch.wrappedDocuments.size).toBe(1);
+    await checkInvalidDocument(
+      'invalid-document-store-document',
+      `Expected document store address to be "${documentStore.address}", got "${invalidDocumentStoreAddress}"`
+    )
+    await checkInvalidDocument(
+      'non-json-document',
+      'Document body is not a valid JSON'
+    )
+    await checkInvalidDocument(
+      'unwrapped-document',
+      'Invalid document schema'
+    )
+    await checkInvalidDocument(
+      'invalid-document',
+      'Invalid document schema'
+    )
+    await checkInvalidDocument(
+      'invalid-signature-document',
+      'Invalid document signature'
+    )
+    await checkInvalidDocument(
+      'revoked-document',
+      `Document 0x${documents.get('revoked-document').signature.targetHash} already revoked`
+    )
     expect(batch.wrappedDocuments.get('deleted-document')).toBeFalsy();
-    expect(batch.wrappedDocuments.get('unwrapped-document')).toBeFalsy();
-    expect(batch.wrappedDocuments.get('invalid-document')).toBeFalsy();
-    expect(batch.wrappedDocuments.get('invalid-document-store-document')).toBeFalsy();
     expect(batch.wrappedDocuments.get('wrapped-document')).toBeTruthy();
   });
 });

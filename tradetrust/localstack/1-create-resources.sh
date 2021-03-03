@@ -9,6 +9,8 @@ echo "Creating buckets..."
 awslocal s3api create-bucket --bucket "unprocessed"
 awslocal s3api create-bucket --bucket "batch"
 awslocal s3api create-bucket --bucket "issued"
+awslocal s3api create-bucket --bucket "revoked"
+awslocal s3api create-bucket --bucket "invalid"
 echo "Done"
 echo "Creating notifications..."
 awslocal s3api put-bucket-notification --bucket unprocessed --notification-configuration file:///docker-entrypoint-initaws.d/notification.json

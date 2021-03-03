@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   SchemaId
 } from '@govtechsg/open-attestation';
@@ -21,10 +22,17 @@ import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentS
 class InvalidEventError extends Error{}
 
 
-class InvalidDocumentError extends Error{}
+class InvalidDocumentError extends Error{
+  public document: Document;
+  constructor(message: string, document: Document){
+    super(message);
+    this.document = document;
+  }
+}
 
 
 interface IComposeBatchProps{
+  invalidDocuments: Bucket,
   unprocessedDocuments: Bucket,
   batchDocuments: Bucket,
   unprocessedDocumentsQueue: Queue,
@@ -47,6 +55,7 @@ interface IComposeBatchState{
 interface Document{
   key: string,
   size: number,
+  eTag: string,
   body: {
     string: string,
     json: any
@@ -127,21 +136,22 @@ abstract class ComposeBatch implements Task<void>{
       throw new RetryError(e);
     }
     const documentStringBody = documentObject.Body!.toString();
+    documentObject = {
+      key: s3Object.key,
+      size: s3Object.size,
+      eTag: s3Object.eTag,
+      body: {
+        string: documentStringBody,
+        json: null
+      }
+    }
     // the only potential error here is invalid JSON string
     try{
-      const documentJSONBody = JSON.parse(documentStringBody);
-      documentObject = {
-        key: s3Object.key,
-        size: s3Object.size,
-        body: {
-          string: documentStringBody,
-          json: documentJSONBody
-        }
-      }
+      documentObject.body.json = JSON.parse(documentStringBody);
       logger.info('Downloaded');
       return documentObject;
     }catch(e){
-      throw new InvalidDocumentError('Document body is not a valid JSON');
+      throw new InvalidDocumentError('Document body is not a valid JSON', documentObject);
     }
   }
 
@@ -180,9 +190,34 @@ abstract class ComposeBatch implements Task<void>{
 
   async removeDocumentFromUnprocessed(document: Document){
     try{
-      logger.info('Deleting document "%s" from unprocessed', document.key);
+      logger.info('Deleting document "%s" etag: %s from unprocessed', document.key);
       await this.props.unprocessedDocuments.delete({Key: document.key});
       logger.info('Deleted');
+    }catch(e){
+      if(e.code === 'KeyError'){
+        logger.warn('Document does not exit');
+      }else{
+        throw new RetryError(e);
+      }
+    }
+  }
+
+  async putDocumentAndReasonToInvalid(e: InvalidDocumentError){
+    try{
+      logger.info('Adding document "%s" to invalid',  e.document.key);
+      await this.props.invalidDocuments.put({Key: e.document.key, Body: e.document.body.string});
+      logger.info('Added');
+      const parsedPath = path.parse(e.document.key);
+      const reasonFilename = `${path.join(parsedPath.dir, parsedPath.name)}.reason.json`;
+      const reasonBody = e.message??'Undefined';
+      logger.info('Reason: "%s"', reasonBody);
+      logger.info('Adding reason "%s" to invalid', reasonFilename);
+      await this.props.invalidDocuments.put({
+        Key: reasonFilename,
+        Body: JSON.stringify({
+          reason: reasonBody
+        })
+      });
     }catch(e){
       throw new RetryError(e);
     }
@@ -275,6 +310,8 @@ abstract class ComposeBatch implements Task<void>{
     }catch(e){
       if(e instanceof InvalidDocumentError){
         logger.error(e);
+        await this.putDocumentAndReasonToInvalid(e);
+        await this.removeDocumentFromUnprocessed(e.document);
         logger.info('Deleting the invalid document event');
         await this.deleteEvent(event);
         logger.info('Deleted');

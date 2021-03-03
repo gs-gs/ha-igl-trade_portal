@@ -6,6 +6,7 @@ import ComposeRevokeBatch from './compose-revoke-batch';
 import RevokeBatch from './revoke-batch';
 import SaveBatch from './save-batch';
 import {
+  InvalidDocuments,
   BatchDocuments,
   RevokedDocuments,
   UnprocessedDocuments,
@@ -16,6 +17,7 @@ import { Wallet } from 'ethers';
 
 
 interface IBatchedRevokeProps{
+  invalidDocuments: InvalidDocuments,
   unprocessedDocuments: UnprocessedDocuments,
   batchDocuments: BatchDocuments,
   revokedDocuments: RevokedDocuments,
@@ -65,6 +67,7 @@ class BatchedRevoke implements Task<Promise<void>>{
 
     await new ComposeRevokeBatch({
       batch,
+      invalidDocuments: this.props.invalidDocuments,
       batchDocuments: this.props.batchDocuments,
       unprocessedDocuments: this.props.unprocessedDocuments,
       unprocessedDocumentsQueue: this.props.unprocessedDocumentsQueue,
