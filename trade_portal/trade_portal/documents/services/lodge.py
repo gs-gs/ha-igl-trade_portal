@@ -63,8 +63,12 @@ class AESCipher:
 
 
 class OAClient:
+    """
+    Client working with our OA wrap API, moved out for easy mocking in tests,
+    code separation and possible replacement by native code
+    """
 
-    def document_wrap(self, oa_doc):
+    def wrap_document(self, oa_doc):
         if getattr(settings, "IS_UNITTEST", False) is True:
             raise EnvironmentError("This procedure must not be called from unittest")
         return requests.post(
@@ -104,14 +108,13 @@ class DocumentService(BaseIgService):
 
         # step 2. Render the OAv2 doc with attachments
         oa_doc = self._render_oa_v2_document(document, subject)
-        # step 2. Append EDI3 document, merging them on the root level
+        # step 2. Append EDI3 document, merging it to the root level
         oa_doc.update(document.get_rendered_edi3_document())
 
         DocumentHistoryItem.objects.create(
             type="text",
             document=document,
             message=f"OA document has been generated, size: {len(json.dumps(oa_doc))}b",
-            # object_body=json.dumps(oa_doc)
             related_file=default_storage.save(
                 f"incoming/{document.id}/oa-doc.json",
                 ContentFile(json.dumps(oa_doc, indent=2).encode("utf-8")),
@@ -119,57 +122,46 @@ class DocumentService(BaseIgService):
         )
 
         # step 3, slow: wrap OA document using external api for wrapping documents
+        # TODO: think about replacing by native solution (won't give much performance increase)
         try:
-            oa_doc_wrapped_resp = self.oa_client.wrap_document()
+            oa_doc_wrapped_resp = self.oa_client.wrap_document(oa_doc)
+            if oa_doc_wrapped_resp.status_code != 200:
+                # this is not common to have API answering non-200
+                logger.warning("Received %s for oa doc wrap step", oa_doc_wrapped_resp)
+                raise Exception(oa_doc_wrapped_resp.json())
+            else:
+                # OA document is wrapped correctly
+                oa_doc_wrapped = oa_doc_wrapped_resp.json()
+                wrapped_doc_merkle_root = oa_doc_wrapped.get("signature", {}).get("merkleRoot")
+                if not wrapped_doc_merkle_root:
+                    raise Exception("Empty merkleRoot for " + oa_doc_wrapped_resp.content.decode("utf-8"))
+                DocumentHistoryItem.objects.create(
+                    type="text",
+                    document=document,
+                    message=f"OA document has been wrapped, new size: {len(oa_doc_wrapped_resp.content)}b",
+                    related_file=default_storage.save(
+                        f"incoming/{document.id}/oa-doc-wrapped.json",
+                        ContentFile(oa_doc_wrapped_resp.content),
+                    ),
+                )
         except Exception as e:
             logger.exception(e)
             DocumentHistoryItem.objects.create(
                 is_error=True,
                 type="error",
                 document=document,
-                message="Error: OA document wrap failed with error",
+                message="Error: OA document wrap failed",
                 object_body=str(e),
             )
             document.status = Document.STATUS_FAILED
             document.verification_status = Document.V_STATUS_ERROR
-            document.save()
-            return False
-
-        if oa_doc_wrapped_resp.status_code == 200:
-            oa_doc_wrapped = oa_doc_wrapped_resp.json()
-            wrapped_doc_merkle_root = (
-                oa_doc_wrapped.get("signature", {}).get("merkleRoot") or subject
-            )
-            oa_doc_wrapped_json = json.dumps(oa_doc_wrapped)
-            DocumentHistoryItem.objects.create(
-                type="text",
-                document=document,
-                message=f"OA document has been wrapped, new size: {len(oa_doc_wrapped_json)}b",
-                related_file=default_storage.save(
-                    f"incoming/{document.id}/oa-doc-wrapped.json",
-                    ContentFile(oa_doc_wrapped_json.encode("utf-8")),
-                ),
-            )
-        else:
-            logger.warning(
-                "Received response %s for oa doc wrap step", oa_doc_wrapped_resp
-            )
-            DocumentHistoryItem.objects.create(
-                is_error=True,
-                type="error",
-                document=document,
-                message=f"Error: OA document wrap failed with result {oa_doc_wrapped_resp.status_code}",
-                object_body=oa_doc_wrapped_resp.json(),
-            )
-            document.status = Document.STATUS_FAILED
-            document.verification_status = Document.V_STATUS_ERROR
+            document.workflow_status = Document.WORKFLOW_STATUS_NOT_ISSUED  # Error?
             document.save()
             return False
 
         # now the OA document contains attachment (binary, if any) and CoO EDI3 document
         # and it's prepared for the notarisation
-
-        oa_wrapped_body = json.dumps(oa_doc_wrapped)
+        oa_wrapped_body = oa_doc_wrapped_resp.content.decode("utf-8")
 
         # step4. encrypt and publish ciphertext
         # oa_wrapped_body
@@ -203,7 +195,10 @@ class DocumentService(BaseIgService):
             document.verification_status = Document.V_STATUS_ERROR
 
         # and now goes the standard Intergov node communication
+        self._send_igl_message(document, oa_wrapped_body, wrapped_doc_merkle_root)
+        return True
 
+    def _send_igl_message(self, document, oa_wrapped_body, wrapped_doc_merkle_root):
         if str(document.importing_country).upper() in config.IGL_CHANNELS_CONFIGURED.upper().split(","):
             document.status = Document.STATUS_PENDING
             document.save()
@@ -278,7 +273,6 @@ class DocumentService(BaseIgService):
             document.workflow_status = Document.WORKFLOW_STATUS_ISSUED
             document.status = Document.STATUS_NOT_SENT
             document.save()
-        return True
 
     def _render_uploaded_files(self, document: Document) -> list:
         uploaded = []

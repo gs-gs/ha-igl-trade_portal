@@ -13,15 +13,30 @@ class MockResponse(mock.MagicMock):
     def json(self):
         return self.json_resp
 
+    @property
+    def content(self):
+        return json.dumps(self.json_resp).encode("utf-8")
+
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("ERROR_CODE", [None, "wrap_500"])
 @mock.patch("trade_portal.documents.tasks.document_oa_verify.apply_async")
 @mock.patch("requests.post")
 @mock.patch("trade_portal.documents.services.lodge.NotaryService")
-def test_document_service(notary_service_mock, post_mock, oa_task_mock, docapi_env):
+def test_document_service(notary_service_mock, post_mock, oa_task_mock, docapi_env, ERROR_CODE):
+    mockedJsonResp = {
+        "1": "2",
+        "signature": {
+            "merkleRoot": "the only required field for the code, everything else is just proxied"
+        }
+    }
+
     ig_client = mock.MagicMock()
     oa_client = mock.MagicMock()
-    oa_client.wrap_document.return_value = MockResponse(status_code=200, json_resp={'wrapped': "body"})
+    oa_client.wrap_document.return_value = MockResponse(
+        status_code=500 if ERROR_CODE == "wrap_500" else 200,
+        json_resp=mockedJsonResp if ERROR_CODE is None else {}
+    )
     notary_service_mock.notarize_document.return_value = True
 
     s = DocumentService(ig_client=ig_client, oa_client=oa_client)
@@ -31,27 +46,34 @@ def test_document_service(notary_service_mock, post_mock, oa_task_mock, docapi_e
         workflow_status=Document.WORKFLOW_STATUS_ISSUED
     )
 
-    assert s.issue(doc) is True
+    issue_result = s.issue(doc)
 
-    assert doc.status == Document.STATUS_NOT_SENT  # because IGL message not needed here, no recipient
-    assert doc.verification_status == Document.V_STATUS_PENDING
-    assert doc.workflow_status == Document.WORKFLOW_STATUS_ISSUED
+    if ERROR_CODE is None:
+        assert issue_result is True
 
-    assert notary_service_mock.notarize_file.call_count == 1
-    notary_service_mock.notarize_file.assert_called_once_with(
-        "{}.{}.{}".format(
-            settings.ICL_APP_COUNTRY.upper(),
-            (doc.created_by_org.business_id).replace(".", "-"),
-            doc.short_id,
-        ),
-        json.dumps({'wrapped': "body"})
-    )
-    assert oa_task_mock.call_count == 1
-    oa_task_mock.assert_called_once_with(
-        args=[doc.pk], countdown=30
-    )
-    assert post_mock.call_count == 0  # ensure it wasn't called because we have patched it
-    assert oa_client.wrap_document.call_count == 1  # this was
+        assert doc.status == Document.STATUS_NOT_SENT  # because IGL message not needed here, no recipient
+        assert doc.verification_status == Document.V_STATUS_PENDING
+        assert doc.workflow_status == Document.WORKFLOW_STATUS_ISSUED
 
-    assert DocumentHistoryItem.objects.count() == 5
-    assert DocumentHistoryItem.objects.filter(document=doc).count() == 5
+        assert notary_service_mock.notarize_file.call_count == 1
+        notary_service_mock.notarize_file.assert_called_once_with(
+            "{}.{}.{}".format(
+                settings.ICL_APP_COUNTRY.upper(),
+                (doc.created_by_org.business_id).replace(".", "-"),
+                doc.short_id,
+            ),
+            json.dumps(mockedJsonResp)
+        )
+        assert oa_task_mock.call_count == 1
+        oa_task_mock.assert_called_once_with(
+            args=[doc.pk], countdown=30
+        )
+        assert post_mock.call_count == 0  # ensure it wasn't called because we have patched it
+        assert oa_client.wrap_document.call_count == 1  # this was
+
+        assert DocumentHistoryItem.objects.count() == 5
+        assert DocumentHistoryItem.objects.filter(document=doc).count() == 5
+    elif ERROR_CODE == "wrap_500":
+        assert doc.status == Document.STATUS_FAILED
+        assert doc.verification_status == Document.V_STATUS_ERROR
+        assert doc.workflow_status == Document.WORKFLOW_STATUS_NOT_ISSUED
