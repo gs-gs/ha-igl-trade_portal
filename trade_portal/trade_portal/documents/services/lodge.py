@@ -62,8 +62,34 @@ class AESCipher:
         return cipher.decrypt_and_verify(ciphertext, tag)
 
 
+class OAClient:
+
+    def document_wrap(self, oa_doc):
+        if getattr(settings, "IS_UNITTEST", False) is True:
+            raise EnvironmentError("This procedure must not be called from unittest")
+        return requests.post(
+            settings.OA_WRAP_API_URL + "/document/wrap",
+            json={
+                "document": oa_doc,
+                "params": {
+                    "version": "https://schema.openattestation.com/2.0/schema.json",
+                },
+            },
+        )
+
+
 class DocumentService(BaseIgService):
+    def __init__(self, oa_client=None, *args, **kwargs):
+        if not oa_client:
+            oa_client = OAClient()
+        self.oa_client = oa_client
+        super().__init__(*args, **kwargs)
+
     def issue(self, document: Document) -> bool:
+        """
+        Does all issue/OA notarize/IGL message sending work
+        This procedure is a good candidate for refactoring to smaller clients, services and functions
+        """
         from trade_portal.documents.tasks import document_oa_verify
 
         document.verification_status = Document.V_STATUS_PENDING
@@ -94,15 +120,7 @@ class DocumentService(BaseIgService):
 
         # step 3, slow: wrap OA document using external api for wrapping documents
         try:
-            oa_doc_wrapped_resp = requests.post(
-                settings.OA_WRAP_API_URL + "/document/wrap",
-                json={
-                    "document": oa_doc,
-                    "params": {
-                        "version": "https://schema.openattestation.com/2.0/schema.json",
-                    },
-                },
-            )
+            oa_doc_wrapped_resp = self.oa_client.wrap_document()
         except Exception as e:
             logger.exception(e)
             DocumentHistoryItem.objects.create(

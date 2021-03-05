@@ -47,15 +47,29 @@ class DocumentCreateView(Login, CreateView):
             return redirect(
                 "documents:create-specific", dtype=self.kwargs["dtype"], oa=oa.pk
             )
+        try:
+            OaDetails.objects.get(
+                pk=self.kwargs["oa"],
+                created_for=self.request.user.get_current_org(self.request.session)
+            )
+        except OaDetails.DoesNotExist:
+            # it's either user tries to access draft document by wrong organisation
+            # or OA is invalid for some reason. So we just redirect user to the documenst list
+            # assuming they will handle that as they wish
+            return redirect(
+                "documents:list"
+            )
         return super().get(*args, **kwargs)
 
     def get_form_kwargs(self):
         k = super().get_form_kwargs()
-        current_org = self.request.user.get_current_org(self.request.session)
         k["dtype"] = self.kwargs["dtype"]
-        k["oa"] = OaDetails.objects.get(pk=self.kwargs["oa"], created_for=current_org)
+        k["oa"] = OaDetails.objects.get(
+            pk=self.kwargs["oa"],
+            created_for=self.request.user.get_current_org(self.request.session)
+        )
         k["user"] = self.request.user
-        k["current_org"] = current_org
+        k["current_org"] = self.request.user.get_current_org(self.request.session)
         return k
 
     def get_success_url(self):
@@ -166,22 +180,20 @@ class DocumentIssueView(Login, DocumentQuerysetMixin, DetailView):
             return redirect("documents:fill", obj.pk)
         if "issue" in request.POST or "issue-without-qr-code" in request.POST:
             if "issue-without-qr-code" in request.POST:
+                # issuing without QR code for documents which can't be edited
                 att = obj.get_pdf_attachment()
                 if att:
                     # we mark it as not requiring watermarking
                     att.is_watermarked = None
                     att.save()
+            else:
+                obj.extra_data["qr_x_position"] = request.POST.get("qr_x")
+                obj.extra_data["qr_y_position"] = request.POST.get("qr_y")
             obj.workflow_status = Document.WORKFLOW_STATUS_ISSUED
-            obj.extra_data["qr_x_position"] = request.POST.get("qr_x")
-            obj.extra_data["qr_y_position"] = request.POST.get("qr_y")
             obj.save()
-
             message = "The document will be issued as a Verifiable Credential (VC)"
             # and, if a direct G2G channel exists, will also be sent to the importing regulator
-            messages.success(
-                self.request,
-                _(message),
-            )
+            messages.success(self.request, _(message))
             lodge_document.apply_async([obj.pk], countdown=2)
 
         return redirect("documents:detail", obj.pk)
