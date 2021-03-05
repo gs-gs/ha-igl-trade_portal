@@ -24,6 +24,9 @@ class NotaryService:
     def notarize_file(cls, doc_key: str, document_body: str):
         import boto3  # local import because some setups may not even use it
 
+        if getattr(settings, "IS_UNITTEST", False) is True:
+            raise EnvironmentError("This procedure must not be called from unittest")
+
         if not settings.OA_UNPROCESSED_BUCKET_NAME:
             logger.warning(
                 "Asked to notarize file but the service is not configured well"
@@ -65,6 +68,9 @@ class NotaryService:
         if not settings.OA_UNPROCESSED_QUEUE_URL:
             # it's fine, we don't want to send them
             return
+
+        if getattr(settings, "IS_UNITTEST", False) is True:
+            raise EnvironmentError("This procedure must not be called from unittest")
 
         s3_config = {
             "aws_access_key_id": (

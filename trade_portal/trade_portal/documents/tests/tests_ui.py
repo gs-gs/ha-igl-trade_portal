@@ -6,8 +6,9 @@ from django.urls import reverse
 from trade_portal.documents.models import Document, DocumentFile
 
 
+@pytest.mark.parametrize("ISSUE_TYPE", ["issue", "issue-without-qr-code"])
 @pytest.mark.django_db
-def test_document_issue(normal_user, ftas):
+def test_document_issue(normal_user, ftas, ISSUE_TYPE):
     assert Document.objects.count() == 0
     nr = normal_user.web_client.get(reverse('documents:list'))
     assert nr.status_code == 200
@@ -72,10 +73,12 @@ def test_document_issue(normal_user, ftas):
     assert not nr.context["data_warnings"]
 
     with patch('trade_portal.documents.tasks.lodge_document.apply_async') as mock_task:
+        # we test lodge_document in a separate unit-test, so just ensure it's called
         nr = normal_user.web_client.post(
             issue_url,
             {
-                'issue': "Issue",
+                # 'issue': "Issue",
+                ISSUE_TYPE: "Issue",  # with or without QR code
                 'qr_x': "50",
                 'qr_y': "50",
             }
@@ -83,6 +86,9 @@ def test_document_issue(normal_user, ftas):
         assert nr.status_code == 302
         assert nr.url == reverse("documents:detail", kwargs={"pk": doc.pk})
         assert mock_task.call_count == 1
+        doc = Document.objects.first()
+        assert doc.workflow_status == Document.WORKFLOW_STATUS_ISSUED
+        assert doc.get_pdf_attachment().is_watermarked == (False if ISSUE_TYPE == "issue" else None)
 
 
 @pytest.mark.django_db
