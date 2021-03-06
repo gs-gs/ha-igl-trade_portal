@@ -1,11 +1,9 @@
 """
 Things related to the CoO packaging and sending to the upstream
 """
-import base64
 import datetime
 import json
 import logging
-import mimetypes
 
 import requests
 from constance import config
@@ -154,6 +152,8 @@ class DocumentService(BaseIgService):
             )
             document_oa_verify.apply_async(args=[document.pk], countdown=30)
         else:
+            # please note it doesn't stop the further steps and just marks verification
+            # status as failure
             DocumentHistoryItem.objects.create(
                 is_error=True,
                 type="error",
@@ -242,19 +242,20 @@ class DocumentService(BaseIgService):
             document.status = Document.STATUS_NOT_SENT
             document.save()
 
-    def _render_uploaded_files(self, document: Document) -> list:
-        uploaded = []
-        for file in document.files.all():
-            file.file
-            mt, enc = mimetypes.guess_type(file.filename, strict=False)
-            uploaded.append(
-                {
-                    "type": mt or "binary/octet-stream",
-                    "filename": file.filename,
-                    "data": base64.b64encode(file.file.read()).decode("utf-8"),
-                }
-            )
-        return uploaded
+    # this is not used but may be in the future versions
+    # def _render_uploaded_files(self, document: Document) -> list:
+    #     uploaded = []
+    #     for file in document.files.all():
+    #         file.file
+    #         mt, enc = mimetypes.guess_type(file.filename, strict=False)
+    #         uploaded.append(
+    #             {
+    #                 "type": mt or "binary/octet-stream",
+    #                 "filename": file.filename,
+    #                 "data": base64.b64encode(file.file.read()).decode("utf-8"),
+    #             }
+    #         )
+    #     return uploaded
 
     def _render_oa_v2_document(self, document: Document, subject: str) -> dict:
         tt_host = settings.OA_NOTARY_DOMAIN or settings.BASE_URL

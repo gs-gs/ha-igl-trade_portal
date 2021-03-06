@@ -19,11 +19,10 @@ class MockResponse(mock.MagicMock):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("ERROR_CODE", [None, "wrap_500"])
+@pytest.mark.parametrize("ERROR_CODE", [None, "wrap_500", "fail_notarize"])
 @mock.patch("trade_portal.documents.tasks.document_oa_verify.apply_async")
-@mock.patch("requests.post")
 @mock.patch("trade_portal.documents.services.lodge.NotaryService")
-def test_document_service(notary_service_mock, post_mock, oa_task_mock, docapi_env, ERROR_CODE):
+def test_document_service(notary_service_mock, oa_task_mock, docapi_env, ERROR_CODE):
     mockedJsonResp = {
         "1": "2",
         "signature": {
@@ -35,9 +34,9 @@ def test_document_service(notary_service_mock, post_mock, oa_task_mock, docapi_e
     oa_client = mock.MagicMock()
     oa_client.wrap_document.return_value = MockResponse(
         status_code=500 if ERROR_CODE == "wrap_500" else 200,
-        json_resp=mockedJsonResp if ERROR_CODE is None else {}
+        json_resp=mockedJsonResp if ERROR_CODE != "wrap_500" else {}
     )
-    notary_service_mock.notarize_document.return_value = True
+    notary_service_mock.notarize_file.return_value = True if ERROR_CODE != "fail_notarize" else False
 
     s = DocumentService(ig_client=ig_client, oa_client=oa_client)
     doc = DocumentFactory(
@@ -68,12 +67,24 @@ def test_document_service(notary_service_mock, post_mock, oa_task_mock, docapi_e
         oa_task_mock.assert_called_once_with(
             args=[doc.pk], countdown=30
         )
-        assert post_mock.call_count == 0  # ensure it wasn't called because we have patched it
-        assert oa_client.wrap_document.call_count == 1  # this was
-
+        assert oa_client.wrap_document.call_count == 1
         assert DocumentHistoryItem.objects.count() == 5
         assert DocumentHistoryItem.objects.filter(document=doc).count() == 5
     elif ERROR_CODE == "wrap_500":
+        assert issue_result is False
         assert doc.status == Document.STATUS_FAILED
         assert doc.verification_status == Document.V_STATUS_ERROR
         assert doc.workflow_status == Document.WORKFLOW_STATUS_NOT_ISSUED
+        assert notary_service_mock.notarize_file.call_count == 0
+        assert oa_client.wrap_document.call_count == 1
+        assert oa_task_mock.call_count == 0
+    elif ERROR_CODE == "fail_notarize":
+        assert issue_result is True
+        assert notary_service_mock.notarize_file.call_count == 1
+        assert oa_client.wrap_document.call_count == 1
+        assert oa_task_mock.call_count == 0
+        assert (doc.status, doc.verification_status, doc.workflow_status) == (
+            Document.STATUS_NOT_SENT,
+            Document.V_STATUS_ERROR,
+            Document.WORKFLOW_STATUS_ISSUED
+        )
