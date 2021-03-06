@@ -7,9 +7,6 @@ import json
 import logging
 import mimetypes
 
-# TODO: replace to pyca/cryptography as Bandit advises (low)
-from Crypto.Cipher import AES
-
 import requests
 from constance import config
 from django.conf import settings
@@ -27,42 +24,13 @@ from trade_portal.documents.models import (
     OaDetails,
 )
 from trade_portal.documents.services import BaseIgService
+from trade_portal.documents.services.encryption import AESCipher
 from trade_portal.documents.services.notarize import NotaryService
 
 logger = logging.getLogger(__name__)
 
 
-class AESCipher:
-    BS = 256 // 8
-
-    def __init__(self, key):
-        self.key = bytes.fromhex(key)
-
-    def pad(self, s):
-        return s + (self.BS - len(s) % self.BS) * chr(self.BS - len(s) % self.BS)
-
-    def unpad(self, s):
-        return s[: -ord(s[len(s) - 1 :])]
-
-    def encrypt_with_params_separate(self, raw):
-        encoded = base64.b64encode(raw.encode("utf-8"))
-        cipher = AES.new(self.key, AES.MODE_GCM)
-        ciphertext, tag = cipher.encrypt_and_digest(encoded)
-        return (
-            base64.b64encode(cipher.nonce).decode("utf-8"),
-            base64.b64encode(tag).decode("utf-8"),
-            base64.b64encode(ciphertext).decode("utf-8"),
-        )
-
-    def decrypt(self, iv, tag, ciphertext):
-        iv = base64.b64decode(iv)
-        tag = base64.b64decode(tag)
-        ciphertext = base64.b64decode(ciphertext)
-        cipher = AES.new(self.key, AES.MODE_GCM, iv)
-        return cipher.decrypt_and_verify(ciphertext, tag)
-
-
-class OAClient:
+class OAApIRestClient:
     """
     Client working with our OA wrap API, moved out for easy mocking in tests,
     code separation and possible replacement by native code
@@ -85,7 +53,7 @@ class OAClient:
 class DocumentService(BaseIgService):
     def __init__(self, oa_client=None, *args, **kwargs):
         if not oa_client:
-            oa_client = OAClient()
+            oa_client = OAApIRestClient()
         self.oa_client = oa_client
         super().__init__(*args, **kwargs)
 

@@ -13,11 +13,12 @@ logger = logging.getLogger(__name__)
 class NotaryService:
     """
     Service made solely for files notarisation.
-    In it's current state it just puts some file to some bucket and ensurees that
-    remote OA worker will be informed about it.
+    In its current state it just puts the file to configured bucket and ensurees that
+    remote OA worker is be informed about it (by sending SQS message)
 
-    In the future it could also handle notifiations from that service and handle
-    possible errors (the OA service is very sensitive to format issues)
+    In the future it could also handle feedback from that service and handle
+    possible errors (the OA service is very sensitive to format issues), bulk issues,
+    revokations and so on.
     """
 
     @classmethod

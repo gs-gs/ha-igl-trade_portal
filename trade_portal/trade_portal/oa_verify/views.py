@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.views.generic import TemplateView
 
 from trade_portal.documents.models import OaDetails, Document
-from trade_portal.documents.services.lodge import AESCipher
+from trade_portal.documents.services.encryption import AESCipher
 from trade_portal.oa_verify.services import (
     OaVerificationService,
     OaVerificationError,
