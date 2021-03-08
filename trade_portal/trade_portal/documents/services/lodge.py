@@ -28,7 +28,7 @@ from trade_portal.documents.services.notarize import NotaryService
 logger = logging.getLogger(__name__)
 
 
-class OAApIRestClient:
+class OaApiRestClient:
     """
     Client working with our OA wrap API, moved out for easy mocking in tests,
     code separation and possible replacement by native code
@@ -51,7 +51,7 @@ class OAApIRestClient:
 class DocumentService(BaseIgService):
     def __init__(self, oa_client=None, *args, **kwargs):
         if not oa_client:
-            oa_client = OAApIRestClient()
+            oa_client = OaApiRestClient()
         self.oa_client = oa_client
         super().__init__(*args, **kwargs)
 
@@ -150,6 +150,7 @@ class DocumentService(BaseIgService):
                 document=document,
                 message="OA document has been sent to the notary service",
             )
+            # Calling this is not strictly required and is used just to ensure the verification went fine
             document_oa_verify.apply_async(args=[document.pk], countdown=30)
         else:
             # please note it doesn't stop the further steps and just marks verification

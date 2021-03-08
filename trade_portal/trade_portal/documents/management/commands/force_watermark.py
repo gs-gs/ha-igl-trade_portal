@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from trade_portal.documents.models import Document
-from trade_portal.documents.services.watermark import WatermarkService
+from trade_portal.documents.services.watermark import DocumentWatermarkService
 
 
 class Command(BaseCommand):
@@ -12,4 +12,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         doc = Document.objects.get(pk=kwargs["doc_id"])
-        WatermarkService().watermark_document(doc, force=True)
+        DocumentWatermarkService().watermark_document(doc, force=True)

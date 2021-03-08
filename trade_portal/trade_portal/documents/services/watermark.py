@@ -1,5 +1,6 @@
 """
-Things related to the CoO packaging and sending to the upstream
+Misc utilities to work with DocumentFile PDFs as images:
+watermarking them, rendering to PNG and getting media info
 """
 import io
 import logging
@@ -18,22 +19,24 @@ from trade_portal.documents.models import (
 logger = logging.getLogger(__name__)
 
 
-class WatermarkService:
+class DocumentWatermarkService:
     """
-    Helper to add QR code to the uploaded PDF file assuming it doesn't have any
+    Accepting the document
+    Adds QR code to any DocumentFile of correct format
+    Where such watermarking is requested
     """
 
     def watermark_document(self, document: Document, force: bool = False):
         qrcode_image = document.oa.get_qr_image()
 
         qset = document.files.all()
-        if force is False:
+        if force is False:  # useful only for debug and development
             qset = qset.filter(is_watermarked=False)
 
         for docfile in qset:
             if docfile.filename.lower().endswith(".pdf"):
                 t0 = time.time()
-                self.add_watermark(docfile, qrcode_image)
+                self._add_watermark(docfile, qrcode_image)
                 time_spent = round(time.time() - t0, 4)  # seconds
                 DocumentHistoryItem.objects.create(
                     is_error=False,
@@ -44,37 +47,7 @@ class WatermarkService:
                 )
         return
 
-    def get_document_filesize(self, docfile: DocumentFile) -> (int, int):
-        """
-        Return x, y tuple meaning the original page size (mm)
-        Or -1, -1 if the document is encrypted (which doesn't mean it can't be read, but can't be updated)
-        Or 0, 0 if the document can't be parsed (not a PDF or some internal format issue)
-        """
-        from PyPDF2 import PdfFileReader
-        from reportlab.lib.units import mm
-
-        try:
-            # Read the original PDF first to detemine it's page size (the first page)
-            orig_doc = PdfFileReader(docfile.original_file or docfile.file)
-            orig_doc_first_page_size = orig_doc.getPage(0).mediaBox
-        except Exception as e:
-            if "file has not been decrypted" in str(e):
-                return -1, -1
-            else:
-                logger.exception(e)
-                return 0, 0
-        return (
-            round(
-                float(orig_doc_first_page_size[2] - orig_doc_first_page_size[0]) / mm,
-                2
-            ),
-            round(
-                float(orig_doc_first_page_size[3] - orig_doc_first_page_size[1]) / mm,
-                2
-            )
-        )
-
-    def add_watermark(self, docfile: DocumentFile, qrcode_image) -> None:
+    def _add_watermark(self, docfile: DocumentFile, qrcode_image) -> None:
         """
         Draws given QR code over a PDF content in the top right cornder
         and re-saves the file in place with updated result
@@ -157,12 +130,46 @@ class WatermarkService:
         docfile.save()
         return
 
-    def get_first_page_as_png(self, *args, **kwargs):
-        return self.get_first_page_as_pdf2image(*args, **kwargs)
 
-    def get_first_page_as_pdf2image(self, source, page_number=0):
+class DocumentFileImageService:
+    """
+    Works with DocumentFile and returns filesize or first page rendered as PNG
+    Which is useful to QR code positioning UI and other things
+    """
+
+    def get_first_page_size_mm(self, docfile: DocumentFile) -> (int, int):
         """
-        Uses opencv library and works better with encrypted/protected PDFs
+        Return x, y tuple meaning the original page size (mm)
+        Or -1, -1 if the document is encrypted (which doesn't mean it can't be read, but can't be updated)
+        Or 0, 0 if the document can't be parsed (not a PDF or some internal format issue)
+        """
+        from PyPDF2 import PdfFileReader
+        from reportlab.lib.units import mm
+
+        try:
+            # Read the original PDF first to detemine it's page size (the first page)
+            orig_doc = PdfFileReader(docfile.original_file or docfile.file)
+            orig_doc_first_page_size = orig_doc.getPage(0).mediaBox
+        except Exception as e:
+            if "file has not been decrypted" in str(e):
+                return -1, -1
+            else:
+                logger.exception(e)
+                return 0, 0
+        return (
+            round(
+                float(orig_doc_first_page_size[2] - orig_doc_first_page_size[0]) / mm,
+                2
+            ),
+            round(
+                float(orig_doc_first_page_size[3] - orig_doc_first_page_size[1]) / mm,
+                2
+            )
+        )
+
+    def get_first_page_as_png(self, source, page_number=0):
+        """
+        Uses opencv library and works better with encrypted/write-protected PDFs
         """
         import tempfile
         import cv2
@@ -172,32 +179,9 @@ class WatermarkService:
 
         png_content = None
         with tempfile.NamedTemporaryFile(suffix=".ppm") as incoming_ppm_image:
+            # it saves the file physically but there must be other way to do so
             with tempfile.NamedTemporaryFile(suffix=".png") as tmp_png_file:
                 images[0].save(incoming_ppm_image.name)
                 cv2.imwrite(tmp_png_file.name, cv2.imread(incoming_ppm_image.name))
                 png_content = open(tmp_png_file.name, "rb").read()
         return png_content
-
-    def get_first_page_as_png_wand(self, source, page_number=0):
-        """
-        Doesn't work well with encrypted PDFs, even if printing is allowed so
-        nothing stops us from rendering it to PNG
-        """
-        import PyPDF2
-        from wand.image import Image
-
-        resolution = 140
-        source = PyPDF2.PdfFileReader(source)
-        dst_pdf = PyPDF2.PdfFileWriter()
-        dst_pdf.addPage(source.getPage(page_number))
-
-        pdf_bytes = io.BytesIO()
-        dst_pdf.write(pdf_bytes)
-        pdf_bytes.seek(0)
-        img = Image(file=pdf_bytes, resolution=resolution)
-        img.convert("png")
-        img.format = "png"
-        stream = io.BytesIO()
-        img.save(file=stream)
-        stream.seek(0)
-        return stream
