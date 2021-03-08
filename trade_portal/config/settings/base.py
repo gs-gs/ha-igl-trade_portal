@@ -260,6 +260,8 @@ RECAPTCHA_PUBLIC_KEY = env("RECAPTCHA_PUBLIC_KEY", default="")
 RECAPTCHA_PRIVATE_KEY = env("RECAPTCHA_PRIVATE_KEY", default="")
 RECAPTCHA_REQUIRED_SCORE = 0.85
 
+AWS_REGION = env('AWS_REGION', default='ap-southeast-2')
+
 
 from .base_auth import *  # NOQA
 from .base_app import *  # NOQA

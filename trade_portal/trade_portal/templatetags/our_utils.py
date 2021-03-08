@@ -10,7 +10,6 @@ def json_render(obj):
     if not obj:
         return ""
     try:
-
         def escape_script_tags(unsafe_str):
             # seriously: http://stackoverflow.com/a/1068548/8207
             return unsafe_str.replace("</script>", '<" + "/script>')
@@ -19,6 +18,5 @@ def json_render(obj):
             obj = json.loads(obj)
 
         return escape_script_tags(json.dumps(obj, indent=2))
-    except Exception as e:
-        print(f"json_render template tag error {e} for object {obj}")
+    except Exception:
         return escape_script_tags(obj)

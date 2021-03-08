@@ -8,7 +8,8 @@ from trade_portal.documents.models import (
     Document,
     DocumentHistoryItem,
 )
-from trade_portal.documents.services.lodge import DocumentService, NodeService
+from trade_portal.documents.services.lodge import DocumentService
+from trade_portal.documents.services.igl import IGLService
 from trade_portal.documents.services.textract import MetadataExtractService
 from trade_portal.documents.services.watermark import (
     DocumentWatermarkService,
@@ -30,11 +31,16 @@ logger = logging.getLogger(__name__)
     soft_time_limit=290,
 )
 def lodge_document(document_id=None):
+    """
+    TODO: split to 2 tasks if we want to be able to retry issuing without re-watermaking
+    or leave as is to have the whole process atomic
+    """
     doc = Document.objects.get(pk=document_id)
     DocumentHistoryItem.objects.create(
         document=doc, message="Starting the issue step..."
     )
 
+    # step1. Watermark things to be watermarked
     try:
         DocumentWatermarkService().watermark_document(doc)
     except PdfReadError as e:
@@ -68,6 +74,7 @@ def lodge_document(document_id=None):
         doc.files.filter(is_watermarked=False).update(is_watermarked=None)  # so they are not "processing" anymore
         return  # for any watermarking error we don't continue the process
 
+    # step2. Issue things to be issued
     try:
         t0 = time.time()
         DocumentService().issue(doc)
@@ -106,7 +113,7 @@ def lodge_document(document_id=None):
     interval_max=50,
 )
 def update_message_by_sender_ref(self, sender_ref):
-    NodeService().update_message_by_sender_ref(sender_ref)
+    IGLService().update_message_by_sender_ref(sender_ref)
 
 
 @celery_app.task(
@@ -118,7 +125,7 @@ def update_message_by_sender_ref(self, sender_ref):
     interval_max=50,
 )
 def store_message_by_ping_body(self, ping_body):
-    NodeService().store_message_by_ping_body(ping_body)
+    IGLService().store_message_by_ping_body(ping_body)
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=40)
@@ -262,6 +269,7 @@ def document_oa_verify(self, document_id, do_retries=True):
     logger.info(
         "Trying to verify document %s, attempt %s", document, self.request.retries
     )
+    t0 = time.time()
     vc = document.get_vc()
     if not vc:
         document.verification_status = Document.V_STATUS_ERROR
@@ -296,6 +304,7 @@ def document_oa_verify(self, document_id, do_retries=True):
             type="OA",
             document=document,
             message="The document OA credential is valid",
+            object_body=f"Spent {round(time.time() - t0, 6)}s"
         )
         return
     elif verify_response.get("status") == "error":
@@ -311,23 +320,26 @@ def document_oa_verify(self, document_id, do_retries=True):
             type="error",
             document=document,
             message=f"Unable to verify document: {verify_response.get('error_message')}",
+            object_body=f"Spent {round(time.time() - t0, 6)}s"
         )
         return
     if do_retries:
         if self.request.retries < self.max_retries:
-            logger.info(
-                "Retrying the document %s verification task (%s)",
-                document,
-                self.request.retries,
-            )
+            is_eager = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
             if self.request.retries < 10:
                 retry_delay = 30  # seconds
             else:
                 retry_delay = 120  # seconds
 
-            if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False) is True:
-                logger.warning("Not retrying the eager task")
+            if is_eager is True:
+                logger.warning("Not retrying eager verification task")
             else:
+                logger.info(
+                    "Retrying the document %s verification task (retry %s, delay %s)",
+                    document,
+                    self.request.retries,
+                    retry_delay
+                )
                 self.retry(countdown=retry_delay)
         else:
             # max retries but still not valid - mark as failed

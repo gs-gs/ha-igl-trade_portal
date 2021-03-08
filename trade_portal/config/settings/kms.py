@@ -5,7 +5,7 @@ import logging
 import boto3
 
 BASE64_PREFIX = os.environ.get('KMS_PREFIX', 'base64:')
-AWS_REGION = os.environ.get('AWS_REGION', None)
+AWS_REGION = os.environ.get('AWS_REGION', "ap-southeast-2")
 
 
 def decrypt_kms_data(encrypted_data):
