@@ -22,7 +22,7 @@ from trade_portal.documents.forms import (
     ConsignmentSectionUpdateForm,
 )
 from trade_portal.documents.models import Document, DocumentFile
-from trade_portal.documents.services.watermark import WatermarkService
+from trade_portal.documents.services.watermark import DocumentFileImageService
 from trade_portal.documents.tables import DocumentsTable
 from trade_portal.documents.tasks import document_oa_verify
 from trade_portal.monitoring.models import VerificationAttempt
@@ -253,7 +253,7 @@ class DocumentFileDownloadView(Login, DocumentQuerysetMixin, DetailView):
             if self.request.GET.get("as_png"):
                 try:
                     response = HttpResponse(
-                        WatermarkService().get_first_page_as_png(the_file),
+                        DocumentFileImageService().get_first_page_as_png(the_file),
                         content_type="image/png",
                     )
                 except PdfReadError as e:

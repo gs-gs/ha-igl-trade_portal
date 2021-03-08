@@ -10,7 +10,10 @@ from trade_portal.documents.models import (
 )
 from trade_portal.documents.services.lodge import DocumentService, NodeService
 from trade_portal.documents.services.textract import MetadataExtractService
-from trade_portal.documents.services.watermark import WatermarkService
+from trade_portal.documents.services.watermark import (
+    DocumentWatermarkService,
+    DocumentFileImageService,
+)
 from trade_portal.oa_verify.services import OaVerificationService
 from config import celery_app
 
@@ -33,7 +36,7 @@ def lodge_document(document_id=None):
     )
 
     try:
-        WatermarkService().watermark_document(doc)
+        DocumentWatermarkService().watermark_document(doc)
     except PdfReadError as e:
         # some PDF issue
         if e.args[0] == "file has not been decrypted":
@@ -214,7 +217,7 @@ def fill_document_metadata(document_id=None):
         if docfile.filename.lower().endswith(".pdf"):
             # not determined yet and is PDF
             t0 = time.time()
-            x, y = WatermarkService().get_document_filesize(docfile)
+            x, y = DocumentFileImageService().get_first_page_size_mm(docfile)
             time_spent = round(time.time() - t0, 4)  # seconds
 
             docfile.refresh_from_db()
