@@ -10,4 +10,4 @@ class Command(BaseCommand):
         file_content = (
             "a b c"  # it will probably be useful if we read that file content
         )
-        NotaryService.notarize_file("xxxfile", file_content)
+        NotaryService().notarize_file("xxxfile", file_content)

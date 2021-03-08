@@ -212,6 +212,7 @@ class OaVerificationService:
 class PdfVerificationService:
     """
     Service to extract supported QR codes from provided PDF
+    Never updates the input, only reads and parses it
 
     https://github.com/gs-gs/ha-igl-project/issues/54
     """
