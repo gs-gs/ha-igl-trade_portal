@@ -1,3 +1,4 @@
+import datetime
 import logging
 import time
 
@@ -353,3 +354,15 @@ def document_oa_verify(self, document_id, do_retries=True):
             )
     else:
         logger.info("not scheduling any retries because started directly")
+
+
+@celery_app.task(ignore_result=True)
+def canary_task():
+    from django.core.cache import cache
+    utc_now = datetime.datetime.utcnow().isoformat()
+    cache.set(
+        'canary-task-last-run',
+        utc_now,
+        60 * 5
+    )
+    return

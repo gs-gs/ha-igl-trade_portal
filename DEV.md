@@ -35,22 +35,15 @@ Constance configuration: navigate to .../admin/constance/config/ and
 * update OA_NOTARY_CONTRACT to some correct value (which should be supplied with the bucket/queue from the previous point)
 
 
-## Test coverage
+## Tests
 
-To run the tests, check your test coverage, and generate an HTML coverage report (inside the Django docker container):
+Inside the Django docker container:
 
-    $ coverage run -m pytest
-    $ coverage html
-    $ open htmlcov/index.html
-
-
-## Running tests
-
-  $ py.test (from the inside of the django container)
+  $ py.test
   $ flake8
   $ bandit -r trade_portal
 
-The helper pytest.sh will run unittests, mypy check and flake8 check.
+The helper pytest.sh will run unittests, mypy check and flake8 check. Coverage is also updated each test run.
 
 
 ### Translations
