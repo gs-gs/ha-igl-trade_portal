@@ -62,6 +62,7 @@ class DocumentService:
 
         # step 3, slow: wrap OA document using external api for wrapping documents
         # TODO: think about replacing by native solution (won't give much performance increase)
+        # https://github.com/Open-Attestation/open-attestation/blob/master/src/2.0/wrap.ts#L25
         try:
             oa_doc_wrapped_resp = self.oa_client.wrap_document(oa_doc)
             if oa_doc_wrapped_resp.status_code != 200:

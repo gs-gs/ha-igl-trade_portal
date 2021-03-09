@@ -199,14 +199,19 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_TIME_LIMIT = 5 * 60
 CELERY_TASK_SOFT_TIME_LIMIT = 4 * 60
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 50
-
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 
 CELERY_BEAT_SCHEDULE = {
     'subscribe_to_new_messages': {
         'task': 'trade_portal.websub_receiver.tasks.subscribe_to_new_messages',
         'schedule': datetime.timedelta(minutes=30),
     },
+    'canary_task': {
+        'task': 'trade_portal.documents.tasks.canary_task',
+        'schedule': datetime.timedelta(minutes=4),
+    },
 }
+
 
 DEFAULT_FROM_EMAIL = env(
     "DJANGO_DEFAULT_FROM_EMAIL", default="Trade Portal <noreply@example.com>"
