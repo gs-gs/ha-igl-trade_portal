@@ -14,9 +14,6 @@ class Batch{
 
   public restored: boolean = false;
   public composed: boolean = false;
-  public wrapped: boolean = false;
-  public issued: boolean = false;
-  public saved: boolean = false;
 
   constructor(){
     this.unwrappedDocuments = new Map<string, Document>();
@@ -38,7 +35,7 @@ class Batch{
   }
 
   isEmpty(){
-    return this.unwrappedDocuments.size == 0;
+    return this.unwrappedDocuments.size == 0 && this.wrappedDocuments.size == 0;
   }
 
   isComposed(maxSizeBytes: number, maxTimeSeconds: number){

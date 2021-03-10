@@ -1,12 +1,38 @@
+import { logger }  from '../logger';
 import {
-  SendDocumentStoreBatchTransaction
-} from './send-document-store-batch-transaction';
+  Batch
+} from './data';
+import {
+  ISendDocumentStoreTransactionProps,
+  SendDocumentStoreTransaction
+} from './send-document-store-transaction';
 
-class IssueBatch extends SendDocumentStoreBatchTransaction{
+interface IIssueBatchProps extends ISendDocumentStoreTransactionProps{
+  batch: Batch;
+}
+
+class IssueBatch extends SendDocumentStoreTransaction{
+
+  protected props!: IIssueBatchProps;
+
+  constructor(props: IIssueBatchProps){
+    super(props);
+  }
+
   async populateTransaction(){
     const merkleRoot = '0x'+this.props.batch.merkleRoot;
     const transaction = await this.props.documentStore.populateTransaction.issue(merkleRoot);
     return transaction;
+  }
+  async onComplete() {
+    logger.info('Documents batch "%s" issued', this.props.batch.merkleRoot);
+  }
+  async onRanOutOfAttemps(){
+    logger.error('Documents batch "%s" issuing failed', this.props.batch.merkleRoot);
+  }
+  async start(){
+    logger.info('IssueBatch task started');
+    return super.start();
   }
 }
 

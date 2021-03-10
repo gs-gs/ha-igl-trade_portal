@@ -1,6 +1,8 @@
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
+import { connectWallet, connectDocumentStore } from 'src/document-store';
 import { Batch, ComposeIssueBatch } from 'src/tasks';
 import {
+  InvalidDocuments,
   UnprocessedDocuments,
   BatchDocuments,
   UnprocessedDocumentsQueue
@@ -22,12 +24,15 @@ describe('ComposeBatch Task', ()=>{
     done();
   }, 1000 * 60);
 
+  const invalidDocuments = new InvalidDocuments(config);
   const unprocessedDocuments = new UnprocessedDocuments(config);
   const batchDocuments = new BatchDocuments(config);
   const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue(config);
 
 
   test('batch backup', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
     const documents = generateDocumentsMap(10);
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
@@ -36,6 +41,7 @@ describe('ComposeBatch Task', ()=>{
 
     const batch = new Batch();
     const composeBatch = new ComposeIssueBatch({
+      invalidDocuments,
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
@@ -43,7 +49,8 @@ describe('ComposeBatch Task', ()=>{
       batchSizeBytes: 1024 * 1024 * 1024,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      wallet: wallet,
+      documentStore: documentStore,
       attempts: 1,
       attemptsIntervalSeconds: 1,
       batch
@@ -59,6 +66,11 @@ describe('ComposeBatch Task', ()=>{
 
 
   test('invalid documents handling', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
+
+    const invalidDocumentStoreAddress = '0x0000000000000000000000000000000000000000';
+
     const documents = new Map<string, any>();
     documents.set('non-json-document', 'non-json-document-body');
     documents.set('deleted-document', documentV2({body: 'deleted-document-body'}));
@@ -69,7 +81,7 @@ describe('ComposeBatch Task', ()=>{
       issuers:[
         {
           name: 'DEMO STORE',
-          documentStore: 'invalid-document-store-address',
+          documentStore: invalidDocumentStoreAddress,
           identityProof: {
             type: 'DNS-TXT',
             location: 'tradetrust.io'
@@ -86,11 +98,17 @@ describe('ComposeBatch Task', ()=>{
     await unprocessedDocumentsQueue.post({MessageBody: JSON.stringify(invalidETagDocumentPutEvent.Body)});
 
     for(let [key, document] of documents){
-      await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)});
+      if(typeof document !== 'string'){
+        document = JSON.stringify(document);
+      }
+      await unprocessedDocuments.put({Key: key, Body: document});
     }
     await unprocessedDocuments.delete({Key: 'deleted-document'});
+
+
     const batch = new Batch();
     const composeBatch = new ComposeIssueBatch({
+      invalidDocuments,
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
@@ -98,19 +116,51 @@ describe('ComposeBatch Task', ()=>{
       batchSizeBytes: 1024 * 1024 * 1024,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      wallet: wallet,
+      documentStore: documentStore,
       batch
     });
     await composeBatch.start();
-    expect(batch.unwrappedDocuments.get('non-json-document')).toBeFalsy();
-    expect(batch.unwrappedDocuments.get('deleted-document')).toBeFalsy();
-    expect(batch.unwrappedDocuments.get('invalid-document')).toBeFalsy();
-    expect(batch.unwrappedDocuments.get('invalid-document-store-document')).toBeFalsy();
+
+    const checkInvalidDocument = async (key: string, reason: string)=>{
+      expect(batch.wrappedDocuments.get(key)).toBeFalsy();
+      const invalidDocumentReasonBody = JSON.parse((await invalidDocuments.get({Key: `${key}.reason.json`})).Body?.toString()??'{}');
+      const expectedDocumentBody = documents.get(key);
+      if(typeof expectedDocumentBody === 'string'){
+        const invalidDocumentBody = (await invalidDocuments.get({Key: key})).Body?.toString();
+        expect(invalidDocumentBody).toMatch(documents.get(key));
+      }else{
+        const invalidDocumentBody = JSON.parse((await invalidDocuments.get({Key: key})).Body?.toString()??'{}');
+        expect(invalidDocumentBody).toEqual(documents.get(key));
+      }
+      expect(invalidDocumentReasonBody).toEqual({
+        reason: reason
+      })
+    }
+
+    expect(batch.wrappedDocuments.size).toBe(0);
+    expect(batch.unwrappedDocuments.size).toBe(1);
+    await checkInvalidDocument(
+      'invalid-document-store-document',
+      `Expected document store address to be "${documentStore.address}", got "${invalidDocumentStoreAddress}"`
+    )
+    await checkInvalidDocument(
+      'non-json-document',
+      'Document body is not a valid JSON'
+    )
+    await checkInvalidDocument(
+      'invalid-document',
+      'Invalid document schema'
+    )
+
     expect(batch.unwrappedDocuments.get('invalid-etag-document')).toBeFalsy();
+    expect(batch.unwrappedDocuments.get('deleted-document')).toBeFalsy();
     expect(batch.unwrappedDocuments.get('regular-document')).toBeTruthy();
   });
 
   test('complete by time', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
 
     const documents = generateDocumentsMap(10);
     for(let [key, document] of documents){
@@ -118,6 +168,7 @@ describe('ComposeBatch Task', ()=>{
     }
     const batch = new Batch();
     const composeBatch = new ComposeIssueBatch({
+      invalidDocuments,
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
@@ -125,7 +176,8 @@ describe('ComposeBatch Task', ()=>{
       batchSizeBytes: 1024 * 1024 * 1024,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      wallet: wallet,
+      documentStore: documentStore,
       batch
     });
 
@@ -138,6 +190,8 @@ describe('ComposeBatch Task', ()=>{
   });
 
   test('complete by size', async ()=>{
+    const wallet = await connectWallet(config);
+    const documentStore = await connectDocumentStore(config, wallet);
 
     const documentsCount = 20;
     const expectedBatchDocumentsCount = 10;
@@ -154,6 +208,7 @@ describe('ComposeBatch Task', ()=>{
     }
     const batch = new Batch();
     const composeBatch = new ComposeIssueBatch({
+      invalidDocuments,
       unprocessedDocuments,
       batchDocuments,
       unprocessedDocumentsQueue,
@@ -161,7 +216,8 @@ describe('ComposeBatch Task', ()=>{
       batchSizeBytes: maxBatchSizeBytes,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      documentStoreAddress: config.DOCUMENT_STORE_ADDRESS,
+      wallet: wallet,
+      documentStore: documentStore,
       batch
     });
     await composeBatch.start();

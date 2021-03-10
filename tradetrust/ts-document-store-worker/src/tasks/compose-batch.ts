@@ -1,3 +1,4 @@
+import path from 'path';
 import {
   SchemaId
 } from '@govtechsg/open-attestation';
@@ -14,15 +15,24 @@ import { logger } from '../logger';
 import { Batch } from './data';
 import { Task } from './interfaces';
 import { RetryError } from './errors';
+import { Wallet } from 'ethers';
+import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 
 
 class InvalidEventError extends Error{}
 
 
-class InvalidDocumentError extends Error{}
+class InvalidDocumentError extends Error{
+  public document: Document;
+  constructor(message: string, document: Document){
+    super(message);
+    this.document = document;
+  }
+}
 
 
 interface IComposeBatchProps{
+  invalidDocuments: Bucket,
   unprocessedDocuments: Bucket,
   batchDocuments: Bucket,
   unprocessedDocumentsQueue: Queue,
@@ -30,7 +40,8 @@ interface IComposeBatchProps{
   batchSizeBytes: number,
   messageWaitTime: number,
   messageVisibilityTimeout: number,
-  documentStoreAddress: string,
+  wallet: Wallet,
+  documentStore: DocumentStore,
   batch: Batch,
   attempts?: number,
   attemptsIntervalSeconds?: number
@@ -44,6 +55,7 @@ interface IComposeBatchState{
 interface Document{
   key: string,
   size: number,
+  eTag: string,
   body: {
     string: string,
     json: any
@@ -107,7 +119,6 @@ abstract class ComposeBatch implements Task<void>{
 
 
   async getDocumentDataFromEvent(event: any): Promise<Document|undefined>{
-    logger.debug('getDocumentDataFromEvent');
     const s3Object = event.Body.Records[0].s3.object;
     let documentObject;
     try{
@@ -125,39 +136,38 @@ abstract class ComposeBatch implements Task<void>{
       throw new RetryError(e);
     }
     const documentStringBody = documentObject.Body!.toString();
+    documentObject = {
+      key: s3Object.key,
+      size: s3Object.size,
+      eTag: s3Object.eTag,
+      body: {
+        string: documentStringBody,
+        json: null
+      }
+    }
     // the only potential error here is invalid JSON string
     try{
-      const documentJSONBody = JSON.parse(documentStringBody);
-      documentObject = {
-        key: s3Object.key,
-        size: s3Object.size,
-        body: {
-          string: documentStringBody,
-          json: documentJSONBody
-        }
-      }
+      documentObject.body.json = JSON.parse(documentStringBody);
       logger.info('Downloaded');
       return documentObject;
     }catch(e){
-      throw new InvalidDocumentError('Document body is not a valid JSON');
+      throw new InvalidDocumentError('Document body is not a valid JSON', documentObject);
     }
   }
 
 
-  getDocumentStoreAddress(document: Document, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
-    logger.debug('getDocumentStoreAddress');
+  getDocumentStoreAddress(document: any, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
     if(version === SchemaId.v2){
-      return document.body.json.issuers?.[0]?.documentStore;
+      return document.issuers?.[0]?.documentStore;
     }else if(version === SchemaId.v3){
-      return document.body.json.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.body.json.proof.value: undefined;
+      return document.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.proof.value: undefined;
     }
     return undefined;
   }
 
 
-  getDocumentVersion(document: Document): SchemaId.v2|SchemaId.v3|undefined{
-    logger.debug('getDocumentVersion');
-    switch(document.body.json.version){
+  getDocumentVersion(document: any): SchemaId.v2|SchemaId.v3|undefined{
+    switch(document.version){
       case SchemaId.v2:
       case OPEN_ATTESTATION_VERSION_ID_V2_SHORT:
         return SchemaId.v2;
@@ -169,7 +179,6 @@ abstract class ComposeBatch implements Task<void>{
 
 
   async putDocumentToBatchBackup(document: Document){
-    logger.debug('putDocumentToBatchBackup');
     try{
       logger.info('Adding document "%s" to backup', document.key);
       await this.props.batchDocuments.put({Key: document.key, Body: document.body.string});
@@ -180,18 +189,41 @@ abstract class ComposeBatch implements Task<void>{
   }
 
   async removeDocumentFromUnprocessed(document: Document){
-    logger.debug('removeDocumentFromUnprocessed');
     try{
-      logger.info('Deleting document "%s" from unprocessed', document.key);
+      logger.info('Deleting document "%s" etag: %s from unprocessed', document.key);
       await this.props.unprocessedDocuments.delete({Key: document.key});
       logger.info('Deleted');
+    }catch(e){
+      if(e.code === 'KeyError'){
+        logger.warn('Document does not exit');
+      }else{
+        throw new RetryError(e);
+      }
+    }
+  }
+
+  async putDocumentAndReasonToInvalid(e: InvalidDocumentError){
+    try{
+      logger.info('Adding document "%s" to invalid',  e.document.key);
+      await this.props.invalidDocuments.put({Key: e.document.key, Body: e.document.body.string});
+      logger.info('Added');
+      const parsedPath = path.parse(e.document.key);
+      const reasonFilename = `${path.join(parsedPath.dir, parsedPath.name)}.reason.json`;
+      const reasonBody = e.message??'Undefined';
+      logger.info('Reason: "%s"', reasonBody);
+      logger.info('Adding reason "%s" to invalid', reasonFilename);
+      await this.props.invalidDocuments.put({
+        Key: reasonFilename,
+        Body: JSON.stringify({
+          reason: reasonBody
+        })
+      });
     }catch(e){
       throw new RetryError(e);
     }
   }
 
   async addUnwrappedDocumentToBatch(document: Document){
-    logger.debug('addDocumentToBatch')
     await this.putDocumentToBatchBackup(document);
     await this.removeDocumentFromUnprocessed(document);
     this.props.batch.unwrappedDocuments.set(document.key, {
@@ -201,7 +233,6 @@ abstract class ComposeBatch implements Task<void>{
   }
 
   async addWrappedDocumentToBatch(document: Document){
-    logger.debug('addDocumentToBatch')
     await this.putDocumentToBatchBackup(document);
     await this.removeDocumentFromUnprocessed(document);
     this.props.batch.unwrappedDocuments.set(document.key, {
@@ -211,7 +242,6 @@ abstract class ComposeBatch implements Task<void>{
   }
 
   async start(){
-    logger.info('Starting batch composition');
     // if batch didn't get any documents from RestoreBatch task
     // batch.compositionStartTimestamp will be reset and time spent on RestoreBatch task will be skipped
     if(!this.props.batch.restored){
@@ -242,6 +272,7 @@ abstract class ComposeBatch implements Task<void>{
       }
       this.props.batch.composed = this.props.batch.isComposed(this.props.batchSizeBytes, this.props.batchTimeSeconds)
     }
+    logger.info('Batch composed');
   }
 
   async next(){
@@ -279,6 +310,8 @@ abstract class ComposeBatch implements Task<void>{
     }catch(e){
       if(e instanceof InvalidDocumentError){
         logger.error(e);
+        await this.putDocumentAndReasonToInvalid(e);
+        await this.removeDocumentFromUnprocessed(e.document);
         logger.info('Deleting the invalid document event');
         await this.deleteEvent(event);
         logger.info('Deleted');

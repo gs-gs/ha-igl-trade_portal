@@ -53,7 +53,7 @@ describe.only('SaveIssuedBatch task unit tests', ()=>{
     batchDocuments.delete.mockRejectedValueOnce(new NoSuchKey());
 
     const saveIssuedBatch = new SaveBatch({
-      issuedDocuments: <IssuedDocuments><unknown>issuedDocuments,
+      processedDocuments: <IssuedDocuments><unknown>issuedDocuments,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
       batch,
       attempts: 10,
@@ -90,7 +90,7 @@ describe.only('SaveIssuedBatch task unit tests', ()=>{
     issuedDocuments.put.mockRejectedValue(new UnexpectedError());
 
     const saveIssuedBatch = new SaveBatch({
-      issuedDocuments: <IssuedDocuments><unknown>issuedDocuments,
+      processedDocuments: <IssuedDocuments><unknown>issuedDocuments,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
       batch,
       attempts,

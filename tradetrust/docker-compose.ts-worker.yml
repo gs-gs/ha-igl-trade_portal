@@ -114,9 +114,11 @@ services:
       DOCUMENT_STORE_OWNER_PRIVATE_KEY: "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
 
       UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
+      INVALID_BUCKET_NAME: invalid
       UNPROCESSED_BUCKET_NAME: unprocessed
       ISSUED_BUCKET_NAME: issued
       BATCH_BUCKET_NAME: batch
+      REVOKED_BUCKET_NAME: revoked
 
       # integer value >= 1 and <= 20
       # 20 is an upper limit that aws sdk has
@@ -145,3 +147,5 @@ services:
       # number of attempts and interval between them in case of an unexpected error in IssueBatch task
       ISSUE_ATTEMPTS: 10
       ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60
+      REVOKE_ATTEMPTS: 10
+      REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60

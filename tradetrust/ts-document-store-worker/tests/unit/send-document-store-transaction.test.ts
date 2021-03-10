@@ -1,6 +1,6 @@
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { BigNumber, Wallet, utils } from 'ethers';
-// using IssueBatch task because it's a child of SendDocumentStoreBatchTransaction
+// using IssueBatch task because it's a child of SendDocumentStoreTransaction
 import { IssueBatch, Batch } from 'src/tasks';
 
 const GAS_PRICE = utils.parseUnits('20', 'gwei');

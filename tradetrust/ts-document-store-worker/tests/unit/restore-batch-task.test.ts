@@ -61,6 +61,7 @@ describe('RestoreBatch task unit tests',()=>{
     const batch = new Batch();
     const restoreBatch = new RestoreBatch({
       batch,
+      wrapped: false,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
       batchSizeBytes: 1024 * 1024 * 10,
       batchTimeSeconds: 10,
@@ -89,6 +90,7 @@ describe('RestoreBatch task unit tests',()=>{
     const batch = new Batch();
     const restoreBatch = new RestoreBatch({
       batch,
+      wrapped: false,
       batchDocuments: <BatchDocuments><unknown>batchDocuments,
       batchSizeBytes: 1024 * 1024 * 10,
       batchTimeSeconds: 10,
