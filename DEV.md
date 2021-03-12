@@ -72,3 +72,12 @@ To update them:
 
 Please note this dependency and code changes is not pushed to the master because
 it's rare manual operation anyway.
+
+
+### Models graph
+
+Login to the Django container and
+
+    ./manage.py graph_models documents users  > documents_users.dot
+    ./manage.py graph_models documents  > documents.dot
+    ./manage.py graph_models -a > full.dot
