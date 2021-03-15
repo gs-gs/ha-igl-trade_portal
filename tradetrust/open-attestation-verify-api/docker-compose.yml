@@ -1,0 +1,25 @@
+# Minimal docker-compose file using external Infura API for development
+
+# Usage:
+# update local.py with BLOCKCHAIN_ENDPOINT variable set
+# run docker-compose up
+# use the API at designated port
+
+version: '3.5'
+
+services:
+  open-attestation-verify-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+        - 9011:9011
+    volumes:
+      - .:/open-attestation-verify-api/'
+    environment:
+      PORT: 9011
+      CONTAINER_MODE: server-development
+      # BLOCKCHAIN_ENDPOINT: https://ropsten.infura.io/v3/XXXXXXXXXXXXXXXXXXXXXXXXXXX
+    env_file:
+      - local.env
+    stop_signal: sigkill
