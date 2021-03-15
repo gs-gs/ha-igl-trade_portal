@@ -29,7 +29,11 @@ class OaVerificationView(TemplateView):
         c["VERIFIER_SHOW_DOWNLOAD_TAB"] = config.VERIFIER_SHOW_DOWNLOAD_TAB
 
         if self.request.POST:
-            c["verification_result"] = self.perform_verification()
+            try:
+                c["verification_result"] = self.perform_verification()
+            except Exception as e:
+                logger.exception(e)
+                pass
         else:
             query_query = self._get_qr_code_query()
             if query_query:
@@ -140,6 +144,8 @@ class OaVerificationView(TemplateView):
                     "status": "error",
                     "error_message": "The QR code seems to be invalid or unsupported",
                 }
+        else:
+            return None
         return verify_result
 
     def _unpack_and_verify_cleartext(self, cleartext):
