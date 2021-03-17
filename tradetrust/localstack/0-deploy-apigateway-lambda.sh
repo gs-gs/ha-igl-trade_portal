@@ -70,7 +70,7 @@ function deploy_apigateway_lambda(){
     --http-method ANY \
     --type AWS_PROXY \
     --integration-http-method POST \
-    --uri arn:aws:apigateway:${AWS_DEFAULT_REGION}:lambda:path/2015-03-31/functions/${LAMBDA_ARN}/invocations \
+    --uri arn:aws:apigateway:${DEFAULT_REGION}:lambda:path/2015-03-31/functions/${LAMBDA_ARN}/invocations \
     --passthrough-behavior WHEN_NO_MATCH
   echo "Done"
   echo "Deploying api gateway"
@@ -81,7 +81,7 @@ function deploy_apigateway_lambda(){
 
   echo "Saving API endpoint..."
 
-  ENDPOINT=http://${HOSTNAME_EXTERNAL}:4567/restapis/${API_ID}/test/_user_request_/
+  ENDPOINT=http://${HOSTNAME_EXTERNAL}:10001/restapis/${API_ID}/test/_user_request_/
 
   echo "$ENDPOINT" > $API_ENDPOINT_FILENAME
   echo "ENDPOINT=$ENDPOINT saved to $API_ENDPOINT_FILENAME"

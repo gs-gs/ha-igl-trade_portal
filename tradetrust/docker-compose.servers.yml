@@ -18,7 +18,6 @@ services:
       SERVICES: sqs,s3,iam,cloudwatch
       DEFAULT_REGION: us-east-1
 
-      AWS_DEFAULT_REGION: us-east-1
       AWS_ACCESS_KEY_ID: access
       AWS_SECRET_ACCESS_KEY: secretaccess
 
