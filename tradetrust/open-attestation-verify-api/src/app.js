@@ -56,6 +56,12 @@ function create(){
     return document;
   }
 
+  app.get("/healthcheck", function (req, res){
+    res.json({
+      "version": "20200317"
+    });
+  });
+
   app.post('/verify', upload.single('file'), async function (req, res, next){
     async function handler(){
       const document = getDocumentJSON(req);
@@ -75,7 +81,6 @@ function create(){
     }
     handler().catch(next);
   });
-
 
   app.use(errorHandler);
 

@@ -15,7 +15,7 @@ services:
     ports:
         - 9011:9011
     volumes:
-      - .:/open-attestation-verify-api/'
+      - ./src/:/open-attestation-verify-api/src/'
     environment:
       PORT: 9011
       CONTAINER_MODE: server-development
