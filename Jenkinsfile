@@ -39,6 +39,7 @@ pipeline {
     stages {
 
         stage('Cancel running builds') {
+            agent none
             steps {
                 milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
                 milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
