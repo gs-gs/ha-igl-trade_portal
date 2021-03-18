@@ -12,7 +12,8 @@ pipeline {
                 numToKeepStr: '20'
             )
         )
-        skipDefaultCheckout()
+        // Checkout the repo so we can determine change log
+        checkoutToSubdirectory('.changelog')
     }
 
     parameters {
@@ -37,6 +38,14 @@ pipeline {
     }
 
     stages {
+
+        stage('Cancel running builds') {
+            steps {
+                milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
+                milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
+            }
+        }
+
         stage('Testing') {
 
             stages {
@@ -186,7 +195,6 @@ pipeline {
                     }
 
                     steps {
-
                         dir('.hamlet/cmdb') {
                             script {
                                 git changelog: false, credentialsId: 'github', poll: false, url: "${env["product_cmdb"]}", branch: "${env["product_cmdb_branch"]}"
