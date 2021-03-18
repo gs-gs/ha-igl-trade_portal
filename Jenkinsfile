@@ -119,8 +119,6 @@ pipeline {
                             # run testing
                             sleep 30s
                             docker-compose exec -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
-                            docker-compose exec -T document-store-worker coverage -m tests
-                            docker-compose exec -T document-store-worker coverage report -m tests
                             '''
                         }
                     }
