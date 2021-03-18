@@ -12,7 +12,8 @@ pipeline {
                 numToKeepStr: '20'
             )
         )
-        skipDefaultCheckout()
+        // Checkout the repo so we can determine change log
+        checkoutToSubdirectory('.changelog')
     }
 
     parameters {
