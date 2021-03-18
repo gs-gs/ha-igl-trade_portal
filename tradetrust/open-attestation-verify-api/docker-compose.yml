@@ -1,7 +1,7 @@
 # Minimal docker-compose file using external Infura API for development
 
 # Usage:
-# update local.py with BLOCKCHAIN_ENDPOINT variable set
+# create and update local.env with BLOCKCHAIN_ENDPOINT variable set
 # run docker-compose up
 # use the API at designated port
 

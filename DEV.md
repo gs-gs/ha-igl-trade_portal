@@ -6,7 +6,7 @@ First - build the static files (UI):
 
     $ npm install && npm run build
 
-First, cd do the ``trade_portal/devops/localdocker`` folder and create local.env file (may be empty; for each country you want to start - au sg cn etc):
+Then cd do the ``trade_portal/devops/localdocker`` folder and create local.env file (may be empty; for each country you want to start - au sg cn etc):
 
     $ touch local.env
     $ touch demo-au-local.env
@@ -28,11 +28,7 @@ To create a superuser:
 
 After it's done please get back to README.md to configure organisation manually (so you can create documents).
 
-Constance configuration: navigate to .../admin/constance/config/ and
-
-* set the OA_WRAP_API_URL to the correct one (for example https://openattestation.c1.devnet.trustbridge.io/ - we only use document/wrap and unwrap endpoints which are public). If you need to start this API locally please check `/tradetrust/open-attestation-api/docker-compose.yml` file for details
-* set OA_UNPROCESSED_BUCKET_NAME and OA_UNPROCESSED_QUEUE_URL so the service knows where to submit files for the notarisation worker; you are most likely have to set OA_AWS_ACCESS_KEYS variable as well with some api keys issued with access to these bucket/queue.
-* update OA_NOTARY_CONTRACT to some correct value (which should be supplied with the bucket/queue from the previous point)
+Please check ``trade_portal/devops/localdocker/common.env`` and other env files to understand how it's linked to external APIs. There is some documentation inside.
 
 
 ## Tests
@@ -43,14 +39,14 @@ Inside the Django docker container:
   $ flake8
   $ bandit -r trade_portal
 
-The helper pytest.sh will run unittests, mypy check and flake8 check. Coverage is also updated each test run.
+Coverage is available in ``htmlcov`` directory and is updated each test run.
 
 
 ### Translations
 
 We use https://django-amazon-translate.readthedocs.io/en/latest/installation.html library
-to ask AWS Translate to make the translations for us. It saves times, but the translations
-can look dumb in some places. Although it's easy to fix the most irritating ones manually.
+to ask AWS Translate to make the translations for us. It saves time, but the translations
+can look dumb in some places. The most irritating ones are supposed to be fixed manually.
 
 To update them:
 
@@ -65,7 +61,6 @@ To update them:
 
 Please note this dependency and code changes is not pushed to the master because
 it's rare manual operation anyway.
-
 
 ### Models graph
 

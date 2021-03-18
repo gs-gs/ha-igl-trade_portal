@@ -79,6 +79,8 @@ The worker configured using environment variables:
 Serverless(`api gateway` + `lamda`) open attestation framework REST API wrapper.
 It's running using 2 appoaches: local setups of ApiGw+Lambda or just a normal Express app started and listening port 9090. To use ApiGw one you shoudln't rely on the output from the container and just read the `localstack/oa-api.endpoint` file and see the endpoint there. Add `document/wrap` for example to use it. In case of 9090 port it's `http://localhost:9090/document/wrap` and in case of ApiGw approach you should ssh to the container first and then use the `{endpoint}document/wrap` url (or add localstack to some network and access it from there).
 
+There is another (simplified) way to run it - check the ``open-attestation-api/docker-compose.yml`` file for details. This way it doesn't start any extra services and just runs the code as HTTP REST API on default port.
+
 Example of the python script doing it (get the valid document format from the test folder)
 
 ```python
@@ -108,10 +110,10 @@ Example of the python script doing it (get the valid document format from the te
 
 Just like `open-attestation-api` has two modes to run: `server`, Serverless(`api gateway` + `lamda`). In the server mode it is listening on `localhost:9091`.
 
+And there is the same simplified way to run it (see open-attestation-verify-api/docker-compose.yml). This API has blockhain endpoint requirement, for development and simple demo scenarios services like infura.io are recommended.
+
 #### Configuration(ENV)
 
-1. `ETHEREUM_PROVIDER` - `cloudflare` or `infura`. NOTE: `cloudflare` only works with `mainnet`.
-1. `INFURA_API_KEY` - used to connect to infura node when `infura` provider is used.
-1. `ETHEREUM_NETWORK` - used to specify network that is used to look for smart contracts. Values: `mainnet`, `ropsten`, etc. Default: `ropsten`.
+1. `BLOCKCHAIN_ENDPOINT` - point to your ethereum node API. Typical values are `https://ropsten.infura.io/v3/{key here}` for testnet or `https://mainnet.infura.io/v3/{key here}` or `https://eth-rpc-channel.services.devnet.trustbridge.io` if you have your own ethereum node started.
 
 [API Specification](open-attestation-verify-api/api.yml)
