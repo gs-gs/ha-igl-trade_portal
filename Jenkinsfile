@@ -64,7 +64,7 @@ pipeline {
                             npm run build
 
                             # build the docker service
-                            touch local.env
+                            touch devops/localdocker/local.env
                             docker-compose up --build -d
 
                             # run testing
