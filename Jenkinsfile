@@ -13,15 +13,10 @@ pipeline {
             )
         )
         // Checkout the repo so we can determine change log
-        checkoutToSubdirectory('.changelog')
+        skipDefaultCheckout()
     }
 
     parameters {
-        booleanParam(
-            name: 'force_tests',
-            defaultValue: false,
-            description: "force all tests to run"
-        )
         booleanParam(
             name: 'force_deploy',
             defaultValue: false,
@@ -50,12 +45,6 @@ pipeline {
 
             stages {
                 stage('trade_portal') {
-                    when {
-                        allOf {
-                            equals expected: true, actual: params.force_tests
-                            changeset "trade_portal/**"
-                        }
-                    }
 
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
@@ -113,12 +102,7 @@ pipeline {
                 }
 
                 stage('openatt_worker') {
-                    when {
-                        allOf {
-                            equals expected: true, actual: params.force_tests
-                            changeset "tradetrust/**"
-                        }
-                    }
+
                     environment {
                         COMPOSE_FILE = 'docker-compose.servers.yml'
                     }
