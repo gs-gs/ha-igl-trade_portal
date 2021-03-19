@@ -30,7 +30,7 @@
     {% endif %}
   </head>
 
-  <body class="d-flex flex-column {% block body_class %}{% endblock %}{% if request.user.is_authenticated %} authenticated{% endif %}">
+  <body class="d-flex flex-column {% block body_class %}{% endblock %} {% if request.user.is_authenticated %}authenticated{% else %}notauthenticated{% endif %}">
     <header class="header {% block header_class %}{% endblock %}">
       <div class="header__container">
         <div class="header__main-menu">
