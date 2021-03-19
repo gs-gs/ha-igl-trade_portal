@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const expressPino = require('express-pino-logger');
 const pino = require('pino');
 const multer = require('multer');
+const Sentry = require("@sentry/node");
 const { verificationBuilder, isValid, openAttestationVerifiers } = require('@govtechsg/oa-verify');
 
 function create(){
@@ -28,6 +29,12 @@ function create(){
   const upload = multer({storage: multer.memoryStorage(), fileSize: 1024 * 1024 * 50});
   const app = express();
 
+  if (process.env.SENTRY_DSN) {
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN
+    });
+  }
+
   const VERIFY_OPTIONS = {
     provider:  new ethers.providers.Web3Provider(new Web3.providers.HttpProvider(process.env.BLOCKCHAIN_ENDPOINT))
   };
@@ -36,6 +43,7 @@ function create(){
 
   const verify = verificationBuilder(openAttestationVerifiers, VERIFY_OPTIONS);
 
+  app.use(Sentry.Handlers.requestHandler());
   app.use(bodyParser.json({'limit': '50mb', 'strict': true}));
   app.use(expressPino({logger}));
 
@@ -57,6 +65,10 @@ function create(){
   }
 
   app.get("/healthcheck", function (req, res){
+    if (req.query.exception) {
+      // for Sentry tests
+      throw "healthcheck test exception";
+    }
     res.json({
       "version": "20200317"
     });
@@ -82,6 +94,7 @@ function create(){
     handler().catch(next);
   });
 
+  app.use(Sentry.Handlers.errorHandler());
   app.use(errorHandler);
 
   return app
