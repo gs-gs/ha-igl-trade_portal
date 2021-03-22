@@ -155,12 +155,6 @@ class Party(models.Model):
 
 
 class OaDetails(models.Model):
-    # tradetrust://
-    # {
-    #     "uri":"https://salty-wildwood-95924.herokuapp.com/abc123
-    #            #
-    #            b3d1961f047eba5eb5ff5582ed3b7fea408bed8860b63bf80c7028c2d8ab356e"
-    # }
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     created_at = models.DateTimeField(default=timezone.now)
     created_for = models.ForeignKey(
@@ -196,19 +190,37 @@ class OaDetails(models.Model):
         return self.uri
 
     def url_repr(self):
-        # Old approach, manual scan
-        # return 'tradetrust://{' + f'"uri":""' + '}'
+        # Historical QR codes which are not supported even by tradetrust.io anymore
+        # tradetrust://
+        # {
+        #     "uri":"https://salty-wildwood-95924.herokuapp.com/abc123
+        #            #
+        #            b3d1961f047eba5eb5ff5582ed3b7fea408bed8860b63bf80c7028c2d8ab356e"
+        # }
         # New approach, self-made url
+        # (but if we want to use dev.tradetrust.io it must be openattestation)
+
+        # our custom hosts - tradetrust.io won't verify it
         params = {
             "type": "DOCUMENT",
             "payload": {
                 "uri": self.uri,
                 "key": self.key,
-                # "permittedActions": ["VIEW"],
-                # "redirect": settings.UA_VERIFY_HOST
             },
         }
         return f"{settings.UA_BASE_HOST}?q={quote(json.dumps(params))}"
+
+        # marrying tradetrust.io
+        # params = {
+        #     "type": "DOCUMENT",
+        #     "payload": {
+        #         "uri": self.uri,
+        #         "key": self.key,
+        #         # "permittedActions": ["VIEW"],
+        #         "redirect": settings.TRADETRUST_VERIFY_HOST
+        #     },
+        # }
+        # return f"https://action.openattestation.com/?q={quote(json.dumps(params))}"
 
     @classmethod
     def retrieve_new(cls, for_org):
