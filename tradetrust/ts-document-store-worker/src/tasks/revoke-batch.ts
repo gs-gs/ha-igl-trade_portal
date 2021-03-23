@@ -31,7 +31,7 @@ class RevokeBatch extends SendDocumentStoreTransaction{
     logger.info('Documents batch revoked');
   }
   async onRanOutOfAttemps(){
-    logger.error('Documents batch revocation failed');
+    logger.warn('Documents batch revocation failed');
   }
 
   async start(){

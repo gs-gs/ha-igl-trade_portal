@@ -95,12 +95,12 @@ class SaveBatch implements Task<void>{
         if(e instanceof RetryError){
           this.state.attempt++;
           if(this.state.attempt < this.props.attempts!){
-            logger.error('An unexpected error occured');
-            logger.error(e.source);
-            logger.info('Waiting %s seconds', this.props.attemptsIntervalSeconds);
+            logger.warn('An unexpected error occured');
+            logger.warn('Reason:', e.source);
+            logger.warn('Waiting %s seconds', this.props.attemptsIntervalSeconds);
             await new Promise(resolve=>setTimeout(resolve, this.props.attemptsIntervalSeconds! * 1000));
           }else{
-            logger.error('Ran out of attempts');
+            logger.error('Ran out of attempts. Reason:', e.source);
             throw e.source;
           }
         }

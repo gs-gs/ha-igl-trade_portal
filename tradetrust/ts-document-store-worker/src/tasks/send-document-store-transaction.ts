@@ -70,6 +70,8 @@ abstract class SendDocumentStoreTransaction implements Task<void>{
     this.props.attempts = this.props.attempts??10;
     this.props.attemptsIntervalSeconds = this.props.attemptsIntervalSeconds??60;
     this.props.gasPriceLimitGwei = this.props.gasPriceLimitGwei??200;
+    this.props.transactionConfirmationThreshold = this.props.transactionConfirmationThreshold??1;
+    this.props.transactionTimeoutSeconds = this.props.transactionTimeoutSeconds??60;
 
     this.state = {
       attempt: 0,
@@ -112,7 +114,13 @@ abstract class SendDocumentStoreTransaction implements Task<void>{
       transaction.gasPrice = gasPrice;
       transaction.nonce = await this.props.wallet.getTransactionCount('latest');
       logger.info('Transaction created');
-      logger.info(transaction);
+      logger.info('%O', {
+        ...transaction,
+        ...{
+          gasLimit: `${gasPrice.toNumber()}`,
+          gasPrice: `${utils.formatUnits(transaction.gasPrice, 'gwei')} gwei`,
+        }
+      });
       logger.info('Sending transaction...');
       // updating current pending transaction
       this.state.pendingTransaction = await this.props.wallet.sendTransaction(transaction);
@@ -209,20 +217,20 @@ abstract class SendDocumentStoreTransaction implements Task<void>{
       try{
         logger.info('Attempt %s/%s', this.state.attempt + 1, this.props.attempts);
         await this.sendTransactionWithGasPriceAdjustment();
-        logger.info('The batch issued succesfully');
+        logger.info('The transaction completed successfully');
         await this.onComplete();
         return;
       }catch(e){
         // if process fails during gas price increase it can still pick up using this.state property
         if(e instanceof RetryError){
           this.state.attempt += 1;
-          logger.error('An unexpected error occured');
-          logger.error(e.source);
+          logger.warn('An unexpected error occured');
+          logger.warn('Reason:', e.source);
           if(this.state.attempt < this.props.attempts!){
-            logger.info('Waiting %s seconds', this.props.attemptsIntervalSeconds);
+            logger.warn('Waiting %s seconds', this.props.attemptsIntervalSeconds);
             await new Promise(resolve=>setTimeout(resolve, this.props.attemptsIntervalSeconds! * 1000));
           }else{
-            logger.error('Ran out of attempts, issuing failed');
+            logger.error('Ran out of attempts, the transaction failed. Reason:', e.source);
             await this.onRanOutOfAttemps();
             throw e.source;
           }

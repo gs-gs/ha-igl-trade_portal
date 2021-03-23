@@ -84,21 +84,24 @@ const LOGGER_OPTS = {
   transports: new Array<Transport>()
 }
 
+
 if(process.env.NODE_ENV !== 'production'){
   LOGGER_OPTS.transports.push(new transports.Console({
     format: format.combine(
       format.errors({stack: true}),
       format.splat(),
       format.colorize(),
-      format.align()
+      format.align(),
+      format.printf(info=>{
+        return `${info.level}:${info.message}${info.stack?'\n'+info.stack:''}`
+      })
     )
   }))
-}else{
+}else if(process.env.SENTRY_DSN){
   LOGGER_OPTS.transports.push(new SentryTransport({
     format: format.combine(
       format.errors({stack: true}),
-      format.splat(),
-      format.printf(info=>`${info.level}:${info.message}`)
+      format.splat()
     ),
     levels: {
       event: [

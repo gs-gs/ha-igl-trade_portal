@@ -101,6 +101,7 @@ services:
       - '${dockerstagedir:-.}/ts-document-store-worker:/document-store-worker/'
       - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
     environment:
+      NODE_ENV: development
       CONTAINER_MODE: container
 
       BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585

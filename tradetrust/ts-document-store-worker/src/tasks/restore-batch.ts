@@ -46,12 +46,13 @@ class RestoreBatch implements Task<Promise<void>>{
         // increasing attempt index
         this.state.attempt++;
         if(e instanceof RetryError){
-          logger.error(e.source);
           if(this.state.attempt < this.props.attempts!){
-            logger.info('An unexpected error happened, waiting %s seconds and retrying', this.props.attemptsIntervalSeconds);
+            logger.warn('An unexpected error occured');
+            logger.warn('Reason:', e.source);
+            logger.warn('Waiting %s seconds', this.props.attemptsIntervalSeconds);
             await new Promise(r=>setTimeout(r, this.props.attemptsIntervalSeconds! * 1000));
           }else{
-            logger.error('Ran out of attempts');
+            logger.error('Ran out of attempts. Reason:', e.source);
             throw e.source;
           }
         }else{

@@ -190,7 +190,7 @@ abstract class ComposeBatch implements Task<void>{
 
   async removeDocumentFromUnprocessed(document: Document){
     try{
-      logger.info('Deleting document "%s" etag: %s from unprocessed', document.key);
+      logger.info('Deleting document "%s" etag: %s from unprocessed', document.key, document.eTag);
       await this.props.unprocessedDocuments.delete({Key: document.key});
       logger.info('Deleted');
     }catch(e){
@@ -204,14 +204,13 @@ abstract class ComposeBatch implements Task<void>{
 
   async putDocumentAndReasonToInvalid(e: InvalidDocumentError){
     try{
-      logger.info('Adding document "%s" to invalid',  e.document.key);
+      logger.warn('Adding document "%s" to invalid',  e.document.key);
       await this.props.invalidDocuments.put({Key: e.document.key, Body: e.document.body.string});
-      logger.info('Added');
+      logger.warn('Added');
       const parsedPath = path.parse(e.document.key);
       const reasonFilename = `${path.join(parsedPath.dir, parsedPath.name)}.reason.json`;
       const reasonBody = e.message??'Undefined';
-      logger.info('Reason: "%s"', reasonBody);
-      logger.info('Adding reason "%s" to invalid', reasonFilename);
+      logger.warn('Adding reason "%s" to invalid', reasonFilename);
       await this.props.invalidDocuments.put({
         Key: reasonFilename,
         Body: JSON.stringify({
@@ -258,14 +257,14 @@ abstract class ComposeBatch implements Task<void>{
         if(e instanceof RetryError){
           this.state.attempt++;
           if(this.state.attempt < this.props.attempts!){
-            logger.error(e.source);
-            logger.info('An unexpected error happened, waiting %s seconds and retrying', this.props.attemptsIntervalSeconds);
+            logger.warn('An unexpected error occured');
+            logger.warn('Reason:', e.source);
+            logger.warn('Waiting %s seconds', this.props.attemptsIntervalSeconds);
             await new Promise(r=>setTimeout(r, this.props.attemptsIntervalSeconds! * 1000));
           }else{
-            logger.error('Ran out of attempts');
+            logger.error('Ran out of attempts. Reason: ', e.source);
             throw e.source;
           }
-
         }else{
           throw e;
         }
@@ -286,10 +285,10 @@ abstract class ComposeBatch implements Task<void>{
       event = this.parseDocumentPutEvent(event);
     }catch(e){
       if(e instanceof InvalidEventError){
-        logger.error(e);
-        logger.info('Deleting the invalid event');
+        logger.warn('Deleting the invalid event');
         await this.deleteEvent(event);
-        logger.info('Deleted');
+        logger.warn('Deleted');
+        logger.error('Reason:', e);
         return;
       }else{
         throw e;
@@ -309,12 +308,12 @@ abstract class ComposeBatch implements Task<void>{
       logger.info('Deleted');
     }catch(e){
       if(e instanceof InvalidDocumentError){
-        logger.error(e);
         await this.putDocumentAndReasonToInvalid(e);
         await this.removeDocumentFromUnprocessed(e.document);
-        logger.info('Deleting the invalid document event');
+        logger.warn('Deleting the invalid document event');
         await this.deleteEvent(event);
-        logger.info('Deleted');
+        logger.warn('Deleted');
+        logger.error('Reason:', e)
       }else{
         throw e;
       }

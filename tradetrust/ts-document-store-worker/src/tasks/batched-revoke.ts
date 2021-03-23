@@ -113,8 +113,7 @@ class BatchedRevoke implements Task<Promise<void>>{
       try{
         await this.next();
       }catch(e){
-        logger.error('An unexpeded error occured');
-        logger.error(e);
+        logger.error('An unexpected error occured. Reason:', e);
         // to not hang on endless cycle
         await new Promise(r=>setTimeout(r, 1000));
       }
