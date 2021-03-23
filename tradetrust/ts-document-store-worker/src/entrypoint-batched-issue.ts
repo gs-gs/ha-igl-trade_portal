@@ -5,7 +5,8 @@ import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue,
   BatchDocuments,
-  IssuedDocuments
+  IssuedDocuments,
+  InvalidDocuments
 } from './repos';
 import {
   connectWallet,
@@ -17,6 +18,7 @@ async function main(){
   const config = getBatchedIssueEnvConfig();
   const wallet = await connectWallet(config);
   await new BatchedIssue({
+    invalidDocuments: new InvalidDocuments(config),
     unprocessedDocuments: new UnprocessedDocuments(config),
     batchDocuments: new BatchDocuments(config),
     issuedDocuments: new IssuedDocuments(config),
