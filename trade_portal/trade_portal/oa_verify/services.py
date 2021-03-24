@@ -64,6 +64,8 @@ class OaVerificationService:
                 # might be wrapped document number
                 doc_number = doc_number.split(":", maxsplit=2)[2]
 
+        self.kick_verify_api()
+
         t0 = time.time()
         try:
             api_verify_resp = self._api_verify_file(file_content)
@@ -123,6 +125,36 @@ class OaVerificationService:
                 )
         result["doc_number"] = doc_number
         return result
+
+    def kick_verify_api(self):
+        """
+        Call the healthcheck API to ensure it's warm and ready
+        """
+        if not settings.OA_VERIFY_API_HEALTHCHECK_URL:
+            return False
+        t0 = time.time()
+        try:
+            kick_resp = requests.get(settings.OA_VERIFY_API_HEALTHCHECK_URL)
+        except Exception as e:
+            logger.error(
+                "Verifier healthcheck temporary unavailable (%s)", str(e)
+            )
+            return False
+        else:
+            if kick_resp.status_code != 200:
+                logger.warning(
+                    "OA Verify API healthcheck resp %s, %s",
+                    kick_resp.status_code,
+                    kick_resp.content
+                )
+
+        kick_timeout = time.time() - t0
+        logger.info(
+            "Verifier healthcheck resp is %s, %ss",
+            kick_resp.status_code,
+            round(kick_timeout, 4)
+        )
+        return kick_resp.status_code == 200
 
     def _api_verify_file(self, file_content):
         try:

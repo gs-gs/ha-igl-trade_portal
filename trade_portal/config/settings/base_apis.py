@@ -73,6 +73,13 @@ OA_AWS_ACCESS_KEYS = env("OA_AWS_ACCESS_KEYS", default="") or None
 
 # Some endpoint (without any non-transparent auth) which verifies the OA JSON document passed to it
 OA_VERIFY_API_URL = env("OA_VERIFY_API_URL")
+if OA_VERIFY_API_URL:
+    OA_VERIFY_API_HEALTHCHECK_URL = env(
+        "OA_VERIFY_API_HEALTHCHECK_URL",
+        default=OA_VERIFY_API_URL.replace("/verify/fragments", "/healthcheck")
+    ) or None
+else:
+    OA_VERIFY_API_HEALTHCHECK_URL = None
 
 # ## Universal actions QR code parameters
 
