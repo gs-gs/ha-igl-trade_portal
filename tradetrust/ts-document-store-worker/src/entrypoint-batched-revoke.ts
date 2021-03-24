@@ -5,7 +5,8 @@ import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue,
   BatchDocuments,
-  RevokedDocuments
+  RevokedDocuments,
+  InvalidDocuments
 } from './repos';
 import {
   connectWallet,
@@ -17,6 +18,7 @@ async function main(){
   const config = getBatchedRevokeEnvConfig();
   const wallet = await connectWallet(config);
   await new BatchedRevoke({
+    invalidDocuments: new InvalidDocuments(config),
     unprocessedDocuments: new UnprocessedDocuments(config),
     batchDocuments: new BatchDocuments(config),
     revokedDocuments: new RevokedDocuments(config),

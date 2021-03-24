@@ -28,7 +28,7 @@ class IssueBatch extends SendDocumentStoreTransaction{
     logger.info('Documents batch "%s" issued', this.props.batch.merkleRoot);
   }
   async onRanOutOfAttemps(){
-    logger.error('Documents batch "%s" issuing failed', this.props.batch.merkleRoot);
+    logger.warn('Documents batch "%s" issuing failed', this.props.batch.merkleRoot);
   }
   async start(){
     logger.info('IssueBatch task started');

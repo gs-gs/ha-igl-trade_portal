@@ -101,6 +101,7 @@ services:
       - '${dockerstagedir:-.}/ts-document-store-worker:/document-store-worker/'
       - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
     environment:
+      NODE_ENV: development
       CONTAINER_MODE: container
 
       BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
@@ -149,3 +150,8 @@ services:
       ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60
       REVOKE_ATTEMPTS: 10
       REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
+
+      SENTRY_DSN: https://f962516582ba4b23968e24868a1b8d66@o225511.ingest.sentry.io/5676050
+      SENTRY_RELEASE: '1.0'
+      SENTRY_ENVIRONMENT: 'development'
+      SENTRY_NAME: 'devenv'

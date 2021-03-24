@@ -11,8 +11,8 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "strict": true,
-    "lib": ["es6"],
-    "target": "es6",
+    "lib": ["es2020"],
+    "target": "es2020",
     "module": "CommonJS",
     "moduleResolution": "node",
     "baseUrl": ".",
@@ -20,6 +20,10 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "removeComments": true
+    "removeComments": true,
+    "noEmitHelpers": true,
+    "importHelpers": true,
+    "sourceMap": true,
+    "inlineSources": true
   }
 }
