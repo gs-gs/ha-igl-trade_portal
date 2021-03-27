@@ -51,7 +51,25 @@ components:
             properties:
               valid:
                 type: boolean
+    HealthcheckResult:
+      description:
+        Some information about the API version
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              version:
+                type: string
 paths:
+  /healthcheck:
+    get:
+      summary: >
+        Return basic information about the service
+      responses:
+        200:
+          $ref: '#/components/responses/HealthcheckResult'
+
   /document/wrap:
     post:
       summary: >

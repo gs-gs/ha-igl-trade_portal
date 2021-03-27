@@ -81,6 +81,17 @@ function create(){
     res.send(verification);
   });
 
+  app.get("/healthcheck", function (req, res){
+    if (req.query.exception) {
+      // for Sentry tests
+      throw "healthcheck test exception";
+    }
+    res.json({
+      "product": "oa-api",
+      "version": "20200327"
+    });
+  });
+
   app.use(errorHandler);
 
   return app
