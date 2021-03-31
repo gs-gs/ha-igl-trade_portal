@@ -156,28 +156,6 @@ abstract class ComposeBatch implements Task<void>{
   }
 
 
-  getDocumentStoreAddress(document: any, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
-    if(version === SchemaId.v2){
-      return document.issuers?.[0]?.documentStore;
-    }else if(version === SchemaId.v3){
-      return document.proof?.method===DOCUMENT_STORE_PROOF_TYPE?document.proof.value: undefined;
-    }
-    return undefined;
-  }
-
-
-  getDocumentVersion(document: any): SchemaId.v2|SchemaId.v3|undefined{
-    switch(document.version){
-      case SchemaId.v2:
-      case OPEN_ATTESTATION_VERSION_ID_V2_SHORT:
-        return SchemaId.v2;
-      case SchemaId.v3:
-      case OPEN_ATTESTATION_VERSION_ID_V3_SHORT:
-        return SchemaId.v3;
-    }
-  }
-
-
   async putDocumentToBatchBackup(document: Document){
     try{
       logger.info('Adding document "%s" to backup', document.key);

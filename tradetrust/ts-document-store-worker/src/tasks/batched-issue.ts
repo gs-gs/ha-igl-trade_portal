@@ -69,6 +69,8 @@ class BatchedIssue implements Task<void>{
 
     await new RestoreBatch({
       wrapped: false,
+      documentStore: this.props.documentStore,
+      invalidDocuments: this.props.invalidDocuments,
       batchDocuments: this.props.batchDocuments,
       batchTimeSeconds: this.props.batchTimeSeconds,
       batchSizeBytes: this.props.batchSizeBytes,

@@ -142,7 +142,7 @@ describe('ComposeBatch Task', ()=>{
     expect(batch.unwrappedDocuments.size).toBe(1);
     await checkInvalidDocument(
       'invalid-document-store-document',
-      `Expected document store address to be "${documentStore.address}", got "${invalidDocumentStoreAddress}"`
+      `Invalid document store address. Expected: ${documentStore.address}. Got: ${invalidDocumentStoreAddress}`
     )
     await checkInvalidDocument(
       'non-json-document',
