@@ -1,34 +1,30 @@
-import { verifySignature, validateSchema, getData } from '@govtechsg/open-attestation';
+import { VerifyDocumentRevocation, VerificationError } from './utils/verify-document';
 import { logger } from '../logger';
 import {
   ComposeBatch,
   Document,
-  InvalidDocumentError
+  InvalidDocumentError,
+  IComposeBatchProps
 } from './compose-batch';
 
 
 class ComposeRevokeBatch extends ComposeBatch{
+  private verificator: VerifyDocumentRevocation;
+
+  constructor(props: IComposeBatchProps){
+    super(props);
+    this.verificator = new VerifyDocumentRevocation({documentStore: props.documentStore});
+  }
 
   async verifyDocument(document: Document){
-    if(!validateSchema(document.body.json)){
-      throw new InvalidDocumentError('Invalid document schema', document);
-    }
-    if(!verifySignature(document.body.json)){
-      throw new InvalidDocumentError('Invalid document signature', document);
-    }
-    const unwrappedDocumentData = getData(document.body.json);
-    const version = this.getDocumentVersion(unwrappedDocumentData);
-    const documentStoreAddress = this.getDocumentStoreAddress(unwrappedDocumentData, version);
-    if(documentStoreAddress != this.props.documentStore.address){
-      throw new InvalidDocumentError(
-        `Expected document store address to be "${this.props.documentStore.address}", got "${documentStoreAddress}"`,
-        document
-      )
-    }
-    // A document must not be revoked previosly, attempts to revoke revoked documents cause an error
-    const targetHash = `0x${document.body.json.signature.targetHash}`;
-    if(await this.props.documentStore.isRevoked(targetHash)){
-      throw new InvalidDocumentError(`Document ${targetHash} already revoked`, document);
+    try{
+      await this.verificator.verify(document.body.json);
+    }catch(e){
+      if(e instanceof VerificationError){
+        throw new InvalidDocumentError(e.message, document);
+      }else{
+        throw e;
+      }
     }
   }
 

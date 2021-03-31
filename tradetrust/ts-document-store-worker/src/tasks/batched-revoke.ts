@@ -58,6 +58,8 @@ class BatchedRevoke implements Task<Promise<void>>{
     await new RestoreBatch({
       batch,
       wrapped: true,
+      documentStore: this.props.documentStore,
+      invalidDocuments: this.props.invalidDocuments,
       batchDocuments: this.props.batchDocuments,
       batchSizeBytes: this.props.batchSizeBytes,
       batchTimeSeconds: this.props.batchTimeSeconds,

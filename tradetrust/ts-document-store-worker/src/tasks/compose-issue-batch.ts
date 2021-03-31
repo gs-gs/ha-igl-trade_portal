@@ -1,32 +1,33 @@
 import { logger } from '../logger';
-import { wrapDocument } from '@govtechsg/open-attestation';
+import { VerifyDocumentIssuance, VerificationError } from './utils/verify-document';
 import {
   ComposeBatch,
   Document,
-  InvalidDocumentError
+  InvalidDocumentError,
+  IComposeBatchProps
 } from './compose-batch';
 
 
 class ComposeIssueBatch extends ComposeBatch{
+  private verificator: VerifyDocumentIssuance;
+
+  constructor(props: IComposeBatchProps){
+    super(props);
+    this.verificator = new VerifyDocumentIssuance({documentStore:props.documentStore});
+  }
+
   async verifyDocument(document: Document){
     try{
-      wrapDocument(document.body.json)
+      await this.verificator.verify(document.body.json);
     }catch(e){
-      if(!!e.validationErrors){
-        throw new InvalidDocumentError('Invalid document schema', document);
+      if(e instanceof VerificationError){
+        throw new InvalidDocumentError(e.message, document);
       }else{
         throw e;
       }
     }
-    const version = this.getDocumentVersion(document.body.json);
-    const documentStoreAddress = this.getDocumentStoreAddress(document.body.json, version);
-    if(documentStoreAddress != this.props.documentStore.address){
-      throw new InvalidDocumentError(
-        `Expected document store address to be "${this.props.documentStore.address}", got "${documentStoreAddress}"`,
-        document
-      )
-    }
   }
+
   async addDocumentToBatch(document: Document){
     await this.putDocumentToBatchBackup(document);
     await this.removeDocumentFromUnprocessed(document);
