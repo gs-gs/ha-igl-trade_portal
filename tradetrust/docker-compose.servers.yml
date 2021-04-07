@@ -4,6 +4,11 @@ networks:
   internal:
     name: tradetrust-document-store-internal
 
+  igl-local-network:
+    # a network used for local development to allow components across the separate repos and docker compose files to communicate
+    driver: bridge
+    external: true
+
 services:
 
   localstack:
@@ -24,6 +29,7 @@ services:
 
     networks:
       - internal
+      - igl-local-network
     volumes:
       - '${dockerstagedir:-.}/localstack:/docker-entrypoint-initaws.d'
       - '/var/run/docker.sock:/var/run/docker.sock'
@@ -97,6 +103,7 @@ services:
       dockerfile: Dockerfile
     networks:
       - internal
+      - igl-local-network
     volumes:
       - /open-attestation-api/node_modules
       - '${dockerstagedir:-.}/open-attestation-api:/open-attestation-api/'
@@ -115,6 +122,7 @@ services:
       dockerfile: Dockerfile
     networks:
       - internal
+      - igl-local-network
     volumes:
       - /open-attestation-verify-api/node_modules
       - '${dockerstagedir:-.}/localstack:/aws'

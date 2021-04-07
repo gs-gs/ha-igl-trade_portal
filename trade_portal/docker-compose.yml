@@ -5,11 +5,17 @@ networks:
     driver: bridge
     name: ${COMPOSE_PROJECT_NAME}-internal
 
+  igl-local-network:
+    # a network used for local development to allow components across the separate repos and docker compose files to communicate
+    driver: bridge
+    external: true
+
 volumes:
   # named volumes are needed because permissions don't work on Windows
   # otherwise, which breaks PostgreSQL. COMPOSE_PROJECT_NAME is automatically
   # prefixed to the volume name by docker-compose
   postgresql_data:
+
 
 services:
   django: &django
@@ -33,6 +39,7 @@ services:
     restart: on-failure
     networks:
       - internal
+      - igl-local-network
 
   # needed only for local development - because on Linux you can't
   # access the host container in any other reliable way
@@ -58,6 +65,7 @@ services:
     restart: on-failure
     networks:
       - internal
+      - igl-local-network
     volumes:
       - postgresql_data:/var/lib/postgresql/data
 
@@ -119,3 +127,4 @@ services:
       driver: none
     networks:
       - internal
+      - igl-local-network
