@@ -21,7 +21,7 @@
     onClick="$('#qr-reader-container').show(); initQrReader(); $('#id-qr-code-init-btn').hide();"
   >Read QR code using camera</button>
 
-  <div id="qr-reader-container" style="display: none">
+  <div id="qr-reader-container" style="display: none; text-align: center">
     <div id="qr-code-loadingMessage">
       (no camera access has been given yet)
     </div>
@@ -30,5 +30,6 @@
       <div id="qr-code-outputMessage">Please move your QR code into the viewport.</div>
       <div style="display: none"><b>Data:</b> <span id="qr-code-outputData"></span></div>
     </div>
+    <a href="/v/">Back</a>
   </div>
 </div>

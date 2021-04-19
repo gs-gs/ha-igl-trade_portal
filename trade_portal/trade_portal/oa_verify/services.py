@@ -7,11 +7,11 @@ from io import BytesIO
 
 import PyPDF2
 import requests
+from django.conf import settings
 from PIL import Image
 from pyzbar.pyzbar import decode as pyzbar_decode
 
-
-from django.conf import settings
+from trade_portal.documents.services.encryption import AESCipher
 
 logger = logging.getLogger(__name__)
 
@@ -22,30 +22,26 @@ class OaVerificationError(Exception):
 
 class OaVerificationService:
     """
-    Object containing the code to verify OA documents
-    As QR codes, binary files and so on.
+    Object containing the code to verify JSON OA TT documents
     """
 
-    def wrap_file(self, unwrapped_json):
-        raise NotImplementedError()
-
-    def verify_file(self, file_content):
+    def verify_json_tt_document(self, file_content):
         """
-        Helper function which verifies the OA body and returns dict with some
-        useful variables set
+        Return verification result dict
+        Accepting OA file body as cleartext bytes (already decrypted but not unwrapped)
 
-        The file_content parameter must be cleartext bytes
-        (already decrypted but not unwrapped)
+        Any other business-facing verification method (PDF upload, QR Code reading) ends
+        in some TT document verification anyway
 
-        Has next keys:
-        * status - valid/invalid/error
-        * verify_result - list of dicts about specific verification details
-        * verify_result_rotated - the same but in a format comfortable for display
-        * unwrapped_file - bytes with unwrapped file content (the JSON to display or render)
-        * oa_raw_data - dict made by parsing the unwrapped file
-        * oa_bas64 - base64 representation of the wrapped file for easy "download" actions
-        * template_url - URL of the renderer to use in iframe which renders the document
-        * attachments - list of binary (or text) attached files like PDFs
+        The result has next keys:
+            * status - valid/invalid/error
+            * verify_result - list of dicts about specific verification details
+            * verify_result_rotated - the same but in a format comfortable for display
+            * unwrapped_file - bytes with unwrapped file content (the JSON to display or render)
+            * oa_raw_data - dict made by parsing the unwrapped file
+            * oa_bas64 - base64 representation of the wrapped file for easy "download" actions
+            * template_url - URL of the renderer to use in iframe which renders the document
+            * attachments - list of binary (or text) attached files like PDFs
         """
         result = {}
 
@@ -68,7 +64,7 @@ class OaVerificationService:
 
         t0 = time.time()
         try:
-            api_verify_resp = self._api_verify_file(file_content)
+            api_verify_resp = self._api_verify_tt_json_file(file_content)
         except OaVerificationError as e:
             logger.info("Document verification (api call), failed in %ss", round(time.time() - t0, 4))
             result = {
@@ -126,6 +122,118 @@ class OaVerificationService:
         result["doc_number"] = doc_number
         return result
 
+    def verify_pdf_file(self, pdf_file):
+        """
+        Accepting uploaded file as object with `.read()` method
+        Tries to parse that PDF file and retrieve a valid QR code from it
+        And verify that QR code
+        https://github.com/gs-gs/ha-igl-project/issues/54
+        """
+        try:
+            valid_qrcodes = PdfVerificationService(pdf_file).get_valid_qrcodes()
+        except Exception as e:
+            if "file has not been decrypted" in str(e):
+                return {
+                    "status": "error",
+                    "error_message": (
+                        "Verification of encrypted PDF files directly is not supported; "
+                        "please use QR code reader and your camera."
+                    ),
+                }
+            else:
+                logger.exception(e)
+                return {
+                    "status": "error",
+                    "error_message": (
+                        "Unable to parse the PDF file"
+                    ),
+                }
+        if not valid_qrcodes:
+            return {
+                "status": "error",
+                "error_message": (
+                    "No QR codes were found in the PDF file; "
+                    "Please try to use 'Read QR code using camera' directly"
+                ),
+            }
+        elif len(valid_qrcodes) > 1:
+            return {
+                "status": "error",
+                "error_message": (
+                    "There are multiple valid QR codes in that document; "
+                    "please scan the desired one manually"
+                ),
+            }
+        return self.verify_qr_code(code=valid_qrcodes[0])
+
+    def verify_qr_code(self, code: str = None, query: dict = None):
+        """
+        Return QR code verification result or error
+
+        Next kinds of QR codes are supported:
+        1. New self-contained format
+            https://action.openattestation.com/?q={q}
+            where q is urlencoded JSON something like
+            {
+                "type": "DOCUMENT",
+                "payload": {
+                    "uri": "https://trade.c1.devnet.trustbridge.io/oa/1d490b1b-aee8-47f3-bfa5-d08c67e940eb/",
+                    "key": "DC97D0BA857D6FC213959F6F42E77AF0426C8329ABF3855B5000FED82B86E82C",
+                    "permittedActions": ["VIEW"],
+                    "redirect": "https://dev.tradetrust.io"
+                }
+            }
+
+        2. Old tradetrust data as json
+            tradetrust://{"uri":"https://trade.c1.devnet.trustbridge.io/oa/1d490b1b-aee8-47f3-bfa5-d08c67e940eb/#DC97D0BA857D6FC213959F6F42E77AF0426C8329ABF3855B5000FED82B86E82C"}
+
+        Exceptions are raised but not cached here, the calling code should do it
+        """
+        if code:
+            # has been already read and parsed
+            if code.startswith("https://") or code.startswith("http://"):
+                # new approach
+                components = urllib.parse.urlparse(code)
+                params = urllib.parse.parse_qs(components.query)
+                req = json.loads(params["q"][0])
+                if req["type"].upper() == "DOCUMENT":
+                    uri = req["payload"]["uri"]
+                    key = req["payload"]["key"]  # it's always AES key
+            elif code.startswith("tradetrust://"):
+                # old approach
+                json_body = code.split("://", maxsplit=1)[1]
+                params = json.loads(json_body)["uri"]
+                uri, key = params.rsplit("#", maxsplit=1)
+            else:
+                raise OaVerificationError("Unsupported QR code format")
+        elif query:
+            # the url has been navigated, so we already have both uri and key
+            uri, key = query["uri"], query["key"]
+
+        # this will contain fields cipherText, iv, tag, type
+        logger.info("Retrieving document %s using key ending with %s", uri, str(key)[-5:])
+
+        try:
+            document_info = requests.get(uri).json()["document"]
+        except Exception as e:
+            logger.exception(e)
+            raise OaVerificationError(
+                "Unable to download the OA document from given url (this usually "
+                "means that remote service is down or acting incorrectly"
+            )
+
+        cp = AESCipher(key)
+        cleartext_b64 = cp.decrypt(
+            document_info["iv"],
+            document_info["tag"],
+            document_info["cipherText"],
+        ).decode("utf-8")
+        cleartext = base64.b64decode(cleartext_b64)
+
+        logger.info("Unpacking document %s", uri)
+
+        return OaVerificationService().verify_json_tt_document(cleartext)
+
     def kick_verify_api(self):
         """
         Call the healthcheck API to ensure it's warm and ready
@@ -156,7 +264,14 @@ class OaVerificationService:
         )
         return kick_resp.status_code == 200
 
-    def _api_verify_file(self, file_content):
+    def _api_verify_tt_json_file(self, file_content):
+        """
+        Return response from the remote OA verification API
+        Accepting TT JSON file content as bytes string
+
+        Raises OaVerificationError with details if it's impossible
+        Or returns raw verify endpoint response as dict if success
+        """
         try:
             resp = requests.post(
                 settings.OA_VERIFY_API_URL,
@@ -166,7 +281,8 @@ class OaVerificationService:
             )
         except Exception as e:
             raise OaVerificationError(
-                f"Verifier temporary unavailable (error {e.__class__.__name__}); please try again later"
+                f"Verifier is temporary unavailable (reported {e.__class__.__name__}); "
+                f"please try again later. We are already aware of that issue and working on it."
             )
         if resp.status_code == 200:
             # now it contains list of dicts, each tells us something
@@ -183,13 +299,15 @@ class OaVerificationService:
                 resp.content,
             )
             raise OaVerificationError(
-                f"Verifier temporary unavailable (error {resp.status_code}); please try again later"
+                f"Verifier is temporary unavailable (reported {resp.status_code}); please try again later."
+                f"We are already aware of that issue and working on it."
             )
 
     def _unwrap_file(self, content):
         """
-        Warning: it's less reliable but quick
-        It's better to cal OA.unwrap() method
+        This is a reproduction of OA.unwrap() method and will stop working if
+        OA wrapping rules change in the future
+        But it's quick and written in Python, not JS
         """
 
         def unwrap_it(what):
@@ -273,7 +391,9 @@ class PdfVerificationService:
             # try another library to rasterize that PDF and read QRs from images
             qr_texts_found = self._try_rasterisation()
         else:
-            # PDF can be parsed
+            # PDF can be parsed, do it
+            if pages_count > 20:
+                pages_count = 20  # performance
             for page_num in range(0, pages_count):
                 page = reader.getPage(page_num)
 

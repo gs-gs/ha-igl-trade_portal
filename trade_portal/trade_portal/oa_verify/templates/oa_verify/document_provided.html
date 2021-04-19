@@ -31,7 +31,7 @@
     {% else %}
       {# error #}
       <h2><span class="badge badge-warning">Error</span></h2>
-      <h4>{{ verification_result.error_message }}.</h4>
+      <div class="alert alert-warning" style="margin: 20px auto; max-width: 50%">{{ verification_result.error_message }}</div>
     {% endif %}
   {% endif %}
 
