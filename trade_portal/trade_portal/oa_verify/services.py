@@ -108,14 +108,7 @@ class OaVerificationService:
                     "Unable to unwrap the OA file - it's structure may be invalid"
                 )
             else:
-                result["template_url"] = requests.get(
-                    result["unwrapped_file"]
-                    .get("data", {})
-                    .get("$template", {})
-                    .get("url")
-                ).url
-                if result["template_url"] and not result["template_url"].startswith("http"):
-                    result["template_url"] = "https://" + result["template_url"]
+                result["template_url"] = self._retrieve_template_url(result["unwrapped_file"])
                 result["attachments"] = self._parse_attachments(
                     result["unwrapped_file"].get("data", {})
                 )
@@ -187,7 +180,7 @@ class OaVerificationService:
         2. Old tradetrust data as json
             tradetrust://{"uri":"https://trade.c1.devnet.trustbridge.io/oa/1d490b1b-aee8-47f3-bfa5-d08c67e940eb/#DC97D0BA857D6FC213959F6F42E77AF0426C8329ABF3855B5000FED82B86E82C"}
 
-        Exceptions are raised but not cached here, the calling code should do it
+        Exceptions are raised but not catched here, the calling code should do it
         """
         if code:
             # has been already read and parsed
@@ -357,6 +350,26 @@ class OaVerificationService:
                 }
             )
         return attachments
+
+    def _retrieve_template_url(self, unwrapped_file):
+        """
+        Return resolved template url (following all requests)
+        Or just the OA-coded value if can't perform request with 200 resp
+        """
+        url = unwrapped_file.get("data", {}).get("$template", {}).get("url")
+        try:
+            url_resp = requests.get(url)
+        except Exception as e:
+            logger.exception(e)
+            ret = url
+        else:
+            if url_resp.status_code == 200:
+                ret = url_resp.url
+            else:
+                ret = url
+            if ret and not ret.startswith("http"):
+                ret = "https://" + ret
+        return ret
 
 
 class PdfVerificationService:
