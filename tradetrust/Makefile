@@ -3,21 +3,6 @@
 run:
 	@ docker-compose up --build --remove-orphans --renew-anon-volumes
 
-.PHONY: run-on-servers
-.ONESHELL:
-run-on-servers:
-	@ docker-compose -f docker-compose.servers.yml up --build --remove-orphans --renew-anon-volumes
-
-.PHONY: run-ts-worker
-.ONESHELL:
-run-ts-worker:
-	@ docker-compose -f docker-compose.ts-worker.yml up --build --remove-orphans --renew-anon-volumes
-
-.PHONY: run-testnet-test
-.ONESHELL:
-run-testnet-test:
-	@ docker-compose -f docker-compose.testnet.yml up --build --remove-orphans --renew-anon-volumes
-
 .PHONY: stop
 .ONESHELL:
 stop:
@@ -35,10 +20,21 @@ build:
 	@ docker-compose build --no-cache
 
 
-.PHONY: shell-document-store-api
+.PHONY: compose-system
 .ONESHELL:
-shell-document-store-api:
-	@ docker-compose exec document-store-api /bin/bash
+compose-system:
+	@ cat docker-compose.base.yml docker-compose.system.yml > docker-compose.yml
+
+.PHONY: compose-py-worker
+.ONESHELL:
+compose-py-worker:
+	@ cat docker-compose.base.yml docker-compose.py-worker.yml > docker-compose.yml
+
+
+.PHONY: compose-ts-worker
+.ONESHELL:
+compose-ts-worker:
+	@ cat docker-compose.base.yml docker-compose.ts-worker.yml > docker-compose.yml
 
 
 .PHONY: shell-document-store-contract
