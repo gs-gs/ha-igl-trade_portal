@@ -85,6 +85,9 @@ function create(){
 
   app.post('/verify', upload.single('file'), async function (req, res, next){
     async function handler(){
+      // check that the node connection is active
+      // it will throw an error if something went wrong while getting network details
+      await VERIFY_OPTIONS.provider.getNetwork();
       const document = getDocumentJSON(req);
       const fragments = await verify(document);
       const valid = isValid(fragments);
@@ -96,6 +99,9 @@ function create(){
 
   app.post('/verify/fragments', upload.single('file'), async function(req, res, next){
     async function handler(){
+      // check that the node connection is active
+      // it will throw an error if something went wrong while getting network details
+      await VERIFY_OPTIONS.provider.getNetwork();
       const document = getDocumentJSON(req);
       const fragments = await verify(document);
       res.status(200).send(fragments);
