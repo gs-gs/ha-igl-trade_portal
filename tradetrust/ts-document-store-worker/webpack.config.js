@@ -1,7 +1,10 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: {
+    'batched-issue-worker': 'src/entrypoint-batched-issue.ts',
+    'batched-revoke-worker': 'src/entrypoint-batched-revoke.ts'
+  },
   mode: 'production',
   target: 'node',
   module: {
@@ -21,7 +24,7 @@ module.exports = {
     }
   },
   output: {
-    filename: 'worker.js',
+    filename: 'bundle/[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
 };

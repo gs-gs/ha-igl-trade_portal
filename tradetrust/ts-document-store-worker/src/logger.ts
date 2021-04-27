@@ -9,19 +9,7 @@ const LOGGER_OPTS = {
 }
 
 
-if(process.env.NODE_ENV !== 'production'){
-  LOGGER_OPTS.transports.push(new transports.Console({
-    format: format.combine(
-      format.errors({stack: true}),
-      format.splat(),
-      format.colorize(),
-      format.align(),
-      format.printf(info=>{
-        return `${info.level}:${info.message}${info.stack?'\n'+info.stack:''}`
-      })
-    )
-  }))
-}else if(process.env.SENTRY_DSN){
+if(process.env.SENTRY_DSN){
   /* istanbul ignore next */
   LOGGER_OPTS.transports.push(new SentryTransport({
     format: format.combine(
@@ -42,6 +30,22 @@ if(process.env.NODE_ENV !== 'production'){
     }
   }));
 }
+
+
+if(process.env.CONSOLE_LOGS || LOGGER_OPTS.transports.length == 0){
+  LOGGER_OPTS.transports.push(new transports.Console({
+    format: format.combine(
+      format.errors({stack: true}),
+      format.splat(),
+      format.colorize(),
+      format.align(),
+      format.printf(info=>{
+        return `${info.level}:${info.message}${info.stack?'\n'+info.stack:''}`
+      })
+    )
+  }))
+}
+
 
 const logger = createLogger(LOGGER_OPTS);
 

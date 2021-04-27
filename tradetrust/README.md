@@ -67,6 +67,8 @@ The worker configured using environment variables:
 
 ```bash
     cd tradetrust
+    make compose-ts-worker
+    ## OR make compose-py-worker OR make compose-system to generate corresponding docker-compose file
     make run
     ## Wait until `localstack` finishes resource deployment.
     make shell-document-store-worker

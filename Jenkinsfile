@@ -104,8 +104,9 @@ pipeline {
                 stage('openatt_worker') {
 
                     environment {
-                        COMPOSE_FILE = 'docker-compose.servers.yml'
+                        COMPOSE_FILE = 'docker-compose.yml'
                     }
+
                     steps {
                         dir('test/openatt_worker') {
                             checkout scm
@@ -114,10 +115,11 @@ pipeline {
                         dir('test/openatt_worker/tradetrust') {
                             sh '''#!/bin/bash
 
+                            cat docker-compose.base.yml docker-compose.py-worker.yml > docker-compose.yml
                             docker-compose up --build --remove-orphans --renew-anon-volumes -d
 
                             # run testing
-                            sleep 30s
+                            sleep 60s
                             docker-compose exec -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
                             '''
                         }

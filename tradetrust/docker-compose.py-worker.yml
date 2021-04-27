@@ -1,93 +1,12 @@
-version: '3.5'
-
-networks:
-  internal:
-    name: tradetrust-document-store-internal
-
 services:
-
   localstack:
-    image: localstack/localstack
-    container_name: tradetrust-localstack
-    environment:
-
-      EDGE_PORT: 10001
-      PORT_WEB_UI: 9999
-      HOSTNAME_EXTERNAL: tradetrust-localstack
-      LOCALSTACK_HOSTNAME: tradetrust-localstack
-      SERVICES: sqs,s3,iam,cloudwatch
-      DEFAULT_REGION: us-east-1
-
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: access
-      AWS_SECRET_ACCESS_KEY: secretaccess
-
-    networks:
-      - internal
-    volumes:
-      - '${dockerstagedir:-.}/localstack:/docker-entrypoint-initaws.d'
-      - '/var/run/docker.sock:/var/run/docker.sock'
-
+    <<: *localstack
 
   ganache-cli:
-    image: trufflesuite/ganache-cli
-    container_name: tradetrust-ganache-cli
-    networks:
-      - internal
-    command: >
-        ganache-cli
-        --hostname 0.0.0.0
-        --port 8585
-        --networkId 15
-        --hardfork petersburg
-        --blockTime 0
-        --accounts 5
-        --unlock "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
-        --deterministic
-        --mnemonic "myth like bonus scare over problem client lizard pioneer submit female collect"
-
-
-  monitoring:
-    image: tradetrust/monitoring
-    container_name: tradetrust-monitoring
-    build:
-      context: "${dockerstagedir:-.}/monitoring"
-      dockerfile: Dockerfile
-    networks:
-      - internal
-    volumes:
-      - "/monitoring/node_modules"
-      - "${dockerstagedir:-.}/monitoring:/monitoring"
-    environment:
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: access
-      AWS_SECRET_ACCESS_KEY: secretaccess
-      AWS_ENDPOINT_URL: http://tradetrust-localstack:10001
-
-      HTTP_BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
-      ACCOUNT_ADDRESS: "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
+    <<: *ganache-cli
 
   document-store-contract:
-    image: tradetrust/document-store-contract
-    container_name: tradetrust-document-store-contract
-    build:
-      context: "${dockerstagedir:-.}/document-store-contract"
-      dockerfile: Dockerfile
-      args:
-        DOCUMENT_STORE_MASTER_COMMIT: 65092f8cfcc06622a75548e183b08e1c9a8fee21
-    networks:
-      - internal
-    volumes:
-      - "${dockerstagedir:-.}/document-store-contract/scripts/truffle-config.js:/document-store-contract/truffle-config.js"
-      - "${dockerstagedir:-.}/document-store-contract/scripts/deploy-contracts.js:/document-store-contract/deploy-contracts.js"
-      - "${dockerstagedir:-.}/document-store-contract/addresses:/document-store-contract/addresses"
-      - "${dockerstagedir:-.}/document-store-contract/abi:/document-store-contract/abi"
-    environment:
-      DOCUMENT_STORE_NAME: Development
-      ADDRESSES_DIR: /document-store-contract/addresses
-    depends_on:
-      - ganache-cli
-
+    <<: *document-store-contract
 
   open-attestation-api:
     image: tradetrust/open-attestation-api
@@ -105,7 +24,6 @@ services:
     environment:
       CONTAINER_MODE: server-development
       PORT: 9090
-
 
   open-attestation-verify-api:
     image: tradetrust/open-attestation-verify-api
