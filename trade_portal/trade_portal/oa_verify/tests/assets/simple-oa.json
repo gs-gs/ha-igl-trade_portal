@@ -1,0 +1,37 @@
+{
+  "version": "https://schema.openattestation.com/2.0/schema.json",
+  "data": {
+    "$template": {
+      "name": "1f766fd4-8b5a-4621-bee6-23da9f89e056:string:main",
+      "type": "d90d9a2c-19bf-4047-bedc-a977631f5d21:string:EMBEDDED_RENDERER",
+      "url": "d2ad8497-7c48-4d91-87c4-29db4fb13287:string:https://tutorial-renderer.openattestation.com"
+    },
+    "recipient": {
+      "name": "9f19ed9b-7635-4b69-b598-ba0678d403b3:string:Htc code 6 Htc code 8 DestinationDestinationDestination 15.55 16.66"
+    },
+    "exportClaim": {
+      "version": "32390f00-ed86-4b28-a8a7-96b567deb27b:string:v0.0",
+      "htc6": "f6bb44d4-c037-4595-aaf9-d28e236d6dc2:string:Htc code 6",
+      "htc8": "c63565f7-ea87-4739-84c6-b93ee17ea7d8:string:Htc code 8",
+      "destination": "00aaf34d-4126-4204-8f1f-3f460e6c9cf4:string:DestinationDestinationDestination",
+      "qty": "e760a9c7-b35c-48d7-871e-05b29d21fa2c:string:15.55",
+      "local_value": "a4badd70-1415-4598-a767-1acf953cc2a5:string:16.66"
+    },
+    "issuers": [
+      {
+        "name": "b0d47705-4d6d-4e6f-a6b3-63e3a0f84aff:string:wpca-alpha.datatrust.link",
+        "documentStore": "778b45bd-b0af-472f-bf5b-277aa8e0b862:string:0xd1F122506c02063913939acC4451B7C26aD7FCC9",
+        "identityProof": {
+          "type": "38f03a2d-e2b8-4c36-99b0-26501aff5850:string:DNS-TXT",
+          "location": "c88e1f1a-f25b-468c-88d9-35b0d4a1e2dd:string:wpca-alpha.datatrust.link"
+        }
+      }
+    ]
+  },
+  "signature": {
+    "type": "SHA3MerkleProof",
+    "targetHash": "54b859d6e7c17c872852fa1b0f32826970033e7200f38edbfd6835a14667dc16",
+    "proof": [],
+    "merkleRoot": "54b859d6e7c17c872852fa1b0f32826970033e7200f38edbfd6835a14667dc16"
+  }
+}

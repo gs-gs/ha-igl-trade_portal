@@ -7,11 +7,11 @@ redis==3.4.1 # https://github.com/andymccurdy/redis-py
 celery==4.4.0  # pyup: < 5.0  # https://github.com/celery/celery
 flower==0.9.3  # https://github.com/mher/flower
 psycopg2==2.8.4 --no-binary psycopg2  # https://github.com/psycopg/psycopg2
-django-countries==5.3.3
+django-countries==7.1
 
 # Django
 # ------------------------------------------------------------------------------
-django==2.2.10  # pyup: < 3.0  # https://www.djangoproject.com/
+django<2.3 # pyup: < 3.0  # https://www.djangoproject.com/
 django-environ==0.4.5  # https://github.com/joke2k/django-environ
 django-model-utils==4.0.0  # https://github.com/jazzband/django-model-utils
 django-allauth==0.41.0  # https://github.com/pennersr/django-allauth
