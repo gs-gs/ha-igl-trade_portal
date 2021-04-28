@@ -297,7 +297,7 @@ def document_oa_verify(self, document_id, do_retries=True):
                 message="Verification started...",
             )
 
-    verify_response = OaVerificationService().verify_file(vc.read())
+    verify_response = OaVerificationService().verify_json_tt_document(vc.read())
     if verify_response.get("status") == "valid":
         document.verification_status = Document.V_STATUS_VALID
         document.save()
