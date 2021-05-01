@@ -23,7 +23,7 @@
     "typescript": "^4.2.4"
   },
   "scripts": {
-    "test-v2": "jest -i tests/v2 | pino-pretty"
+    "test-v2": "jest -i tests/system/v2 | pino-pretty"
   },
   "author": "",
   "license": "ISC"

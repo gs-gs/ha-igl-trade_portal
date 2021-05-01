@@ -22,7 +22,7 @@ interface IBucketDeleteProps{
 }
 
 interface IBucketListProps{
-  Prefix: string
+  Prefix?: string
 }
 
 class Bucket{
@@ -49,21 +49,27 @@ class Bucket{
   }
 
   async put({Body, Key}: IBucketPutProps){
-    return await S3.putObject({
+    logger.info('Putting object "%s" into bucket "%s"', Key, this.props.Bucket);
+    const result = await S3.putObject({
       Bucket: this.props.Bucket,
       Key,
       Body
     }).promise()
+    logger.info('Object successfully put');
+    return result;
   }
 
   async delete({Key}: IBucketDeleteProps){
-    return await S3.deleteObject({
+    logger.info('Deleting object "%s" from bucket "%s"', Key, this.props.Bucket);
+    const result = await S3.deleteObject({
       Bucket: this.props.Bucket,
       Key
     }).promise()
+    logger.info('Object successfully deleted', Key, this.props.Bucket);
+    return result;
   }
 
-  async list({Prefix}: IBucketListProps){
+  async list({Prefix}: IBucketListProps = {}){
     let ContinuationToken = undefined;
     const list: Array<AWS.S3.Object> = [];
     do{
@@ -78,6 +84,15 @@ class Bucket{
       }
     }while(ContinuationToken)
     return list;
+  }
+
+  async clear(){
+    logger.info('Clearing "%s" bucket', this.props.Bucket);
+    const objects = await this.list();
+    for(let object of objects){
+      await this.delete({Key: object.Key!});
+    }
+    logger.info('%s objects deleted', objects.length);
   }
 }
 
