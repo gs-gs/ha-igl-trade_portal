@@ -127,20 +127,69 @@ services:
   ganache-cli:
     <<: *ganache-cli
 
+  monitoring:
+    <<: *monitoring
+
   document-store-contract:
     <<: *document-store-contract
 
-  document-store-worker:
-    <<: *document-store-service-environment
-    container_name: tradetrust-document-store-worker
-    environment:
-      CONTAINER_MODE: container
 
-      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
-      INVALID_BUCKET_NAME: invalid
-      UNPROCESSED_BUCKET_NAME: unprocessed
+  batched-issue-worker:
+    <<: *document-store-service-production
+    container_name: batched-issue-worker
+    command: batched-issue-worker.js
+    environment:
+
+      STARTUP_DELAY_SECONDS: 60
+
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/issue-unprocessed
+      INVALID_BUCKET_NAME: issue-invalid
+      UNPROCESSED_BUCKET_NAME: issue-unprocessed
+      BATCH_BUCKET_NAME: issue-batch
       ISSUED_BUCKET_NAME: issued
-      BATCH_BUCKET_NAME: batch
+
+      # integer value >= 1 and <= 20
+      # 20 is an upper limit that aws sdk has
+      MESSAGE_WAIT_TIME: 10
+      MESSAGE_VISIBILITY_TIMEOUT: 60
+      TRANSACTION_TIMEOUT_SECONDS: 600
+      TRANSACTION_CONFIRMATION_THRESHOLD: 1
+
+      # integer only value
+      GAS_PRICE_LIMIT_GWEI: 200
+      # positive float value >= 1.1
+      GAS_PRICE_MULTIPLIER: 1.2
+      # 100 MB
+      BATCH_SIZE_BYTES: 104857600
+      # 10 minutes
+      BATCH_TIME_SECONDS: 600
+      # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
+      RESTORE_ATTEMPTS: 10
+      RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in ComposeBatch task
+      COMPOSE_ATTEMPTS: 10
+      COMPOSE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in SaveIssuedBatch task
+      SAVE_ATTEMPTS: 10
+      SAVE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in IssueBatch task
+      ISSUE_ATTEMPTS: 10
+      ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60
+      REVOKE_ATTEMPTS: 10
+      REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
+
+
+  batched-revoke-worker:
+    <<: *document-store-service-production
+    container_name: batched-revoke-worker
+    command: batched-revoke-worker.js
+    environment:
+      STARTUP_DELAY_SECONDS: 60
+
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/revoke-unprocessed
+      INVALID_BUCKET_NAME: revoke-invalid
+      UNPROCESSED_BUCKET_NAME: revoke-unprocessed
+      BATCH_BUCKET_NAME: revoke-batch
       REVOKED_BUCKET_NAME: revoked
 
       # integer value >= 1 and <= 20
@@ -172,3 +221,18 @@ services:
       ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60
       REVOKE_ATTEMPTS: 10
       REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
+
+  system-tests:
+    image: tradetrust/system-tests
+    container_name: system-tests
+    build:
+      context: ${dockerstagedir:-.}/system-tests
+      dockerfile: Dockerfile
+    networks:
+      - internal
+    volumes:
+      - /system-tests/node_modules
+      - '${dockerstagedir:-.}/system-tests:/system-tests'
+    env_file:
+      - aws.local.env
+      - document-store-service.local.env

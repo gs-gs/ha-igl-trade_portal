@@ -77,3 +77,8 @@ shell-document-store-worker:
 .ONESHELL:
 shell-monitoring:
 	@ docker-compose exec monitoring /bin/bash
+
+.PHONY: shell-system-tests
+.ONESHELL:
+shell-system-tests:
+	@ docker-compose exec system-tests /bin/bash
