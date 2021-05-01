@@ -20,6 +20,4 @@ function SQS(conf?: AWS.SQS.ClientConfiguration): AWS.SQS{
   return new AWS.SQS({...defaultConfig, ...conf});
 }
 
-export {SQS, S3};
-
-export default AWS;
+export {SQS, S3, AWS};

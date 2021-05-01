@@ -161,8 +161,8 @@ services:
       GAS_PRICE_MULTIPLIER: 1.2
       # 100 MB
       BATCH_SIZE_BYTES: 104857600
-      # 10 minutes
-      BATCH_TIME_SECONDS: 600
+      # 30 sec
+      BATCH_TIME_SECONDS: 30
       # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
       RESTORE_ATTEMPTS: 10
       RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
@@ -205,8 +205,8 @@ services:
       GAS_PRICE_MULTIPLIER: 1.2
       # 100 MB
       BATCH_SIZE_BYTES: 104857600
-      # 10 minutes
-      BATCH_TIME_SECONDS: 600
+      # 30 sec
+      BATCH_TIME_SECONDS: 30
       # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
       RESTORE_ATTEMPTS: 10
       RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
@@ -233,6 +233,7 @@ services:
     volumes:
       - /system-tests/node_modules
       - '${dockerstagedir:-.}/system-tests:/system-tests'
+      - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
     env_file:
       - aws.local.env
       - document-store-service.local.env

@@ -17,6 +17,8 @@ import { BatchedRevoke } from './tasks';
 async function main(){
   const config = getBatchedRevokeEnvConfig();
   const wallet = await connectWallet(config);
+  logger.info('Config loaded');
+  logger.info('%O', config);
   await new BatchedRevoke({
     invalidDocuments: new InvalidDocuments(config),
     unprocessedDocuments: new UnprocessedDocuments(config),

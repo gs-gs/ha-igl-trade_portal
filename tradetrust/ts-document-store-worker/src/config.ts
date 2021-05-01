@@ -87,9 +87,9 @@ const getBatchedDocumentStoreTaskEnvConfig = (): IBatchedDocumentStoreTaskConfig
   GAS_PRICE_MULTIPLIER: parseFloat(process.env.GAS_PRICE_MULTIPLIER??'1.2'),
   GAS_PRICE_LIMIT_GWEI: parseInt(process.env.GAS_PRICE_LIMIT_GWEI??'200'),
   // default 100 MB
-  BATCH_SIZE_BYTES: parseInt(process.env.MAX_BATCH_SIZE_BYTES??'104857600'),
+  BATCH_SIZE_BYTES: parseInt(process.env.BATCH_SIZE_BYTES??'104857600'),
   // 10 minutes
-  BATCH_TIME_SECONDS: parseInt(process.env.MAX_BATCH_TIME_SECONDS??'600'),
+  BATCH_TIME_SECONDS: parseInt(process.env.BATCH_TIME_SECONDS??'600'),
 
   RESTORE_ATTEMPTS: parseInt(process.env.RESTORE_ATTEMPTS??'10'),
   RESTORE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.RESTORE_ATTEMPTS_INTERVAL_SECONDS??'60'),
