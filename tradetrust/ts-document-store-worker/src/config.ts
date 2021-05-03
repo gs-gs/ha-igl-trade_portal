@@ -111,9 +111,9 @@ const getBatchedIssueEnvConfig = (): IBatchedIssueConfig => ({
 
 const getBatchedRevokeEnvConfig = (): IBatchedRevokeConfig => ({
   ...getBatchedDocumentStoreTaskEnvConfig(),
-  REVOKED_BUCKET_NAME: process.env.ISSUED_BUCKET_NAME??'',
-  REVOKE_ATTEMPTS: parseInt(process.env.ISSUE_ATTEMPTS??'10'),
-  REVOKE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.ISSUE_ATTEMPTS_INTERVAL_SECONDS??'60')
+  REVOKED_BUCKET_NAME: process.env.REVOKED_BUCKET_NAME??'',
+  REVOKE_ATTEMPTS: parseInt(process.env.REVOKE_ATTEMPTS??'10'),
+  REVOKE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.REVOKE_ATTEMPTS_INTERVAL_SECONDS??'60')
 });
 
 export {

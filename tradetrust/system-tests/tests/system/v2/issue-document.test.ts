@@ -1,10 +1,9 @@
-// import { logger } from 'tests/logger';
 import { getData, wrapDocument } from '@govtechsg/open-attestation';
 import * as Config from 'tests/config';
 import { RetryableBucket } from 'tests/repos';
 import { documentV2 } from 'tests/data';
 
-describe('Issue document', ()=>{
+describe('Issue Document V2', ()=>{
   test('Valid document', async ()=>{
     jest.setTimeout(300 * 1000);
     const unwrappedDocument = documentV2();
@@ -28,7 +27,7 @@ describe('Issue document', ()=>{
     jest.setTimeout(300 * 1000);
     const unprocessed = new RetryableBucket({Bucket: Config.ISSUE_UNPROCESSED_BUCKET});
     const issued = new RetryableBucket({Bucket: Config.ISSUED_BUCKET});
-    const invalid = new RetryableBucket({Bucket: Config.ISSUE_INVALID});
+    const invalid = new RetryableBucket({Bucket: Config.ISSUE_INVALID_BUCKET});
     await unprocessed.clear();
     await issued.clear();
     await invalid.clear();
@@ -81,7 +80,7 @@ describe('Issue document', ()=>{
     jest.setTimeout(300 * 1000);
     const unprocessed = new RetryableBucket({Bucket: Config.ISSUE_UNPROCESSED_BUCKET});
     const issued = new RetryableBucket({Bucket: Config.ISSUED_BUCKET});
-    const invalid = new RetryableBucket({Bucket: Config.ISSUE_INVALID});
+    const invalid = new RetryableBucket({Bucket: Config.ISSUE_INVALID_BUCKET});
     await unprocessed.clear();
     await issued.clear();
     await invalid.clear();

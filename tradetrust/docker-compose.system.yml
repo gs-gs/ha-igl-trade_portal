@@ -95,8 +95,6 @@ services:
       SAVE_ATTEMPTS: 10
       SAVE_ATTEMPTS_INTERVAL_SECONDS: 60
       # number of attempts and interval between them in case of an unexpected error in IssueBatch task
-      ISSUE_ATTEMPTS: 10
-      ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60
       REVOKE_ATTEMPTS: 10
       REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
 
