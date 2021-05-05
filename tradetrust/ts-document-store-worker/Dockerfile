@@ -9,14 +9,16 @@ USER node
 COPY package* ./
 RUN npm ci
 COPY ./ ./
-ENTRYPOINT ./docker-entrypoint.sh
+ENTRYPOINT ["./dev.docker-entrypoint.sh"]
 
 
 FROM environment AS build
-RUN npm run build
+RUN npm run build && cp prod.docker-entrypoint.sh dist/bundle/prod.docker-entrypoint.sh
+
 
 
 FROM node:14-alpine AS production
+WORKDIR /document-store-worker
 COPY --from=build /document-store-worker/dist/bundle ./
-ENTRYPOINT ["node"]
+ENTRYPOINT ["./prod.docker-entrypoint.sh"]
 CMD ["--help"]

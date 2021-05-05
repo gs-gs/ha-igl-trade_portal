@@ -77,3 +77,20 @@ shell-document-store-worker:
 .ONESHELL:
 shell-monitoring:
 	@ docker-compose exec monitoring /bin/bash
+
+.PHONY: shell-system-tests
+.ONESHELL:
+shell-system-tests:
+	@ docker-compose exec system-tests /bin/bash
+
+
+.PHONY: shell-batched-issue-worker
+.ONESHELL:
+shell-batched-issue-worker:
+	@ docker-compose exec batched-issue-worker /bin/sh
+
+
+.PHONY: shell-batched-revoke-worker
+.ONESHELL:
+shell-batched-revoke-worker:
+	@ docker-compose exec batched-revoke-worker /bin/sh

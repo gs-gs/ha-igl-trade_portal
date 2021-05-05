@@ -1,0 +1,30 @@
+{
+  "name": "system-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@govtechsg/document-store": "^2.2.1",
+    "@govtechsg/oa-verify": "^7.4.1",
+    "@govtechsg/open-attestation": "^5.2.2",
+    "@types/jest": "^26.0.23",
+    "@types/lodash": "^4.14.168",
+    "@types/node": "^15.0.1",
+    "@types/pino": "^6.3.8",
+    "aws-sdk": "^2.896.0",
+    "ethers": "^5.1.4",
+    "jest": "^26.6.3",
+    "lodash": "^4.17.21",
+    "pino": "^6.11.3",
+    "pino-pretty": "^4.7.1",
+    "ts-jest": "^26.5.5",
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4"
+  },
+  "scripts": {
+    "test-v2": "jest -i tests/system/v2 | pino-pretty"
+  },
+  "author": "",
+  "license": "ISC"
+}

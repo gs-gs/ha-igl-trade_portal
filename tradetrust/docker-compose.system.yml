@@ -18,12 +18,13 @@ services:
     command: batched-issue-worker.js
     environment:
 
-      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
-      INVALID_BUCKET_NAME: invalid
-      UNPROCESSED_BUCKET_NAME: unprocessed
+      STARTUP_DELAY_SECONDS: 60
+
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/issue-unprocessed
+      INVALID_BUCKET_NAME: issue-invalid
+      UNPROCESSED_BUCKET_NAME: issue-unprocessed
+      BATCH_BUCKET_NAME: issue-batch
       ISSUED_BUCKET_NAME: issued
-      BATCH_BUCKET_NAME: batch
-      REVOKED_BUCKET_NAME: revoked
 
       # integer value >= 1 and <= 20
       # 20 is an upper limit that aws sdk has
@@ -38,8 +39,8 @@ services:
       GAS_PRICE_MULTIPLIER: 1.2
       # 100 MB
       BATCH_SIZE_BYTES: 104857600
-      # 10 minutes
-      BATCH_TIME_SECONDS: 600
+      # 30 sec
+      BATCH_TIME_SECONDS: 30
       # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
       RESTORE_ATTEMPTS: 10
       RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
@@ -61,12 +62,12 @@ services:
     container_name: batched-revoke-worker
     command: batched-revoke-worker.js
     environment:
+      STARTUP_DELAY_SECONDS: 60
 
-      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
-      INVALID_BUCKET_NAME: invalid
-      UNPROCESSED_BUCKET_NAME: unprocessed
-      ISSUED_BUCKET_NAME: issued
-      BATCH_BUCKET_NAME: batch
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/revoke-unprocessed
+      INVALID_BUCKET_NAME: revoke-invalid
+      UNPROCESSED_BUCKET_NAME: revoke-unprocessed
+      BATCH_BUCKET_NAME: revoke-batch
       REVOKED_BUCKET_NAME: revoked
 
       # integer value >= 1 and <= 20
@@ -82,8 +83,8 @@ services:
       GAS_PRICE_MULTIPLIER: 1.2
       # 100 MB
       BATCH_SIZE_BYTES: 104857600
-      # 10 minutes
-      BATCH_TIME_SECONDS: 600
+      # 30 sec
+      BATCH_TIME_SECONDS: 30
       # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
       RESTORE_ATTEMPTS: 10
       RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
@@ -94,7 +95,21 @@ services:
       SAVE_ATTEMPTS: 10
       SAVE_ATTEMPTS_INTERVAL_SECONDS: 60
       # number of attempts and interval between them in case of an unexpected error in IssueBatch task
-      ISSUE_ATTEMPTS: 10
-      ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60
       REVOKE_ATTEMPTS: 10
       REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
+
+  system-tests:
+    image: tradetrust/system-tests
+    container_name: system-tests
+    build:
+      context: ${dockerstagedir:-.}/system-tests
+      dockerfile: Dockerfile
+    networks:
+      - internal
+    volumes:
+      - /system-tests/node_modules
+      - '${dockerstagedir:-.}/system-tests:/system-tests'
+      - '${dockerstagedir:-.}/document-store-contract:/document-store-contract'
+    env_file:
+      - aws.local.env
+      - document-store-service.local.env

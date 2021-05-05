@@ -1,0 +1,28 @@
+{
+  "include": [
+    "tests/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "strict": true,
+    "lib": ["es2020"],
+    "target": "es2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "removeComments": true,
+    "noEmitHelpers": true,
+    "importHelpers": true,
+    "sourceMap": true,
+    "inlineSources": true
+  }
+}

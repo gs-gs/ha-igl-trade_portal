@@ -17,6 +17,8 @@ import { BatchedIssue } from './tasks';
 async function main(){
   const config = getBatchedIssueEnvConfig();
   const wallet = await connectWallet(config);
+  logger.info('Config loaded');
+  logger.info('%O', config);
   await new BatchedIssue({
     invalidDocuments: new InvalidDocuments(config),
     unprocessedDocuments: new UnprocessedDocuments(config),
