@@ -75,14 +75,14 @@ abstract class SendDocumentStoreTransaction implements Task<void>{
 
     this.state = {
       attempt: 0,
-      gasPriceLimit: utils.parseUnits(this.props.gasPriceLimitGwei!.toString(), 'gwei')
+      gasPriceLimit: BigNumber.from(utils.parseUnits(this.props.gasPriceLimitGwei!.toString(), 'gwei'))
     }
   }
 
   async calculateGasPrice(gasPriceMultiplier: number): Promise<BigNumber>{
     const gasPriceWei = await this.props.wallet.getGasPrice();
     const gasPriceEtherMultiplied = parseFloat(utils.formatEther(gasPriceWei)) * gasPriceMultiplier;
-    return utils.parseEther(gasPriceEtherMultiplied.toFixed(18));
+    return BigNumber.from(utils.parseEther(gasPriceEtherMultiplied.toFixed(18)));
   }
 
 
