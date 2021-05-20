@@ -11,14 +11,27 @@ services:
   document-store-worker:
     <<: *document-store-service-environment
     container_name: tradetrust-document-store-worker
+    ports:
+      - '8080:8080'
     environment:
       CONTAINER_MODE: container
 
       UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
       INVALID_BUCKET_NAME: invalid
       UNPROCESSED_BUCKET_NAME: unprocessed
-      ISSUED_BUCKET_NAME: issued
       BATCH_BUCKET_NAME: batch
+
+      HOST: 0.0.0.0
+      PORT: 8080
+
+      ISSUE_UNPROCESSED_BUCKET_NAME: issue-unprocessed
+      ISSUE_BATCH_BUCKET_NAME: issue-batch
+      ISSUE_INVALID_BUCKET_NAME: issue-invalid
+      ISSUED_BUCKET_NAME: issued
+
+      REVOKE_UNPROCESSED_BUCKET_NAME: revoke-unprocessed
+      REVOKE_BATCH_BUCKET_NAME: revoke-batch
+      REVOKE_INVALID_BUCKET_NAME: revoke-invalid
       REVOKED_BUCKET_NAME: revoked
 
       # integer value >= 1 and <= 20

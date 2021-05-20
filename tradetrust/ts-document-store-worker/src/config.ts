@@ -116,13 +116,45 @@ const getBatchedRevokeEnvConfig = (): IBatchedRevokeConfig => ({
   REVOKE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.REVOKE_ATTEMPTS_INTERVAL_SECONDS??'60')
 });
 
+interface IStatusTrackingAPIConfig {
+  readonly HOST: string,
+  readonly PORT: number,
+
+  readonly REVOKE_UNPROCESSED_BUCKET_NAME: string
+  readonly REVOKE_BATCH_BUCKET_NAME: string
+  readonly REVOKE_INVALID_BUCKET_NAME: string
+  readonly REVOKED_BUCKET_NAME: string
+
+  readonly ISSUE_UNPROCESSED_BUCKET_NAME: string
+  readonly ISSUE_BATCH_BUCKET_NAME: string
+  readonly ISSUE_INVALID_BUCKET_NAME: string
+  readonly ISSUED_BUCKET_NAME: string
+}
+
+const getStatusTrackingAPIConfig = (): IStatusTrackingAPIConfig => ({
+  HOST: process.env.HOST??'0.0.0.0',
+  PORT: parseInt(process.env.PORT??'8080'),
+
+  REVOKE_UNPROCESSED_BUCKET_NAME: process.env.REVOKE_UNPROCESSED_BUCKET_NAME??'',
+  REVOKE_BATCH_BUCKET_NAME: process.env.REVOKE_BATCH_BUCKET_NAME??'',
+  REVOKE_INVALID_BUCKET_NAME: process.env.REVOKE_INVALID_BUCKET_NAME??'',
+  REVOKED_BUCKET_NAME: process.env.REVOKED_BUCKET_NAME??'',
+
+  ISSUE_UNPROCESSED_BUCKET_NAME: process.env.ISSUE_UNPROCESSED_BUCKET_NAME??'',
+  ISSUE_BATCH_BUCKET_NAME: process.env.ISSUE_BATCH_BUCKET_NAME??'',
+  ISSUE_INVALID_BUCKET_NAME: process.env.ISSUE_INVALID_BUCKET_NAME??'',
+  ISSUED_BUCKET_NAME: process.env.ISSUED_BUCKET_NAME??''
+})
+
 export {
   IAWSConfig,
   IBatchedIssueConfig,
   IBatchedRevokeConfig,
   IBatchedDocumentStoreTaskConfig,
+  IStatusTrackingAPIConfig,
   getAWSEnvConfig,
   getBatchedIssueEnvConfig,
   getBatchedRevokeEnvConfig,
-  getBatchedDocumentStoreTaskEnvConfig
+  getBatchedDocumentStoreTaskEnvConfig,
+  getStatusTrackingAPIConfig
 };
