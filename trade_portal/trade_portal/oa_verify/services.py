@@ -110,7 +110,8 @@ class OaVerificationService:
             else:
                 result["template_url"] = self._retrieve_template_url(result["unwrapped_file"])
                 result["attachments"] = self._parse_attachments(
-                    result["unwrapped_file"].get("data", {})
+                    result["unwrapped_file"].get("data", {}),
+                    doc_number=doc_number
                 )
         result["doc_number"] = doc_number
         return result
@@ -331,7 +332,7 @@ class OaVerificationService:
         wrapped = json.loads(content)
         return unwrap_it(wrapped)
 
-    def _parse_attachments(self, data):
+    def _parse_attachments(self, data, doc_number=None):
         """
         This procedure is needed because different document formats have
         their attachments in different places
@@ -344,8 +345,10 @@ class OaVerificationService:
             attachments.append(
                 {
                     "type": unCoOattachedFile["mimeCode"],
-                    "filename": "file."
-                    + unCoOattachedFile["mimeCode"].rsplit("/")[-1].lower(),
+                    "filename": (
+                        (doc_number or "file") + "."
+                        + unCoOattachedFile["mimeCode"].rsplit("/")[-1].lower()
+                    ),
                     "data": unCoOattachedFile["file"],
                 }
             )
