@@ -1,11 +1,11 @@
-import { logger } from '../logger';
-import { VerifyDocumentIssuance, VerificationError } from './utils/verify-document';
+import { logger } from 'src/logger';
+import { VerifyDocumentIssuance, VerificationError } from 'src/tasks/utils/verify-document';
 import {
   ComposeBatch,
   Document,
   InvalidDocumentError,
   IComposeBatchProps
-} from './compose-batch';
+} from 'src/tasks/compose-batch';
 
 
 class ComposeIssueBatch extends ComposeBatch{

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Transport from 'winston-transport';
 import { createLogger, format, transports } from 'winston';
-import { SentryTransport } from './logger-sentry-transport';
+import { SentryTransport } from 'src/logger-sentry-transport';
 
 const LOGGER_OPTS = {
   level: 'info',

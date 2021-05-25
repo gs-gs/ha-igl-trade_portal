@@ -1,10 +1,10 @@
-import { logger } from '../logger';
-import { Batch } from './data';
-import { Task } from './interfaces';
-import RestoreBatch from './restore-batch';
-import ComposeRevokeBatch from './compose-revoke-batch';
-import RevokeBatch from './revoke-batch';
-import SaveBatch from './save-batch';
+import { logger } from 'src/logger';
+import { Batch } from 'src/tasks/data';
+import { Task } from 'src/tasks/interfaces';
+import RestoreBatch from 'src/tasks/restore-batch';
+import ComposeRevokeBatch from 'src/tasks/compose-revoke-batch';
+import RevokeBatch from 'src/tasks/revoke-batch';
+import SaveBatch from 'src/tasks/save-batch';
 import {
   InvalidDocuments,
   BatchDocuments,

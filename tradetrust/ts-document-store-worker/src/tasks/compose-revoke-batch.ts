@@ -1,11 +1,11 @@
-import { VerifyDocumentRevocation, VerificationError } from './utils/verify-document';
-import { logger } from '../logger';
+import { VerifyDocumentRevocation, VerificationError } from 'src/tasks/utils/verify-document';
+import { logger } from 'src/logger';
 import {
   ComposeBatch,
   Document,
   InvalidDocumentError,
   IComposeBatchProps
-} from './compose-batch';
+} from 'src/tasks/compose-batch';
 
 
 class ComposeRevokeBatch extends ComposeBatch{
