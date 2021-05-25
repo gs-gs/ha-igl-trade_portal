@@ -42,7 +42,7 @@ export const api = ()=>{
 
   async function getDocument(repo: Bucket, key: string){
     try{
-      await repo.get({Key: key})
+      return await repo.get({Key: key})
     }catch(e){
       if(e.code == 'NoSuchKey'){
         return null;
