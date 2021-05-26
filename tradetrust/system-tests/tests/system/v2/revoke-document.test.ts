@@ -2,6 +2,7 @@ import { getData, wrapDocument } from '@govtechsg/open-attestation';
 import { documentV2 } from 'tests/data';
 import { RetryableBucket } from 'tests/repos';
 import * as Config from 'tests/config';
+import { getRevokeDocumentStatus } from 'tests/api';
 
 
 async function getBuckets(){
@@ -64,7 +65,13 @@ describe('Revoke Document V2', ()=>{
     document.revoked = JSON.parse(document.revoked.Body.toString());
     expect(document.unwrapped).toEqual(getData(document.revoked));
     expect(document.wrapped).toEqual(document.revoked);
-
+    const status = await getRevokeDocumentStatus(Key);
+    expect(status).toEqual({
+      status: 200,
+      body: {
+        status: 'processed'
+      }
+    })
   });
 
   test('Invalid document', async ()=>{
@@ -142,6 +149,13 @@ describe('Revoke Document V2', ()=>{
       object = await bucket.revoke.invalid.get({Attempts: 10, AttemptsInterval: 10, Key});
       expect(object).toBeTruthy();
       expect(object!.Body!.toString()).toEqual(Body);
+      const status = await getRevokeDocumentStatus(Key);
+      expect(status).toEqual({
+        status: 200,
+        body: {
+          status: 'invalid'
+        }
+      })
 
       Key = Key.split('.')[0] + '.reason.json';
       object = await bucket.revoke.invalid.get({Attempts: 10, AttemptsInterval: 10, Key});
@@ -150,7 +164,7 @@ describe('Revoke Document V2', ()=>{
     }
   });
 
-  test.only('Mix: valid & invalid documents', async ()=>{
+  test('Mix: valid & invalid documents', async ()=>{
     jest.setTimeout(300 * 1000);
     const bucket = await getBuckets();
     const documents = {
@@ -226,7 +240,7 @@ describe('Revoke Document V2', ()=>{
     Body = 'non-json-document-body'
     Reason = 'Document body is not a valid JSON';
     await put.revoke.invalid(Key, Body, Reason);
-    
+
     // STEP 6. Revoke valid document
     Key = 'issued-document-2.json'
     Body = documents.issued.issued.get(Key);
@@ -245,6 +259,13 @@ describe('Revoke Document V2', ()=>{
       object = await bucket.revoke.revoked.get({Attempts: 10, AttemptsInterval: 10, Key});
       expect(object).toBeTruthy();
       expect(object!.Body!.toString()).toEqual(Body);
+      const status = await getRevokeDocumentStatus(Key);
+      expect(status).toEqual({
+        status: 200,
+        body: {
+          status: 'processed'
+        }
+      })
     }
 
 
@@ -254,6 +275,13 @@ describe('Revoke Document V2', ()=>{
       object = await bucket.revoke.invalid.get({Attempts: 10, AttemptsInterval: 10, Key});
       expect(object).toBeTruthy();
       expect(object!.Body!.toString()).toEqual(Body);
+      const status = await getRevokeDocumentStatus(Key);
+      expect(status).toEqual({
+        status: 200,
+        body: {
+          status: 'invalid'
+        }
+      })
 
       Key = Key.split('.')[0] + '.reason.json';
       object = await bucket.revoke.invalid.get({Attempts: 10, AttemptsInterval: 10, Key});
