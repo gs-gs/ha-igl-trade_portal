@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@ethersproject/contracts": "^5.0.8",
-    "@govtechsg/oa-verify": "^7.3.2",
+    "@govtechsg/oa-verify": "^7.4.3",
     "@sentry/node": "^6.2.3",
     "@sentry/serverless": "^6.2.3",
     "aws-serverless-express": "^3.3.8",
