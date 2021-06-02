@@ -11,7 +11,7 @@
 
   {% if verification_result.status == "valid" %}
     <h2><span class="badge badge-success">Valid</span></h2>
-    <h4>Issued by: {{ verification_result.verify_result_rotated.OpenAttestationDnsTxt.data.0.location|default:verification_result.verify_result_rotated.OpenAttestationDnsTxtIdentityProof.data.0.location }}</h4>
+    <h4>Issued by: {{ verification_result.issued_by }}</h4>
 
     {% comment %}
       although these checks look like hardcoded
