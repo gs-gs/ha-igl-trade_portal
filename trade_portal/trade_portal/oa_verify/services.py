@@ -113,6 +113,15 @@ class OaVerificationService:
                     result["unwrapped_file"].get("data", {})
                 )
         result["doc_number"] = doc_number
+
+        # fill issued_by
+        result["issued_by"] = (
+            result["verify_result_rotated"].get("OpenAttestationDnsTxt", {}).get("data", [{}])[0].get("location")
+            or
+            result["verify_result_rotated"].get("OpenAttestationDnsTxtIdentityProof", {}).get("data", [{}])[0].get("location")
+            or
+            result["verify_result_rotated"].get("OpenAttestationDnsDidIdentityProof", {}).get("data", {}).get("location")
+        )
         return result
 
     def verify_pdf_file(self, pdf_file):
@@ -321,6 +330,10 @@ class OaVerificationService:
                             return None
                     else:
                         return what
+                else:
+                    # could be unwrapped already
+                    # (which means the document is invalid)
+                    return what
             elif isinstance(what, list):
                 return [unwrap_it(x) for x in what]
             elif isinstance(what, dict):
@@ -356,7 +369,14 @@ class OaVerificationService:
         Return resolved template url (following all requests)
         Or just the OA-coded value if can't perform request with 200 resp
         """
+        # v2 url format
         url = unwrapped_file.get("data", {}).get("$template", {}).get("url")
+        if not url:
+            url = unwrapped_file.get("openAttestationMetadata", {}).get("template", {}).get("url")
+        if not url:
+            logger.warning("Unable to fetch renderer URL from OA file")
+            return ""
+
         try:
             url_resp = requests.get(url)
         except Exception as e:
