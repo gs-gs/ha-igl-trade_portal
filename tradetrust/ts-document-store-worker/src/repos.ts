@@ -1,4 +1,4 @@
-import AWS, {S3, SQS, KMS} from './aws';
+import AWS, {S3, SQS, KMS} from 'src/aws';
 import {
   IBatchedIssueConfig,
   IBatchedDocumentStoreTaskConfig,

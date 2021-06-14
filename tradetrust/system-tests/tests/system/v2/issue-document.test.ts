@@ -2,6 +2,8 @@ import { getData, wrapDocument } from '@govtechsg/open-attestation';
 import * as Config from 'tests/config';
 import { RetryableBucket } from 'tests/repos';
 import { documentV2 } from 'tests/data';
+import { getIssueDocumentStatus } from 'tests/api';
+
 
 describe('Issue Document V2', ()=>{
   test('Valid document', async ()=>{
@@ -21,6 +23,13 @@ describe('Issue Document V2', ()=>{
     expect(wrappedDocumentObject).toBeTruthy();
     const wrappedDocument = JSON.parse(wrappedDocumentObject!.Body!.toString());
     expect(getData(wrappedDocument)).toEqual(unwrappedDocument);
+    const status = await getIssueDocumentStatus(Key);
+    expect(status).toEqual({
+      status: 200,
+      body: {
+        status: 'processed'
+      }
+    });
   });
 
   test('Invalid document', async ()=>{
@@ -67,6 +76,13 @@ describe('Issue Document V2', ()=>{
       object = await invalid.get({Attempts: 10, AttemptsInterval: 10, Key});
       expect(object).toBeTruthy();
       expect(object!.Body!.toString()).toEqual(Body);
+      const status = await getIssueDocumentStatus(Key);
+      expect(status).toEqual({
+        status: 200,
+        body: {
+          status: 'invalid'
+        }
+      });
 
       Key = Key.split('.')[0] + '.reason.json';
       object = await invalid.get({Attempts: 10, AttemptsInterval: 10, Key});
@@ -143,6 +159,13 @@ describe('Issue Document V2', ()=>{
       expect(object).toBeTruthy();
       const wrappedDocument = JSON.parse(object!.Body!.toString());
       expect(getData(wrappedDocument)).toEqual(JSON.parse(Body));
+      const status = await getIssueDocumentStatus(Key);
+      expect(status).toEqual({
+        status: 200,
+        body: {
+          status: 'processed'
+        }
+      });
     }
 
     for([Key, {Body, Reason}] of documents.invalid.entries()){
@@ -151,6 +174,13 @@ describe('Issue Document V2', ()=>{
       object = await invalid.get({Attempts: 10, AttemptsInterval: 10, Key});
       expect(object).toBeTruthy();
       expect(object!.Body!.toString()).toEqual(Body);
+      const status = await getIssueDocumentStatus(Key);
+      expect(status).toEqual({
+        status: 200,
+        body: {
+          status: 'invalid'
+        }
+      });
 
       Key = Key.split('.')[0] + '.reason.json';
       object = await invalid.get({Attempts: 10, AttemptsInterval: 10, Key});

@@ -6,15 +6,15 @@ import {
   IssuedDocuments,
   UnprocessedDocuments,
   UnprocessedDocumentsQueue
-} from "../repos";
-import { logger } from '../logger';
-import RestoreBatch from "./restore-batch";
-import ComposeIssueBatch from "./compose-issue-batch";
-import { Batch } from './data';
-import { Task } from "./interfaces";
-import IssueBatch from "./issue-batch";
-import SaveBatch from "./save-batch";
-import WrapBatch from "./wrap-batch";
+} from "src/repos";
+import { logger } from 'src/logger';
+import RestoreBatch from "src/tasks/restore-batch";
+import ComposeIssueBatch from "src/tasks/compose-issue-batch";
+import { Batch } from 'src/tasks/data';
+import { Task } from "src/tasks/interfaces";
+import IssueBatch from "src/tasks/issue-batch";
+import SaveBatch from "src/tasks/save-batch";
+import WrapBatch from "src/tasks/wrap-batch";
 
 interface IProcessDocumentsProps{
   invalidDocuments: InvalidDocuments,

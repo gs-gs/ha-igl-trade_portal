@@ -3,7 +3,7 @@ import { BigNumber, Wallet, utils } from 'ethers';
 // using IssueBatch task because it's a child of SendDocumentStoreTransaction
 import { IssueBatch, Batch } from 'src/tasks';
 
-const GAS_PRICE = utils.parseUnits('20', 'gwei');
+const GAS_PRICE = BigNumber.from(utils.parseUnits('20', 'gwei'));
 const GAS = BigNumber.from(100000);
 const GAS_PRICE_MULTIPLIER = 1.2;
 
@@ -13,7 +13,7 @@ describe('SendDocumentStoreBatchTransaction task unit tests', ()=>{
 
   function mulGasPrice(gasPriceWei: BigNumber, gasPriceMultiplier: number){
     const gasPriceEtherMultiplied = parseFloat(utils.formatEther(gasPriceWei)) * gasPriceMultiplier;
-    return utils.parseEther(gasPriceEtherMultiplied.toFixed(18));
+    return BigNumber.from(utils.parseEther(gasPriceEtherMultiplied.toFixed(18)));
   }
 
   let documentStore:any;

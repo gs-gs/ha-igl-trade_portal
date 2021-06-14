@@ -1,16 +1,16 @@
 import {
   Bucket,
-} from '../repos';
-import { logger } from '../logger';
-import { Batch } from './data';
-import { Task } from './interfaces';
-import { RetryError } from './errors';
+} from 'src/repos';
+import { logger } from 'src/logger';
+import { Batch } from 'src/tasks/data';
+import { Task } from 'src/tasks/interfaces';
+import { RetryError } from 'src/tasks/errors';
 import {
   VerifyDocument,
   VerifyDocumentIssuance,
   VerifyDocumentRevocation,
   VerificationError
-} from './utils/verify-document';
+} from 'src/tasks/utils/verify-document';
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import path from 'path';
 import { S3 } from 'aws-sdk';

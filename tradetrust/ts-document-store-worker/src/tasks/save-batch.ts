@@ -1,8 +1,8 @@
-import { logger } from '../logger';
-import { Bucket } from "../repos";
-import { Batch } from './data';
-import { Task } from './interfaces';
-import { RetryError } from './errors';
+import { logger } from 'src/logger';
+import { Bucket } from "src/repos";
+import { Batch } from 'src/tasks/data';
+import { Task } from 'src/tasks/interfaces';
+import { RetryError } from 'src/tasks/errors';
 
 
 interface ISaveBatchProps{

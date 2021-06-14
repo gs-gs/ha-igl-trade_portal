@@ -1,9 +1,9 @@
-import { logger } from '../logger';
+import { logger } from 'src/logger';
 import {
   SendDocumentStoreTransaction,
   ISendDocumentStoreTransactionProps
-} from './send-document-store-transaction';
-import { Batch } from './data';
+} from 'src/tasks/send-document-store-transaction';
+import { Batch } from 'src/tasks/data';
 
 
 interface IRevokeDocumentProps extends ISendDocumentStoreTransactionProps{

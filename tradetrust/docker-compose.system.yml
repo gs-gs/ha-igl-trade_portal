@@ -98,6 +98,26 @@ services:
       REVOKE_ATTEMPTS: 10
       REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
 
+  status-tracking-api:
+    <<: *document-store-service-production
+    container_name: status-tracking-api
+    command: status-tracking-api.js
+    environment:
+      STARTUP_DELAY_SECONDS: 60
+
+      HOST: 0.0.0.0
+      PORT: 8080
+
+      ISSUE_UNPROCESSED_BUCKET_NAME: issue-unprocessed
+      ISSUE_BATCH_BUCKET_NAME: issue-batch
+      ISSUE_INVALID_BUCKET_NAME: issue-invalid
+      ISSUED_BUCKET_NAME: issued
+
+      REVOKE_UNPROCESSED_BUCKET_NAME: revoke-unprocessed
+      REVOKE_BATCH_BUCKET_NAME: revoke-batch
+      REVOKE_INVALID_BUCKET_NAME: revoke-invalid
+      REVOKED_BUCKET_NAME: revoked
+
   system-tests:
     image: tradetrust/system-tests
     container_name: system-tests

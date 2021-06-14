@@ -2,8 +2,9 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    'batched-issue-worker': 'src/entrypoint-batched-issue.ts',
-    'batched-revoke-worker': 'src/entrypoint-batched-revoke.ts'
+    'batched-issue-worker': 'src/entrypoints/batched-issue.ts',
+    'batched-revoke-worker': 'src/entrypoints/batched-revoke.ts',
+    'status-tracking-api': 'src/entrypoints/status-tracking-api.ts'
   },
   mode: 'production',
   target: 'node',

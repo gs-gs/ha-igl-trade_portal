@@ -1,7 +1,7 @@
 import { wrapDocuments } from '@govtechsg/open-attestation';
-import { logger } from '../logger';
-import { Batch } from './data';
-import { Task } from './interfaces';
+import { logger } from 'src/logger';
+import { Batch } from 'src/tasks/data';
+import { Task } from 'src/tasks/interfaces';
 
 interface IWrapBatchProps{
   batch: Batch

@@ -1,6 +1,6 @@
 import { ethers, Wallet} from 'ethers';
-import { IBatchedDocumentStoreTaskConfig } from './config';
-import { Keys } from './repos';
+import { IBatchedDocumentStoreTaskConfig } from 'src/config';
+import { Keys } from 'src/repos';
 import {connect} from '@govtechsg/document-store';
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 

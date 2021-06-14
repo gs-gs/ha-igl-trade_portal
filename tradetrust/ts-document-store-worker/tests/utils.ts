@@ -3,11 +3,14 @@ import { logger } from 'src/logger';
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import {SQS, S3} from 'src/aws';
 import DOCUMENT_V2_JSON from './data/document.v2.json';
+import DOCUMENT_V3_JSON from './data/document.v3.json';
 
-const config = getBatchedDocumentStoreTaskEnvConfig();
 
 const S3Service = S3();
 const SQSService = SQS();
+
+
+const config = getBatchedDocumentStoreTaskEnvConfig();
 
 
 async function clearBucket(Bucket: string){
@@ -32,12 +35,17 @@ async function clearQueue(QueueUrl: string){
 }
 
 
-function documentV2(overrides: object): any{
-  const document = _.cloneDeep(DOCUMENT_V2_JSON);
+function documentV2(overrides: object = {}): any{
+  let document = _.cloneDeep(DOCUMENT_V2_JSON);
   document.issuers[0].documentStore = config.DOCUMENT_STORE_ADDRESS;
-  return Object.assign(document, overrides);
+  return _.merge(document, overrides);
 }
 
+function documentV3(overrides: object = {}): any{
+  let document = _.cloneDeep(DOCUMENT_V3_JSON);
+  document.openAttestationMetadata.proof.value = config.DOCUMENT_STORE_ADDRESS;
+  return _.merge(document, overrides);
+}
 
 function generateDocumentsMap(documentsCount: number): Map<string, any>{
   const documents = new Map<string, any>();
@@ -53,6 +61,7 @@ function generateDocumentsMap(documentsCount: number): Map<string, any>{
 export {
   generateDocumentsMap,
   documentV2,
+  documentV3,
   clearQueue,
   clearBucket
 }
