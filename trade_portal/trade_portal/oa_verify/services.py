@@ -115,13 +115,41 @@ class OaVerificationService:
         result["doc_number"] = doc_number
 
         # fill issued_by
-        result["issued_by"] = (
-            result["verify_result_rotated"].get("OpenAttestationDnsTxt", {}).get("data", [{}])[0].get("location")
-            or
-            result["verify_result_rotated"].get("OpenAttestationDnsTxtIdentityProof", {}).get("data", [{}])[0].get("location")
-            or
-            result["verify_result_rotated"].get("OpenAttestationDnsDidIdentityProof", {}).get("data", {}).get("location")
-        )
+        try:
+            result["issued_by"] = result["verify_result_rotated"].get(
+                "OpenAttestationDnsTxt", {}
+            ).get("data", [{}])[0].get("location")
+        except Exception as e:
+            logger.exception(e)
+            result["issued_by"] = None
+
+        if not result["issued_by"]:
+            try:
+                # try DID
+                vrr = result["verify_result_rotated"].get("OpenAttestationDnsDidIdentityProof", {}).get("data")
+                if isinstance(vrr, list):
+                    for row in vrr:
+                        result["issued_by"] = row.get("location")
+                        if result["issued_by"]:
+                            break
+                elif isinstance(vrr, dict):
+                    result["issued_by"] = vrr.get("location")
+            except Exception as e:
+                logger.exception(e)
+
+        if not result["issued_by"]:
+            try:
+                # try TXT
+                vrr = result["verify_result_rotated"].get("OpenAttestationDnsTxtIdentityProof", {}).get("data")
+                if isinstance(vrr, list):
+                    for row in vrr:
+                        result["issued_by"] = row.get("location")
+                        if result["issued_by"]:
+                            break
+                elif isinstance(vrr, dict):
+                    result["issued_by"] = vrr.get("location")
+            except Exception as e:
+                logger.exception(e)
         return result
 
     def verify_pdf_file(self, pdf_file):
