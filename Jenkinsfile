@@ -109,7 +109,7 @@ pipeline {
                 stage('openatt_worker') {
                     when {
                         anyOf {
-                            equals expected: true, actual: params.skip_openatt_qa
+                            equals expected: false, actual: params.skip_openatt_qa
                         }
                     }
 
