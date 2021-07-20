@@ -21,7 +21,7 @@ pipeline {
             name: 'force_deploy',
             defaultValue: false,
             description: 'Force deployment of all components'
-        ),
+        )
         booleanParam(
             name: 'skip_openatt_qa',
             defaultValue: false,
