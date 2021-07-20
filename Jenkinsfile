@@ -21,6 +21,11 @@ pipeline {
             name: 'force_deploy',
             defaultValue: false,
             description: 'Force deployment of all components'
+        ),
+        booleanParam(
+            name: 'skip_openatt_qa',
+            defaultValue: false,
+            description: 'Skip QA for open attestation components'
         )
     }
 
@@ -102,6 +107,11 @@ pipeline {
                 }
 
                 stage('openatt_worker') {
+                    when {
+                        anyOf {
+                            equals expected: true, actual: params.skip_openatt_qa
+                        }
+                    }
 
                     environment {
                         COMPOSE_FILE = 'docker-compose.yml'
