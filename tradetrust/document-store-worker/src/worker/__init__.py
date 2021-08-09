@@ -144,7 +144,8 @@ class Worker:
         logger.debug('connect_contract')
         self.document_store = self.web3.eth.contract(
             self.config['DocumentStore']['Address'],
-            abi=self.config['DocumentStore']['ABI']
+            abi=self.config['DocumentStore']['ABI'],
+            options={'gas': 60000}
         )
 
     # this operation also validates document schema
@@ -234,6 +235,7 @@ class Worker:
         }
 
         transaction['gasPrice'] = self.gas_price
+
         merkleRoot = wrapped_document['signature']['merkleRoot']
         unsigned_transaction = self.document_store.functions.issue(merkleRoot).buildTransaction(transaction)
         signed_transaction = self.web3.eth.account.sign_transaction(unsigned_transaction, private_key=private_key)
