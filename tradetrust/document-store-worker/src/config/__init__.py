@@ -54,7 +54,7 @@ class Config:
         )
 
         blockchain = {
-            'Endpoint': os.environ['BLOCKCHAIN_ENDPOINT'],
+            'Endpoint': os.environ['FALLBACK_BLOCKCHAIN_ENDPOINT'],
             'GasPrice': os.environ.get('BLOCKCHAIN_GAS_PRICE', 'medium'),
             'GasPriceRefreshRate': int(os.environ.get('BLOCKCHAIN_GAS_PRICE_REFRESH_RATE', 10)),
             'ReceiptTimeout': int(os.environ.get('BLOCKCHAIN_RECEIPT_TIMEOUT', 180))
