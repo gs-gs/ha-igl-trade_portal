@@ -231,7 +231,7 @@ class Worker:
         transaction = {
             'from': public_key,
             'nonce': nonce,
-            'gasLimit': 60000
+            'gas': 60000
         }
 
         transaction['gasPrice'] = self.gas_price
