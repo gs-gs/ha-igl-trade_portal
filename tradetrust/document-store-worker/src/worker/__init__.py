@@ -144,8 +144,7 @@ class Worker:
         logger.debug('connect_contract')
         self.document_store = self.web3.eth.contract(
             self.config['DocumentStore']['Address'],
-            abi=self.config['DocumentStore']['ABI'],
-            options={'gas': 60000}
+            abi=self.config['DocumentStore']['ABI']
         )
 
     # this operation also validates document schema
@@ -231,7 +230,8 @@ class Worker:
         nonce = self.web3.eth.getTransactionCount(public_key, 'latest')
         transaction = {
             'from': public_key,
-            'nonce': nonce
+            'nonce': nonce,
+            'gasLimit': 60000
         }
 
         transaction['gasPrice'] = self.gas_price
