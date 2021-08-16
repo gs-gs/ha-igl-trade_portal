@@ -130,7 +130,7 @@ pipeline {
 
                             # run testing
                             sleep 60s
-                            docker-compose exec -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml document-store-worker/test-report.xml
+                            docker-compose exec -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml ts-document-store-worker/test-report.xml
                             '''
                         }
                     }
