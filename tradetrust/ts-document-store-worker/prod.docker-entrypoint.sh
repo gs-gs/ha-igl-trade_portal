@@ -4,10 +4,5 @@ set -euo pipefail
 
 cd /document-store-worker
 
-STARTUP_DELAY_SECONDS="${STARTUP_DELAY_SECONDS:-}"
-if [[ -n "$STARTUP_DELAY_SECONDS" ]]; then
-  echo "Sleeping $STARTUP_DELAY_SECONDS"
-  sleep $STARTUP_DELAY_SECONDS
-fi
-
-node $@
+# TODO: implement startup switch once cmdb changes in place to pass in mode
+npm run start-batched-issue-worker
