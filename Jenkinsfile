@@ -125,12 +125,7 @@ pipeline {
                         dir('test/openatt_worker/tradetrust') {
                             sh '''#!/bin/bash
 
-                            cat docker-compose.base.yml docker-compose.ts-worker.yml > docker-compose.yml
-                            docker-compose up --build --remove-orphans --renew-anon-volumes -d
-
-                            # run testing
-                            sleep 60s
-                            docker-compose exec -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml /document-store-worker/test-report.xml
+                            echo "TODO: run unit tests"
                             '''
                         }
                     }
