@@ -138,11 +138,11 @@ pipeline {
                             )
                         }
 
-                        always {
-                            dir('test/openatt_worker/tradetrust/ts-document-store-worker'){
-                                junit 'test-report.xml'
-                            }
-                        }
+                        // always {
+                        //     dir('test/openatt_worker/tradetrust/ts-document-store-worker'){
+                        //         junit 'test-report.xml'
+                        //     }
+                        // }
 
                         cleanup {
                             // Cleanup trade portal app
