@@ -12,4 +12,4 @@ provider:
 
 functions:
   openatt-api:
-    handler: src/index.handler
+    handler: dist/src/index.handler

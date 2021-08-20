@@ -2,6 +2,7 @@ node_modules
 local.env
 .nyc_output
 aws
+dist
 
 .serverless
 api.bundle.yml

@@ -1,4 +1,4 @@
-module.exports = {
+{
   "id": "SERIAL_NUMBER_123",
   "$template": {
     "name": "CUSTOM_TEMPLATE",
@@ -19,10 +19,14 @@ module.exports = {
     "name": "Recipient Name"
   },
   "unknownKey": "Some value",
-  "data": {
-  	"message": {
-      "public": "Hello world!",
-      "private": "No..."
-    }
+  "credentialSubject": {
+    "id": "did:example:JOHN_DOE_DID",
+    "licenseNumber": "S1234567a",
+    "birthDate": "1977-02-22",
+    "name": "John Doe",
+    "class": [
+      { "type": "3", "effectiveDate": "2010-01-01T19:23:24Z" },
+      { "type": "3A", "effectiveDate": "2010-01-01T19:23:24Z" }
+    ]
   }
 }

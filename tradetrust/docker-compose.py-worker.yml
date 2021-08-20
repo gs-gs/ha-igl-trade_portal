@@ -42,7 +42,10 @@ services:
     environment:
       CONTAINER_MODE: server-development
       PORT: 9091
-      BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
+      PROVIDER_NETWORK: mainnet
+      PROVIDER_CHAIN_ID: 1
+      PROVIDER_ENDPOINT_URL: https://mainnet.infura.io/v3/bb46da3f80e040e8ab73c0a9ff365d18
+      # BLOCKCHAIN_ENDPOINT: http://tradetrust-ganache-cli:8585
 
   document-store-worker:
     image: tradetrust/document-store-worker
