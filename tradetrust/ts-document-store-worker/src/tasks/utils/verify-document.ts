@@ -1,13 +1,14 @@
-import {
-  OPEN_ATTESTATION_VERSION_ID_V2_SHORT,
-  OPEN_ATTESTATION_VERSION_ID_V3_SHORT,
-  DOCUMENT_STORE_PROOF_TYPE
-} from '../../constants';
 import { wrapDocument, getData, validateSchema, verifySignature } from '@govtechsg/open-attestation';
 import {
   SchemaId
 } from '@govtechsg/open-attestation';
 import { DocumentStore } from "@govtechsg/document-store/src/contracts/DocumentStore";
+import {
+  OPEN_ATTESTATION_VERSION_ID_V2_SHORT,
+  OPEN_ATTESTATION_VERSION_ID_V3_SHORT,
+  DOCUMENT_STORE_PROOF_TYPE
+} from 'src/constants';
+
 
 class VerificationError extends Error{
 

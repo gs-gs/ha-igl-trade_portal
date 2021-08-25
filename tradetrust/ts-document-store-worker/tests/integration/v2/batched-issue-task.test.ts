@@ -10,7 +10,7 @@ import {
 } from 'src/repos';
 import { getBatchedIssueEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
-import { BatchedIssue } from 'src/tasks';
+import BatchedIssue from 'src/tasks/v2/batched-issue';
 import { clearQueue, clearBucket, generateDocumentsMap } from 'tests/utils';
 
 describe('BatchedIssue task test', ()=>{

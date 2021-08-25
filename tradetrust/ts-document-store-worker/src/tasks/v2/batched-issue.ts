@@ -1,20 +1,20 @@
 import { DocumentStore } from "@govtechsg/document-store/src/contracts/DocumentStore";
 import { Wallet } from "ethers";
+import { logger } from 'src/logger';
 import {
   InvalidDocuments,
   BatchDocuments,
   IssuedDocuments,
   UnprocessedDocuments,
   UnprocessedDocumentsQueue
-} from "../repos";
-import { logger } from '../logger';
-import RestoreBatch from "./restore-batch";
-import ComposeIssueBatch from "./compose-issue-batch";
-import { Batch } from './data';
-import { Task } from "./interfaces";
-import IssueBatch from "./issue-batch";
-import SaveBatch from "./save-batch";
-import WrapBatch from "./wrap-batch";
+} from "src/repos";
+import RestoreBatch from "src/tasks/common/restore-batch";
+import { Batch } from 'src/tasks/common/data';
+import { Task } from "src/tasks/common/interfaces";
+import SaveBatch from "src/tasks/common/save-batch";
+import ComposeIssueBatch from "src/tasks/v2/compose-issue-batch";
+import IssueBatch from "src/tasks/v2/issue-batch";
+import WrapBatch from "src/tasks/v2/wrap-batch";
 
 interface IProcessDocumentsProps{
   invalidDocuments: InvalidDocuments,

@@ -1,7 +1,8 @@
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import { BatchDocuments, InvalidDocuments } from 'src/repos';
-import { RestoreBatch, Batch } from 'src/tasks';
+import { Batch } from 'src/tasks/common/data';
+import RestoreBatch from 'src/tasks/common/restore-batch';
 import {
   generateDocumentsMap,
 } from 'tests/utils';

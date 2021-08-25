@@ -1,19 +1,19 @@
-import { logger } from '../logger';
-import { VerifyDocumentIssuance, VerificationError } from './utils/verify-document';
+import { logger } from 'src/logger';
+import { VerifyDocumentRevocation, VerificationError } from 'src/tasks/utils/verify-document';
 import {
   ComposeBatch,
   Document,
   InvalidDocumentError,
   IComposeBatchProps
-} from './compose-batch';
+} from 'src/tasks/common/compose-batch';
 
 
-class ComposeIssueBatch extends ComposeBatch{
-  private verificator: VerifyDocumentIssuance;
+class V2ComposeRevokeBatch extends ComposeBatch{
+  private verificator: VerifyDocumentRevocation;
 
   constructor(props: IComposeBatchProps){
     super(props);
-    this.verificator = new VerifyDocumentIssuance({documentStore:props.documentStore});
+    this.verificator = new VerifyDocumentRevocation({documentStore: props.documentStore});
   }
 
   async verifyDocument(document: Document){
@@ -31,13 +31,13 @@ class ComposeIssueBatch extends ComposeBatch{
   async addDocumentToBatch(document: Document){
     await this.putDocumentToBatchBackup(document);
     await this.removeDocumentFromUnprocessed(document);
-    this.props.batch.unwrappedDocuments.set(document.key, {body: document.body.json, size: document.size});
+    this.props.batch.wrappedDocuments.set(document.key, {body: document.body.json, size: document.size});
   }
 
   async start(){
-    logger.info('ComposeIssueBatch task started');
+    logger.info('ComposeRevokeBatch task started');
     return super.start();
   }
 }
 
-export default ComposeIssueBatch;
+export default V2ComposeRevokeBatch;

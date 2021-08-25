@@ -1,10 +1,7 @@
-import { logger } from '../logger';
-import { Batch } from './data';
-import { Task } from './interfaces';
-import RestoreBatch from './restore-batch';
-import ComposeRevokeBatch from './compose-revoke-batch';
-import RevokeBatch from './revoke-batch';
-import SaveBatch from './save-batch';
+import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
+import { Wallet } from 'ethers';
+
+import { logger } from 'src/logger';
 import {
   InvalidDocuments,
   BatchDocuments,
@@ -12,8 +9,14 @@ import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue
 } from 'src/repos';
-import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
-import { Wallet } from 'ethers';
+
+import { Batch } from 'src/tasks/common/data';
+import { Task } from 'src/tasks/common/interfaces';
+import RestoreBatch from 'src/tasks/common/restore-batch';
+
+import ComposeRevokeBatch from 'src/tasks/v2/compose-revoke-batch';
+import RevokeBatch from 'src/tasks/v2/revoke-batch';
+import SaveBatch from 'src/tasks/common/save-batch';
 
 
 interface IBatchedRevokeProps{

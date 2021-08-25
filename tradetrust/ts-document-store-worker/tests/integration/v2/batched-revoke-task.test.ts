@@ -8,7 +8,7 @@ import {
 } from 'src/repos';
 import { getBatchedRevokeEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
-import { BatchedRevoke } from 'src/tasks';
+import  BatchedRevoke from 'src/tasks/v2/batched-revoke';
 import { clearQueue, clearBucket, generateDocumentsMap } from 'tests/utils';
 
 describe('Test', ()=>{

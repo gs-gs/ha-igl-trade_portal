@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { getAWSEnvConfig } from './config';
+import { getAWSEnvConfig } from 'src/config';
 
 
 function S3(conf?: AWS.S3.ClientConfiguration): AWS.S3{

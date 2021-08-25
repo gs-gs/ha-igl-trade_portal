@@ -1,18 +1,18 @@
 /* istanbul ignore file */
-import { logger } from './logger';
-import { getBatchedRevokeEnvConfig } from './config';
+import { logger } from 'src/logger';
+import { getBatchedRevokeEnvConfig } from 'src/config';
 import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue,
   BatchDocuments,
   RevokedDocuments,
   InvalidDocuments
-} from './repos';
+} from 'src/repos';
 import {
   connectWallet,
   connectDocumentStore,
-} from './document-store';
-import { BatchedRevoke } from './tasks';
+} from 'src/document-store';
+import BatchedRevoke from 'src/tasks/v2/batched-revoke';
 
 async function main(){
   const config = getBatchedRevokeEnvConfig();

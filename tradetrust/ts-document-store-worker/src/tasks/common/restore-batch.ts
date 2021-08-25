@@ -1,7 +1,10 @@
+import path from 'path';
+import { S3 } from 'aws-sdk';
+import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import {
   Bucket,
-} from '../repos';
-import { logger } from '../logger';
+} from 'src/repos';
+import { logger } from 'src/logger';
 import { Batch } from './data';
 import { Task } from './interfaces';
 import { RetryError } from './errors';
@@ -10,10 +13,7 @@ import {
   VerifyDocumentIssuance,
   VerifyDocumentRevocation,
   VerificationError
-} from './utils/verify-document';
-import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
-import path from 'path';
-import { S3 } from 'aws-sdk';
+} from 'src/tasks/utils/verify-document';
 
 
 interface IRestoreBatchProps{

@@ -1,6 +1,7 @@
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
-import { Batch, ComposeIssueBatch } from 'src/tasks';
+import { Batch } from 'src/tasks/common/data';
+import ComposeIssueBatch from 'src/tasks/v2/compose-issue-batch';
 import {
   InvalidDocuments,
   UnprocessedDocuments,

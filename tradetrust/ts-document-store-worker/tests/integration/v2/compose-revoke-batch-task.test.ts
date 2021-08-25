@@ -1,7 +1,8 @@
 import { wrapDocument } from '@govtechsg/open-attestation';
 import { getBatchedRevokeEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
-import { Batch, ComposeRevokeBatch } from 'src/tasks';
+import { Batch } from 'src/tasks/common/data';
+import ComposeRevokeBatch from 'src/tasks/v2/compose-revoke-batch';
 import {
   InvalidDocuments,
   UnprocessedDocuments,

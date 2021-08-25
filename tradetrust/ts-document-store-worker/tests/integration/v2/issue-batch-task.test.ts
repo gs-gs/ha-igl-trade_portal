@@ -1,8 +1,9 @@
 import { wrapDocument } from '@govtechsg/open-attestation';
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
-import { documentV2 } from 'tests/utils';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
-import { IssueBatch, Batch } from 'src/tasks';
+import { Batch } from 'src/tasks/common/data';
+import IssueBatch from 'src/tasks/v2/issue-batch';
+import { documentV2 } from 'tests/utils';
 
 
 describe('IssueBatch Task', ()=>{

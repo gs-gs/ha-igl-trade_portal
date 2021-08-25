@@ -1,22 +1,14 @@
+import { Wallet } from 'ethers';
+import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import path from 'path';
-import {
-  SchemaId
-} from '@govtechsg/open-attestation';
 import {
   Bucket,
   Queue
-} from '../repos';
-import {
-  OPEN_ATTESTATION_VERSION_ID_V2_SHORT,
-  OPEN_ATTESTATION_VERSION_ID_V3_SHORT,
-  DOCUMENT_STORE_PROOF_TYPE
-} from '../constants';
-import { logger } from '../logger';
-import { Batch } from './data';
-import { Task } from './interfaces';
-import { RetryError } from './errors';
-import { Wallet } from 'ethers';
-import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
+} from 'src/repos';
+import { logger } from 'src/logger';
+import { Batch } from 'src/tasks/common/data';
+import { Task } from 'src/tasks/common/interfaces';
+import { RetryError } from 'src/tasks/common/errors';
 
 
 class InvalidEventError extends Error{}

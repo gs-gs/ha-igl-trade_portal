@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import { logger } from './logger';
-import { getBatchedIssueEnvConfig } from './config';
+import { logger } from 'src/logger';
+import { getBatchedIssueEnvConfig } from 'src/config';
 import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue,
@@ -12,7 +12,7 @@ import {
   connectWallet,
   connectDocumentStore,
 } from './document-store';
-import { BatchedIssue } from './tasks';
+import BatchedIssue from 'src/tasks/v2/batched-issue';
 
 async function main(){
   const config = getBatchedIssueEnvConfig();

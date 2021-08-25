@@ -1,11 +1,11 @@
-import { logger }  from '../logger';
+import { logger }  from 'src/logger';
 import {
   Batch
-} from './data';
+} from 'src/tasks/common/data';
 import {
   ISendDocumentStoreTransactionProps,
   SendDocumentStoreTransaction
-} from './send-document-store-transaction';
+} from 'src/tasks/common/send-document-store-transaction';
 
 interface IIssueBatchProps extends ISendDocumentStoreTransactionProps{
   batch: Batch;

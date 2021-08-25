@@ -8,7 +8,8 @@ import {
   InvalidDocuments
 } from 'src/repos';
 // using ComposeIssueBatch because it's a child of ComposeBatch task
-import { ComposeIssueBatch, Batch } from 'src/tasks';
+import ComposeIssueBatch from 'src/tasks/v2/compose-issue-batch';
+import { Batch } from 'src/tasks/common/data';
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
 import {
   documentV2

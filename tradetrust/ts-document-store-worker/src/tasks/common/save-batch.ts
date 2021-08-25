@@ -1,5 +1,5 @@
-import { logger } from '../logger';
-import { Bucket } from "../repos";
+import { logger } from 'src/logger';
+import { Bucket } from "src/repos";
 import { Batch } from './data';
 import { Task } from './interfaces';
 import { RetryError } from './errors';

@@ -1,6 +1,6 @@
-import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { Wallet, utils, BigNumber, PopulatedTransaction} from 'ethers';
-import { logger } from '../logger';
+import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
+import { logger } from 'src/logger';
 import { Task } from './interfaces';
 import { RetryError } from './errors';
 

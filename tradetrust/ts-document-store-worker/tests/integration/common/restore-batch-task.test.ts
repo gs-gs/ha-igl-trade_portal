@@ -1,5 +1,6 @@
 import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
-import { Batch, RestoreBatch } from 'src/tasks';
+import { Batch } from 'src/tasks/common/data';
+import RestoreBatch from 'src/tasks/common/restore-batch';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
 import {
   BatchDocuments,

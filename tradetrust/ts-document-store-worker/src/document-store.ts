@@ -1,8 +1,9 @@
 import { ethers, Wallet} from 'ethers';
-import { IBatchedDocumentStoreTaskConfig } from './config';
-import { Keys } from './repos';
 import {connect} from '@govtechsg/document-store';
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
+import { IBatchedDocumentStoreTaskConfig } from 'src/config';
+import { Keys } from 'src/repos';
+
 
 async function connectWallet(config: IBatchedDocumentStoreTaskConfig): Promise<Wallet>{
   const privateKey = await Keys.getStringOrB64KMS(config.DOCUMENT_STORE_OWNER_PRIVATE_KEY);

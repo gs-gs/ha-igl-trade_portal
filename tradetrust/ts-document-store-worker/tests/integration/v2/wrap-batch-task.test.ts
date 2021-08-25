@@ -1,5 +1,6 @@
 import { getData } from '@govtechsg/open-attestation';
-import { WrapBatch, Batch } from 'src/tasks';
+import { Batch } from 'src/tasks/common/data';
+import WrapBatch from 'src/tasks/v2/wrap-batch';
 import { documentV2 } from 'tests/utils';
 
 
