@@ -1,5 +1,5 @@
 import { logger } from 'src/logger';
-import { VerifyDocumentRevocation, VerificationError } from 'src/tasks/utils/verify-document';
+import { VerifyDocumentRevocationV2, VerificationError } from 'src/tasks/utils/verify-document';
 import {
   ComposeBatch,
   Document,
@@ -9,11 +9,11 @@ import {
 
 
 class V2ComposeRevokeBatch extends ComposeBatch{
-  private verificator: VerifyDocumentRevocation;
+  private verificator: VerifyDocumentRevocationV2;
 
   constructor(props: IComposeBatchProps){
     super(props);
-    this.verificator = new VerifyDocumentRevocation({documentStore: props.documentStore});
+    this.verificator = new VerifyDocumentRevocationV2({documentStore: props.documentStore});
   }
 
   async verifyDocument(document: Document){

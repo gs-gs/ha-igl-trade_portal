@@ -91,7 +91,7 @@ abstract class VerifyDocument{
 }
 
 
-class VerifyDocumentRevocation extends VerifyDocument{
+class VerifyDocumentRevocationV2 extends VerifyDocument{
   async verify(document: any){
     await this.verifyWrappedDocumentSchema(document);
     await this.verifyWrappedDocumentSignature(document);
@@ -100,7 +100,7 @@ class VerifyDocumentRevocation extends VerifyDocument{
   }
 }
 
-class VerifyDocumentIssuance extends VerifyDocument{
+class VerifyDocumentIssuanceV2 extends VerifyDocument{
   async verify(document: any){
     await this.verifyUnwrappedDocumentSchema(document);
     await this.verifyDocumentStoreAddress(document);
@@ -110,7 +110,7 @@ class VerifyDocumentIssuance extends VerifyDocument{
 
 export {
   VerifyDocument,
-  VerifyDocumentIssuance,
-  VerifyDocumentRevocation,
+  VerifyDocumentIssuanceV2,
+  VerifyDocumentRevocationV2,
   VerificationError
 }

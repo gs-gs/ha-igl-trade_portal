@@ -10,8 +10,8 @@ import { Task } from './interfaces';
 import { RetryError } from './errors';
 import {
   VerifyDocument,
-  VerifyDocumentIssuance,
-  VerifyDocumentRevocation,
+  VerifyDocumentIssuanceV2,
+  VerifyDocumentRevocationV2,
   VerificationError
 } from 'src/tasks/utils/verify-document';
 
@@ -44,7 +44,7 @@ class RestoreBatch implements Task<Promise<void>>{
     this.props = props;
     this.props.attempts = this.props.attempts??10;
     this.props.attemptsIntervalSeconds = this.props.attemptsIntervalSeconds??60;
-    const VerificatorClass = props.wrapped?VerifyDocumentRevocation:VerifyDocumentIssuance;
+    const VerificatorClass = props.wrapped?VerifyDocumentRevocationV2:VerifyDocumentIssuanceV2;
     this.state = {
       attempt: 0,
       restoredDocuments: props.wrapped?props.batch.wrappedDocuments:props.batch.unwrappedDocuments,

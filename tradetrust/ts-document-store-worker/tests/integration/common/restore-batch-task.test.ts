@@ -17,10 +17,9 @@ describe('RestoreBatch task integration tests', ()=>{
   jest.setTimeout(1000 * 100);
   const config = getBatchedDocumentStoreTaskEnvConfig();
 
-  beforeEach(async (done)=>{
+  beforeEach(async ()=>{
     await clearBucket(config.BATCH_BUCKET_NAME);
     await clearBucket(config.INVALID_BUCKET_NAME);
-    done();
   }, 1000 * 60);
 
   const batchDocuments = new BatchDocuments(config);

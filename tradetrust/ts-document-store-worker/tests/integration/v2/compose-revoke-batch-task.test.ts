@@ -27,11 +27,10 @@ describe('ComposeRevokeBatch integration test', ()=>{
   const batchDocuments = new BatchDocuments(config);
   const invalidDocuments = new InvalidDocuments(config);
 
-  beforeEach(async (done)=>{
+  beforeEach(async ()=>{
     await clearQueue(config.UNPROCESSED_QUEUE_URL);
     await clearBucket(config.UNPROCESSED_BUCKET_NAME);
     await clearBucket(config.BATCH_BUCKET_NAME);
-    done();
   }, 1000 * 60);
 
 

@@ -34,12 +34,11 @@ describe('Test', ()=>{
   const revokedDocuments = new RevokedDocuments(config);
   const unprocessedDocumentsQueue = new UnprocessedDocumentsQueue(config);
 
-  beforeEach(async (done)=>{
+  beforeEach(async ()=>{
     await clearQueue(config.UNPROCESSED_QUEUE_URL);
     await clearBucket(config.UNPROCESSED_BUCKET_NAME);
     await clearBucket(config.BATCH_BUCKET_NAME);
     await clearBucket(config.REVOKED_BUCKET_NAME);
-    done();
   }, 1000 * 60);
 
   test('test complete by size', async ()=>{

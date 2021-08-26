@@ -18,11 +18,10 @@ import {
 describe('ComposeBatch Task', ()=>{
   jest.setTimeout(1000 * 100);
   const config = getBatchedDocumentStoreTaskEnvConfig();
-  beforeEach(async (done)=>{
+  beforeEach(async ()=>{
     await clearQueue(config.UNPROCESSED_QUEUE_URL);
     await clearBucket(config.UNPROCESSED_BUCKET_NAME);
     await clearBucket(config.BATCH_BUCKET_NAME);
-    done();
   }, 1000 * 60);
 
   const invalidDocuments = new InvalidDocuments(config);

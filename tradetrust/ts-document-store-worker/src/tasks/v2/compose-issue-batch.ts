@@ -1,5 +1,5 @@
 import { logger } from 'src/logger';
-import { VerifyDocumentIssuance, VerificationError } from 'src/tasks/utils/verify-document';
+import { VerifyDocumentIssuanceV2, VerificationError } from 'src/tasks/utils/verify-document';
 import {
   ComposeBatch,
   Document,
@@ -9,11 +9,11 @@ import {
 
 
 class V2ComposeIssueBatch extends ComposeBatch{
-  private verificator: VerifyDocumentIssuance;
+  private verificator: VerifyDocumentIssuanceV2;
 
   constructor(props: IComposeBatchProps){
     super(props);
-    this.verificator = new VerifyDocumentIssuance({documentStore:props.documentStore});
+    this.verificator = new VerifyDocumentIssuanceV2({documentStore:props.documentStore});
   }
 
   async verifyDocument(document: Document){
