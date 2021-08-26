@@ -13,12 +13,12 @@ import {
   clearQueue,
   clearBucket,
   documentV2,
-  generateDocumentsMap,
+  generateDocumentsMapV2,
 } from 'tests/utils';
 
 
 
-describe('ComposeRevokeBatch integration test', ()=>{
+describe('ComposeRevokeBatchV2 Task', ()=>{
   jest.setTimeout(100 * 1000);
 
   const config = getBatchedRevokeEnvConfig();
@@ -37,7 +37,7 @@ describe('ComposeRevokeBatch integration test', ()=>{
   test('single document batch', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
-    const unwrappedDocumentsMap = generateDocumentsMap(5);
+    const unwrappedDocumentsMap = generateDocumentsMapV2(5);
     const wrappedDocumentsMap = new Map<string, any>();
     for(let [key, body] of unwrappedDocumentsMap){
       body = wrapDocument(body);

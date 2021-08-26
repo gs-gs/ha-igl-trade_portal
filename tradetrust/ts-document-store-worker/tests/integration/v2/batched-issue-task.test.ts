@@ -1,5 +1,3 @@
-import { Wallet } from 'ethers';
-import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { getData } from '@govtechsg/open-attestation';
 import {
   InvalidDocuments,
@@ -11,9 +9,9 @@ import {
 import { getBatchedIssueEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
 import BatchedIssue from 'src/tasks/v2/batched-issue';
-import { clearQueue, clearBucket, generateDocumentsMap } from 'tests/utils';
+import { clearQueue, clearBucket, generateDocumentsMapV2 } from 'tests/utils';
 
-describe('BatchedIssue task test', ()=>{
+describe('BatchedIssueV2 Task', ()=>{
 
   jest.setTimeout(1000 * 100);
 
@@ -39,7 +37,7 @@ describe('BatchedIssue task test', ()=>{
     const documentStore = await connectDocumentStore(config, wallet);
 
     const documentsCount = 20;
-    const documents = generateDocumentsMap(documentsCount);
+    const documents = generateDocumentsMapV2(documentsCount);
     const expectedBatchDocuments = Array.from<[string, any]>(documents.entries()).slice(0, 10);
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)})
@@ -101,7 +99,7 @@ describe('BatchedIssue task test', ()=>{
     const documentStore = await connectDocumentStore(config, wallet);
 
     const documentsCount = 20;
-    const documents = generateDocumentsMap(documentsCount);
+    const documents = generateDocumentsMapV2(documentsCount);
     const expectedBatchDocuments = Array.from<[string, any]>(documents.entries());
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)})

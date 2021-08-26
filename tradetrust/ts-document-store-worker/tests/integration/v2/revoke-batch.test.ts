@@ -6,10 +6,10 @@ import RevokeBatch from 'src/tasks/v2/revoke-batch';
 import { documentV2 } from 'tests/utils';
 
 
-describe('Revoke batch task integration test', ()=>{
+describe('RevokeBatchV2 Task', ()=>{
   const config = getBatchedRevokeEnvConfig();
   jest.setTimeout(100 * 1000);
-  test('test revoke', async ()=>{
+  test('Revoke', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
     const batch = new Batch();

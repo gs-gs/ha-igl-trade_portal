@@ -4,7 +4,7 @@ import { BatchDocuments, InvalidDocuments } from 'src/repos';
 import { Batch } from 'src/tasks/common/data';
 import RestoreBatch from 'src/tasks/common/restore-batch';
 import {
-  generateDocumentsMap,
+  generateDocumentsMapV2,
 } from 'tests/utils';
 
 class NoSuchKey extends Error{
@@ -37,7 +37,7 @@ describe('RestoreBatch task unit tests',()=>{
     const batchDocuments = createBatchDocumentsRepoMock();
     const invalidDocuments = createInvalidDocumentsRepoMock();
     const documentStore = createDocumentStoreMock();
-    const documents = generateDocumentsMap(5);
+    const documents = generateDocumentsMapV2(5);
     // LI=0
     batchDocuments.list.mockRejectedValueOnce(new Error('Unexpected Error'))
     // LI=1

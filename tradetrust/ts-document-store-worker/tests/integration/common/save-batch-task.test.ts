@@ -17,7 +17,7 @@ describe('SaveBatch Task', ()=>{
   const issuedDocuments = new IssuedDocuments(config);
   const batchDocuments = new BatchDocuments(config);
 
-  test('save batch documents', async ()=>{
+  test('Save', async ()=>{
     const batch = new Batch();
     const documents = new Map<string, any>();
     for(let documentIndex = 0; documentIndex < 10; documentIndex++){

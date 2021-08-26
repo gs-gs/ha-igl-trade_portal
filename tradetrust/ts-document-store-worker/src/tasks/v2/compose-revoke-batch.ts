@@ -8,7 +8,7 @@ import {
 } from 'src/tasks/common/compose-batch';
 
 
-class V2ComposeRevokeBatch extends ComposeBatch{
+class ComposeRevokeBatchV2 extends ComposeBatch{
   private verificator: VerifyDocumentRevocationV2;
 
   constructor(props: IComposeBatchProps){
@@ -35,9 +35,9 @@ class V2ComposeRevokeBatch extends ComposeBatch{
   }
 
   async start(){
-    logger.info('ComposeRevokeBatch task started');
+    logger.info('ComposeRevokeBatchV2 task started');
     return super.start();
   }
 }
 
-export default V2ComposeRevokeBatch;
+export default ComposeRevokeBatchV2;

@@ -9,16 +9,16 @@ import {
 import { getBatchedRevokeEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
 import  BatchedRevoke from 'src/tasks/v2/batched-revoke';
-import { clearQueue, clearBucket, generateDocumentsMap } from 'tests/utils';
+import { clearQueue, clearBucket, generateDocumentsMapV2 } from 'tests/utils';
 
-describe('Test', ()=>{
+describe('BatchedRevokeV2 Task', ()=>{
 
   jest.setTimeout(1000 * 100);
 
 
   const config = getBatchedRevokeEnvConfig();
   const documentsCount = 5;
-  const unwrappedDocuments = generateDocumentsMap(documentsCount);
+  const unwrappedDocuments = generateDocumentsMapV2(documentsCount);
 
   const generateWrappedDocuments = (unwrappedDocuments: Map<string, any>)=>{
     const wrappedDocuments = new Map<string,any>();

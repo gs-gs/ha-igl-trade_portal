@@ -6,10 +6,10 @@ import IssueBatch from 'src/tasks/v2/issue-batch';
 import { documentV2 } from 'tests/utils';
 
 
-describe('IssueBatch Task', ()=>{
+describe('IssueBatchV2 Task', ()=>{
   jest.setTimeout(1000 * 100);
   const config = getBatchedDocumentStoreTaskEnvConfig();
-  test('issue test', async ()=>{
+  test('Issue', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
     const document = wrapDocument(documentV2({body: 'random document'}));

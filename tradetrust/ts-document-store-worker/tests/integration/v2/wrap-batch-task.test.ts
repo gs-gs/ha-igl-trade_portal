@@ -4,11 +4,11 @@ import WrapBatch from 'src/tasks/v2/wrap-batch';
 import { documentV2 } from 'tests/utils';
 
 
-describe('WrapBatch Task', ()=>{
+describe('WrapBatchV2 Task', ()=>{
 
   jest.setTimeout(1000 * 100);
 
-  test('wrap batch', ()=>{
+  test('Wrap', ()=>{
     const batch = new Batch();
     for(let documentIndex = 0; documentIndex < 10; documentIndex++){
       const key = `document-${documentIndex}`

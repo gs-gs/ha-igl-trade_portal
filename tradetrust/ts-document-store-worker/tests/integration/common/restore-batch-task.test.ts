@@ -8,12 +8,12 @@ import {
 } from 'src/repos';
 import {
   clearBucket,
-  generateDocumentsMap,
+  generateDocumentsMapV2,
 } from 'tests/utils';
 import { wrapDocument } from '@govtechsg/open-attestation';
 
 
-describe('RestoreBatch task integration tests', ()=>{
+describe('RestoreBatch Task', ()=>{
   jest.setTimeout(1000 * 100);
   const config = getBatchedDocumentStoreTaskEnvConfig();
 
@@ -25,12 +25,12 @@ describe('RestoreBatch task integration tests', ()=>{
   const batchDocuments = new BatchDocuments(config);
   const invalidDocuments = new InvalidDocuments(config);
 
-  test('restore unwrapped batch, batch.restored=true, batch.composed=true', async ()=>{
+  test('Restore unwrapped batch, batch.restored=true, batch.composed=true', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
     const documentsCount = 10;
     const expectedBatchDocumentsCount = 5;
-    const documents = generateDocumentsMap(documentsCount);
+    const documents = generateDocumentsMapV2(documentsCount);
     let batchSizeBytes = 0;
     let documentIndex = 0;
     for(let [key, document] of documents){
@@ -68,12 +68,12 @@ describe('RestoreBatch task integration tests', ()=>{
     }
   })
 
-  test('restore wrapped batch, batch.restored=true, batch.composed=true', async ()=>{
+  test('Restore wrapped batch, batch.restored=true, batch.composed=true', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
     const documentsCount = 10;
     const expectedBatchDocumentsCount = 5;
-    const documents = generateDocumentsMap(documentsCount);
+    const documents = generateDocumentsMapV2(documentsCount);
     let batchSizeBytes = 0;
     let documentIndex = 0;
     for(let [key, document] of documents){
@@ -111,10 +111,10 @@ describe('RestoreBatch task integration tests', ()=>{
     }
   })
 
-  test('restore unwrapped batch, batch.restored=true, batch.composed=false', async ()=>{
+  test('Restore unwrapped batch, batch.restored=true, batch.composed=false', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
-    const documents = generateDocumentsMap(10);
+    const documents = generateDocumentsMapV2(10);
     for(let [key, document] of documents){
       await batchDocuments.put({Key: key, Body: JSON.stringify(document)});
     }
@@ -144,10 +144,10 @@ describe('RestoreBatch task integration tests', ()=>{
     }
   })
 
-  test('restore wrapped batch, batch.restored=true, batch.composed=false', async ()=>{
+  test('Restore wrapped batch, batch.restored=true, batch.composed=false', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
-    const documents = generateDocumentsMap(10);
+    const documents = generateDocumentsMapV2(10);
     for(let [key, document] of documents){
       await batchDocuments.put({Key: key, Body: JSON.stringify(wrapDocument(document))});
     }
@@ -178,7 +178,7 @@ describe('RestoreBatch task integration tests', ()=>{
     }
   })
 
-  test('restore unwrapped batch, batch.restored=false, batch.composed=false', async ()=>{
+  test('Restore unwrapped batch, batch.restored=false, batch.composed=false', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
     const batch = new Batch();
@@ -202,7 +202,7 @@ describe('RestoreBatch task integration tests', ()=>{
     expect(batch.wrappedDocuments.size).toBe(0);
   })
 
-  test('restore wrapped batch, batch.restored=false, batch.composed=false', async ()=>{
+  test('Restore wrapped batch, batch.restored=false, batch.composed=false', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);
     const batch = new Batch();
