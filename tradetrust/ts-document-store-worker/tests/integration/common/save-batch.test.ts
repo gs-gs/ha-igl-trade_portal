@@ -1,7 +1,7 @@
 import { getBatchedIssueEnvConfig } from 'src/config';
 import { IssuedDocuments, BatchDocuments } from 'src/repos';
 import { Batch } from 'src/tasks/common/data';
-import SaveBatch from 'src/tasks/common/save-batch';
+import { SaveBatch } from 'src/tasks/common/save-batch';
 import { wrapDocuments } from '@govtechsg/open-attestation';
 import { clearBucket, documentV2 } from "tests/utils";
 

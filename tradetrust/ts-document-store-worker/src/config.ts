@@ -10,17 +10,15 @@ function get_env_or_file_value(envVarName: string):string{
   }
 }
 
-
-interface IAWSConfig{
+export interface IAWSConfig{
   readonly AWS_ENDPOINT_URL?: string
 }
 
-interface IBatchedDocumentStoreTaskConfig extends IAWSConfig{
-  readonly BLOCKCHAIN_ENDPOINT: string
+export const getAWSEnvConfig = (): IAWSConfig => ({
+  AWS_ENDPOINT_URL: process.env.AWS_ENDPOINT_URL
+})
 
-  readonly DOCUMENT_STORE_OWNER_PRIVATE_KEY: string
-  readonly DOCUMENT_STORE_ADDRESS: string
-
+export interface IBatchedTaskConfig {
   readonly UNPROCESSED_QUEUE_URL: string
   readonly INVALID_BUCKET_NAME: string
   readonly UNPROCESSED_BUCKET_NAME: string
@@ -28,12 +26,6 @@ interface IBatchedDocumentStoreTaskConfig extends IAWSConfig{
 
   readonly MESSAGE_WAIT_TIME: number,
   readonly MESSAGE_VISIBILITY_TIMEOUT: number,
-
-  readonly GAS_PRICE_MULTIPLIER: number,
-  readonly GAS_PRICE_LIMIT_GWEI: number,
-
-  readonly TRANSACTION_TIMEOUT_SECONDS: number,
-  readonly TRANSACTION_CONFIRMATION_THRESHOLD: number,
 
   readonly BATCH_SIZE_BYTES: number,
   readonly BATCH_TIME_SECONDS: number,
@@ -48,44 +40,13 @@ interface IBatchedDocumentStoreTaskConfig extends IAWSConfig{
   readonly SAVE_ATTEMPTS_INTERVAL_SECONDS: number
 }
 
-
-interface IBatchedIssueConfig extends IBatchedDocumentStoreTaskConfig{
-  readonly ISSUED_BUCKET_NAME: string
-
-  readonly ISSUE_ATTEMPTS: number,
-  readonly ISSUE_ATTEMPTS_INTERVAL_SECONDS: number,
-}
-
-interface IBatchedRevokeConfig extends IBatchedDocumentStoreTaskConfig{
-  readonly REVOKED_BUCKET_NAME: string
-
-  readonly REVOKE_ATTEMPTS: number,
-  readonly REVOKE_ATTEMPTS_INTERVAL_SECONDS: number,
-}
-
-const getAWSEnvConfig = (): IAWSConfig => ({
-  AWS_ENDPOINT_URL: process.env.AWS_ENDPOINT_URL,
-})
-
-const getBatchedDocumentStoreTaskEnvConfig = (): IBatchedDocumentStoreTaskConfig => ({
-  ...getAWSEnvConfig(),
+export const getBatchedTaskEnvConfig = (): IBatchedTaskConfig =>({
+  MESSAGE_WAIT_TIME: parseInt(process.env.MESSAGE_WAIT_TIME??'1'),
+  MESSAGE_VISIBILITY_TIMEOUT: parseInt(process.env.MESSAGE_VISIBILITY_TIMEOUT??'60'),
   UNPROCESSED_QUEUE_URL: process.env.UNPROCESSED_QUEUE_URL??'',
   INVALID_BUCKET_NAME: process.env.INVALID_BUCKET_NAME??'',
   UNPROCESSED_BUCKET_NAME: process.env.UNPROCESSED_BUCKET_NAME??'',
   BATCH_BUCKET_NAME: process.env.BATCH_BUCKET_NAME??'',
-
-  BLOCKCHAIN_ENDPOINT: process.env.BLOCKCHAIN_ENDPOINT??'',
-
-  DOCUMENT_STORE_ADDRESS: get_env_or_file_value('DOCUMENT_STORE_ADDRESS'),
-  DOCUMENT_STORE_OWNER_PRIVATE_KEY: process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY??'',
-
-  MESSAGE_WAIT_TIME: parseInt(process.env.MESSAGE_WAIT_TIME??'1'),
-  MESSAGE_VISIBILITY_TIMEOUT: parseInt(process.env.MESSAGE_VISIBILITY_TIMEOUT??'60'),
-  TRANSACTION_TIMEOUT_SECONDS: parseInt(process.env.TRANSACTION_TIMEOUT_SECONDS??'600'),
-  TRANSACTION_CONFIRMATION_THRESHOLD: parseInt(process.env.TRANSACTION_CONFIRMATION_THRESHOLD??'12'),
-  // 1.2
-  GAS_PRICE_MULTIPLIER: parseFloat(process.env.GAS_PRICE_MULTIPLIER??'1.2'),
-  GAS_PRICE_LIMIT_GWEI: parseInt(process.env.GAS_PRICE_LIMIT_GWEI??'200'),
   // default 100 MB
   BATCH_SIZE_BYTES: parseInt(process.env.BATCH_SIZE_BYTES??'104857600'),
   // 10 minutes
@@ -101,28 +62,96 @@ const getBatchedDocumentStoreTaskEnvConfig = (): IBatchedDocumentStoreTaskConfig
   SAVE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.SAVE_ATTEMPTS_INTERVAL_SECONDS??'60')
 })
 
+export interface IIssueTaskConfig{
+  readonly ISSUED_BUCKET_NAME: string,
+  readonly ISSUE_ATTEMPTS: number,
+  readonly ISSUE_ATTEMPTS_INTERVAL_SECONDS: number,
+}
 
-const getBatchedIssueEnvConfig = (): IBatchedIssueConfig => ({
-  ...getBatchedDocumentStoreTaskEnvConfig(),
+export const getIssueTaskEnvConfig = ():IIssueTaskConfig =>({
   ISSUED_BUCKET_NAME: process.env.ISSUED_BUCKET_NAME??'',
   ISSUE_ATTEMPTS: parseInt(process.env.ISSUE_ATTEMPTS??'10'),
   ISSUE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.ISSUE_ATTEMPTS_INTERVAL_SECONDS??'60')
 })
 
-const getBatchedRevokeEnvConfig = (): IBatchedRevokeConfig => ({
-  ...getBatchedDocumentStoreTaskEnvConfig(),
+export interface IRevokeTaskConfig{
+  readonly REVOKED_BUCKET_NAME: string,
+  readonly REVOKE_ATTEMPTS: number,
+  readonly REVOKE_ATTEMPTS_INTERVAL_SECONDS: number,
+}
+
+export const getRevokeTaskEnvConfig = ():IRevokeTaskConfig =>({
   REVOKED_BUCKET_NAME: process.env.REVOKED_BUCKET_NAME??'',
   REVOKE_ATTEMPTS: parseInt(process.env.REVOKE_ATTEMPTS??'10'),
   REVOKE_ATTEMPTS_INTERVAL_SECONDS: parseInt(process.env.REVOKE_ATTEMPTS_INTERVAL_SECONDS??'60')
+})
+
+export interface ITransactionTaskConfig{
+  readonly GAS_PRICE_MULTIPLIER: number,
+  readonly GAS_PRICE_LIMIT_GWEI: number,
+
+  readonly TRANSACTION_TIMEOUT_SECONDS: number,
+  readonly TRANSACTION_CONFIRMATION_THRESHOLD: number
+}
+
+export const getTransactionTaskEnvConfig = ():ITransactionTaskConfig=>({
+  TRANSACTION_TIMEOUT_SECONDS: parseInt(process.env.TRANSACTION_TIMEOUT_SECONDS??'600'),
+  TRANSACTION_CONFIRMATION_THRESHOLD: parseInt(process.env.TRANSACTION_CONFIRMATION_THRESHOLD??'12'),
+  // 1.2
+  GAS_PRICE_MULTIPLIER: parseFloat(process.env.GAS_PRICE_MULTIPLIER??'1.2'),
+  GAS_PRICE_LIMIT_GWEI: parseInt(process.env.GAS_PRICE_LIMIT_GWEI??'200')
+})
+
+export interface IDocumentStoreTaskConfig{
+  readonly BLOCKCHAIN_ENDPOINT: string
+
+  readonly DOCUMENT_STORE_OWNER_PUBLIC_KEY: string,
+  readonly DOCUMENT_STORE_OWNER_PRIVATE_KEY: string
+  readonly DOCUMENT_STORE_ADDRESS: string
+}
+
+export const getDocumentStoreTaskEnvConfig = ():IDocumentStoreTaskConfig =>({
+  BLOCKCHAIN_ENDPOINT: process.env.BLOCKCHAIN_ENDPOINT??'',
+  DOCUMENT_STORE_ADDRESS: get_env_or_file_value('DOCUMENT_STORE_ADDRESS'),
+  DOCUMENT_STORE_OWNER_PUBLIC_KEY: process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY??'',
+  DOCUMENT_STORE_OWNER_PRIVATE_KEY: process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY??''
 });
 
-export {
-  IAWSConfig,
-  IBatchedIssueConfig,
-  IBatchedRevokeConfig,
-  IBatchedDocumentStoreTaskConfig,
-  getAWSEnvConfig,
-  getBatchedIssueEnvConfig,
-  getBatchedRevokeEnvConfig,
-  getBatchedDocumentStoreTaskEnvConfig
-};
+export interface ISignerTaskConfig{
+  PRIVATE_KEY: string,
+  PUBLIC_KEY: string
+}
+
+export const getSignerTaskEnvConfig = ():ISignerTaskConfig =>({
+  PRIVATE_KEY: process.env.PRIVATE_KEY??'',
+  PUBLIC_KEY: process.env.PUBLIC_KEY??''
+})
+
+export interface IBatchedIssueConfig extends IAWSConfig, IBatchedTaskConfig, IDocumentStoreTaskConfig, ITransactionTaskConfig, IIssueTaskConfig{}
+
+export const getBatchedIssueEnvConfig = (): IBatchedIssueConfig => ({
+  ...getAWSEnvConfig(),
+  ...getBatchedTaskEnvConfig(),
+  ...getDocumentStoreTaskEnvConfig(),
+  ...getTransactionTaskEnvConfig(),
+  ...getIssueTaskEnvConfig()
+});
+
+export interface IBatchedRevokeConfig extends IAWSConfig, IBatchedTaskConfig, IDocumentStoreTaskConfig, ITransactionTaskConfig, IRevokeTaskConfig{}
+
+export const getBatchedRevokeEnvConfig = (): IBatchedRevokeConfig => ({
+  ...getAWSEnvConfig(),
+  ...getBatchedTaskEnvConfig(),
+  ...getDocumentStoreTaskEnvConfig(),
+  ...getTransactionTaskEnvConfig(),
+  ...getRevokeTaskEnvConfig()
+});
+
+export interface IBatchedSignerConfig extends IAWSConfig, IBatchedTaskConfig, IDocumentStoreTaskConfig, IIssueTaskConfig{}
+
+export const getBatchedSignerEnvConfig = (): IBatchedSignerConfig => ({
+  ...getAWSEnvConfig(),
+  ...getBatchedTaskEnvConfig(),
+  ...getDocumentStoreTaskEnvConfig(),
+  ...getIssueTaskEnvConfig()
+});

@@ -5,7 +5,7 @@ import { Task } from './interfaces';
 import { RetryError } from './errors';
 
 
-class EthereumError extends Error{
+export class EthereumError extends Error{
 
   public static is(e:Error): boolean {
     return false;
@@ -19,25 +19,25 @@ class EthereumError extends Error{
 }
 
 
-class TransactionTimeoutError extends EthereumError{
+export class TransactionTimeoutError extends EthereumError{
   static is(e:Error){
     return e.message.includes('timeout exceeded');
   }
 }
 
-class UnderpricedTransactionError extends EthereumError{
+export class UnderpricedTransactionError extends EthereumError{
   static is(e:Error){
     return e.message.includes('replacement transaction underpriced');
   }
 }
 
-class HashDuplicationError extends EthereumError{
+export class HashDuplicationError extends EthereumError{
   static is(e: Error){
     return e.message.includes('Only hashes that have not been issued can be issued')
   }
 }
 
-interface ISendDocumentStoreTransactionProps{
+export interface ISendDocumentStoreTransactionProps{
   wallet: Wallet,
   documentStore: DocumentStore,
   gasPriceMultiplier?: number,
@@ -48,7 +48,7 @@ interface ISendDocumentStoreTransactionProps{
   attemptsIntervalSeconds?: number
 }
 
-interface ISendDocumentStoreTransactionState{
+export interface ISendDocumentStoreTransactionState{
   attempt: number,
   pendingTransaction?: any,
   gasPriceMutiplier?: number,
@@ -58,7 +58,7 @@ interface ISendDocumentStoreTransactionState{
 }
 
 
-abstract class SendDocumentStoreTransaction implements Task<void>{
+export abstract class SendDocumentStoreTransaction implements Task<void>{
 
   protected state: ISendDocumentStoreTransactionState;
   protected props: ISendDocumentStoreTransactionProps;
@@ -251,12 +251,3 @@ abstract class SendDocumentStoreTransaction implements Task<void>{
   abstract onRanOutOfAttemps(): Promise<void>;
 
 }
-
-
-export {
-  SendDocumentStoreTransaction,
-  ISendDocumentStoreTransactionProps,
-  ISendDocumentStoreTransactionState
-};
-
-export default SendDocumentStoreTransaction;

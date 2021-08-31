@@ -1,6 +1,6 @@
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
 import { Wallet } from 'ethers';
-
+import { OpenAttestationVersion as Version } from 'src/constants';
 import { logger } from 'src/logger';
 import {
   InvalidDocuments,
@@ -12,14 +12,14 @@ import {
 
 import { Batch } from 'src/tasks/common/data';
 import { Task } from 'src/tasks/common/interfaces';
-import RestoreBatch from 'src/tasks/common/restore-batch';
+import { RestoreBatch } from 'src/tasks/common/restore-batch';
+import { ComposeRevokeBatch } from 'src/tasks/common/compose-revoke-batch';
+import { RevokeBatch } from 'src/tasks/common/revoke-batch';
+import { SaveBatch } from 'src/tasks/common/save-batch';
 
-import ComposeRevokeBatch from 'src/tasks/v2/compose-revoke-batch';
-import RevokeBatch from 'src/tasks/v2/revoke-batch';
-import SaveBatch from 'src/tasks/common/save-batch';
 
-
-interface IBatchedRevokeProps{
+export interface IBatchedRevokeProps{
+  version: Version,
   invalidDocuments: InvalidDocuments,
   unprocessedDocuments: UnprocessedDocuments,
   batchDocuments: BatchDocuments,
@@ -47,7 +47,7 @@ interface IBatchedRevokeProps{
 
 
 
-class BatchedRevoke implements Task<Promise<void>>{
+export class BatchedRevoke implements Task<Promise<void>>{
 
   private props: IBatchedRevokeProps;
 
@@ -57,9 +57,10 @@ class BatchedRevoke implements Task<Promise<void>>{
 
   async next(){
     const batch = new Batch();
-
+    const {version} = this.props;
     await new RestoreBatch({
       batch,
+      version,
       wrapped: true,
       documentStore: this.props.documentStore,
       invalidDocuments: this.props.invalidDocuments,
@@ -72,6 +73,7 @@ class BatchedRevoke implements Task<Promise<void>>{
 
     await new ComposeRevokeBatch({
       batch,
+      version,
       invalidDocuments: this.props.invalidDocuments,
       batchDocuments: this.props.batchDocuments,
       unprocessedDocuments: this.props.unprocessedDocuments,
@@ -93,6 +95,7 @@ class BatchedRevoke implements Task<Promise<void>>{
 
     await new RevokeBatch({
       batch,
+      version,
       wallet: this.props.wallet,
       documentStore: this.props.documentStore,
       attempts: this.props.revokeAttempts,
@@ -113,7 +116,7 @@ class BatchedRevoke implements Task<Promise<void>>{
   }
 
   async start(){
-    logger.info('BatchedRevoke task started');
+    logger.info('BatchedRevoke[%s] task started', this.props.version);
     while(true){
       try{
         await this.next();
@@ -125,6 +128,3 @@ class BatchedRevoke implements Task<Promise<void>>{
     }
   }
 }
-
-
-export default BatchedRevoke;

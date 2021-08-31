@@ -1,4 +1,3 @@
-import { getData } from '@govtechsg/open-attestation';
 import {
   InvalidDocuments,
   UnprocessedDocuments,
@@ -6,17 +5,17 @@ import {
   IssuedDocuments,
   UnprocessedDocumentsQueue
 } from 'src/repos';
-import { getBatchedIssueEnvConfig } from 'src/config';
+import { getBatchedSignerEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
-import BatchedIssue from 'src/tasks/v2/batched-issue';
-import { clearQueue, clearBucket, generateDocumentsMapV2 } from 'tests/utils';
+import { BatchedIssue } from 'src/tasks/v3/batched-issue';
+import { clearQueue, clearBucket, generateDocumentsMapV3 } from 'tests/utils';
 
-describe('BatchedIssueV2 Task', ()=>{
+describe('BatchedIssue Task V3', ()=>{
 
   jest.setTimeout(1000 * 100);
 
 
-  const config = getBatchedIssueEnvConfig();
+  const config = getBatchedSignerEnvConfig();
 
   const unprocessedDocuments = new UnprocessedDocuments(config);
   const batchDocuments = new BatchDocuments(config);
@@ -37,7 +36,7 @@ describe('BatchedIssueV2 Task', ()=>{
     const documentStore = await connectDocumentStore(config, wallet);
 
     const documentsCount = 20;
-    const documents = generateDocumentsMapV2(documentsCount);
+    const documents = generateDocumentsMapV3(documentsCount);
     const expectedBatchDocuments = Array.from<[string, any]>(documents.entries()).slice(0, 10);
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)})
@@ -56,14 +55,10 @@ describe('BatchedIssueV2 Task', ()=>{
       unprocessedDocumentsQueue,
       wallet,
       documentStore,
-      gasPriceLimitGwei: 200,
-      gasPriceMultiplier: 1.2,
       batchSizeBytes: maxBatchSizeBytes,
       batchTimeSeconds: 10,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      transactionTimeoutSeconds: 180,
-      transactionConfirmationThreshold: 1,
       restoreAttempts: 1,
       restoreAttemptsIntervalSeconds: 1,
       composeAttempts: 1,
@@ -86,9 +81,14 @@ describe('BatchedIssueV2 Task', ()=>{
     for(let [key, document] of expectedBatchDocuments){
       const issuedDocumentS3Object = await issuedDocuments.get({Key: key});
       const issuedDocument = JSON.parse(issuedDocumentS3Object.Body!.toString());
-      signatures.push(issuedDocument.signature.merkleRoot);
-      const unwrappedIssuedDocument = getData(issuedDocument);
-      expect(unwrappedIssuedDocument).toEqual(document);
+      expect(issuedDocument).toHaveProperty('proof.merkleRoot');
+      expect(issuedDocument).toHaveProperty('proof.targetHash');
+      expect(issuedDocument).toHaveProperty('proof.key');
+      expect(issuedDocument).toHaveProperty('proof.signature');
+      signatures.push(issuedDocument.proof.signature);
+      // unwrapping
+      delete issuedDocument.proof;
+      expect(issuedDocument).toEqual(document);
     }
     expect(signatures.every(signature=> signature == signatures[0])).toBe(true);
   });
@@ -99,7 +99,7 @@ describe('BatchedIssueV2 Task', ()=>{
     const documentStore = await connectDocumentStore(config, wallet);
 
     const documentsCount = 20;
-    const documents = generateDocumentsMapV2(documentsCount);
+    const documents = generateDocumentsMapV3(documentsCount);
     const expectedBatchDocuments = Array.from<[string, any]>(documents.entries());
     for(let [key, document] of documents){
       await unprocessedDocuments.put({Key: key, Body: JSON.stringify(document)})
@@ -118,14 +118,10 @@ describe('BatchedIssueV2 Task', ()=>{
       unprocessedDocumentsQueue,
       wallet,
       documentStore,
-      gasPriceLimitGwei: 200,
-      gasPriceMultiplier: 1.2,
       batchSizeBytes: maxBatchSizeBytes * 2,
       batchTimeSeconds: 10,
       messageWaitTime: 1,
       messageVisibilityTimeout: 60,
-      transactionTimeoutSeconds: 180,
-      transactionConfirmationThreshold: 1,
       restoreAttempts: 1,
       restoreAttemptsIntervalSeconds: 1,
       composeAttempts: 1,
@@ -148,9 +144,14 @@ describe('BatchedIssueV2 Task', ()=>{
     for(let [key, document] of expectedBatchDocuments){
       const issuedDocumentS3Object = await issuedDocuments.get({Key: key});
       const issuedDocument = JSON.parse(issuedDocumentS3Object.Body!.toString());
-      signatures.push(issuedDocument.signature.merkleRoot);
-      const unwrappedIssuedDocument = getData(issuedDocument);
-      expect(unwrappedIssuedDocument).toEqual(document);
+      expect(issuedDocument).toHaveProperty('proof.merkleRoot');
+      expect(issuedDocument).toHaveProperty('proof.targetHash');
+      expect(issuedDocument).toHaveProperty('proof.key');
+      expect(issuedDocument).toHaveProperty('proof.signature');
+      signatures.push(issuedDocument.proof.signature);
+      // unwrapping
+      delete issuedDocument.proof;
+      expect(issuedDocument).toEqual(document);
     }
     expect(signatures.every(signature=> signature == signatures[0])).toBe(true);
   });

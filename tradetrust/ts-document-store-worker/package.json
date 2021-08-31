@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack build --progress --color",
+    "build": "rm -rf dist/* && webpack build --progress --color",
     "test": "jest --detectOpenHandles -i --collect-coverage"
   },
   "author": "",

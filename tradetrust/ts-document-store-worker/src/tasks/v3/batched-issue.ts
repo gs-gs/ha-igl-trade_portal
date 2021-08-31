@@ -15,7 +15,7 @@ import { Task } from "src/tasks/common/interfaces";
 import { SaveBatch } from "src/tasks/common/save-batch";
 import { ComposeIssueBatch } from "src/tasks/common/compose-issue-batch";
 import { WrapBatch } from "src/tasks/common/wrap-batch";
-import { IssueBatch } from "src/tasks/v2/issue-batch";
+import { IssueBatch } from "src/tasks/v3/issue-batch";
 
 export interface IBatchedIssueProps{
   invalidDocuments: InvalidDocuments,
@@ -29,10 +29,6 @@ export interface IBatchedIssueProps{
   messageVisibilityTimeout: number,
   batchSizeBytes: number,
   batchTimeSeconds: number,
-  transactionTimeoutSeconds: number,
-  transactionConfirmationThreshold: number,
-  gasPriceMultiplier: number
-  gasPriceLimitGwei: number,
   restoreAttempts: number,
   restoreAttemptsIntervalSeconds: number,
   composeAttempts: number,
@@ -53,7 +49,7 @@ export class BatchedIssue implements Task<void>{
 
   /* istanbul ignore next */
   async start(){
-    logger.info(`BatchedIssue[${Version.V2}] task started`);
+    logger.info(`BatchedIssue[${Version.V3}] task started`);
     while(true){
       try{
         await this.next();
@@ -67,7 +63,7 @@ export class BatchedIssue implements Task<void>{
 
   async next(){
     const batch = new Batch();
-    const version = Version.V2;
+    const version = Version.V3;
     await new RestoreBatch({
       version,
       wrapped: false,
@@ -102,17 +98,10 @@ export class BatchedIssue implements Task<void>{
       return;
     }
 
-    new WrapBatch({version, batch}).start()
+    await new WrapBatch({version, batch}).start()
 
     await new IssueBatch({
-      wallet: this.props.wallet,
-      documentStore: this.props.documentStore,
-      gasPriceLimitGwei: this.props.gasPriceLimitGwei,
-      gasPriceMultiplier: this.props.gasPriceMultiplier,
-      transactionTimeoutSeconds: this.props.transactionTimeoutSeconds,
-      transactionConfirmationThreshold: this.props.transactionConfirmationThreshold,
-      attempts: this.props.issueAttempts,
-      attemptsIntervalSeconds: this.props.issueAttemptsIntervalSeconds,
+      signer: this.props.wallet,
       batch
     }).start()
 

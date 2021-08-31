@@ -1,4 +1,5 @@
 import { logger }  from 'src/logger';
+import { OpenAttestationVersion as Version } from 'src/constants';
 import {
   Batch
 } from 'src/tasks/common/data';
@@ -7,11 +8,11 @@ import {
   SendDocumentStoreTransaction
 } from 'src/tasks/common/send-document-store-transaction';
 
-interface IIssueBatchProps extends ISendDocumentStoreTransactionProps{
+export interface IIssueBatchProps extends ISendDocumentStoreTransactionProps{
   batch: Batch;
 }
 
-class IssueBatch extends SendDocumentStoreTransaction{
+export class IssueBatch extends SendDocumentStoreTransaction{
 
   protected props!: IIssueBatchProps;
 
@@ -31,9 +32,7 @@ class IssueBatch extends SendDocumentStoreTransaction{
     logger.warn('Documents batch "%s" issuing failed', this.props.batch.merkleRoot);
   }
   async start(){
-    logger.info('IssueBatch task started');
+    logger.info(`IssueBatch[${Version.V2}] task started`);
     return super.start();
   }
 }
-
-export default IssueBatch;

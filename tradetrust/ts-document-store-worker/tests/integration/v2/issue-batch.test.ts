@@ -1,14 +1,14 @@
 import { wrapDocument } from '@govtechsg/open-attestation';
-import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
+import { getBatchedIssueEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
 import { Batch } from 'src/tasks/common/data';
-import IssueBatch from 'src/tasks/v2/issue-batch';
+import { IssueBatch } from 'src/tasks/v2/issue-batch';
 import { documentV2 } from 'tests/utils';
 
 
-describe('IssueBatchV2 Task', ()=>{
+describe('IssueBatch Task V2', ()=>{
   jest.setTimeout(1000 * 100);
-  const config = getBatchedDocumentStoreTaskEnvConfig();
+  const config = getBatchedIssueEnvConfig();
   test('Issue', async ()=>{
     const wallet = await connectWallet(config);
     const documentStore = await connectDocumentStore(config, wallet);

@@ -5,7 +5,7 @@ import { Task } from './interfaces';
 import { RetryError } from './errors';
 
 
-interface ISaveBatchProps{
+export interface ISaveBatchProps{
   processedDocuments: Bucket,
   batchDocuments: Bucket,
   batch: Batch,
@@ -13,14 +13,14 @@ interface ISaveBatchProps{
   attemptsIntervalSeconds?: number
 }
 
-interface ISaveBatchState{
+export interface ISaveBatchState{
   attempt: number,
   savedDocuments: Array<string>
   deletedDocuments: Array<string>
 }
 
 
-class SaveBatch implements Task<void>{
+export class SaveBatch implements Task<void>{
 
   private props: ISaveBatchProps;
   private state: ISaveBatchState;
@@ -112,5 +112,3 @@ class SaveBatch implements Task<void>{
   }
 
 }
-
-export default SaveBatch;

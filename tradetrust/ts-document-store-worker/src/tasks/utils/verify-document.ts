@@ -1,4 +1,5 @@
 import {
+  utils,
   getData,
   validateSchema,
   verifySignature,
@@ -102,27 +103,46 @@ abstract class VerifyDocument{
     }catch(e){
       // TODO: decide what to do for better error handling here,
       // maybe add logging
-      throw new VerificationError(`Invalid document schema`);
+      throw new VerificationError('Invalid document schema');
     }
   }
 
-  async verifyDocumentNotRevoked(document: any){
+  async verifyWrappedDocumentV2(document: any){
+    if(!utils.isWrappedV2Document(document)){
+      throw new VerificationError('Document not wrapped');
+    }
+  }
+
+  async verifyWrappedDocumentV3(document: any){
+    if(!utils.isWrappedV3Document(document)){
+      throw new VerificationError('Document not wrapped');
+    }
+  }
+
+  async verifyDocumentNotRevokedV2(document: any){
     const targetHash = `0x${document.signature.targetHash}`;
     if(await this.props.documentStore.isRevoked(targetHash)){
       throw new VerificationError(`Document ${targetHash} already revoked`);
     }
   }
 
+  async verifyDocumentNotRevokedV3(document: any){
+    const targetHash = `0x${document.proof.targetHash}`;
+    if(await this.props.documentStore.isRevoked(targetHash)){
+      throw new VerificationError(`Document ${targetHash} already revoked`);
+    }
+  }
   abstract verify(document: any): Promise<void>;
 }
 
 
 class VerifyDocumentRevocationV2 extends VerifyDocument{
   async verify(document: any){
+    await this.verifyWrappedDocumentV2(document);
     await this.verifyWrappedDocumentSchema(document);
     await this.verifyWrappedDocumentSignature(document);
     await this.verifyDocumentStoreAddress(getData(document));
-    await this.verifyDocumentNotRevoked(document);
+    await this.verifyDocumentNotRevokedV2(document);
   }
 }
 
@@ -137,10 +157,11 @@ class VerifyDocumentIssuanceV2 extends VerifyDocument{
 
 class VerifyDocumentRevocationV3 extends VerifyDocument{
   async verify(document: any){
+    await this.verifyWrappedDocumentV3(document);
     await this.verifyWrappedDocumentSchema(document);
     await this.verifyWrappedDocumentSignature(document);
     await this.verifyDocumentStoreAddress(document);
-    await this.verifyDocumentNotRevoked(document);
+    await this.verifyDocumentNotRevokedV3(document);
   }
 }
 

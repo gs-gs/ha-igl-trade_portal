@@ -36,7 +36,8 @@ interface IComposeBatchProps{
   documentStore: DocumentStore,
   batch: Batch,
   attempts?: number,
-  attemptsIntervalSeconds?: number
+  attemptsIntervalSeconds?: number,
+  [index: string]: any
 }
 
 

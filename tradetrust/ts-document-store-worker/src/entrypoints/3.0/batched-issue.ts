@@ -1,21 +1,21 @@
 /* istanbul ignore file */
 import { logger } from 'src/logger';
-import { getBatchedIssueEnvConfig } from 'src/config';
+import { getBatchedSignerEnvConfig } from 'src/config';
 import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue,
   BatchDocuments,
   IssuedDocuments,
   InvalidDocuments
-} from './repos';
+} from 'src/repos';
 import {
   connectWallet,
   connectDocumentStore,
-} from './document-store';
-import BatchedIssue from 'src/tasks/v2/batched-issue';
+} from 'src/document-store';
+import { BatchedIssue } from 'src/tasks/v3/batched-issue';
 
 async function main(){
-  const config = getBatchedIssueEnvConfig();
+  const config = getBatchedSignerEnvConfig();
   const wallet = await connectWallet(config);
   logger.info('Config loaded');
   logger.info('%O', config);
@@ -31,10 +31,6 @@ async function main(){
     messageVisibilityTimeout: config.MESSAGE_VISIBILITY_TIMEOUT,
     batchSizeBytes: config.BATCH_SIZE_BYTES,
     batchTimeSeconds: config.BATCH_TIME_SECONDS,
-    transactionTimeoutSeconds: config.TRANSACTION_TIMEOUT_SECONDS,
-    transactionConfirmationThreshold: config.TRANSACTION_CONFIRMATION_THRESHOLD,
-    gasPriceMultiplier: config.GAS_PRICE_MULTIPLIER,
-    gasPriceLimitGwei: config.GAS_PRICE_LIMIT_GWEI,
     restoreAttempts: config.RESTORE_ATTEMPTS,
     restoreAttemptsIntervalSeconds: config.RESTORE_ATTEMPTS_INTERVAL_SECONDS,
     composeAttempts: config.COMPOSE_ATTEMPTS,

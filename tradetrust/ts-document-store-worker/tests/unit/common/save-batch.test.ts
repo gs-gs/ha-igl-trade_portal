@@ -1,6 +1,6 @@
 import { IssuedDocuments, BatchDocuments } from 'src/repos';
 import { Batch } from 'src/tasks/common/data';
-import SaveBatch from 'src/tasks/common/save-batch';
+import { SaveBatch } from 'src/tasks/common/save-batch';
 
 
 class UnexpectedError extends Error{

@@ -1,8 +1,8 @@
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
-import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
+import { getBatchedIssueEnvConfig } from 'src/config';
 import { BatchDocuments, InvalidDocuments } from 'src/repos';
 import { Batch } from 'src/tasks/common/data';
-import RestoreBatch from 'src/tasks/common/restore-batch';
+import { RestoreBatch } from 'src/tasks/common/restore-batch';
 import {
   generateDocumentsMapV2,
 } from 'tests/utils';
@@ -25,7 +25,7 @@ describe('RestoreBatch task unit tests',()=>{
     put: jest.fn().mockResolvedValue(true)
   })
 
-  const config = getBatchedDocumentStoreTaskEnvConfig();
+  const config = getBatchedIssueEnvConfig();
 
   const createDocumentStoreMock = ()=>({
     address: config.DOCUMENT_STORE_ADDRESS,

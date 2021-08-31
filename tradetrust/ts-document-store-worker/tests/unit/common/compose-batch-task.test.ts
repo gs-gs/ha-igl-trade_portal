@@ -8,9 +8,9 @@ import {
   InvalidDocuments
 } from 'src/repos';
 // using ComposeIssueBatch because it's a child of ComposeBatch task
-import ComposeIssueBatch from 'src/tasks/v2/compose-issue-batch';
+import { ComposeIssueBatch } from 'src/tasks/common/compose-issue-batch';
 import { Batch } from 'src/tasks/common/data';
-import { getBatchedDocumentStoreTaskEnvConfig } from 'src/config';
+import { getBatchedIssueEnvConfig } from 'src/config';
 import {
   documentV2
 } from 'tests/utils';
@@ -52,7 +52,7 @@ function S3ObjectResponse(s3Object: any){
 
 describe('ComposeBatch task unit tests', ()=>{
   jest.setTimeout(100 * 1000);
-  const config = getBatchedDocumentStoreTaskEnvConfig();
+  const config = getBatchedIssueEnvConfig();
   const createUnprocessedDocumentsQueueMock = ()=>{
     return {
       get: jest.fn(),

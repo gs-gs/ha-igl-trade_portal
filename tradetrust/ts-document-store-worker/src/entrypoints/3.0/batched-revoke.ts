@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 import { logger } from 'src/logger';
+import { OpenAttestationVersion as Version } from 'src/constants';
 import { getBatchedRevokeEnvConfig } from 'src/config';
 import {
   UnprocessedDocuments,
@@ -12,7 +13,7 @@ import {
   connectWallet,
   connectDocumentStore,
 } from 'src/document-store';
-import BatchedRevoke from 'src/tasks/v2/batched-revoke';
+import { BatchedRevoke } from 'src/tasks/common/batched-revoke';
 
 async function main(){
   const config = getBatchedRevokeEnvConfig();
@@ -20,6 +21,7 @@ async function main(){
   logger.info('Config loaded');
   logger.info('%O', config);
   await new BatchedRevoke({
+    version: Version.V3,
     invalidDocuments: new InvalidDocuments(config),
     unprocessedDocuments: new UnprocessedDocuments(config),
     batchDocuments: new BatchDocuments(config),

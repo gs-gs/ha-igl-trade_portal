@@ -1,6 +1,7 @@
 import path from 'path';
 import { S3 } from 'aws-sdk';
 import { DocumentStore } from '@govtechsg/document-store/src/contracts/DocumentStore';
+import { OpenAttestationVersion as Version } from 'src/constants';
 import {
   Bucket,
 } from 'src/repos';
@@ -12,11 +13,14 @@ import {
   VerifyDocument,
   VerifyDocumentIssuanceV2,
   VerifyDocumentRevocationV2,
+  VerifyDocumentIssuanceV3,
+  VerifyDocumentRevocationV3,
   VerificationError
 } from 'src/tasks/utils/verify-document';
 
 
-interface IRestoreBatchProps{
+export interface IRestoreBatchProps{
+  version?: Version,
   wrapped: boolean,
   documentStore: DocumentStore,
   invalidDocuments: Bucket,
@@ -28,32 +32,45 @@ interface IRestoreBatchProps{
   attemptsIntervalSeconds?: number
 }
 
-interface IRestoreBatchState{
+export interface IRestoreBatchState{
   attempt: number,
   verificator: VerifyDocument,
   restoredDocuments: Map<string, any>
 }
 
 
-class RestoreBatch implements Task<Promise<void>>{
+export class RestoreBatch implements Task<Promise<void>>{
 
   private props: IRestoreBatchProps;
   private state: IRestoreBatchState;
 
   constructor(props: IRestoreBatchProps){
-    this.props = props;
-    this.props.attempts = this.props.attempts??10;
-    this.props.attemptsIntervalSeconds = this.props.attemptsIntervalSeconds??60;
-    const VerificatorClass = props.wrapped?VerifyDocumentRevocationV2:VerifyDocumentIssuanceV2;
+    this.props = Object.assign({
+      version: Version.V2,
+      attempts: 10,
+      attemptsIntervalSeconds: 60
+    }, props);
+    const {version, wrapped, documentStore, batch} = this.props;
+    let VerifyIssuanceClass, VerifyRevocationClass;
+    if(version == Version.V2){
+      VerifyIssuanceClass = VerifyDocumentIssuanceV2;
+      VerifyRevocationClass = VerifyDocumentRevocationV2;
+    }else if(version == Version.V3){
+      VerifyIssuanceClass = VerifyDocumentIssuanceV3;
+      VerifyRevocationClass = VerifyDocumentRevocationV3;
+    }else{
+      throw new Error(`Unknown version "${this.props.version}"`);
+    }
+    const VerificatorClass = wrapped?VerifyRevocationClass:VerifyIssuanceClass;
     this.state = {
       attempt: 0,
-      restoredDocuments: props.wrapped?props.batch.wrappedDocuments:props.batch.unwrappedDocuments,
-      verificator: new VerificatorClass({documentStore: props.documentStore})
+      restoredDocuments: wrapped?batch.wrappedDocuments:batch.unwrappedDocuments,
+      verificator: new VerificatorClass({documentStore})
     }
   }
 
   async start(){
-    logger.info('RestoreBatch started');
+    logger.info('RestoreBatch[%s] started', this.props.version);
     this.props.batch.compositionStartTimestamp = Date.now();
     logger.info('Composition start timestamp = %s', this.props.batch.compositionStartTimestamp);
     while(true){
@@ -223,5 +240,3 @@ class RestoreBatch implements Task<Promise<void>>{
 
   }
 }
-
-export default RestoreBatch;
