@@ -47,9 +47,11 @@
           <a class="nav-link" id="id-pdf-tab" data-toggle="tab" href="#id-pdf-tab-content" role="tab" aria-controls="id-pdf-tab-content" aria-selected="false">Downloads</a>
         </li>
       {% endif %}
-      <li class="nav-item">
-        <a class="nav-link" id="id-status-tab" data-toggle="tab" href="#id-status-tab-content" role="tab" aria-controls="id-status-tab-content" aria-selected="true">Logs</a>
-      </li>
+      {% if request.user.is_staff %}
+        <li class="nav-item">
+          <a class="nav-link" id="id-status-tab" data-toggle="tab" href="#id-status-tab-content" role="tab" aria-controls="id-status-tab-content" aria-selected="true">Logs</a>
+        </li>
+      {% endif %}
     </ul>
     <div class="tab-content" id="oa-tabs-content">
       <div class="tab-pane fade show active" id="id-verify-tab-content" role="tabpanel" aria-labelledby="id-verify-tab">
@@ -63,46 +65,51 @@
         <div class="tab-pane fade" id="id-pdf-tab-content" role="tabpanel" aria-labelledby="id-pdf-tab">
           {% if verification_result.status == "valid" %}
             {% for attach in verification_result.attachments %}
-              <a href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary" download>{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
+              <a download="{{ attach.filename }}" href="data:{{ attach.type }};base64,{{ attach.data }}" class="btn btn-primary" download>{{ attach.filename }} ({{ attach.type }})</a><br/><br/>
+              {% if forloop.first %}
+                {# we ride on the first attachment with name here #}
+                <a download="{{ attach.filename }}.json" href="data:application/json;base64,{{ verification_result.oa_base64 }}" class="btn btn-primary" download>OA file</a><br/><br/>
+              {% endif %}
             {% endfor %}
-            <a href="data:application/json;base64,{{ verification_result.oa_base64 }}" class="btn btn-primary" download>OA file</a><br/><br/>
+
           {% else %}
             We display attachments only for valid documents.
           {% endif %}
         </div>
       {% endif %}
 
-      <div class="tab-pane fade" id="id-status-tab-content" role="tabpanel" aria-labelledby="id-status-tab">
-        <table class="table">
-          {% for criteria in verification_result.verify_result %}
-            <tr>
-              <td>
-                {{ criteria.name }}<br/>
-                <small>{{ criteria.type }}</small>
-              </td>
-              <td>
-                {% if criteria.status|lower == "valid" %}
-                  <span class="badge badge-success">Valid</span>
-                {% else %}
-                  {% if criteria.status|lower == "invalid" %}
-                    <span class="badge badge-danger">Invalid</span>
+      {% if request.user.is_staff %}
+        <div class="tab-pane fade" id="id-status-tab-content" role="tabpanel" aria-labelledby="id-status-tab">
+          <table class="table">
+            {% for criteria in verification_result.verify_result %}
+              <tr>
+                <td>
+                  {{ criteria.name }}<br/>
+                  <small>{{ criteria.type }}</small>
+                </td>
+                <td>
+                  {% if criteria.status|lower == "valid" %}
+                    <span class="badge badge-success">Valid</span>
                   {% else %}
-                    {% if criteria.status|lower == "error" %}
-                      <span class="badge badge-danger">Error</span>
+                    {% if criteria.status|lower == "invalid" %}
+                      <span class="badge badge-danger">Invalid</span>
                     {% else %}
-                      <span class="badge badge-default">{{ criteria.status }}</span>
+                      {% if criteria.status|lower == "error" %}
+                        <span class="badge badge-danger">Error</span>
+                      {% else %}
+                        <span class="badge badge-default">{{ criteria.status }}</span>
+                      {% endif %}
                     {% endif %}
                   {% endif %}
-                {% endif %}
-                <br/>
-                <small>{{ criteria.reason.message }}</small>
-              </td>
-              <td><pre>{{ criteria.data|json_render }}</pre></td>
-            </tr>
-          {% endfor %}
-        </table>
-      </div>
-
+                  <br/>
+                  <small>{{ criteria.reason.message }}</small>
+                </td>
+                <td><pre>{{ criteria.data|json_render }}</pre></td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      {% endif %}
     </div>
   {% endif %}
 </div>

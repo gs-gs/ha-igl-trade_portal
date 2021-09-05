@@ -230,10 +230,12 @@ class Worker:
         nonce = self.web3.eth.getTransactionCount(public_key, 'latest')
         transaction = {
             'from': public_key,
-            'nonce': nonce
+            'nonce': nonce,
+            'gas': 60000
         }
 
         transaction['gasPrice'] = self.gas_price
+
         merkleRoot = wrapped_document['signature']['merkleRoot']
         unsigned_transaction = self.document_store.functions.issue(merkleRoot).buildTransaction(transaction)
         signed_transaction = self.web3.eth.account.sign_transaction(unsigned_transaction, private_key=private_key)

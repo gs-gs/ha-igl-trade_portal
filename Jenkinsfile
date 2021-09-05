@@ -125,29 +125,24 @@ pipeline {
                         dir('test/openatt_worker/tradetrust') {
                             sh '''#!/bin/bash
 
-                            cat docker-compose.base.yml docker-compose.py-worker.yml > docker-compose.yml
-                            docker-compose up --build --remove-orphans --renew-anon-volumes -d
-
-                            # run testing
-                            sleep 60s
-                            docker-compose exec -T document-store-worker pytest tests -vv -x -c pytest.ini --junit-xml document-store-worker/test-report.xml
+                            echo "TODO: run unit tests"
                             '''
                         }
                     }
                     post {
                         failure {
                             slackSend (
-                                message: "*Warning* | <${BUILD_URL}|${JOB_NAME}> \n document-store-worker testing failed",
+                                message: "*Warning* | <${BUILD_URL}|${JOB_NAME}> \n ts-document-store-worker testing failed",
                                 channel: "${env["slack_channel"]}",
                                 color: "#f18500"
                             )
                         }
 
-                        always {
-                            dir('test/openatt_worker/tradetrust/document-store-worker'){
-                                junit 'test-report.xml'
-                            }
-                        }
+                        // always {
+                        //     dir('test/openatt_worker/tradetrust/ts-document-store-worker'){
+                        //         junit 'test-report.xml'
+                        //     }
+                        // }
 
                         cleanup {
                             // Cleanup trade portal app
@@ -395,10 +390,10 @@ pipeline {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-worker,openatt-contract'
                                 SEGMENT = 'clients'
-                                BUILD_PATH = 'artefact/tradetrust/tradetrust/document-store-worker'
+                                BUILD_PATH = 'artefact/tradetrust/tradetrust/ts-document-store-worker'
                                 BUILD_SRC_DIR = ''
-                                DOCKER_CONTEXT_DIR = 'artefact/tradetrust/tradetrust/document-store-worker'
-                                DOCKER_FILE = 'artefact/tradetrust/tradetrust/document-store-worker/Dockerfile'
+                                DOCKER_CONTEXT_DIR = 'artefact/tradetrust/tradetrust/ts-document-store-worker'
+                                DOCKER_FILE = 'artefact/tradetrust/tradetrust/ts-document-store-worker/Dockerfile'
                                 GENERATION_CONTEXT_DEFINED = ''
 
                                 image_format = 'docker'
