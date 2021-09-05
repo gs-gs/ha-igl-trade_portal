@@ -1,9 +1,9 @@
-import AWS, {S3, SQS, KMS} from './aws';
+import AWS, {S3, SQS, KMS} from 'src/aws';
 import {
-  IBatchedIssueConfig,
-  IBatchedDocumentStoreTaskConfig,
-  IBatchedRevokeConfig,
-} from './config';
+  IIssueTaskConfig,
+  IRevokeTaskConfig,
+  IBatchedTaskConfig
+} from 'src/config';
 
 const S3Service = S3({});
 const SQSService = SQS({});
@@ -108,37 +108,37 @@ class Queue{
 }
 
 class InvalidDocuments extends Bucket{
-  constructor(config: IBatchedDocumentStoreTaskConfig){
+  constructor(config: IBatchedTaskConfig){
     super(config.INVALID_BUCKET_NAME);
   }
 }
 
 class UnprocessedDocuments extends Bucket{
-  constructor(config: IBatchedDocumentStoreTaskConfig){
+  constructor(config: IBatchedTaskConfig){
     super(config.UNPROCESSED_BUCKET_NAME);
   }
 }
 
 class BatchDocuments extends Bucket{
-  constructor(config: IBatchedDocumentStoreTaskConfig){
+  constructor(config: IBatchedTaskConfig){
     super(config.BATCH_BUCKET_NAME);
   }
 }
 
 class IssuedDocuments extends Bucket{
-  constructor(config: IBatchedIssueConfig){
+  constructor(config: IIssueTaskConfig){
     super(config.ISSUED_BUCKET_NAME);
   }
 }
 
 class RevokedDocuments extends Bucket{
-  constructor(config: IBatchedRevokeConfig){
+  constructor(config: IRevokeTaskConfig){
     super(config.REVOKED_BUCKET_NAME);
   }
 }
 
 class UnprocessedDocumentsQueue extends Queue{
-  constructor(config: IBatchedDocumentStoreTaskConfig){
+  constructor(config: IBatchedTaskConfig){
     super(config.UNPROCESSED_QUEUE_URL);
   }
 }

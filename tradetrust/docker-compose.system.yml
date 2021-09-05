@@ -15,7 +15,7 @@ services:
   batched-issue-worker:
     <<: *document-store-service-production
     container_name: batched-issue-worker
-    command: batched-issue-worker.js
+    command: 2.0/batched-issue-worker.js
     environment:
 
       STARTUP_DELAY_SECONDS: 60
@@ -60,7 +60,7 @@ services:
   batched-revoke-worker:
     <<: *document-store-service-production
     container_name: batched-revoke-worker
-    command: batched-revoke-worker.js
+    command: 2.0/batched-revoke-worker.js
     environment:
       STARTUP_DELAY_SECONDS: 60
 

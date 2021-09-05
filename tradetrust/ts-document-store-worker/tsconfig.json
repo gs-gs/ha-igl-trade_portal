@@ -9,6 +9,10 @@
   "compilerOptions": {
     "rootDir": ".",
     "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"],
+      "tests/*": ["tests/*"]
+    },
     "outDir": "./dist",
     "strict": true,
     "lib": ["es2020"],
