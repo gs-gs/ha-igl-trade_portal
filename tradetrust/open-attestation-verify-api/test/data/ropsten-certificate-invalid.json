@@ -1,0 +1,78 @@
+{
+  "version": "https://schema.openattestation.com/2.0/schema.json",
+  "data": {
+    "version": "738a8040-73ec-4b30-9002-92143cf8b4a2:string:open-attestation/2.0",
+    "reference": "5305cdf3-c589-4da6-ad24-9191fad7ade8:string:AU.89636749924.919c36",
+    "name": "1277bf7b-3ad0-420e-96c5-bf581d8cd347:string:SAFTA - Singapore Australia Free trade Agreement Preferential Certificate of Origin",
+    "validFrom": "95d42fbb-1757-4bb0-a614-aab37b9311f9:string:2020-08-06T05:57:01Z",
+    "$template": {
+      "name": "5b926177-be6b-4f08-999e-ccfe15720a02:string:custom",
+      "type": "ebfa76d1-e4c8-4ba7-9d93-42df48352985:string:EMBEDDED_RENDERER",
+      "url": "79991421-bd8c-4f6c-a3b6-60179328ea11:string:https://chafta.tradetrust.io"
+    },
+    "issuers": [
+      {
+        "name": "a147f27f-953e-46d1-b693-b3cd169c6469:string:Wine Australia",
+        "documentStore": "ed7e9216-07e3-4bc4-9f73-52ba4b35cbeb:string:0xa57812DeC86336809Ea68987AbaA1669DeA31541",
+        "identityProof": {
+          "type": "180c6c17-2061-4455-90f2-cc0e7985662e:string:DNS-TXT",
+          "location": "dec77a2a-5424-44be-845f-32b502ef59e1:string:trade.c1.devnet.trustbridge.iooo"
+        }
+      }
+    ],
+    "attachments": [],
+    "recipient": {
+      "name": "dadeba18-cc48-452d-8de8-80e1b88d308b:string:FOLEY, MICHAEL PATRICK"
+    },
+    "id": "e912038e-c061-4947-a05d-b781e3bb0010:string:wineaustralia.com:coo:ih2we",
+    "issueDateTime": "7abb4f1e-be26-483e-be33-c550c96a0e75:string:2020-08-06T05:56:57.835424+00:00",
+    "issuer": {
+      "id": "e3644970-2ec2-4acd-a31d-da59d0d3a288:string:abr.gov.au:abn:89636749924",
+      "name": "f1cf4003-f835-41a8-982d-501e2e5e72bd:string:Wine Australia"
+    },
+    "status": "d344c31a-c742-4f82-ba08-8f2e1dc4166e:string:issued",
+    "isPreferential": "6a7c6bca-565c-46d7-8265-cb82e65da43e:boolean:true",
+    "freeTradeAgreement": "153404ef-68f6-4fc9-aa23-c3adbf70f6fd:string:SAFTA - Singapore Australia Free trade Agreement",
+    "supplyChainConsignment": {
+      "exportCountry": {
+        "code": "cc0a69cb-6140-4908-9c82-697b6e170085:string:AU"
+      },
+      "exporter": {
+        "id": "b4d79d2b-84ee-4575-9adf-7af3aff93750:string:abr.gov.au:abn:79108843686",
+        "name": "7787a1f6-9c31-4840-a872-cba5b14e7de3:string:FOLEY, MICHAEL PATRICK"
+      },
+      "importCountry": {
+        "code": "41f4f8d4-f1e0-412c-9c78-66749b9ea0bb:string:SG"
+      },
+      "includedConsignmentItems": [
+        {
+          "crossBorderRegulatoryProcedure": {
+            "originCriteriaText": "547bdf2a-ea9d-482e-b4fd-aa0176de6347:string:WO"
+          },
+          "tradeLineItems": [
+            {
+              "sequenceNumber": "31a63fd4-c771-4b96-8daf-0795db6e6c45:number:1",
+              "invoiceReference": {
+                "id": "e77a51ca-721b-427e-803b-231c758245cf:string:invoice:2345"
+              },
+              "tradeProduct": {
+                "harmonisedTariffCode": {
+                  "classCode": "b9bc4cdc-69b9-4ec8-8785-b102893385f8:string:2204.21"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "importer": {
+      "name": "1ac4daab-5313-4a86-ad91-548c50c991cb:string:FOLEY, MICHAEL PATRICK"
+    }
+  },
+  "signature": {
+    "type": "SHA3MerkleProof",
+    "targetHash": "54d7b2055bd6671b75fa57bd31e788ec5201593552798c126ee75b316292f3b3",
+    "proof": [],
+    "merkleRoot": "54d7b2055bd6671b75fa57bd31e788ec5201593552798c126ee75b316292f3b4"
+  }
+}

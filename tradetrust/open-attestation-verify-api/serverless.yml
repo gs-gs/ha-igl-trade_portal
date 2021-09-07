@@ -12,4 +12,4 @@ provider:
 
 functions:
   open-attestation-verify-api:
-    handler: dist/src/index.handler
+    handler: src/index.handler
