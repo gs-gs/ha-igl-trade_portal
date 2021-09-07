@@ -1,6 +1,5 @@
 node_modules
 .nyc_output
 aws
-dist
 
 .serverless
