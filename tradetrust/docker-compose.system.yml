@@ -12,19 +12,19 @@ services:
     <<: *document-store-contract
 
 
-  batched-issue-worker:
+  batched-issue-worker-2.0:
     <<: *document-store-service-production
-    container_name: batched-issue-worker
+    container_name: batched-issue-worker-2.0
     command: 2.0/batched-issue-worker.js
     environment:
 
       STARTUP_DELAY_SECONDS: 60
 
-      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/issue-unprocessed
-      INVALID_BUCKET_NAME: issue-invalid
-      UNPROCESSED_BUCKET_NAME: issue-unprocessed
-      BATCH_BUCKET_NAME: issue-batch
-      ISSUED_BUCKET_NAME: issued
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/000000000000/issue-unprocessed-2.0
+      INVALID_BUCKET_NAME: issue-invalid-2.0
+      UNPROCESSED_BUCKET_NAME: issue-unprocessed-2.0
+      BATCH_BUCKET_NAME: issue-batch-2.0
+      ISSUED_BUCKET_NAME: issued-2.0
 
       # integer value >= 1 and <= 20
       # 20 is an upper limit that aws sdk has
@@ -57,18 +57,18 @@ services:
       REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
 
 
-  batched-revoke-worker:
+  batched-revoke-worker-2.0:
     <<: *document-store-service-production
-    container_name: batched-revoke-worker
+    container_name: batched-revoke-worker-2.0
     command: 2.0/batched-revoke-worker.js
     environment:
-      STARTUP_DELAY_SECONDS: 60
+      STARTUP_DELAY_SECONDS: 65
 
-      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/revoke-unprocessed
-      INVALID_BUCKET_NAME: revoke-invalid
-      UNPROCESSED_BUCKET_NAME: revoke-unprocessed
-      BATCH_BUCKET_NAME: revoke-batch
-      REVOKED_BUCKET_NAME: revoked
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/000000000000/revoke-unprocessed-2.0
+      INVALID_BUCKET_NAME: revoke-invalid-2.0
+      UNPROCESSED_BUCKET_NAME: revoke-unprocessed-2.0
+      BATCH_BUCKET_NAME: revoke-batch-2.0
+      REVOKED_BUCKET_NAME: revoked-2.0
 
       # integer value >= 1 and <= 20
       # 20 is an upper limit that aws sdk has
@@ -97,6 +97,86 @@ services:
       # number of attempts and interval between them in case of an unexpected error in IssueBatch task
       REVOKE_ATTEMPTS: 10
       REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
+
+  batched-issue-worker-3.0:
+    <<: *document-store-service-production
+    container_name: batched-issue-worker-3.0
+    command: 3.0/batched-issue-worker.js
+    environment:
+
+      STARTUP_DELAY_SECONDS: 70
+
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/000000000000/issue-unprocessed-3.0
+      INVALID_BUCKET_NAME: issue-invalid-3.0
+      UNPROCESSED_BUCKET_NAME: issue-unprocessed-3.0
+      BATCH_BUCKET_NAME: issue-batch-3.0
+      ISSUED_BUCKET_NAME: issued-3.0
+
+      # integer value >= 1 and <= 20
+      # 20 is an upper limit that aws sdk has
+      MESSAGE_WAIT_TIME: 10
+      MESSAGE_VISIBILITY_TIMEOUT: 60
+      # 100 MB
+      BATCH_SIZE_BYTES: 104857600
+      # 30 sec
+      BATCH_TIME_SECONDS: 30
+      # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
+      RESTORE_ATTEMPTS: 10
+      RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in ComposeBatch task
+      COMPOSE_ATTEMPTS: 10
+      COMPOSE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in SaveIssuedBatch task
+      SAVE_ATTEMPTS: 10
+      SAVE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in IssueBatch task
+      ISSUE_ATTEMPTS: 10
+      ISSUE_ATTEMPTS_INTERVAL_SECONDS: 60
+      REVOKE_ATTEMPTS: 10
+      REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
+
+
+  batched-revoke-worker-3.0:
+    <<: *document-store-service-production
+    container_name: batched-revoke-worker-3.0
+    command: 3.0/batched-revoke-worker.js
+    environment:
+      STARTUP_DELAY_SECONDS: 75
+
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/000000000000/revoke-unprocessed-3.0
+      INVALID_BUCKET_NAME: revoke-invalid-3.0
+      UNPROCESSED_BUCKET_NAME: revoke-unprocessed-3.0
+      BATCH_BUCKET_NAME: revoke-batch-3.0
+      REVOKED_BUCKET_NAME: revoked-3.0
+
+      # integer value >= 1 and <= 20
+      # 20 is an upper limit that aws sdk has
+      MESSAGE_WAIT_TIME: 10
+      MESSAGE_VISIBILITY_TIMEOUT: 60
+      TRANSACTION_TIMEOUT_SECONDS: 600
+      TRANSACTION_CONFIRMATION_THRESHOLD: 1
+
+      # integer only value
+      GAS_PRICE_LIMIT_GWEI: 200
+      # positive float value >= 1.1
+      GAS_PRICE_MULTIPLIER: 1.2
+      # 100 MB
+      BATCH_SIZE_BYTES: 104857600
+      # 30 sec
+      BATCH_TIME_SECONDS: 30
+      # number of attempts and interval between them in case of an unexpected error in RestoreBatch task
+      RESTORE_ATTEMPTS: 10
+      RESTORE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in ComposeBatch task
+      COMPOSE_ATTEMPTS: 10
+      COMPOSE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in SaveIssuedBatch task
+      SAVE_ATTEMPTS: 10
+      SAVE_ATTEMPTS_INTERVAL_SECONDS: 60
+      # number of attempts and interval between them in case of an unexpected error in IssueBatch task
+      REVOKE_ATTEMPTS: 10
+      REVOKE_ATTEMPTS_INTERVAL_SECONDS: 60
+
 
   system-tests:
     image: tradetrust/system-tests

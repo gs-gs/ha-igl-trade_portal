@@ -2,6 +2,6 @@
   "QueueConfiguration": {
     "Id": "TestId",
     "Event": "s3:ObjectCreated:Put",
-    "Queue": "arn:aws:sqs:us-east-1:000000000000:issue-unprocessed"
+    "Queue": "arn:aws:sqs:us-east-1:000000000000:issue-unprocessed-2.0"
   }
 }

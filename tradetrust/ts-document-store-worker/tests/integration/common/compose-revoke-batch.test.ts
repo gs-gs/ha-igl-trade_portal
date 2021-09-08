@@ -1,4 +1,5 @@
 import {
+  SchemaId,
   wrapDocument as wrapDocumentV2,
   __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocumentV3
 } from '@govtechsg/open-attestation';
@@ -46,11 +47,11 @@ describe('ComposeRevokeBatch Task', ()=>{
       generateDocumentsMap: generateDocumentsMapV2,
       wrapDocument: async (document:any)=>wrapDocumentV2(document)
     },
-    {
-      version: Version.V3,
-      generateDocumentsMap: generateDocumentsMapV3,
-      wrapDocument: async (document:any)=>{return await wrapDocumentV3(document)}
-    }
+    // {
+    //   version: Version.V3,
+    //   generateDocumentsMap: generateDocumentsMapV3,
+    //   wrapDocument: async (document:any)=>{return await wrapDocumentV3(document)}
+    // }
   ];
 
   describe.each(SINGLE_DOCUMENT_BATCH_TEST_PARAMS)('Single document batch', ({
@@ -94,6 +95,7 @@ describe('ComposeRevokeBatch Task', ()=>{
     {
       version: Version.V2,
       document: documentV2,
+      documentVersion: SchemaId.v2,
       getDocumentSignature: (document:any)=>document.signature.targetHash,
       wrapDocument: async (document:any)=>wrapDocumentV2(document),
       invalidDocumentStoreAddress: '0x0000000000000000000000000000000000000000',
@@ -118,6 +120,7 @@ describe('ComposeRevokeBatch Task', ()=>{
     {
       version: Version.V3,
       document: documentV3,
+      documentVersion: SchemaId.v3,
       getDocumentSignature: (document:any)=>document.proof.targetHash,
       wrapDocument: async (document:any)=>{return await wrapDocumentV3(document)},
       invalidDocumentStoreAddress: '0x0000000000000000000000000000000000000000',
@@ -139,6 +142,7 @@ describe('ComposeRevokeBatch Task', ()=>{
   describe.each(INVALID_DOCUMENTS_HANDLING_TEST_PARAMS)('Invalid documents handling', ({
     version,
     document,
+    documentVersion,
     invalidDocumentStoreAddress,
     invalidDocumentSignatureOverride,
     invalidDocumentStoreAddressOverride,
@@ -162,7 +166,8 @@ describe('ComposeRevokeBatch Task', ()=>{
       documents.set('non-json-document', 'non-json-document-body');
       documents.set('deleted-document', document());
       documents.set('unwrapped-document', document());
-      documents.set('invalid-document', {body: 'invalid-document-body'});
+      documents.set('invalid-document', {version: documentVersion, body: 'invalid-document-body'});
+      documents.set('invalid-document-version', {version: 'invalid', body: 'invalid-document-body'});
       documents.set('invalid-document-store-document', await wrapDocument(document(invalidDocumentStoreAddressOverride)));
       documents.set('wrapped-document', await wrapDocument(document()));
 
@@ -213,6 +218,10 @@ describe('ComposeRevokeBatch Task', ()=>{
         'Document not wrapped'
       )
       await invalidDocumentReasonAssert(
+        'invalid-document-version',
+        'Invalid document version'
+      )
+      await invalidDocumentReasonAssert(
         'invalid-signature-document',
         'Invalid document signature'
       )
@@ -221,6 +230,13 @@ describe('ComposeRevokeBatch Task', ()=>{
         `Document 0x${getDocumentSignature(revokedDocument)} already revoked`
       )
       expect(batch.wrappedDocuments.get('deleted-document')).toBeFalsy();
+      expect(batch.wrappedDocuments.get('invalid-document-store-document')).toBeFalsy();
+      expect(batch.wrappedDocuments.get('non-json-document')).toBeFalsy();
+      expect(batch.wrappedDocuments.get('unwrapped-document')).toBeFalsy();
+      expect(batch.wrappedDocuments.get('invalid-document')).toBeFalsy();
+      expect(batch.wrappedDocuments.get('invalid-document-version')).toBeFalsy();
+      expect(batch.wrappedDocuments.get('invalid-signature-document')).toBeFalsy();
+      expect(batch.wrappedDocuments.get('revoked-document')).toBeFalsy();
       expect(batch.wrappedDocuments.get('wrapped-document')).toBeTruthy();
     });
   });

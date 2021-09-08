@@ -5,25 +5,25 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "@govtechsg/document-store": "^2.2.1",
-    "@govtechsg/oa-verify": "^7.4.1",
-    "@govtechsg/open-attestation": "^5.2.2",
-    "@types/jest": "^26.0.23",
-    "@types/lodash": "^4.14.168",
-    "@types/node": "^15.0.1",
-    "@types/pino": "^6.3.8",
-    "aws-sdk": "^2.896.0",
-    "ethers": "^5.1.4",
-    "jest": "^26.6.3",
+    "@govtechsg/document-store": "^2.2.2",
+    "@govtechsg/oa-verify": "^7.5.1",
+    "@govtechsg/open-attestation": "^6.0.4",
+    "@types/jest": "^24.9.1",
+    "@types/lodash": "^4.14.172",
+    "@types/node": "^15.14.9",
+    "@types/pino": "^6.3.11",
+    "aws-sdk": "^2.983.0",
+    "ethers": "^5.4.6",
+    "jest": "^24.9.0",
     "lodash": "^4.17.21",
-    "pino": "^6.11.3",
-    "pino-pretty": "^4.7.1",
-    "ts-jest": "^26.5.5",
-    "tslib": "^2.2.0",
-    "typescript": "^4.2.4"
+    "pino": "^6.13.2",
+    "pino-pretty": "^4.8.0",
+    "ts-jest": "^24.3.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.2"
   },
   "scripts": {
-    "test-v2": "jest -i tests/system/v2 | pino-pretty"
+    "test": "jest -i tests | pino-pretty"
   },
   "author": "",
   "license": "ISC"

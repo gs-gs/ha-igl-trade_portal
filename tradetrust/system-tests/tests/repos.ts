@@ -40,12 +40,11 @@ class Bucket{
         Key
       }).promise()
     }catch(e){
-      if(e.code == 'NoSuchKey'){
+      if((e as any).code == 'NoSuchKey'){
         return;
       }
       throw e;
     }
-
   }
 
   async put({Body, Key}: IBucketPutProps){
