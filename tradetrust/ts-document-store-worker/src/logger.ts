@@ -9,7 +9,7 @@ const LOGGER_OPTS = {
 }
 
 
-if(process.env.SENTRY_DSN){
+if(process.env.SENTRY_DSN && process.env.USE_SENTRY){
   /* istanbul ignore next */
   LOGGER_OPTS.transports.push(new SentryTransport({
     format: format.combine(
