@@ -8,6 +8,7 @@ module.exports = {
     '3.0/batched-revoke-worker': 'src/entrypoints/3.0/batched-revoke.ts'
   },
   mode: 'production',
+  devtool: 'source-map',
   target: 'node',
   module: {
     rules: [

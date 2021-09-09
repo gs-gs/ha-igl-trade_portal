@@ -10,4 +10,4 @@ if [[ -n "$STARTUP_DELAY_SECONDS" ]]; then
   sleep $STARTUP_DELAY_SECONDS
 fi
 
-node $@
+node --enable-source-maps $@
