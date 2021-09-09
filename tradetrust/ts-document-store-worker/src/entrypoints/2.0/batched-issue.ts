@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { logger } from 'src/logger';
-import { getBatchedIssueEnvConfig } from 'src/config';
+import { getBatchedIssueEnvConfig, hideSecrets } from 'src/config';
 import {
   UnprocessedDocuments,
   UnprocessedDocumentsQueue,
@@ -16,9 +16,9 @@ import { BatchedIssue } from 'src/tasks/v2/batched-issue';
 
 async function main(){
   const config = getBatchedIssueEnvConfig();
-  const wallet = await connectWallet(config);
   logger.info('Config loaded');
-  logger.info('%O', config);
+  logger.info('%O', hideSecrets(config));
+  const wallet = await connectWallet(config);
   await new BatchedIssue({
     invalidDocuments: new InvalidDocuments(config),
     unprocessedDocuments: new UnprocessedDocuments(config),
