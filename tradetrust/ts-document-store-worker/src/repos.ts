@@ -58,14 +58,9 @@ class Keys{
 
   static async decrypt(data: string){
     console.log("decrypt()")
-    try{
-      const decrypted = await KMSService.decrypt({CiphertextBlob: data}).promise();
-    return decrypted.Plaintext?.toString('utf-8')??'';
-    } catch(e){
-      console.log("decryption failed")
-      console.log(e)
-    }
-    
+    const decrypted = await KMSService.decrypt({CiphertextBlob: data}).promise();
+    console.log("decrypted...")
+    return decrypted.Plaintext?.toString('utf-8')??'';   
   }
 
   static async getStringOrB64KMS(data: string): Promise<string>{
