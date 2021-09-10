@@ -57,8 +57,15 @@ class Keys{
   private static BASE64_PREFIX_1: string = 'base64:';
 
   static async decrypt(data: string){
-    const decrypted = await KMSService.decrypt({CiphertextBlob: data}).promise();
+    console.log("decrypt()")
+    try{
+      const decrypted = await KMSService.decrypt({CiphertextBlob: data}).promise();
     return decrypted.Plaintext?.toString('utf-8')??'';
+    } catch(e){
+      console.log("decryption failed")
+      console.log(e)
+    }
+    
   }
 
   static async getStringOrB64KMS(data: string): Promise<string>{
