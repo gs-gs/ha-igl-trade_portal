@@ -271,7 +271,7 @@ pipeline {
                             branch 'master'
                             branch 'main'
                         }
-                    } force_openatt-worker
+                    }
 
                     stages{
                         stage('Setup') {
