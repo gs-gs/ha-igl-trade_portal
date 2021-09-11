@@ -50,6 +50,9 @@ pipeline {
 
             stages {
                 stage('trade_portal') {
+                    when {
+                        changeset "*/trade_portal/**"
+                    }
 
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
@@ -163,11 +166,15 @@ pipeline {
             stages{
                 stage('trade_portal') {
                     when {
-                        anyOf {
-                            equals expected: true, actual: params.force_deploy
-                            branch 'master'
-                            branch 'main'
+                        allOf {
+                            changeset "*/trade_portal/**"
+                            anyOf {
+                                equals expected: true, actual: params.force_deploy
+                                branch 'master'
+                                branch 'main'
+                            }
                         }
+                        
                     }
 
                     environment {
@@ -284,6 +291,9 @@ pipeline {
                         }
 
                         stage('openatt-api') {
+                            when {
+                                changeset "*/tradetrust/open-attestation-api/api.yml"
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-api'
@@ -335,6 +345,9 @@ pipeline {
                         }
 
                         stage('openatt-api-imp') {
+                            when {
+                                changeset "*/tradetrust/open-attestation-api/**"
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-api-imp'
@@ -385,7 +398,9 @@ pipeline {
                         }
 
                         stage('openatt-worker') {
-
+                            when {
+                                changeset "*/tradetrust/ts-document-store-worker/**"
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-worker,openatt-contract'
@@ -428,6 +443,9 @@ pipeline {
                         }
 
                         stage('openatt-verify-api') {
+                            when {
+                                changeset "*/tradetrust/open-attestation-verify-api/api.yml"
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-verify-api'
@@ -481,6 +499,9 @@ pipeline {
                         }
 
                         stage('openatt-verify-api-imp') {
+                            when {
+                                changeset "*/tradetrust/open-attestation-verify-api/**"
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-verify-api-imp'
@@ -531,6 +552,9 @@ pipeline {
                         }
 
                         stage('openatt-eth-mon') {
+                            when {
+                                changeset "*/tradetrust/monitoring/**"
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-eth-mon'
@@ -609,11 +633,15 @@ pipeline {
                 stage('plunger') {
 
                     when {
-                        anyOf {
-                            equals expected: true, actual: params.force_deploy
-                            branch 'master'
-                            branch 'main'
+                        allOf {
+                            changeset "*/trade_portal/scripts/plunger/**"
+                            anyOf {
+                                equals expected: true, actual: params.force_deploy
+                                branch 'master'
+                                branch 'main'
                         }
+                            }
+                        
                     }
 
                     stages{
