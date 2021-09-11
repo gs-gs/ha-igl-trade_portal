@@ -23,7 +23,7 @@ pipeline {
             description: 'Force deployment of all components'
         )
         booleanParam(
-            name: 'force_openatt-worker',
+            name: 'force_openatt_worker',
             defaultValue: false,
             description: 'Force deployment of openatt-worker'
         )
@@ -276,7 +276,7 @@ pipeline {
 
                     when {
                         anyOf {
-                            equals expected: true, actual: params.force_deploy
+                            equals expected: true, actual: params.force_openatt_worker
                             branch 'master'
                             branch 'main'
                         }
@@ -401,7 +401,7 @@ pipeline {
                         stage('openatt-worker') {
                             when {
                                 anyOf {
-                                    equals expected: true, actual: params.force_openatt-worker
+                                    equals expected: true, actual: params.force_openatt_worker
                                     branch 'master'
                                     branch 'main'
                                 }
