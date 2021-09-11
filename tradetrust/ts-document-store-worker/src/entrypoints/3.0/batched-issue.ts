@@ -15,10 +15,12 @@ import {
 import { BatchedIssue } from 'src/tasks/v3/batched-issue';
 
 async function main(){
+  logger.info('main()');
   const config = getBatchedSignerEnvConfig();
-  const wallet = await connectWallet(config);
   logger.info('Config loaded');
   logger.info('%O', config);
+  const wallet = await connectWallet(config);
+  logger.info('connect wallet succeeded...');
   await new BatchedIssue({
     invalidDocuments: new InvalidDocuments(config),
     unprocessedDocuments: new UnprocessedDocuments(config),
