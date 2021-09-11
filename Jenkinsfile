@@ -50,6 +50,9 @@ pipeline {
 
             stages {
                 stage('trade_portal') {
+                    when {
+                        changeset "*/trade_portal/**"
+                    }
 
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
@@ -163,11 +166,15 @@ pipeline {
             stages{
                 stage('trade_portal') {
                     when {
-                        anyOf {
-                            equals expected: true, actual: params.force_deploy
-                            branch 'master'
-                            branch 'main'
+                        allOf {
+                            changeset "*/trade_portal/**"
+                            anyOf {
+                                equals expected: true, actual: params.force_deploy
+                                branch 'master'
+                                branch 'main'
+                            }
                         }
+                        
                     }
 
                     environment {
