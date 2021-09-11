@@ -23,6 +23,11 @@ pipeline {
             description: 'Force deployment of all components'
         )
         booleanParam(
+            name: 'force_openatt-worker',
+            defaultValue: false,
+            description: 'Force deployment of openatt-worker'
+        )
+        booleanParam(
             name: 'skip_openatt_qa',
             defaultValue: false,
             description: 'Skip QA for open attestation components'
@@ -50,9 +55,6 @@ pipeline {
 
             stages {
                 stage('trade_portal') {
-                    when {
-                        changeset "*/trade_portal/**"
-                    }
 
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
@@ -166,15 +168,11 @@ pipeline {
             stages{
                 stage('trade_portal') {
                     when {
-                        allOf {
-                            changeset "*/trade_portal/**"
-                            anyOf {
-                                equals expected: true, actual: params.force_deploy
-                                branch 'master'
-                                branch 'main'
-                            }
+                        anyOf {
+                            equals expected: true, actual: params.force_deploy
+                            branch 'master'
+                            branch 'main'
                         }
-                        
                     }
 
                     environment {
@@ -273,7 +271,7 @@ pipeline {
                             branch 'master'
                             branch 'main'
                         }
-                    }
+                    } force_openatt-worker
 
                     stages{
                         stage('Setup') {
@@ -291,9 +289,6 @@ pipeline {
                         }
 
                         stage('openatt-api') {
-                            when {
-                                changeset "*/tradetrust/open-attestation-api/api.yml"
-                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-api'
@@ -345,9 +340,6 @@ pipeline {
                         }
 
                         stage('openatt-api-imp') {
-                            when {
-                                changeset "*/tradetrust/open-attestation-api/**"
-                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-api-imp'
@@ -399,11 +391,12 @@ pipeline {
 
                         stage('openatt-worker') {
                             when {
-                                anyOf{
-                                    changeset "*/tradetrust/ts-document-store-worker/**"
-                                    equals expected: true, actual: params.force_deploy
+                                anyOf {
+                                    equals expected: true, actual: params.force_openatt-worker
+                                    branch 'master'
+                                    branch 'main'
                                 }
-                            }
+                    } 
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-worker,openatt-contract'
@@ -446,9 +439,6 @@ pipeline {
                         }
 
                         stage('openatt-verify-api') {
-                            when {
-                                changeset "*/tradetrust/open-attestation-verify-api/api.yml"
-                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-verify-api'
@@ -502,9 +492,6 @@ pipeline {
                         }
 
                         stage('openatt-verify-api-imp') {
-                            when {
-                                changeset "*/tradetrust/open-attestation-verify-api/**"
-                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-verify-api-imp'
@@ -555,9 +542,6 @@ pipeline {
                         }
 
                         stage('openatt-eth-mon') {
-                            when {
-                                changeset "*/tradetrust/monitoring/**"
-                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-eth-mon'
@@ -636,15 +620,11 @@ pipeline {
                 stage('plunger') {
 
                     when {
-                        allOf {
-                            changeset "*/trade_portal/scripts/plunger/**"
-                            anyOf {
-                                equals expected: true, actual: params.force_deploy
-                                branch 'master'
-                                branch 'main'
+                        anyOf {
+                            equals expected: true, actual: params.force_deploy
+                            branch 'master'
+                            branch 'main'
                         }
-                            }
-                        
                     }
 
                     stages{
