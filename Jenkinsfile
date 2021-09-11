@@ -32,6 +32,11 @@ pipeline {
             defaultValue: false,
             description: 'Skip QA for open attestation components'
         )
+        booleanParam(
+            name: 'skip_qa',
+            defaultValue: false,
+            description: 'Skip QA'
+        )
     }
 
     environment {
@@ -52,7 +57,11 @@ pipeline {
         }
 
         stage('Testing') {
-
+            when {
+                anyOf {
+                    equals expected: false, actual: params.skip_qa
+                }
+            }
             stages {
                 stage('trade_portal') {
 
