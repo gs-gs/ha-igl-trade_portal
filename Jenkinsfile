@@ -399,7 +399,10 @@ pipeline {
 
                         stage('openatt-worker') {
                             when {
-                                changeset "*/tradetrust/ts-document-store-worker/**"
+                                anyOf{
+                                    changeset "*/tradetrust/ts-document-store-worker/**"
+                                    equals expected: true, actual: params.force_deploy
+                                }
                             }
                             environment {
                                 //hamlet deployment variables
