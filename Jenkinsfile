@@ -23,6 +23,41 @@ pipeline {
             description: 'Force deployment of all components'
         )
         booleanParam(
+            name: 'force_openatt_api',
+            defaultValue: false,
+            description: 'Force deployment of force_openatt_api'
+        )
+        booleanParam(
+            name: 'force_openatt_api_imp',
+            defaultValue: false,
+            description: 'Force deployment of force_openatt_api_imp'
+        )
+        booleanParam(
+            name: 'force_openatt_worker',
+            defaultValue: false,
+            description: 'Force deployment of force_openatt_worker'
+        )
+        booleanParam(
+            name: 'force_openatt_verify_api',
+            defaultValue: false,
+            description: 'Force deployment of force_openatt_verify_api'
+        )
+        booleanParam(
+            name: 'force_openatt_verify_api_imp',
+            defaultValue: false,
+            description: 'Force deployment of force_openatt_verify_api_imp'
+        )
+        booleanParam(
+            name: 'force_eth_mon',
+            defaultValue: false,
+            description: 'Force deployment of force_eth_mon'
+        )
+        booleanParam(
+            name: 'force_plunger',
+            defaultValue: false,
+            description: 'Force deployment of force_plunger'
+        )
+        booleanParam(
             name: 'force_openatt_worker',
             defaultValue: false,
             description: 'Force deployment of openatt-worker'
@@ -274,14 +309,6 @@ pipeline {
 
                 stage('tradetrust') {
 
-                    when {
-                        anyOf {
-                            equals expected: true, actual: params.force_openatt_worker
-                            branch 'master'
-                            branch 'main'
-                        }
-                    }
-
                     stages{
                         stage('Setup') {
                             steps {
@@ -298,6 +325,14 @@ pipeline {
                         }
 
                         stage('openatt-api') {
+
+                            when {
+                                anyOf {
+                                    equals expected: true, actual: params.force_openatt_api
+                                    branch 'master'
+                                    branch 'main'
+                                }
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-api'
@@ -349,6 +384,13 @@ pipeline {
                         }
 
                         stage('openatt-api-imp') {
+                            when {
+                                anyOf {
+                                    equals expected: true, actual: params.force_openatt_api_imp
+                                    branch 'master'
+                                    branch 'main'
+                                }
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-api-imp'
@@ -448,6 +490,13 @@ pipeline {
                         }
 
                         stage('openatt-verify-api') {
+                            when {
+                                anyOf {
+                                    equals expected: true, actual: params.force_openatt_verify_api
+                                    branch 'master'
+                                    branch 'main'
+                                }
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-verify-api'
@@ -501,6 +550,13 @@ pipeline {
                         }
 
                         stage('openatt-verify-api-imp') {
+                            when {
+                                anyOf {
+                                    equals expected: true, actual: params.force_openatt_verify_api_imp
+                                    branch 'master'
+                                    branch 'main'
+                                }
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-verify-api-imp'
@@ -551,6 +607,13 @@ pipeline {
                         }
 
                         stage('openatt-eth-mon') {
+                            when {
+                                anyOf {
+                                    equals expected: true, actual: params.force_eth_mon
+                                    branch 'master'
+                                    branch 'main'
+                                }
+                            }
                             environment {
                                 //hamlet deployment variables
                                 DEPLOYMENT_UNITS = 'openatt-eth-mon'
@@ -630,7 +693,7 @@ pipeline {
 
                     when {
                         anyOf {
-                            equals expected: true, actual: params.force_deploy
+                            equals expected: true, actual: params.force_plunger
                             branch 'master'
                             branch 'main'
                         }
