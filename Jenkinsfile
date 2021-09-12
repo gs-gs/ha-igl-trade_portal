@@ -58,11 +58,6 @@ pipeline {
             description: 'Force deployment of force_plunger'
         )
         booleanParam(
-            name: 'force_openatt_worker',
-            defaultValue: false,
-            description: 'Force deployment of openatt-worker'
-        )
-        booleanParam(
             name: 'skip_openatt_qa',
             defaultValue: false,
             description: 'Skip QA for open attestation components'
