@@ -63,7 +63,7 @@ pipeline {
             description: 'Skip QA for open attestation components'
         )
         booleanParam(
-            name: 'skip_qa',
+            name: 'skip_trade_portal_qa',
             defaultValue: false,
             description: 'Skip QA'
         )
@@ -87,13 +87,13 @@ pipeline {
         }
 
         stage('Testing') {
-            when {
-                anyOf {
-                    equals expected: false, actual: params.skip_qa
-                }
-            }
             stages {
                 stage('trade_portal') {
+                    when {
+                        anyOf {
+                            equals expected: false, actual: params.skip_trade_portal_qa
+                        }
+                    }
 
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
