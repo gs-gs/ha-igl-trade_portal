@@ -104,7 +104,7 @@ services:
 
   minio:
     # https://docs.min.io/docs/minio-docker-quickstart-guide.html
-    image: minio/minio
+    image: minio/minio:RELEASE.2021-09-03T03-56-13Z
     entrypoint: sh
     command: -c 'mkdir -p /minio-data/storage && /usr/bin/minio server /minio-data'
     environment:
