@@ -85,7 +85,7 @@ abstract class ComposeBatch implements Task<void>{
 
 
   parseDocumentPutEvent(event: any){
-    logger.info(`event: ${event}`)
+    logger.info(`event: ${JSON.stringify(event, null, 2)}`)
     try{
       event.Body = JSON.parse(event.Body);
     }catch(e){
