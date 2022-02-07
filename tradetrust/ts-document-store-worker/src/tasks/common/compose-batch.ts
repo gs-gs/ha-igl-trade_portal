@@ -95,10 +95,6 @@ abstract class ComposeBatch implements Task<void>{
     if(records.length == 0 || records.length > 1){
       throw new InvalidEventError(`Expected event.Body.Records.length == 1, got: ${records.length}`);
     }
-    const eventName = event.Body.Records[0].eventName;
-    if(eventName !== 'ObjectCreated:Put'){
-      throw new InvalidEventError(`Expected event.Body.Records[0].eventName == "ObjectCreated:Put", got: "${eventName}"`);
-    }
     return event;
   }
 
