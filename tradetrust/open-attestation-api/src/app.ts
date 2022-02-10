@@ -45,8 +45,11 @@ export default function app(){
 
   const documentWrapRequestHandler = async (req: express.Request, res: express.Response, _next: any)=>{
     if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
+    
     const document = req.body.document;
     const params = {...DEFAULT_WRAP_PARAMS, ...(req.body.params || {})};
+    logger.info(JSON.stringify(document, null, 2))
+    logger.info(JSON.stringify(params, null, 2))
     let wrappedDocument: object;
     try{
       if(params.version == OA_V3_ID){
@@ -56,6 +59,7 @@ export default function app(){
       }else{
         throw new UserFriendlyError('Unknown document version');
       }
+      logger.info(JSON.stringify(wrappedDocument, null, 2))
       res.status(200).send(wrappedDocument);
     }catch(e){
       let error = e.message;
