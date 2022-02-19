@@ -158,8 +158,8 @@ class OaVerificationView(TemplateView):
                     document_number=verify_result.get("doc_number")
                 ).first()
                 if doc:
-                    att.document = doc
-                    att.save()
+                    va.document = doc
+                    va.save()
             except Exception as e:
                 logger.exception(e)
                 verify_result = {
