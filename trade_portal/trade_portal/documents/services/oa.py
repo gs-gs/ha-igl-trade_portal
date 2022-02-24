@@ -51,18 +51,20 @@ class OaV2Renderer:
             # OAv2 field
             "issuers": [
                 {
+                    "id": settings.OA_ISSUER_DID,
                     "name": document.issuer.name,
-                    "documentStore": settings.OA_NOTARY_CONTRACT,
+                    "revocation": {
+                        "type": "NONE"
+                    },
                     "identityProof": {
-                        "type": "DNS-TXT",
+                        "type": "DNS-DID",
                         "location": tt_key_location,
+                        "key": settings.OA_ISSUER_DID 
                     },
                 }
             ],
-            "recipient": {
-                "name": document.importer_name or "",
-            },
         }
+        
         return rendered_oa
 
     # this is not used but may be in the future versions
