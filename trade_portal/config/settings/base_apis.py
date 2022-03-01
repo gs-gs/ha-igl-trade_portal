@@ -51,6 +51,9 @@ ABR_UUID = env("ABR_UUID", default=None) or None
 
 # The value required by notarisation workflow; must be set along with the OA_NOTARY_DOMAIN
 OA_NOTARY_CONTRACT = env("OA_NOTARY_CONTRACT")
+# These values used when signing docuemnt with DID
+OA_ISSUER_DID = env("OA_ISSUER_DID")
+OA_ISSUER_IDENTITY_KEY = f"{OA_ISSUER_DID}#controller"
 # The value required by notarisation workflow; this is the domain where value from the OA_NOTARY_CONTRACT
 # is set in the DNS records. Coupled with OA_NOTARY_CONTRACT. Leave empty to use default website domain.
 OA_NOTARY_DOMAIN = env("OA_NOTARY_DOMAIN")
