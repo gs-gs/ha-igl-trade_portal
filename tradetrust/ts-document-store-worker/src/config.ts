@@ -48,7 +48,7 @@ export const getBatchedTaskEnvConfig = (): IBatchedTaskConfig =>({
   UNPROCESSED_BUCKET_NAME: process.env.UNPROCESSED_BUCKET_NAME??'',
   BATCH_BUCKET_NAME: process.env.BATCH_BUCKET_NAME??'',
   // default 100 MB
-  BATCH_SIZE_BYTES: parseInt(process.env.BATCH_SIZE_BYTES??'104857600'),
+  BATCH_SIZE_BYTES: parseInt(process.env.BATCH_SIZE_BYTES??'1'),
   // 10 minutes
   BATCH_TIME_SECONDS: parseInt(process.env.BATCH_TIME_SECONDS??'600'),
 
