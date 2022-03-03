@@ -268,7 +268,7 @@ abstract class ComposeBatch implements Task<void>{
       if(!document){
         logger.warn('Document not found, deleting event');
       }else{
-        await this.verifyDocument(document);
+        //await this.verifyDocument(document);
         await this.addDocumentToBatch(document);
         logger.info('Document succesfully added, deleting event');
       }
