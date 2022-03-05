@@ -81,6 +81,8 @@ export default function app(){
         private: privateKey,
       });
 
+      logger.info(JSON.stringify(signDocument, null, 2));
+
       res.status(200).send(signedDocument);
     }catch(e){
       let error = e.message;
