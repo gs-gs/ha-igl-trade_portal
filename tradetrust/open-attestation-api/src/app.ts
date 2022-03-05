@@ -3,6 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import expressPino from 'express-pino-logger';
 import pino from 'pino';
+import AWS from 'aws-sdk';
 
 import {
   wrapDocument,
@@ -10,13 +11,15 @@ import {
   validateSchema,
   getData,
   obfuscateDocument,
-  SchemaId,
+  signDocument,
+  SUPPORTED_SIGNING_ALGORITHM,
   __unsafe__use__it__at__your__own__risks__wrapDocument
 } from '@govtechsg/open-attestation';
 
 const OA_V2_ID = 'https://schema.openattestation.com/2.0/schema.json';
 const OA_V3_ID = 'https://schema.openattestation.com/3.0/schema.json';
 
+const KMS = new AWS.KMS();
 
 const DEFAULT_WRAP_PARAMS = {
   version: OA_V3_ID
@@ -46,6 +49,18 @@ export default function app(){
   const documentWrapRequestHandler = async (req: express.Request, res: express.Response, _next: any)=>{
     if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
     
+
+    // get sigining key
+    const pkEnv = process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY||'';
+    const b64String = pkEnv.slice("kms+base64:".length)
+    const data = Buffer.from(b64String, 'base64').toString('utf-8');
+
+    const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
+    const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
+
+    const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
+
+
     const document = req.body.document;
     const params = {...DEFAULT_WRAP_PARAMS, ...(req.body.params || {})};
     logger.info(JSON.stringify(document, null, 2))
@@ -60,7 +75,13 @@ export default function app(){
         throw new UserFriendlyError('Unknown document version');
       }
       logger.info(JSON.stringify(wrappedDocument, null, 2))
-      res.status(200).send(wrappedDocument);
+  
+      const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+        public: `did:ethr:${publicKey}#controller`,
+        private: privateKey,
+      });
+
+      res.status(200).send(signedDocument);
     }catch(e){
       let error = e.message;
       if (e.validationErrors) {
