@@ -30,7 +30,7 @@ export default function app(){
   const app = express();
 
   app.use(bodyParser.json({"limit": "50mb", "strict": true}));
-  app.use(expressPino({logger}));
+  // app.use(expressPino({logger}));
 
   class UserFriendlyError extends Error{}
 
@@ -63,8 +63,8 @@ export default function app(){
 
     const document = req.body.document;
     const params = {...DEFAULT_WRAP_PARAMS, ...(req.body.params || {})};
-    logger.info(JSON.stringify(document, null, 2))
-    logger.info(JSON.stringify(params, null, 2))
+    console.log(JSON.stringify(document, null, 2))
+    console.log(JSON.stringify(params, null, 2))
     let wrappedDocument: object;
     try{
       if(params.version == OA_V3_ID){
@@ -74,14 +74,14 @@ export default function app(){
       }else{
         throw new UserFriendlyError('Unknown document version');
       }
-      logger.info(JSON.stringify(wrappedDocument, null, 2))
+      console.log(JSON.stringify(wrappedDocument, null, 2))
   
       const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
         public: `did:ethr:${publicKey}#controller`,
         private: privateKey,
       });
 
-      logger.info(JSON.stringify(signDocument, null, 2));
+      console.log(JSON.stringify(signedDocument, null, 2));
 
       res.status(200).send(signedDocument);
     }catch(e){
