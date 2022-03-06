@@ -53,11 +53,14 @@ function create(){
       // get sigining key
       const pkEnv = process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY||'';
       const b64String = pkEnv.slice("kms+base64:".length)
+      console.log(b64String);
       const data = Buffer.from(b64String, 'base64').toString('utf-8');
 
+      console.log("attempting to decrypt private key")
       const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
       const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
-      console.log("key decrypted")
+      console.log("private key decrypted")
+
       const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
 
       const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
