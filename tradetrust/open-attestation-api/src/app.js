@@ -3,15 +3,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const expressPino = require('express-pino-logger');
 const pino = require('pino');
+const AWS = require('aws-sdk');
 
 const {
   wrapDocument,
   verifySignature,
   validateSchema,
   getData,
-  obfuscateDocument
+  obfuscateDocument,
+  signDocument,
+  SUPPORTED_SIGNING_ALGORITHM
 } = require('@govtechsg/open-attestation');
 
+const KMS = new AWS.KMS();
 
 const DEFAULT_WRAP_PARAMS = {
   version: 'https://schema.openattestation.com/3.0/schema.json'
@@ -44,7 +48,25 @@ function create(){
     const params = {...DEFAULT_WRAP_PARAMS, ...(req.body.params || {})};
     try{
       const wrappedDocument = wrapDocument(document, params);
-      res.status(200).send(wrappedDocument);
+
+      // get sigining key
+      const pkEnv = process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY||'';
+      const b64String = pkEnv.slice("kms+base64:".length)
+      const data = Buffer.from(b64String, 'base64').toString('utf-8');
+
+      const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
+      const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
+
+      const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
+
+      const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+        public: `did:ethr:${publicKey}#controller`,
+        private: privateKey,
+      });
+
+      console.log(JSON.stringify(signedDocument, null, 2));
+      
+      res.status(200).send(signedDocument);
     }catch(e){
       let error = e.message;
       if (e.validationErrors) {
