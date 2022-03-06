@@ -48,7 +48,8 @@ function create(){
     const params = {...DEFAULT_WRAP_PARAMS, ...(req.body.params || {})};
     try{
       const wrappedDocument = wrapDocument(document, params);
-
+      console.log("document wrapped")
+      console.log(wrappedDocument)
       // get sigining key
       const pkEnv = process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY||'';
       const b64String = pkEnv.slice("kms+base64:".length)
@@ -56,7 +57,7 @@ function create(){
 
       const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
       const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
-
+      console.log("key decrypted")
       const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
 
       const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
