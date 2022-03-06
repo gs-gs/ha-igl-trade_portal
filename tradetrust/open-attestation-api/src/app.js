@@ -42,7 +42,7 @@ function create(){
     logger.error(err);
   }
 
-  app.post('/document/wrap', function (req, res){
+  app.post('/document/wrap', async function (req, res){
     if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
     const document = req.body.document;
     const params = {...DEFAULT_WRAP_PARAMS, ...(req.body.params || {})};
