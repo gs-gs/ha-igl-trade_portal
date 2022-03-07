@@ -54,7 +54,7 @@ function create(){
       const pkEnv = process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY||'';
       const b64String = pkEnv.slice("kms+base64:".length)
       console.log(b64String);
-      const data = Buffer.from(b64String, 'base64').toString('utf-8');
+      const data = Buffer.from(b64String, 'base64');
 
       console.log("attempting to decrypt private key")
       try{
