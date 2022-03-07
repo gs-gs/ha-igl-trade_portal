@@ -57,20 +57,26 @@ function create(){
       const data = Buffer.from(b64String, 'base64').toString('utf-8');
 
       console.log("attempting to decrypt private key")
-      const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
-      const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
-      console.log("private key decrypted")
+      try{
+        const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
+        const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
+        console.log("private key decrypted")
 
-      const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
+        const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
 
-      const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
-        public: `did:ethr:${publicKey}#controller`,
-        private: privateKey,
-      });
-      console.log("document signed")
-      console.log(JSON.stringify(signedDocument, null, 2));
+        const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+          public: `did:ethr:${publicKey}#controller`,
+          private: privateKey,
+        });
+        console.log("document signed")
+        console.log(JSON.stringify(signedDocument, null, 2));
+        
+        res.status(200).send(signedDocument);
+      } catch(e){
+        console.log("failed to either decrypt key or sign document")
+        console.log(e)
+      }
       
-      res.status(200).send(signedDocument);
     }catch(e){
       let error = e.message;
       if (e.validationErrors) {
