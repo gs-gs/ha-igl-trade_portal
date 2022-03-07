@@ -42,8 +42,8 @@ function create(){
     logger.error(err);
   }
 
-  app.post('/document/wrap', async function (req, res){
-    if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
+  app.post('/document/wrap', function (req, res){
+    // if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
     const document = req.body.document;
     const params = {...DEFAULT_WRAP_PARAMS, ...(req.body.params || {})};
     try{
@@ -57,21 +57,31 @@ function create(){
       const data = Buffer.from(b64String, 'base64').toString('utf-8');
 
       console.log("attempting to decrypt private key")
-      const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
-      const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
-      console.log("private key decrypted")
+      //const decrypted = await 
+      KMS.decrypt({CiphertextBlob: data}).promise().then((decrypted) => {
+        const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
+        console.log("private key decrypted")
 
-      const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
+        const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
 
-      const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
-        public: `did:ethr:${publicKey}#controller`,
-        private: privateKey,
-      });
-
-      console.log(JSON.stringify(signedDocument, null, 2));
-      
-      res.status(200).send(signedDocument);
+        // const signedDocument = await 
+        signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+          public: `did:ethr:${publicKey}#controller`,
+          private: privateKey,
+        }).then((signedDocument) => {
+          console.log(JSON.stringify(signedDocument, null, 2));
+        
+          res.status(200).send(signedDocument);
+        }).catch((e) => {
+          console.log("signing error")
+          console.log(e)
+        })
+      }).catch((e) => {
+        console.log("decryption error")
+        console.log(e)
+      })
     }catch(e){
+      console.log("error wrapping document")
       let error = e.message;
       if (e.validationErrors) {
         error = JSON.stringify(e.validationErrors)
