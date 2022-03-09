@@ -62,6 +62,7 @@ function create(){
         const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
         console.log("private key decrypted")
 
+        console.log(privateKey.slice(0, 10))
         const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
 
         const signedDocument = await signDocument(wrappedDocument, SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
