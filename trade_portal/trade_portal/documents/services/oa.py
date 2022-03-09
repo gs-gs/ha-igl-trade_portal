@@ -59,7 +59,7 @@ class OaV2Renderer:
                     "identityProof": {
                         "type": "DNS-DID",
                         "location": tt_key_location,
-                        "key": settings.OA_ISSUER_DID 
+                        "key": settings.OA_ISSUER_IDENTITY_KEY 
                     },
                 }
             ],
