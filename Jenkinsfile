@@ -216,70 +216,68 @@ pipeline {
                 }
 
                 stage('trade_portal') {
-                    dir('code'){
-                        when {
-                            anyOf {
-                                equals expected: true, actual: params.force_deploy
-                                allOf {
-                                    anyOf {
-                                        branch 'master'
-                                        branch 'main'
-                                        branch 'cd_*'
-                                    }
-                                    anyOf {
-                                        changeset 'trade_portal/**'
-                                        changeset 'Jenkinsfile'
-                                    }
+                    when {
+                        anyOf {
+                            equals expected: true, actual: params.force_deploy
+                            allOf {
+                                anyOf {
+                                    branch 'master'
+                                    branch 'main'
+                                    branch 'cd_*'
+                                }
+                                anyOf {
+                                    changeset 'trade_portal/**'
+                                    changeset 'Jenkinsfile'
                                 }
                             }
                         }
+                    }
 
-                        steps {
-                            dir('trade_portal') {
-                                sh '''#!/bin/bash
-                                    npm ci
-                                    npm run build
-                                '''
+                    steps {
+                        dir('code/trade_portal') {
+                            sh '''#!/bin/bash
+                                npm ci
+                                npm run build
+                            '''
 
 
-                                sh '''#!/bin/bash
-                                    hamlet release upload-image -u www-trd -f docker -r "${GIT_COMMIT}" \
-                                        --dockerfile compose/production/django/Dockerfile --docker-context .
+                            sh '''#!/bin/bash
+                                hamlet release upload-image -u www-trd -f docker -r "${GIT_COMMIT}" \
+                                    --dockerfile compose/production/django/Dockerfile --docker-context .
 
-                                    hamlet release update-image-reference -u www-trd -f docker -r "${GIT_COMMIT}"
-                                '''
+                                hamlet release update-image-reference -u www-trd -f docker -r "${GIT_COMMIT}"
+                            '''
 
-                                sh '''#!/bin/bash
-                                    # Running migration before deploy
-                                    hamlet deploy run-deployments -u www-task-trd
-                                    hamlet run task -t application -i app-ecs \
-                                            -w www-task -x trade -y "" -c www \
-                                            -e APP_TASK_LIST -v "migrate --no-input"
+                            sh '''#!/bin/bash
+                                # Running migration before deploy
+                                hamlet deploy run-deployments -u www-task-trd
+                                hamlet run task -t application -i app-ecs \
+                                        -w www-task -x trade -y "" -c www \
+                                        -e APP_TASK_LIST -v "migrate --no-input"
 
-                                    # Running deploy of other units
-                                    hamlet deploy run-deployments -u www-trd -u www-work-trd -u www-util-trd
-                                '''
-                            }
+                                # Running deploy of other units
+                                hamlet deploy run-deployments -u www-trd -u www-work-trd -u www-util-trd
+                            '''
+                        }
+                    }
+
+                    post {
+                        success {
+                            slackSend (
+                                message: "*Success* | <${BUILD_URL}|${JOB_NAME}> \n trade_portal deployment completed",
+                                channel: env.slack_channel,
+                                color: "#50C878"
+                            )
                         }
 
-                        post {
-                            success {
-                                slackSend (
-                                    message: "*Success* | <${BUILD_URL}|${JOB_NAME}> \n trade_portal deployment completed",
-                                    channel: env.slack_channel,
-                                    color: "#50C878"
-                                )
-                            }
-
-                            failure {
-                                slackSend (
-                                    message: "*Failure* | <${BUILD_URL}|${JOB_NAME}> \n trade_portal deployment completed",
-                                    channel: env.slack_channel,
-                                    color: "#B22222"
-                                )
-                            }
+                        failure {
+                            slackSend (
+                                message: "*Failure* | <${BUILD_URL}|${JOB_NAME}> \n trade_portal deployment completed",
+                                channel: env.slack_channel,
+                                color: "#B22222"
+                            )
                         }
-                    } 
+                    }
                 }
 
                 stage('tradetrust') {
