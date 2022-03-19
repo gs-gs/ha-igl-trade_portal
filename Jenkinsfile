@@ -226,8 +226,8 @@ pipeline {
                                     branch 'cd_*'
                                 }
                                 anyOf {
-                                    changeset 'trade_portal/**'
-                                    changeset 'Jenkinsfile'
+                                    changeset '*/trade_portal/**'
+                                    changeset '*/Jenkinsfile'
                                 }
                             }
                         }
