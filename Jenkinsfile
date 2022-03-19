@@ -18,7 +18,7 @@ pipeline {
     parameters {
         booleanParam(
             name: 'force_deploy',
-            defaultValue: false,
+            defaultValue: true,
             description: 'Force deployment of all components'
         )
         booleanParam(
