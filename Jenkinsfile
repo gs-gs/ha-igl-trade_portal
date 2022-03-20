@@ -17,14 +17,19 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: 'force_deploy',
-            defaultValue: true,
-            description: 'Force deployment of all components'
+            name: 'skip_trade_portal_qa',
+            defaultValue: false,
+            description: 'Skip QA for the trade portal'
         )
         booleanParam(
             name: 'skip_openatt_qa',
             defaultValue: false,
             description: 'Skip QA for open attestation components'
+        )
+        booleanParam(
+            name: 'force_deploy',
+            defaultValue: false,
+            description: 'Force deployment of all components'
         )
     }
 
@@ -41,6 +46,12 @@ pipeline {
 
             stages {
                 stage('trade_portal') {
+
+                    when {
+                        anyOf {
+                            equals expected: false, actual: params.skip_trade_portal_qa
+                        }
+                    }
 
                     environment {
                         COMPOSE_PROJECT_NAME = "trau"
@@ -168,14 +179,37 @@ pipeline {
                 stage ('setup') {
                     steps {
                         withFolderProperties {
-                            dir('cmdb/') {
-                                git(
-                                    credentialsId: 'github',
-                                    changelog: false,
-                                    poll: false,
-                                    url: env.product_cmdb_url,
-                                    branch: env.product_cmdb_branch
-                                )
+                            script {
+                                if ( env.account_cmdb_url ) {
+                                    dir('cmdb/accounts/') {
+                                        git(
+                                            credentialsId: 'github',
+                                            changelog: false,
+                                            poll: false,
+                                            url: env.account_cmdb_url,
+                                            branch: env.account_cmdb_branch
+                                        )
+                                    }
+                                    dir('cmdb/product/') {
+                                        git(
+                                            credentialsId: 'github',
+                                            changelog: false,
+                                            poll: false,
+                                            url: env.product_cmdb_url,
+                                            branch: env.product_cmdb_branch
+                                        )
+                                    }
+                                } else {
+                                    dir('cmdb/') {
+                                        git(
+                                            credentialsId: 'github',
+                                            changelog: false,
+                                            poll: false,
+                                            url: env.product_cmdb_url,
+                                            branch: env.product_cmdb_branch
+                                        )
+                                    }
+                                }
                             }
 
                             dir('code/') {
@@ -206,8 +240,6 @@ pipeline {
 
                                     env['product_cmdb_branch'] = env.product_cmdb_branch
                                     env['product_cmdb_url'] = env.product_cmdb_url
-                                    env['account_cmdb_branch'] = env.account_cmdb_branch
-                                    env['account_cmdb_url'] = env.account_cmdb_url
                                 }
                             }
                         }
