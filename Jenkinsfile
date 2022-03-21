@@ -190,7 +190,7 @@ pipeline {
                                             branch: env.account_cmdb_branch
                                         )
                                     }
-                                    dir('cmdb/product/') {
+                                    dir("cmdb/${PRODUCT}/") {
                                         git(
                                             credentialsId: 'github',
                                             changelog: false,
@@ -199,7 +199,9 @@ pipeline {
                                             branch: env.product_cmdb_branch
                                         )
                                     }
-                                } else {
+                                }
+
+                                else {
                                     dir('cmdb/') {
                                         git(
                                             credentialsId: 'github',
@@ -208,6 +210,14 @@ pipeline {
                                             url: env.product_cmdb_url,
                                             branch: env.product_cmdb_branch
                                         )
+                                    }
+                                }
+
+
+                                if ( env.HAMLET_AWS_AUTH_SOURCE == "ENV") {
+                                    withCredentials([usernamePassword(credentialsId: 'aws', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                                        env["AWS_ACCESS_KEY_ID"] = env.AWS_ACCESS_KEY_ID
+                                        env["AWS_SECRET_ACCESS_KEY"] = env.AWS_SECRET_ACCESS_KEY
                                     }
                                 }
                             }
@@ -226,21 +236,16 @@ pipeline {
                             '''
 
                             // Make folder properties available for rest of deploy jobs
-                            withFolderProperties{
-                                script {
-                                    env['TENANT'] = env.TENANT
-                                    env['PRODUCT'] = env.PRODUCT
-                                    env['ACCOUNT'] = env.ACCOUNT
-                                    env['ENVIRONMENT'] = env.ENVIRONMENT
+                            script {
+                                env['TENANT'] = env.TENANT
+                                env['PRODUCT'] = env.PRODUCT
+                                env['ACCOUNT'] = env.ACCOUNT
+                                env['ENVIRONMENT'] = env.ENVIRONMENT
 
-                                    env['HAMLET_AWS_AUTH_SOURCE'] = env.HAMLET_AWS_AUTH_SOURCE
-                                    env['HAMLET_AWS_AUTH_USER'] = env.HAMLET_AWS_AUTH_USER
+                                env['HAMLET_AWS_AUTH_SOURCE'] = env.HAMLET_AWS_AUTH_SOURCE
+                                env['slack_channel'] = env.slack_channel
 
-                                    env['slack_channel'] = env.slack_channel
-
-                                    env['product_cmdb_branch'] = env.product_cmdb_branch
-                                    env['product_cmdb_url'] = env.product_cmdb_url
-                                }
+                                env['product_cmdb_branch'] = env.product_cmdb_branch
                             }
                         }
                     }
