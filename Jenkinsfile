@@ -218,6 +218,8 @@ pipeline {
                                     withCredentials([usernamePassword(credentialsId: 'aws', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                                         env["AWS_ACCESS_KEY_ID"] = env.AWS_ACCESS_KEY_ID
                                         env["AWS_SECRET_ACCESS_KEY"] = env.AWS_SECRET_ACCESS_KEY
+                                        // unset the older version of the auth source
+                                        env['AWS_AUTOMATION_USER'] = ""
                                     }
                                 }
                             }
@@ -243,8 +245,8 @@ pipeline {
                                 env['ENVIRONMENT'] = env.ENVIRONMENT
 
                                 env['HAMLET_AWS_AUTH_SOURCE'] = env.HAMLET_AWS_AUTH_SOURCE
-                                env['slack_channel'] = env.slack_channel
 
+                                env['slack_channel'] = env.slack_channel
                                 env['product_cmdb_branch'] = env.product_cmdb_branch
                             }
                         }
