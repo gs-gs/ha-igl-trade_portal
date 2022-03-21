@@ -65,6 +65,7 @@ pipeline {
 
                         dir('test/trade_portal/trade_portal') {
                             sh '''#!/bin/bash
+                            set -e
 
                             # Install Node dependecices
                             npm ci
@@ -231,7 +232,9 @@ pipeline {
                                 }
                             }
 
-                            sh '''
+                            sh '''#!/bin/bash
+                                set -e
+
                                 pip install -q --upgrade hamlet
                                 hamlet engine install-engine --update tram
                                 hamlet engine set-engine tram
@@ -281,13 +284,16 @@ pipeline {
 
 
                             sh '''#!/bin/bash
+                                set -e
+
                                 hamlet release upload-image -u www-trd -f docker -r "${GIT_COMMIT}" \
                                     --dockerfile compose/production/django/Dockerfile --docker-context .
-
                                 hamlet release update-image-reference -u www-trd -f docker -r "${GIT_COMMIT}"
                             '''
 
                             sh '''#!/bin/bash
+                                set -e
+
                                 # Running migration before deploy
                                 hamlet deploy run-deployments -u www-task-trd
                                 hamlet run task -t application -i app-ecs \
@@ -342,19 +348,20 @@ pipeline {
                         stage('openatt-api') {
                             steps {
                                 dir('code/tradetrust/open-attestation-api/') {
-                                    sh '''
+                                    sh '''#!/bin/bash
                                         npx swagger-cli bundle --dereference --outfile build/openapi-extended-base.json --type json api.yml
                                         npx swagger-cli validate build/openapi-extended-base.json
                                     '''
 
-                                    sh '''
+                                    sh '''#!/bin/bash
+                                        set -e
                                         hamlet release upload-image -u openatt-api -f openapi -r "${GIT_COMMIT}" \
                                             --image-path build/
 
                                         hamlet release update-image-reference -u openatt-api -f openapi -r "${GIT_COMMIT}"
                                     '''
 
-                                    sh '''
+                                    sh '''#!/bin/bash
                                         hamlet deploy run-deployments -u openatt-api
                                     '''
                                 }
@@ -371,9 +378,10 @@ pipeline {
                                     '''
 
                                     sh '''#!/bin/bash
+                                        set -e
+
                                         hamlet release upload-image -u openatt-api-imp -f lambda \
                                             -r "${GIT_COMMIT}" --image-path .serverless/openatt-api.zip
-
                                         hamlet release update-image-reference -u openatt-api-imp -f lambda \
                                             -r "${GIT_COMMIT}"
                                     '''
@@ -391,9 +399,10 @@ pipeline {
 
                                 dir('code/tradetrust/ts-document-store-worker') {
                                     sh '''#!/bin/bash
+                                        set -e
+
                                         hamlet release upload-image -u openatt-worker -f docker \
                                             -r "${GIT_COMMIT}" --dockerfile Dockerfile --docker-context .
-
                                         hamlet release update-image-reference -u openatt-worker -f docker \
                                             -r "${GIT_COMMIT}"
                                     '''
@@ -409,19 +418,20 @@ pipeline {
                             steps {
 
                                 dir('code/tradetrust/open-attestation-verify-api') {
-                                    sh '''
+                                    sh '''#!/bin/bash
                                         npx swagger-cli bundle -t json -o build/openapi-extended-base.json api.yml
                                         npx swagger-cli validate build/openapi-extended-base.json
                                     '''
 
-                                    sh '''
+                                    sh '''#!/bin/bash
+                                        set -e
                                         hamlet release upload-image -u openatt-verify-api -f openapi -r "${GIT_COMMIT}" \
                                             --image-path build/
 
                                         hamlet release update-image-reference -u openatt-verify-api -f openapi -r "${GIT_COMMIT}"
                                     '''
 
-                                    sh '''
+                                    sh '''#!/bin/bash
                                         hamlet deploy run-deployments -u openatt-verify-api
                                     '''
                                 }
@@ -438,9 +448,10 @@ pipeline {
                                     '''
 
                                     sh '''#!/bin/bash
+                                        set -e
+
                                         hamlet release upload-image -u openatt-verify-api-imp -f lambda \
                                             -r "${GIT_COMMIT}" --image-path .serverless/open-attestation-verify-api.zip
-
                                         hamlet release update-image-reference -u openatt-verify-api-imp -f lambda \
                                             -r "${GIT_COMMIT}"
                                     '''
@@ -468,9 +479,10 @@ pipeline {
                                     '''
 
                                     sh '''#!/bin/bash
+                                        set -e
+
                                         hamlet release upload-image -u openatt-eth-mon -f lambda \
                                             -r "${GIT_COMMIT}" --image-path .serverless/tradetrust-monitoring.zip
-
                                         hamlet release update-image-reference -u openatt-eth-mon -f lambda \
                                             -r "${GIT_COMMIT}"
                                     '''
@@ -506,7 +518,7 @@ pipeline {
             post {
                 always {
                     withCredentials([gitUsernamePassword(credentialsId: 'github')]) {
-                        sh '''
+                        sh '''#!/bin/bash
                             git config --global user.name "JenkinsPipeline"
                             git config --global user.email "${CHANGE_AUTHOR_EMAIL:-Jenkins@pipeline.local}"
 
