@@ -13,7 +13,8 @@ const documentV2 = ()=>{
 
 const documentV3 = ()=>{
   const document = _.cloneDeep(documentV3Data);
-  document.proof.value = DOCUMENT_STORE_ADDRESS;
+  document.openAttestationMetadata.proof.value = `did:ethr:${DOCUMENT_STORE_ADDRESS}`;
+  document.openAttestationMetadata.identityProof.identifier = document.openAttestationMetadata.proof.value;
   return document;
 }
 

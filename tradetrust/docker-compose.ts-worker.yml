@@ -14,7 +14,7 @@ services:
     environment:
       CONTAINER_MODE: container
 
-      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/queue/unprocessed
+      UNPROCESSED_QUEUE_URL: http://tradetrust-localstack:10001/000000000000/unprocessed
       INVALID_BUCKET_NAME: invalid
       UNPROCESSED_BUCKET_NAME: unprocessed
       ISSUED_BUCKET_NAME: issued

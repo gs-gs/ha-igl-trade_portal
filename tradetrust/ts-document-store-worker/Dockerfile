@@ -16,7 +16,6 @@ FROM environment AS build
 RUN npm run build && cp prod.docker-entrypoint.sh dist/bundle/prod.docker-entrypoint.sh
 
 
-
 FROM node:14-alpine AS production
 WORKDIR /document-store-worker
 COPY --from=build /document-store-worker/dist/bundle ./

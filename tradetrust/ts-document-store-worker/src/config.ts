@@ -1,4 +1,5 @@
 import fs from 'fs';
+import _ from 'lodash';
 
 
 function get_env_or_file_value(envVarName: string):string{
@@ -155,3 +156,17 @@ export const getBatchedSignerEnvConfig = (): IBatchedSignerConfig => ({
   ...getDocumentStoreTaskEnvConfig(),
   ...getIssueTaskEnvConfig()
 });
+
+
+export const hideSecrets = (config: any, secrets?: Array<string>): any => {
+  secrets = secrets??['DOCUMENT_STORE_OWNER_PRIVATE_KEY'];
+  config = _.cloneDeep(config);
+  for(let key of secrets){
+    let original = config[key];
+    if(original !== undefined){
+      original = original.toString();
+      config[key] = '*'.repeat(original.length)
+    }
+  }
+  return config;
+}

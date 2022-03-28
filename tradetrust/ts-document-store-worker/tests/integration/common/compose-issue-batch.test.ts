@@ -1,3 +1,8 @@
+import {
+  SchemaId,
+  wrapDocument as wrapDocumentV2,
+  __unsafe__use__it__at__your__own__risks__wrapDocument as wrapDocumentV3
+} from '@govtechsg/open-attestation';
 import { OpenAttestationVersion as Version } from 'src/constants';
 import { getBatchedIssueEnvConfig } from 'src/config';
 import { connectWallet, connectDocumentStore } from 'src/document-store';
@@ -81,7 +86,9 @@ describe('ComposeIssueBatch Task', ()=>{
   const INVALID_DOCUMENTS_HANDLING_TEST_PARAMS = [
     {
       version: Version.V2,
+      documentVersion: SchemaId.v2,
       document: documentV2,
+      wrap: async (document:any)=>wrapDocumentV2(document),
       invalidDocumentStoreAddress: '0x0000000000000000000000000000000000000000',
       invalidDocumentStoreOverride: {
         issuers:[
@@ -98,7 +105,9 @@ describe('ComposeIssueBatch Task', ()=>{
     },
     {
       version: Version.V3,
+      documentVersion: SchemaId.v3,
       document: documentV3,
+      wrap: async (document:any)=>await wrapDocumentV3(document),
       invalidDocumentStoreAddress: '0x0000000000000000000000000000000000000000',
       invalidDocumentStoreOverride: {
         openAttestationMetadata: {
@@ -112,6 +121,8 @@ describe('ComposeIssueBatch Task', ()=>{
   describe.each(INVALID_DOCUMENTS_HANDLING_TEST_PARAMS)('Invalid documents handling', ({
     version,
     document,
+    wrap,
+    documentVersion,
     invalidDocumentStoreAddress,
     invalidDocumentStoreOverride
   })=>{
@@ -121,9 +132,11 @@ describe('ComposeIssueBatch Task', ()=>{
       const documents = new Map<string, any>();
       documents.set('non-json-document', 'non-json-document-body');
       documents.set('deleted-document', document());
-      documents.set('regular-document', document());
-      documents.set('invalid-document', {});
+      documents.set('invalid-document', {version: documentVersion});
+      documents.set('invalid-document-version', {version: 'invalid'});
       documents.set('invalid-document-store-document', document(invalidDocumentStoreOverride));
+      documents.set('wrapped-document', await wrap(document()));
+      documents.set('regular-document', document());
       // adding the document and modifying its event to set invalid etag
       await unprocessedDocuments.put({Key: 'invalid-etag-document', Body: JSON.stringify(document())});
       const invalidETagDocumentPutEvent: any = await unprocessedDocumentsQueue.get();
@@ -172,8 +185,21 @@ describe('ComposeIssueBatch Task', ()=>{
         'invalid-document',
         'Invalid document schema'
       )
-      expect(batch.unwrappedDocuments.get('invalid-etag-document')).toBeFalsy();
+      await invalidDocumentReasonAssert(
+        'invalid-document-version',
+        'Invalid document version'
+      )
+      await invalidDocumentReasonAssert(
+        'wrapped-document',
+        'Document is wrapped'
+      )
+      expect(batch.unwrappedDocuments.get('non-json-document')).toBeFalsy();
       expect(batch.unwrappedDocuments.get('deleted-document')).toBeFalsy();
+      expect(batch.unwrappedDocuments.get('invalid-document')).toBeFalsy();
+      expect(batch.unwrappedDocuments.get('invalid-document-version')).toBeFalsy();
+      expect(batch.unwrappedDocuments.get('invalid-document-store-document')).toBeFalsy();
+      expect(batch.unwrappedDocuments.get('invalid-etag-document')).toBeFalsy();
+      expect(batch.unwrappedDocuments.get('wrapped-document')).toBeFalsy();
       expect(batch.unwrappedDocuments.get('regular-document')).toBeTruthy();
     });
   });

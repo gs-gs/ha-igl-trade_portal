@@ -2,7 +2,8 @@ FROM node:14-alpine
 
 WORKDIR /system-tests
 
-RUN chmod 777 -R /system-tests && \
+RUN mkdir node_modules && \
+  chmod 777 -R /system-tests && \
   apk update && \
   apk add bash
 

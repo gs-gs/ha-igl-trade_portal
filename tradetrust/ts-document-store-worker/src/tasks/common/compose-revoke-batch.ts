@@ -35,6 +35,9 @@ export class ComposeRevokeBatch extends ComposeBatch{
       await this.verificator.verify(document.body.json);
     }catch(e){
       if(e instanceof VerificationError){
+        if(e.details){
+          logger.warn(e.details);
+        }
         throw new InvalidDocumentError(e.message, document);
       }else{
         throw e;

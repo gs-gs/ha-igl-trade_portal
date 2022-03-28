@@ -20,7 +20,11 @@ import {
 
 
 class VerificationError extends Error{
-
+  public details: string | undefined;
+  constructor(message: string, details?: string){
+    super(message);
+    this.details = details;
+  }
 }
 
 
@@ -47,28 +51,48 @@ abstract class VerifyDocument{
     }
   }
 
-  getDocumentStoreAddress(document: any, version: SchemaId.v2|SchemaId.v3|undefined): string|undefined{
-    if(version === SchemaId.v2){
-      return document.issuers?.[0]?.documentStore;
-    }else if(version === SchemaId.v3){
-      const metadata = document.openAttestationMetadata??{};
-      const proofMethod = metadata.proof?.method;
-      const proofValue:string = metadata.proof?.value;
-      const revocationType = metadata.proof?.revocation?.type;
-      if(proofMethod == DOCUMENT_STORE_PROOF_TYPE){
-        return proofValue;
-      }else if(proofMethod == DID_PROOF_TYPE && revocationType == REVOCATION_STORE_REVOCATION_TYPE){
-        return proofValue.split(':').pop();
-      }
+  async verifyDocumentVersionV2(document: any){
+    const version = this.getDocumentVersion(document);
+    if(version != SchemaId.v2){
+      throw new VerificationError('Invalid document version');
     }
-    return undefined;
   }
 
-  async verifyDocumentStoreAddress(document: any){
+  async verifyDocumentVersionV3(document: any){
     const version = this.getDocumentVersion(document);
-    const got = this.getDocumentStoreAddress(document, version);
+    if(version != SchemaId.v3){
+      throw new VerificationError('Invalid document version');
+    }
+  }
+
+  getDocumentStoreAddressV2(document: any): string|undefined{
+    return document.issuers?.[0]?.documentStore;
+  }
+
+  getDocumentStoreAddressV3(document: any): string|undefined{
+    const metadata = document.openAttestationMetadata??{};
+    const proofMethod = metadata.proof?.method;
+    const proofValue:string = metadata.proof?.value;
+    const revocationType = metadata.proof?.revocation?.type;
+    if(proofMethod == DOCUMENT_STORE_PROOF_TYPE){
+      return proofValue;
+    }else if(proofMethod == DID_PROOF_TYPE && revocationType == REVOCATION_STORE_REVOCATION_TYPE){
+      return proofValue.split(':').pop();
+    }
+  }
+
+  async verifyDocumentStoreAddressV2(document: any){
+    const got = this.getDocumentStoreAddressV2(document);
     const expected = this.props.documentStore.address;
-    if(expected != got){
+    if(got != expected){
+      throw new VerificationError(`Invalid document store address. Expected: ${expected}. Got: ${got}`);
+    }
+  }
+
+  async verifyDocumentStoreAddressV3(document: any){
+    const got = this.getDocumentStoreAddressV3(document);
+    const expected = this.props.documentStore.address;
+    if(got != expected){
       throw new VerificationError(`Invalid document store address. Expected: ${expected}. Got: ${got}`);
     }
   }
@@ -90,7 +114,7 @@ abstract class VerifyDocument{
       wrapDocumentV2(document)
     }catch(e){
       if(!!e.validationErrors){
-        throw new VerificationError('Invalid document schema');
+        throw new VerificationError('Invalid document schema', JSON.stringify(e.validationErrors));
       }else{
         throw e;
       }
@@ -101,9 +125,11 @@ abstract class VerifyDocument{
     try{
       await wrapDocumentV3(document);
     }catch(e){
-      // TODO: decide what to do for better error handling here,
-      // maybe add logging
-      throw new VerificationError('Invalid document schema');
+      if(!!e.validationErrors){
+        throw new VerificationError('Invalid document schema',JSON.stringify(e.validationErrors));
+      }else{
+        throw e;
+      }
     }
   }
 
@@ -113,9 +139,27 @@ abstract class VerifyDocument{
     }
   }
 
+  async verifyNotWrappedDocumentV2(document: any){
+    if(utils.isWrappedV2Document(document)){
+      throw new VerificationError('Document is wrapped');
+    }
+  }
+
   async verifyWrappedDocumentV3(document: any){
     if(!utils.isWrappedV3Document(document)){
       throw new VerificationError('Document not wrapped');
+    }
+  }
+
+  async verifyNotWrappedDocumentV3(document: any){
+    if(utils.isWrappedV3Document(document)){
+      throw new VerificationError('Document is wrapped');
+    }
+  }
+
+  async verifyDocumentRevocable(document: any){
+    if(!utils.isDocumentRevokable(document)){
+      throw new Error('Document not revocable');
     }
   }
 
@@ -138,10 +182,12 @@ abstract class VerifyDocument{
 
 class VerifyDocumentRevocationV2 extends VerifyDocument{
   async verify(document: any){
+    await this.verifyDocumentVersionV2(document);
     await this.verifyWrappedDocumentV2(document);
+    await this.verifyDocumentRevocable(document);
     await this.verifyWrappedDocumentSchema(document);
     await this.verifyWrappedDocumentSignature(document);
-    await this.verifyDocumentStoreAddress(getData(document));
+    await this.verifyDocumentStoreAddressV2(getData(document));
     await this.verifyDocumentNotRevokedV2(document);
   }
 }
@@ -149,18 +195,22 @@ class VerifyDocumentRevocationV2 extends VerifyDocument{
 
 class VerifyDocumentIssuanceV2 extends VerifyDocument{
   async verify(document: any){
+    await this.verifyDocumentVersionV2(document);
+    await this.verifyNotWrappedDocumentV2(document);
     await this.verifyUnwrappedDocumentSchemaV2(document);
-    await this.verifyDocumentStoreAddress(document);
+    await this.verifyDocumentStoreAddressV2(document);
   }
 }
 
 
 class VerifyDocumentRevocationV3 extends VerifyDocument{
   async verify(document: any){
+    await this.verifyDocumentVersionV3(document);
     await this.verifyWrappedDocumentV3(document);
+    await this.verifyDocumentRevocable(document);
     await this.verifyWrappedDocumentSchema(document);
     await this.verifyWrappedDocumentSignature(document);
-    await this.verifyDocumentStoreAddress(document);
+    await this.verifyDocumentStoreAddressV3(document);
     await this.verifyDocumentNotRevokedV3(document);
   }
 }
@@ -168,8 +218,10 @@ class VerifyDocumentRevocationV3 extends VerifyDocument{
 
 class VerifyDocumentIssuanceV3 extends VerifyDocument{
   async verify(document: any){
+    await this.verifyDocumentVersionV3(document);
+    await this.verifyNotWrappedDocumentV3(document);
     await this.verifyUnwrappedDocumentSchemaV3(document);
-    await this.verifyDocumentStoreAddress(document);
+    await this.verifyDocumentStoreAddressV3(document);
   }
 }
 
