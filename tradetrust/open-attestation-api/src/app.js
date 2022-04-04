@@ -17,9 +17,10 @@ const {
 
 const KMS = new AWS.KMS();
 
-const DEFAULT_WRAP_PARAMS = {
-  version: 'https://schema.openattestation.com/3.0/schema.json'
+const DEFAULT_WRAP_PARAMS = { //Morgan: This currently does nothing in OA, despite what docs say!
+  version: 'https://schema.openattestation.com/3.0/schema.json'  
 };
+
 
 
 function create(){
@@ -42,19 +43,71 @@ function create(){
     logger.error(err);
   }
 
-  app.post('/document/wrap', async function (req, res){
+  
+  app.post("/document/sign", async function(req,res){
+    console.log('/document/sign')
+    if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
+    const document = req.body.document; 
+
+
+    const pkEnv = process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY||'';
+    if(pkEnv.startsWith('kms+base64:')){// Then it needs decrypting.
+      const b64String = pkEnv.slice("kms+base64:".length)
+      console.log(b64String);
+    
+      const data = Buffer.from(b64String, 'base64');
+      console.log("attempting to decrypt private key")
+      try{
+        const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
+        const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
+        console.log("private key decrypted")
+
+        console.log(privateKey.slice(0, 10))
+      }
+      catch(e){
+        console.log("failed to decrypt key")
+      }
+    } 
+    else{ // Probably running locally in this case.
+      privateKey = pkEnv;
+    }
+    const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
+    try{// Do the actual signing
+      const signedDocument = await signDocument(document, 
+          SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+        public: `did:ethr:${publicKey}#controller`, // this will become the verificationMethod in the singed document
+        private: privateKey,
+      });
+      console.log("document signed")
+      console.log(JSON.stringify(signedDocument, null, 2));
+      if (!verifySignature(signedDocument)){
+        console.log("Signing not validated immediately after signing.");
+      }
+          
+      res.status(200).send(signedDocument);
+    } 
+    catch(e){
+        console.log(e)
+    }
+  });
+
+  app.post("/document/wrap", async function (req, res){
     if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
     const document = req.body.document;
     const params = {...DEFAULT_WRAP_PARAMS, ...(req.body.params || {})};
     try{
       const wrappedDocument = wrapDocument(document, params);
+      res.status(200).send(wrappedDocument);
+      /*
       console.log("document wrapped")
       console.log(wrappedDocument)
+      // Previously  finished here: res.status(200).send(wrappedDocument);
       // get sigining key
       const pkEnv = process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY||'';
       const b64String = pkEnv.slice("kms+base64:".length)
       console.log(b64String);
       const data = Buffer.from(b64String, 'base64');
+
 
       console.log("attempting to decrypt private key")
       try{
@@ -73,15 +126,17 @@ function create(){
         console.log(JSON.stringify(signedDocument, null, 2));
         
         res.status(200).send(signedDocument);
-      } catch(e){
+      } 
+      catch(e){
         console.log("failed to either decrypt key or sign document")
         console.log(e)
       }
+      */
       
     }catch(e){
       let error = e.message;
       if (e.validationErrors) {
-        error = JSON.stringify(e.validationErrors)
+         error = JSON.stringify(e.validationErrors) //Morgan: I suspect this is vestigial?
       }
       throw new UserFriendlyError(error);
     }

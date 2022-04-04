@@ -25,6 +25,16 @@ class OaApiRestClient:
             },
         )
 
+    def sign_document(self, oa_doc):
+        if getattr(settings, "IS_UNITTEST", False) is True: #Copied from wrap_document
+            raise EnvironmentError("This procedure must not be called from unittest")
+        return requests.post(
+            settings.OA_WRAP_API_URL + "/document/sign",
+            json={
+                "document": oa_doc,
+            },
+        )
+
 
 class OaV2Renderer:
 

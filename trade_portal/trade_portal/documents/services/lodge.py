@@ -64,7 +64,8 @@ class DocumentService:
         # TODO: think about replacing by native solution (won't give much performance increase)
         # https://github.com/Open-Attestation/open-attestation/blob/master/src/2.0/wrap.ts#L25
         try:
-            oa_doc_wrapped_resp = self.oa_client.wrap_document(oa_doc)
+            oa_doc_wrapped_resp_0 = self.oa_client.wrap_document(oa_doc)
+            oa_doc_wrapped_resp = self.oa_client.sign_document(oa_doc_wrapped_resp_0.json())
             if oa_doc_wrapped_resp.status_code != 200:
                 # this is not common to have API answering non-200
                 logger.warning("Received %s for oa doc wrap step", oa_doc_wrapped_resp)
