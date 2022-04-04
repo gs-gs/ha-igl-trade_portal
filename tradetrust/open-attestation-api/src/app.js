@@ -47,37 +47,50 @@ function create(){
   app.post("/document/sign", async function(req,res){
     console.log('/document/sign')
     if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
-    const document = req.body.document; //should be wrapped already at this point
-
-    var keyPair;
-    if(!process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY){
-      keyPair = {
-        private: '0x40b639e8fb83afe8ad8d4bb7857e69d039a15c3e476b2d98f346222623420e6f',
-        public: '0x103D912298C89a98Eed323376aa4403b92b28842'
-      }
-    }
-    else{
-      keyPair = {
-        //public: `did:ethr:${publicKey}#controller`,
-        public: process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY,
-        private: process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY
-      };
-    }
+    const document = req.body.document; 
 
 
-    const signedDocument = await signDocument(document, 
-          SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, 
-          keyPair);
-
-    // Verification- probably not necessary
-    if (!verifySignature(signedDocument)){
-      console.log("Signing not validated immediately after signing.");
-    }
-    console.log(JSON.stringify(signedDocument, null, 2)); 
+    const pkEnv = process.env.DOCUMENT_STORE_OWNER_PRIVATE_KEY||'';
+    if(pkEnv.startsWith('kms+base64:')){// Then it needs decrypting.
+      const b64String = pkEnv.slice("kms+base64:".length)
+      console.log(b64String);
     
-    res.status(200).send(signedDocument);
+      const data = Buffer.from(b64String, 'base64');
+      console.log("attempting to decrypt private key")
+      try{
+        const decrypted = await KMS.decrypt({CiphertextBlob: data}).promise();
+        const privateKey = decrypted.Plaintext?.toString('utf-8')??'';
+        console.log("private key decrypted")
 
+        console.log(privateKey.slice(0, 10))
+      }
+      catch(e){
+        console.log("failed to decrypt key")
+      }
+    } 
+    else{ // Probably running locally in this case.
+      privateKey = pkEnv;
+    }
+    const publicKey = process.env.DOCUMENT_STORE_OWNER_PUBLIC_KEY;
+    try{// Do the actual signing
+      const signedDocument = await signDocument(document, 
+          SUPPORTED_SIGNING_ALGORITHM.Secp256k1VerificationKey2018, {
+        public: `did:ethr:${publicKey}#controller`, // this will become the verificationMethod in the singed document
+        private: privateKey,
+      });
+      console.log("document signed")
+      console.log(JSON.stringify(signedDocument, null, 2));
+      if (!verifySignature(signedDocument)){
+        console.log("Signing not validated immediately after signing.");
+      }
+          
+      res.status(200).send(signedDocument);
+    } 
+    catch(e){
+        console.log(e)
+    }
   });
+
   app.post("/document/wrap", async function (req, res){
     if (req.body.document === undefined){throw new UserFriendlyError('No "document" field in payload');}
     const document = req.body.document;
