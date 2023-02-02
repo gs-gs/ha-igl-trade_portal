@@ -29,7 +29,7 @@
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",
     "pino-pretty": "^4.3.0",
-    "serverless": "^2.6.0",
+    "serverless": "^2.72.3",
     "swagger-cli": "^4.0.4"
   }
 }
