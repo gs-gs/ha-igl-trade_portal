@@ -74,4 +74,4 @@ varint==1.0.2
 wcwidth==0.1.9
 web3==5.10.0
 websockets==8.1
-Werkzeug==1.0.1
+Werkzeug==2.2.3
