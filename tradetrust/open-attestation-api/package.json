@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@govtechsg/open-attestation": "^6.3.0",
-    "aws-sdk": "^2.771.0",
+    "aws-sdk": "^2.1354.0",
     "aws-serverless-express": "^3.3.8",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
