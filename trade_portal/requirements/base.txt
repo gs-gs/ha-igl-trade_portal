@@ -61,7 +61,7 @@ pycryptodome==3.9.8
 # pypdf2==1.26.0
 # use master branch for pypdf because they support more filters
 git+https://github.com/mstamy2/PyPDF2.git@18a2627adac13124d4122c8b92aaa863ccfb8c29
-reportlab==3.5.46
+reportlab==3.6.13
 wand==0.6.2
 camelot-py[cv]==0.8.2
 pytesseract==0.3.5
